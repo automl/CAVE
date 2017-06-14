@@ -7,16 +7,16 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 # Adjust the PYTHON_PATH to find the submodules
 spysmac_path = os.path.dirname(os.path.realpath(__file__))[:-8]
-sys.path = [os.path.join(spysmac_path, "plotting_scripts"),
-            os.path.join(spysmac_path, "smac"),
+sys.path = [os.path.join(spysmac_path, "smac"),
             os.path.join(spysmac_path, "asapy"),
+            os.path.join(spysmac_path, "plotting_scripts")
             ] + sys.path
 
 from smac.runhistory.runhistory import RunKey, RunValue
 
-from plottingscripts.plotting.scatter import plot_scatter_plot
-
 from asapy.out_builder.html_builder import HTMLBuilder
+
+from spysmac.plot.plotter import Plotter
 
 class Analyzer(object):
     """
@@ -25,16 +25,39 @@ class Analyzer(object):
     PAR10, timeouts, scatterplots, etc.
     """
 
-    def __init__(self, scenario, runhistory, train_inst, test_inst=None,
-                 output=None):
+    def __init__(self, scenario, runhistory, incumbent, output=None):
         self.logger = log.getLogger("analyzer")
 
         self.output = output if output else scenario.output_dir
 
         self.scenario = scenario
         self.runhistory = runhistory
-        self.train_inst = train_inst
-        self.test_inst = test_inst
+        self.incumbent = incumbent
+        self.train_inst = self.scenario.train_insts
+        self.test_inst = self.scenario.test_insts
+
+    def analyze(self):
+        """
+        Performs analysis of scenario by scrutinizing the runhistory.
+        """
+        default = self.scenario.cs.get_default_configuration()
+        incumbent = self.incumbent
+        # Extract data from runhistory
+        default_performance = self.get_performance_per_instance(default,
+                aggregate=np.mean)
+        incumbent_performance = self.get_performance_per_instance(incumbent,
+                aggregate=np.mean)
+        self.logger.debug("Length default-cost %d, length inc-cost %d",
+                default_performance, incumbent_performance)
+
+        # Plotting
+        plotter = Plotter()
+        # Scatterplot
+        plotter.plot_scatter(default_performance, incumbent_performance,
+                output=os.path.join(self.output, 'scatter.png'))
+        # CDF
+        plotter.plot_cdf(incumbent_performance,
+                output=os.path.join(self.output, 'cdf.png'))
 
     def build_html(self):
         builder = HTMLBuilder(self.output, "SpySMAC")
@@ -114,62 +137,4 @@ class Analyzer(object):
                              "evaluated on both configurations.".format(before -
                                  len(instance_perf), before))
         return instance_perf
-
-    def scatterplot(self, conf1, conf2, instances=None, labels=('default', 'incumbent'),
-                    title='SpySMAC scatterplot', metric='runtime'):
-        """
-        Creates a scatterplot of the two configurations on the given set of
-        instances.
-
-        Parameters:
-        -----------
-        conf1, conf2: Configuration
-            configurations to compare
-        instances: list of strings
-            list of instances to compare. if None, compare all that are
-            evaluated on both configs
-        label: tuple of strings
-            labels of plot
-        title: string
-            title of plot
-        metric: string
-            metric, runtime or quality
-        """
-        data = self.get_performances_per_instance(conf1, conf2,
-                keep_missing=False, aggregate=np.mean)
-        if instances:
-            data = {k: data[k] for k in data if k in instances}
-        # Transpose performance-data to make two lists
-        x_data, y_data = zip(*data.values())
-        x_data, y_data = np.array(x_data), np.array(y_data)
-        fig = plot_scatter_plot(x_data, y_data, labels, title=title,
-                                metric=metric)
-        fig.savefig(os.path.join(self.output, "scatter.png"))
-
-    def plot_cdf(self, conf, filename="CDF"):
-        """
-        Plot the cumulated distribution function for given configuration
-
-        Parameters
-        ----------
-        conf: Configuration
-            configuration to be plotted
-        filename: string
-            filename (without extension)
-        """
-        # TODO make PDF/CDF statistically robust
-        # TODO encapsulate
-        import matplotlib.pyplot as plt
-        # Get dict and turn into sorted list
-        data = self.get_performance_per_instance(conf, aggregate=np.mean)
-        data = sorted(list(data.values()))
-        y_data = np.array(range(len(data)))/(len(data)-1)
-        # Plot1
-        plt.plot(data, y_data)
-        plt.ylabel('Probability of being solved')
-        plt.xlabel('Time')
-        plt.title('SpySMAC CDF')
-        plt.grid(True)
-        plt.savefig(os.path.join(self.output, filename + ".png"))
-        plt.close()
 
