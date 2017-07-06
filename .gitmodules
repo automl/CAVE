@@ -1,9 +1,0 @@
-[submodule "smac"]
-	path = smac
-	url = git://github.com/automl/smac3
-[submodule "plotting_scripts"]
-	path = plotting_scripts
-	url = https://bitbucket.org/aadfreiburg/plotting_scripts.git
-[submodule "asapy"]
-	path = asapy
-	url = https://github.com/mlindauer/asapy.git

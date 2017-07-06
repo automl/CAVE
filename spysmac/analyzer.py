@@ -5,16 +5,9 @@ import logging as log
 import numpy as np
 from matplotlib.backends.backend_pdf import PdfPages
 
-# Adjust the PYTHON_PATH to find the submodules
-spysmac_path = os.path.dirname(os.path.realpath(__file__))[:-8]
-sys.path = [os.path.join(spysmac_path, "smac"),
-            os.path.join(spysmac_path, "asapy"),
-            os.path.join(spysmac_path, "plotting_scripts")
-            ] + sys.path
-
 from smac.runhistory.runhistory import RunKey, RunValue
 
-from asapy.out_builder.html_builder import HTMLBuilder
+#from asapy.out_builder.html_builder import HTMLBuilder
 
 from spysmac.plot.plotter import Plotter
 
