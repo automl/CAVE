@@ -7,8 +7,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 from smac.runhistory.runhistory import RunKey, RunValue
 
-#from asapy.out_builder.html_builder import HTMLBuilder
-
+from spysmac.html.html_builder import HTMLBuilder
 from spysmac.plot.plotter import Plotter
 
 class Analyzer(object):
@@ -21,7 +20,9 @@ class Analyzer(object):
     def __init__(self, scenario, runhistory, incumbent, output=None):
         self.logger = log.getLogger("analyzer")
 
-        self.output = output if output else scenario.output_dir
+        self.output = output
+        if not os.path.exists(output):
+            os.makedirs(output)
 
         self.scenario = scenario
         self.runhistory = runhistory
@@ -41,7 +42,7 @@ class Analyzer(object):
         incumbent_performance = self.get_performance_per_instance(incumbent,
                 aggregate=np.mean)
         self.logger.debug("Length default-cost %d, length inc-cost %d",
-                default_performance, incumbent_performance)
+                len(default_performance), len(incumbent_performance))
 
         # Plotting
         plotter = Plotter()
@@ -49,12 +50,33 @@ class Analyzer(object):
         plotter.plot_scatter(default_performance, incumbent_performance,
                 output=os.path.join(self.output, 'scatter.png'))
         # CDF
-        plotter.plot_cdf(incumbent_performance,
-                output=os.path.join(self.output, 'cdf.png'))
+        plotter.plot_cdf(default_performance, "default",
+                output=os.path.join(self.output, 'def_cdf.png'))
+        plotter.plot_cdf(incumbent_performance, "incumbent",
+                output=os.path.join(self.output, 'inc_cdf.png'))
 
     def build_html(self):
         builder = HTMLBuilder(self.output, "SpySMAC")
-        builder.generate_html(None)
+        scatter_path = os.path.join(self.output, 'scatter.png')
+        cdf_default_path = os.path.join(self.output, 'def_cdf.png')
+        cdf_incumbent_path = os.path.join(self.output, 'inc_cdf.png')
+
+        website = {"Scatterplot": {
+                        "tooltip": "Scatterplot default vs incumbent", #str|None,
+                        #"subtop1": {  # generates a further bottom if it is dictionary
+                        #        "tooltip": str|None,
+                        #        ...
+                        #        }
+                        #"table": table, #str|None (html table)
+                        "figure" : scatter_path # str | None (file name)
+                        },
+                   "Cumulative distribution function (CDF)": {
+                       "tooltip": "CDF for incumbent and for default",
+                       "subtop1": {"figure": cdf_default_path},
+                       "subtop2": {"figure": cdf_incumbent_path},
+                       }
+                  }
+        builder.generate_html(website)
 
     def get_performance_per_instance(self, conf, aggregate=None):
         """

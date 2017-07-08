@@ -52,8 +52,9 @@ class Plotter(object):
         fig = plot_scatter_plot(np.array(conf1), np.array(conf2),
                                 labels, title=title, metric=metric)
         fig.savefig(output)
+        fig.close()
 
-    def plot_cdf(self, perf_conf, output="CDF.png"):
+    def plot_cdf(self, perf_conf, config_name, output="CDF.png"):
         """
         Plot the cumulated distribution function for given configuration
 
@@ -64,7 +65,6 @@ class Plotter(object):
         output: string
             filename
         """
-        # TODO make PDF/CDF statistically robust
         # TODO encapsulate
         # Get dict and turn into sorted list
         data = perf_conf
@@ -74,7 +74,7 @@ class Plotter(object):
         plt.plot(data, y_data)
         plt.ylabel('Probability of being solved')
         plt.xlabel('Time')
-        plt.title('SpySMAC CDF')
+        plt.title('{} - SpySMAC CDF'.format(config_name))
         plt.grid(True)
         plt.savefig(output)
         plt.close()
