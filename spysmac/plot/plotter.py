@@ -7,6 +7,11 @@ import matplotlib.pyplot as plt
 
 from plottingscripts.plotting.scatter import plot_scatter_plot
 
+__author__ = "Joshua Marben"
+__copyright__ = "Copyright 2017, ML4AAD"
+__license__ = "3-clause BSD"
+__maintainer__ = "Joshua Marben"
+__email__ = "joshua.marben@neptun.uni-freiburg.de"
 
 class Plotter(object):
     """

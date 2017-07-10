@@ -13,6 +13,13 @@ from smac.scenario.scenario import Scenario
 from smac.runhistory.runhistory import RunHistory
 from smac.optimizer.objective import average_cost
 
+
+__author__ = "Joshua Marben"
+__copyright__ = "Copyright 2017, ML4AAD"
+__license__ = "3-clause BSD"
+__maintainer__ = "Joshua Marben"
+__email__ = "joshua.marben@neptun.uni-freiburg.de"
+
 class SpySMACCLI(object):
     """
     SpySMAC command line interface.

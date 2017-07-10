@@ -14,7 +14,6 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 
-
 __author__ = "Marius Lindauer"
 __copyright__ = "Copyright 2016, ML4AAD"
 __license__ = "MIT"

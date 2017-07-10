@@ -9,6 +9,13 @@ from smac.runhistory.runhistory import RunKey, RunValue
 from spysmac.html.html_builder import HTMLBuilder
 from spysmac.plot.plotter import Plotter
 
+
+__author__ = "Joshua Marben"
+__copyright__ = "Copyright 2017, ML4AAD"
+__license__ = "3-clause BSD"
+__maintainer__ = "Joshua Marben"
+__email__ = "joshua.marben@neptun.uni-freiburg.de"
+
 class Analyzer(object):
     """
     Analyze SMAC-output data.
