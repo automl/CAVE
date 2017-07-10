@@ -1,5 +1,6 @@
 import sys
 import os
+import logging
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,16 +13,20 @@ class Plotter(object):
     Responsible for plotting (scatter, CDF, etc.)
     """
 
-    def plot_scatter(self, perf_conf1, perf_conf2, labels=('default', 'incumbent'),
+    def __init__(self):
+        self.logger = logging.getLogger("spysmac.plotter")
+
+    def plot_scatter(self, cost_conf1, cost_conf2, labels=('default', 'incumbent'),
                      title='SpySMAC scatterplot', metric='runtime',
                      output='scatter.png'):
         """
         Creates a scatterplot of the two configurations on the given set of
         instances.
+        Saves plot to file.
 
         Parameters:
         -----------
-        perf_conf1, perf_conf2: dict(string->float)
+        cost_conf1, cost_conf2: dict(string->float)
             dicts with instance->cost mapping
         label: tuple of strings
             labels of plot
@@ -36,18 +41,17 @@ class Plotter(object):
         # configurations
         conf1, conf2 = [], []
 
-        # Only consider instances that are present in both configs
-        for i in perf_conf1:
-            if i in perf_conf2:
-                conf1.append(perf_conf1[i])
-                conf2.append(perf_conf2[i])
+        # Make sure both dicts have same keys
+        if not set(cost_conf1) == set(cost_conf2):
+            self.logger.warning("Bad input to scatterplot (unequal cost-dictionaries). "
+                                "Will use only instances evaluated for both configs, "
+                                "this might lead to unexpected behaviour or results.")
 
-        ### Zero-tolerance: (TODO activate as soon as validation works)
-        #for i in perf_conf1:
-        #    conf1.append(perf_conf1[i])
-        #    conf2.append(perf_conf2.pop(i))
-        #if not len(perf_conf2) == 0:
-        #    raise ValueError("Bad input to scatterplot.")
+        # Only consider instances that are present in both configs
+        for i in cost_conf1:
+            if i in cost_conf2:
+                conf1.append(cost_conf1[i])
+                conf2.append(cost_conf2[i])
 
         fig = plot_scatter_plot(np.array(conf1), np.array(conf2),
                                 labels, title=title, metric=metric,
@@ -55,38 +59,12 @@ class Plotter(object):
         fig.savefig(output)
         plt.close(fig)
 
-    def plot_cdf(self, perf_conf, config_name, output="CDF.png"):
-        """
-        Plot the cumulated distribution function for given configuration
-
-        Parameters
-        ----------
-        perf_conf: dict(string->float)
-            instance-cost dict
-        config_name: str
-            name to be printed on axis of plot
-        output: string
-            filename
-        """
-        # TODO encapsulate
-        # Get dict and turn into sorted list
-        data = perf_conf
-        data = sorted(list(data.values()))
-        y_data = np.array(range(len(data)))/(len(data)-1)
-        # Plot1
-        plt.plot(data, y_data)
-        plt.ylabel('Probability of being solved')
-        plt.xlabel('Time')
-        plt.title('{} - SpySMAC CDF'.format(config_name))
-        plt.grid(True)
-        plt.savefig(output)
-        plt.close()
-
     def plot_cdf_compare(self, cost_conf1, config_name1, cost_conf2,
                          config_name2, timeout, same_x=True, output="CDF_compare.png"):
         """
         Plot the cumulated distribution functions for given configurations,
         plots will share y-axis and if desired x-axis.
+        Saves plot to file.
 
         Parameters
         ----------
@@ -94,10 +72,12 @@ class Plotter(object):
             instance-cost dict
         config_name1, config_name2: str
             names to be printed on axis of plot
+        timeout: float
+            timeout/cutoff
         same_x: bool
             whether the two configs should share a single x-axis and plot
         output: string
-            filename
+            filename, default: CDF_compare.png
         """
         cost1, cost2 = sorted(list(cost_conf1.values())), sorted(list(cost_conf2.values()))
         y_cost1 = np.array(range(len(cost1)))/(len(cost1)-1)

@@ -10,6 +10,7 @@ from spysmac.analyzer import Analyzer
 from spysmac.plot.plotter import Plotter
 
 class TestPlot(unittest.TestCase):
+    """ Testing whether plotting generally works without throwing errors. """
 
     def setUp(self):
         scen = Scenario("test/test_files/scenario.txt")
@@ -32,6 +33,10 @@ class TestPlot(unittest.TestCase):
                                 output='test/test_files/test_scatter.png')
 
     def test_create_cdf(self):
-        self.plot.plot_cdf(self.inc_cost, "Test-CDF",
-                                output='test/test_files/test_cdf_inc.png')
+        # Combined
+        self.plot.plot_cdf(self.default_cost, "def", self.inc_cost, "inc", 5, True,
+                           output='test/test_files/test_cdf_inc.png')
+        # Single
+        self.plot.plot_cdf(self.default_cost, "def", self.inc_cost, "inc", 5, False,
+                           output='test/test_files/test_cdf_inc.png')
 
