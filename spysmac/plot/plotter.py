@@ -50,9 +50,10 @@ class Plotter(object):
         #    raise ValueError("Bad input to scatterplot.")
 
         fig = plot_scatter_plot(np.array(conf1), np.array(conf2),
-                                labels, title=title, metric=metric)
+                                labels, title=title, metric=metric,
+                                user_fontsize=10)
         fig.savefig(output)
-        fig.close()
+        plt.close(fig)
 
     def plot_cdf(self, perf_conf, config_name, output="CDF.png"):
         """
@@ -62,6 +63,8 @@ class Plotter(object):
         ----------
         perf_conf: dict(string->float)
             instance-cost dict
+        config_name: str
+            name to be printed on axis of plot
         output: string
             filename
         """
@@ -78,3 +81,72 @@ class Plotter(object):
         plt.grid(True)
         plt.savefig(output)
         plt.close()
+
+    def plot_cdf_compare(self, cost_conf1, config_name1, cost_conf2,
+                         config_name2, timeout, same_x=True, output="CDF_compare.png"):
+        """
+        Plot the cumulated distribution functions for given configurations,
+        plots will share y-axis and if desired x-axis.
+
+        Parameters
+        ----------
+        cost_conf1, cost_conf2: dict(string->float)
+            instance-cost dict
+        config_name1, config_name2: str
+            names to be printed on axis of plot
+        same_x: bool
+            whether the two configs should share a single x-axis and plot
+        output: string
+            filename
+        """
+        cost1, cost2 = sorted(list(cost_conf1.values())), sorted(list(cost_conf2.values()))
+        y_cost1 = np.array(range(len(cost1)))/(len(cost1)-1)
+        y_cost2 = np.array(range(len(cost2)))/(len(cost2)-1)
+        # Manipulate data for timeouts
+        for idx in range(len(cost1)):
+            if cost1[idx] >= timeout:
+                cost1[idx] = timeout
+                y_cost1[idx] = y_cost1[idx-1]
+        for idx in range(len(cost2)):
+            if cost2[idx] >= timeout:
+                cost2[idx] = timeout
+                y_cost2[idx] = y_cost2[idx-1]
+
+
+        if same_x:
+            f, ax1 = plt.subplots()
+            ax1.plot(cost1, y_cost1, color='red', label='config_name1')
+            ax1.plot(cost2, y_cost2, color='blue', label='config_name2')
+            ax1.set_title('{}+{} - SpySMAC CDF'.format(config_name1, config_name2))
+        else:
+            f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+            ax1.plot(cost1, y_cost1, color='red', label='config_name1')
+            ax2.plot(cost2, y_cost2, color='blue', label='config_name2')
+            ax1.set_title('{} - SpySMAC CDF'.format(config_name1))
+            ax2.set_title('{} - SpySMAC CDF'.format(config_name2))
+
+        # Always set props for ax1
+        ax1.grid(True)
+        ax1.set_xscale('log')
+        ax1.set_ylabel('Probability of being solved')
+        ax1.set_xlabel('Time')
+        # Plot 'timeout'
+        ax1.text(timeout,
+                 ax1.get_ylim()[0] - 0.1 * np.abs(ax1.get_ylim()[0]),
+                 "timeout ",  horizontalalignment='center',
+                 verticalalignment="top", rotation=30)
+        ax1.axvline(x=timeout, linestyle='--')
+        # Set props for ax2 if exists
+        if not same_x:
+            ax2.grid(True)
+            ax2.set_xscale('log')
+            ax2.set_xlabel('Time')
+            ax2.text(timeout,
+                     ax2.get_ylim()[0] - 0.1 * np.abs(ax2.get_ylim()[0]),
+                     "timeout ",  horizontalalignment='center',
+                     verticalalignment="top", rotation=30)
+            ax2.axvline(x=timeout, linestyle='--')
+
+        f.savefig(output)
+        plt.close(f)
+

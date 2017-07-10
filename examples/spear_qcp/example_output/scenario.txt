@@ -1,5 +1,5 @@
 shared_model = False
-test_instance_file = smac3-output_2017-07-10_10:40:10_(763482)_run1/SWV-GZIP-test.txt
+test_instance_file = example_output/SWV-GZIP-test.txt
 always_race_default = True
 run_obj = runtime
 maxR = 2000
@@ -15,6 +15,6 @@ abort_on_first_run_crash = True
 runcount_limit = inf
 cost_for_crash = 2147483647.0
 algo = python -u ./target_algorithm/scripts/SATCSSCWrapper.py --mem-limit 1024 --script ./target_algorithm/spear-python/spearCSSCWrapper.py
-instance_file = smac3-output_2017-07-10_10:40:10_(763482)_run1/SWV-GZIP-train.txt
+instance_file = example_output/SWV-GZIP-train.txt
 intensification_percentage = 0.5
-paramfile = smac3-output_2017-07-10_10:40:10_(763482)_run1/spear-params-mixed.pcs
+paramfile = example_output/spear-params-mixed.pcs

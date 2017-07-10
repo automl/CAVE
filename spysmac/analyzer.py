@@ -30,6 +30,15 @@ class Analyzer(object):
         self.train_inst = self.scenario.train_insts
         self.test_inst = self.scenario.test_insts
 
+        # Paths
+        self.scatter_path = os.path.join(self.output, 'scatter.png')
+        self.cdf_def_path = os.path.join(self.output, 'def_cdf.png')
+        self.cdf_inc_path = os.path.join(self.output, 'inc_cdf.png')
+        self.cdf_combined_path = output=os.path.join(self.output,
+                                                     'def_inc_cdf_comb.png')
+        self.cdf_single_path = output=os.path.join(self.output,
+                                                   'def_inc_cdf_single.png')
+
     def analyze(self):
         """
         Performs analysis of scenario by scrutinizing the runhistory.
@@ -44,22 +53,28 @@ class Analyzer(object):
         self.logger.debug("Length default-cost %d, length inc-cost %d",
                 len(default_performance), len(incumbent_performance))
 
+
         # Plotting
         plotter = Plotter()
         # Scatterplot
         plotter.plot_scatter(default_performance, incumbent_performance,
-                output=os.path.join(self.output, 'scatter.png'))
+                             output=self.scatter_path)
         # CDF
         plotter.plot_cdf(default_performance, "default",
-                output=os.path.join(self.output, 'def_cdf.png'))
+                         self.cdf_def_path)
         plotter.plot_cdf(incumbent_performance, "incumbent",
-                output=os.path.join(self.output, 'inc_cdf.png'))
+                         self.cdf_inc_path)
+        plotter.plot_cdf_compare(default_performance, "default",
+                                 incumbent_performance, "incumbent",
+                                 timeout= self.scenario.cutoff,
+                                 same_x=True, output=self.cdf_combined_path)
+        plotter.plot_cdf_compare(default_performance, "default",
+                                 incumbent_performance, "incumbent",
+                                 timeout= self.scenario.cutoff,
+                                 same_x=False, output=self.cdf_single_path)
 
     def build_html(self):
         builder = HTMLBuilder(self.output, "SpySMAC")
-        scatter_path = os.path.join(self.output, 'scatter.png')
-        cdf_default_path = os.path.join(self.output, 'def_cdf.png')
-        cdf_incumbent_path = os.path.join(self.output, 'inc_cdf.png')
 
         website = {"Scatterplot": {
                         "tooltip": "Scatterplot default vs incumbent", #str|None,
@@ -68,12 +83,12 @@ class Analyzer(object):
                         #        ...
                         #        }
                         #"table": table, #str|None (html table)
-                        "figure" : scatter_path # str | None (file name)
+                        "figure" : self.scatter_path # str | None (file name)
                         },
                    "Cumulative distribution function (CDF)": {
                        "tooltip": "CDF for incumbent and for default",
-                       "subtop1": {"figure": cdf_default_path},
-                       "subtop2": {"figure": cdf_incumbent_path},
+                       "Single": {"figure": self.cdf_single_path},
+                       "Combined": {"figure": self.cdf_combined_path},
                        }
                   }
         builder.generate_html(website)
