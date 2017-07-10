@@ -22,21 +22,23 @@ class TestPlot(unittest.TestCase):
         analyzer = Analyzer(scen, rh, train, "test/test_files/tmp")
         default = scen.cs.get_default_configuration()
         incumbent = trajectory[-1]["incumbent"]
-        self.default_cost = analyzer.get_performance_per_instance(default,
-                aggregate=np.mean)
-        self.inc_cost = analyzer.get_performance_per_instance(incumbent,
-                aggregate=np.mean)
+        self.default_cost = analyzer.get_cost_per_instance(default,
+                                                                  aggregate=np.mean)
+        self.inc_cost = analyzer.get_cost_per_instance(incumbent,
+                                                              aggregate=np.mean)
         self.plot = Plotter()
 
     def test_create_scatter(self):
-        self.plot.plot_scatter(self.default_cost, self.inc_cost,
-                                output='test/test_files/test_scatter.png')
+        ''' test scatterplotting '''
+        self.plot.plot_scatter(self.default_cost, self.inc_cost, 5,
+                               output='test/test_files/test_scatter.png')
 
     def test_create_cdf(self):
+        ''' test cdf-plotting '''
         # Combined
-        self.plot.plot_cdf(self.default_cost, "def", self.inc_cost, "inc", 5, True,
-                           output='test/test_files/test_cdf_inc.png')
+        self.plot.plot_cdf_compare(self.default_cost, "def", self.inc_cost, "inc", 5, True,
+                                   output='test/test_files/test_cdf_inc.png')
         # Single
-        self.plot.plot_cdf(self.default_cost, "def", self.inc_cost, "inc", 5, False,
-                           output='test/test_files/test_cdf_inc.png')
+        self.plot.plot_cdf_compare(self.default_cost, "def", self.inc_cost, "inc", 5, False,
+                                   output='test/test_files/test_cdf_inc.png')
 

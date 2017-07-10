@@ -3,7 +3,6 @@ import sys
 import logging as log
 
 import numpy as np
-from matplotlib.backends.backend_pdf import PdfPages
 
 from smac.runhistory.runhistory import RunKey, RunValue
 
@@ -18,9 +17,11 @@ class Analyzer(object):
     """
 
     def __init__(self, scenario, runhistory, incumbent, output=None):
-        self.logger = log.getLogger("analyzer")
+        self.logger = log.getLogger("spysmac.analyzer")
 
+        # Create output if necessary
         self.output = output
+        self.logger.info("Writing to %s", self.output)
         if not os.path.exists(output):
             os.makedirs(output)
 
@@ -32,84 +33,95 @@ class Analyzer(object):
 
         # Paths
         self.scatter_path = os.path.join(self.output, 'scatter.png')
-        self.cdf_def_path = os.path.join(self.output, 'def_cdf.png')
-        self.cdf_inc_path = os.path.join(self.output, 'inc_cdf.png')
-        self.cdf_combined_path = output=os.path.join(self.output,
-                                                     'def_inc_cdf_comb.png')
-        self.cdf_single_path = output=os.path.join(self.output,
-                                                   'def_inc_cdf_single.png')
+        self.cdf_combined_path = os.path.join(self.output, 'def_inc_cdf_comb.png')
+        self.cdf_single_path = os.path.join(self.output, 'def_inc_cdf_single.png')
 
     def analyze(self):
         """
         Performs analysis of scenario by scrutinizing the runhistory.
+        Calculate PAR10-values and plot CDF and scatter.
         """
         default = self.scenario.cs.get_default_configuration()
         incumbent = self.incumbent
         # Extract data from runhistory
-        default_performance = self.get_performance_per_instance(default,
-                aggregate=np.mean)
-        incumbent_performance = self.get_performance_per_instance(incumbent,
-                aggregate=np.mean)
+        default_cost = self.get_cost_per_instance(default, aggregate=np.mean)
+        incumbent_cost = self.get_cost_per_instance(incumbent, aggregate=np.mean)
         self.logger.debug("Length default-cost %d, length inc-cost %d",
-                len(default_performance), len(incumbent_performance))
+                          len(default_cost), len(incumbent_cost))
 
+        if not len(default_cost) == len(incumbent_cost):
+            self.logger.warning("Default evaluated on %d instances, "
+                                "incumbent evaluated on %d instances! "
+                                "Might lead to unexpected results, consider "
+                                "validating your results.",
+                                len(default_cost),
+                                len(incumbent_cost))
+
+        # Analysis
+        self.par10_table = self.create_html_table()
 
         # Plotting
         plotter = Plotter()
         # Scatterplot
-        plotter.plot_scatter(default_performance, incumbent_performance,
-                             output=self.scatter_path)
+        plotter.plot_scatter(default_cost, incumbent_cost,
+                             output=self.scatter_path,
+                             timeout=self.scenario.cutoff)
         # CDF
-        plotter.plot_cdf(default_performance, "default",
-                         self.cdf_def_path)
-        plotter.plot_cdf(incumbent_performance, "incumbent",
-                         self.cdf_inc_path)
-        plotter.plot_cdf_compare(default_performance, "default",
-                                 incumbent_performance, "incumbent",
+        plotter.plot_cdf_compare(default_cost, "default",
+                                 incumbent_cost, "incumbent",
                                  timeout= self.scenario.cutoff,
                                  same_x=True, output=self.cdf_combined_path)
-        plotter.plot_cdf_compare(default_performance, "default",
-                                 incumbent_performance, "incumbent",
+        plotter.plot_cdf_compare(default_cost, "default",
+                                 incumbent_cost, "incumbent",
                                  timeout= self.scenario.cutoff,
                                  same_x=False, output=self.cdf_single_path)
 
     def build_html(self):
+        """ Build website using the HTMLBuilder. Return website as dictionary
+        for further stacking. Also saves website in
+        'self.output/SpySMAC/report.html'
+
+        Return
+        ------
+        website: dict
+            website in dict as used in HTMLBuilder, can be stacked recursively
+            into another dict
+        """
         builder = HTMLBuilder(self.output, "SpySMAC")
 
-        website = {"Scatterplot": {
-                        "tooltip": "Scatterplot default vs incumbent", #str|None,
-                        #"subtop1": {  # generates a further bottom if it is dictionary
-                        #        "tooltip": str|None,
-                        #        ...
-                        #        }
-                        #"table": table, #str|None (html table)
-                        "figure" : self.scatter_path # str | None (file name)
-                        },
-                   "Cumulative distribution function (CDF)": {
-                       "tooltip": "CDF for incumbent and for default",
-                       "Single": {"figure": self.cdf_single_path},
-                       "Combined": {"figure": self.cdf_combined_path},
-                       }
+        website = {
+                   "PAR10":
+                    {"table": self.par10_table},
+                   "Scatterplot":
+                    {
+                     "figure" : self.scatter_path
+                    },
+                   "Cumulative distribution function (CDF)":
+                    {
+                     "Single": {"figure": self.cdf_single_path},
+                     "Combined": {"figure": self.cdf_combined_path},
+                    }
                   }
         builder.generate_html(website)
+        return website
 
-    def get_performance_per_instance(self, conf, aggregate=None):
+    def get_cost_per_instance(self, conf, aggregate=None):
         """
-        Aggregates performance for configuration on given over seeds.
+        Aggregates cost for configuration on given over seeds.
         Raises LookupError if instance not evaluated on configuration.
 
         Parameters:
         -----------
         conf: Configuration
             configuration to evaluate
-        aggregate: Function or None
-            used to aggreagate performance over different seeds, takes a list as
+        aggregate: function or None
+            used to aggregate cost over different seeds, takes a list as
             argument
 
         Returns:
         --------
-        performance: dict(instance->performance)
-            performance per instance (aggregated or as list per seeds)
+        cost: dict(instance->cost)
+            cost per instance (aggregated or as list per seeds)
         """
         # Check if config is in runhistory
         conf_id = self.runhistory.config_ids[conf]
@@ -134,37 +146,55 @@ class Analyzer(object):
 
         return instance_costs
 
-    def get_performances_per_instance(self, conf1, conf2, aggregate=None, keep_missing=False):
+    def get_costs_per_instance(self, conf1, conf2, aggregate=None, keep_missing=False):
         """
-        Get performances for two configurations
+        Get costs for two configurations
 
         Parameters
         ----------
         conf1, conf2: Configuration
             configs to be compared
         aggregate: Function or None
-            used to aggreagate performance over different seeds, takes a list as
+            used to aggregate cost over different seeds, takes a list as
             argument
         keep_missing: Boolean
             keep instances with one or no configs for it
 
         Returns
         -------
-        instance_performances: dict(instance->tuple(perf1, perf2))
-            performances for both configurations
+        instance_costs: dict(instance->tuple(cost1, cost2))
+            costs for both configurations
         """
-        conf1_perf = self.get_performance_per_instance(conf1, aggregate=aggregate)
-        conf2_perf = self.get_performance_per_instance(conf2, aggregate=aggregate)
-        instance_perf = dict()
-        for i in set(conf1_perf.keys()) | set(conf2_perf.keys()):
-            instance_perf[i] = (conf1_perf.get(i), conf2_perf.get(i))
+        conf1_cost = self.get_cost_per_instance(conf1, aggregate=aggregate)
+        conf2_cost = self.get_cost_per_instance(conf2, aggregate=aggregate)
+        instance_cost = dict()
+        for i in set(conf1_cost.keys()) | set(conf2_cost.keys()):
+            instance_cost[i] = (conf1_cost.get(i), conf2_cost.get(i))
 
         if not keep_missing:
-            before = len(instance_perf)
-            instance_perf = {i: instance_perf[i] for i in instance_perf if
-                             instance_perf[i][0] and instance_perf[i][1]}
+            before = len(instance_cost)
+            instance_cost = {i: instance_cost[i] for i in instance_cost if
+                             instance_cost[i][0] and instance_cost[i][1]}
             self.logger.info("Remove {}/{} instances because they are not "
                              "evaluated on both configurations.".format(before -
-                                 len(instance_perf), before))
-        return instance_perf
+                                 len(instance_cost), before))
+        return instance_cost
 
+    def create_html_table(self):
+        """ Create PAR10-table. """
+        # TODO implement
+        table = """
+        <table style="width:100%">
+          <tr>
+            <th> </th>
+            <th>Train</th>
+            <th>Test</th>
+          </tr>
+          <tr>
+            <td>Incumbent</td>
+            <td> N/A </td>
+            <td> N/A </td>
+          </tr>
+        </table>
+	"""
+        return table

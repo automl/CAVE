@@ -16,7 +16,8 @@ class Plotter(object):
     def __init__(self):
         self.logger = logging.getLogger("spysmac.plotter")
 
-    def plot_scatter(self, cost_conf1, cost_conf2, labels=('default', 'incumbent'),
+    def plot_scatter(self, cost_conf1, cost_conf2, timeout,
+                     labels=('default', 'incumbent'),
                      title='SpySMAC scatterplot', metric='runtime',
                      output='scatter.png'):
         """
@@ -28,6 +29,8 @@ class Plotter(object):
         -----------
         cost_conf1, cost_conf2: dict(string->float)
             dicts with instance->cost mapping
+        timeout: float
+            timeout/cutoff
         label: tuple of strings
             labels of plot
         title: string
@@ -55,7 +58,8 @@ class Plotter(object):
 
         fig = plot_scatter_plot(np.array(conf1), np.array(conf2),
                                 labels, title=title, metric=metric,
-                                user_fontsize=10)
+                                user_fontsize=10, max_val=timeout,
+                                jitter_timeout=True)
         fig.savefig(output)
         plt.close(fig)
 
@@ -116,6 +120,7 @@ class Plotter(object):
                  "timeout ",  horizontalalignment='center',
                  verticalalignment="top", rotation=30)
         ax1.axvline(x=timeout, linestyle='--')
+
         # Set props for ax2 if exists
         if not same_x:
             ax2.grid(True)
