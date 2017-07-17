@@ -65,6 +65,7 @@ class Analyzer(object):
                                 len(incumbent_cost))
 
         # Analysis
+        self.calculate_par10(default_cost, incumbent_cost)
         self.par10_table = self.create_html_table()
 
         # Plotting
@@ -187,21 +188,47 @@ class Analyzer(object):
                                  len(instance_cost), before))
         return instance_cost
 
+    def calculate_par10(self, def_costs, inc_costs):
+        """ Calculate par10-values of default and incumbent configs. """
+        default = {i:c if c < self.scenario.cutoff else self.scenario.cutoff*10
+                for i, c in def_costs.items()}
+        incumbent = {i:c if c < self.scenario.cutoff else self.scenario.cutoff*10
+                for i, c in inc_costs.items()}
+        self.def_par10_combined = np.mean(list(default.values()))
+        self.inc_par10_combined = np.mean(list(incumbent.values()))
+        self.def_par10_train = np.mean([c for i, c in default.items() if i in
+            self.train_inst])
+        self.def_par10_test = np.mean([c for i, c in default.items() if i in
+            self.test_inst])
+        self.inc_par10_train = np.mean([c for i, c in incumbent.items() if i in
+            self.train_inst])
+        self.inc_par10_test = np.mean([c for i, c in incumbent.items() if i in
+            self.test_inst])
+
     def create_html_table(self):
         """ Create PAR10-table. """
-        # TODO implement
         table = """
         <table style="width:100%">
           <tr>
             <th> </th>
             <th>Train</th>
             <th>Test</th>
+            <th>Combined</th>
+          </tr>
+          <tr>
+            <td>Default</td>
+            <td> {} </td>
+            <td> {} </td>
+            <td> {} </td>
           </tr>
           <tr>
             <td>Incumbent</td>
-            <td> N/A </td>
-            <td> N/A </td>
+            <td> {} </td>
+            <td> {} </td>
+            <td> {} </td>
           </tr>
         </table>
-	"""
+	""".format(self.def_par10_train, self.def_par10_test,
+                self.def_par10_combined, self.inc_par10_train,
+                self.inc_par10_test, self.inc_par10_combined)
         return table

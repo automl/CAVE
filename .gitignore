@@ -1,3 +1,6 @@
+# Specific examples
+examples/spear_qcp/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

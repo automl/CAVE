@@ -1,3 +1,3 @@
 matplotlib
-git+https://github.com/automl/SMAC3.git@0176b76f86ccbe0af4e75dbb9c6a79a92dfc55cf
-git+https://bitbucket.org/aadfreiburg/plotting_scripts.git
+-e git+https://github.com/automl/SMAC3.git@0176b76f86ccbe0af4e75dbb9c6a79a92dfc55cf
+-e git+https://bitbucket.org/aadfreiburg/plotting_scripts.git
