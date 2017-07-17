@@ -68,8 +68,9 @@ class Plotter(object):
         fig.savefig(output)
         plt.close(fig)
 
-    def plot_cdf_compare(self, cost_conf1, config_name1, cost_conf2,
-                         config_name2, timeout, same_x=True, output="CDF_compare.png"):
+    def plot_cdf_compare(self, data, timeout, same_x=True,
+                         train=[], test=[],
+                         output="CDF_compare.png"):
         """
         Plot the cumulated distribution functions for given configurations,
         plots will share y-axis and if desired x-axis.
@@ -77,44 +78,95 @@ class Plotter(object):
 
         Parameters
         ----------
-        cost_conf1, cost_conf2: dict(string->float)
-            instance-cost dict
-        config_name1, config_name2: str
-            names to be printed on axis of plot
+        data: dict(string->dict(string->float))
+            maps config-names to their instance-cost dicts
         timeout: float
             timeout/cutoff
         same_x: bool
             whether the two configs should share a single x-axis and plot
+        train: list(strings)
+            train-instances, will be printed separately if test also specified
+        test: list(strings)
+            test-instances, will be printed separately if train also specified
         output: string
             filename, default: CDF_compare.png
         """
-        cost1, cost2 = sorted(list(cost_conf1.values())), sorted(list(cost_conf2.values()))
-        y_cost1 = np.array(range(len(cost1)))/(len(cost1)-1)
-        y_cost2 = np.array(range(len(cost2)))/(len(cost2)-1)
-        # Manipulate data for timeouts
-        for idx in range(len(cost1)):
-            if cost1[idx] >= timeout:
-                cost1[idx] = timeout
-                y_cost1[idx] = y_cost1[idx-1]
-        for idx in range(len(cost2)):
-            if cost2[idx] >= timeout:
-                cost2[idx] = timeout
-                y_cost2[idx] = y_cost2[idx-1]
+        data = {config_name : {'combined' : sorted(list(data[config_name].values())),
+                               'train' : sorted([c for i, c in
+                                    data[config_name].items() if i in train]),
+                               'test' : sorted([c for i, c in
+                                    data[config_name].items() if i in test])}
+                for config_name in data}
 
+        def prepare_data(x_data):
+            """ Helper function to keep things easy, generates y_data and
+            manages x_data-timeouts """
+            y_data = np.array(range(len(x_data)))/(len(x_data)-1)
+            for idx in range(len(x_data)):
+                if x_data[idx] >= timeout:
+                    x_data[idx] = timeout
+                    y_data[idx] = y_data[idx-1]
+            return (x_data, y_data)
+
+        # Generate y_data
+        data = {config_name : {label : prepare_data(x_data) for label, x_data in
+            data[config_name].items()}
+                for config_name in data}
+
+        # Until here the code is usable for an arbitrary number of
+        # configurations. Below, it is specified for plotting default vs
+        # incumbent only.
 
         if same_x:
             f, ax1 = plt.subplots()
-            ax1.plot(cost1, y_cost1, color='red', label='config_name1')
-            ax1.plot(cost2, y_cost2, color='blue', label='config_name2')
-            ax1.set_title('{}+{} - SpySMAC CDF'.format(config_name1, config_name2))
+            ax1.plot(data['default']['combined'][0],
+                     data['default']['combined'][1], color='red',
+                     label='default allinst')
+            ax1.plot(data['incumbent']['combined'][0],
+                     data['incumbent']['combined'][1], color='blue',
+                     label='incumbent allinst')
+            if train and test:
+                ax1.plot(data['default']['train'][0],
+                         data['default']['train'][1], color='red',
+                         linestyle='--', label='default train')
+                ax1.plot(data['incumbent']['train'][0],
+                         data['incumbent']['train'][1], color='blue',
+                         linestyle='--', label='incumbent train')
+                ax1.plot(data['default']['test'][0],
+                         data['default']['test'][1], color='red',
+                         linestyle='-.', label='default train')
+                ax1.plot(data['incumbent']['test'][0],
+                         data['incumbent']['test'][1], color='blue',
+                         linestyle='-.', label='incumbent test')
+
+            ax1.set_title('{}+{} - SpySMAC CDF'.format('default', 'incumbent'))
         else:
             f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
-            ax1.plot(cost1, y_cost1, color='red', label='config_name1')
-            ax2.plot(cost2, y_cost2, color='blue', label='config_name2')
-            ax1.set_title('{} - SpySMAC CDF'.format(config_name1))
-            ax2.set_title('{} - SpySMAC CDF'.format(config_name2))
+            ax1.plot(data['default']['combined'][0],
+                     data['default']['combined'][1], color='red',
+                     label='default allinst')
+            ax2.plot(data['incumbent']['combined'][0],
+                     data['incumbent']['combined'][1], color='blue',
+                     label='incumbent allinst')
+            if train and test:
+                ax1.plot(data['default']['train'][0],
+                         data['default']['train'][1], color='red',
+                         linestyle='--', label='default train')
+                ax2.plot(data['incumbent']['train'][0],
+                         data['incumbent']['train'][1], color='blue',
+                         linestyle='--', label='incumbent train')
+                ax1.plot(data['default']['test'][0],
+                         data['default']['test'][1], color='red',
+                         linestyle='-.', label='default train')
+                ax2.plot(data['incumbent']['test'][0],
+                         data['incumbent']['test'][1], color='blue',
+                         linestyle='-.', label='incumbent test')
+            ax1.set_title('{} - SpySMAC CDF'.format('default'))
+            ax2.set_title('{} - SpySMAC CDF'.format('incumbent'))
+            ax2.legend()
 
         # Always set props for ax1
+        ax1.legend()
         ax1.grid(True)
         ax1.set_xscale('log')
         ax1.set_ylabel('Probability of being solved')

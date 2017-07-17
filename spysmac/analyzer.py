@@ -75,14 +75,17 @@ class Analyzer(object):
                              output=self.scatter_path,
                              timeout=self.scenario.cutoff)
         # CDF
-        plotter.plot_cdf_compare(default_cost, "default",
-                                 incumbent_cost, "incumbent",
+        cost_dict = {'default' : default_cost, 'incumbent' : incumbent_cost}
+        plotter.plot_cdf_compare(cost_dict,
                                  timeout= self.scenario.cutoff,
-                                 same_x=True, output=self.cdf_combined_path)
-        plotter.plot_cdf_compare(default_cost, "default",
-                                 incumbent_cost, "incumbent",
+                                 same_x=True,
+                                 #train=self.train_inst, test=self.test_inst,
+                                 output=self.cdf_combined_path)
+        plotter.plot_cdf_compare(cost_dict,
                                  timeout= self.scenario.cutoff,
-                                 same_x=False, output=self.cdf_single_path)
+                                 same_x=False,
+                                 #train=self.train_inst, test=self.test_inst,
+                                 output=self.cdf_single_path)
 
     def build_html(self):
         """ Build website using the HTMLBuilder. Return website as dictionary

@@ -26,6 +26,8 @@ class TestPlot(unittest.TestCase):
                                                                   aggregate=np.mean)
         self.inc_cost = analyzer.get_cost_per_instance(incumbent,
                                                               aggregate=np.mean)
+        self.cost_dict = {'default' : self.default_cost, 'incumbent' :
+                self.inc_cost}
         self.plot = Plotter()
 
     def test_create_scatter(self):
@@ -36,9 +38,9 @@ class TestPlot(unittest.TestCase):
     def test_create_cdf(self):
         ''' test cdf-plotting '''
         # Combined
-        self.plot.plot_cdf_compare(self.default_cost, "def", self.inc_cost, "inc", 5, True,
+        self.plot.plot_cdf_compare(self.cost_dict, 5, True,
                                    output='test/test_files/test_cdf_inc.png')
         # Single
-        self.plot.plot_cdf_compare(self.default_cost, "def", self.inc_cost, "inc", 5, False,
+        self.plot.plot_cdf_compare(self.cost_dict, 5, False,
                                    output='test/test_files/test_cdf_inc.png')
 
