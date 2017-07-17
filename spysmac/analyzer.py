@@ -23,7 +23,21 @@ class Analyzer(object):
     PAR10, timeouts, scatterplots, etc.
     """
 
-    def __init__(self, scenario, runhistory, incumbent, output=None):
+    def __init__(self, scenario, runhistory, incumbent, output):
+        """
+        Constructor
+
+        Arguments
+        ---------
+        scenario: Scenario
+            scenario object for train/test and cutoff
+        runhistory: RunHistory
+            runhistory from which to take data
+        incumbent: Configuration
+            incumbent which is to be compared to default
+        output: string
+            output to which to write
+        """
         self.logger = log.getLogger("spysmac.analyzer")
 
         # Create output if necessary
@@ -53,28 +67,28 @@ class Analyzer(object):
         # Extract data from runhistory
         default_cost = self.get_cost_per_instance(default, aggregate=np.mean)
         incumbent_cost = self.get_cost_per_instance(incumbent, aggregate=np.mean)
-        self.logger.debug("Length default-cost %d, length inc-cost %d",
-                          len(default_cost), len(incumbent_cost))
-
         if not len(default_cost) == len(incumbent_cost):
             self.logger.warning("Default evaluated on %d instances, "
                                 "incumbent evaluated on %d instances! "
                                 "Might lead to unexpected results, consider "
-                                "validating your results.",
+                                "re-validating your results.",
                                 len(default_cost),
                                 len(incumbent_cost))
 
         # Analysis
+        self.logger.debug("Calculate par10-values")
         self.calculate_par10(default_cost, incumbent_cost)
         self.par10_table = self.create_html_table()
 
         # Plotting
         plotter = Plotter()
         # Scatterplot
+        self.logger.debug("Plot scatter")
         plotter.plot_scatter(default_cost, incumbent_cost,
                              output=self.scatter_path,
                              timeout=self.scenario.cutoff)
         # CDF
+        self.logger.debug("Plot CDF")
         cost_dict = {'default' : default_cost, 'incumbent' : incumbent_cost}
         plotter.plot_cdf_compare(cost_dict,
                                  timeout= self.scenario.cutoff,
@@ -186,27 +200,27 @@ class Analyzer(object):
             before = len(instance_cost)
             instance_cost = {i: instance_cost[i] for i in instance_cost if
                              instance_cost[i][0] and instance_cost[i][1]}
-            self.logger.info("Remove {}/{} instances because they are not "
-                             "evaluated on both configurations.".format(before -
-                                 len(instance_cost), before))
+            self.logger.info("Remove %d/%d instances because they are not "
+                             "evaluated on both configurations.",
+                             before - len(instance_cost), before)
         return instance_cost
 
     def calculate_par10(self, def_costs, inc_costs):
         """ Calculate par10-values of default and incumbent configs. """
         default = {i:c if c < self.scenario.cutoff else self.scenario.cutoff*10
-                for i, c in def_costs.items()}
+                   for i, c in def_costs.items()}
         incumbent = {i:c if c < self.scenario.cutoff else self.scenario.cutoff*10
-                for i, c in inc_costs.items()}
+                     for i, c in inc_costs.items()}
         self.def_par10_combined = np.mean(list(default.values()))
         self.inc_par10_combined = np.mean(list(incumbent.values()))
         self.def_par10_train = np.mean([c for i, c in default.items() if i in
-            self.train_inst])
+                                        self.train_inst])
         self.def_par10_test = np.mean([c for i, c in default.items() if i in
-            self.test_inst])
+                                       self.test_inst])
         self.inc_par10_train = np.mean([c for i, c in incumbent.items() if i in
-            self.train_inst])
+                                        self.train_inst])
         self.inc_par10_test = np.mean([c for i, c in incumbent.items() if i in
-            self.test_inst])
+                                       self.test_inst])
 
     def create_html_table(self):
         """ Create PAR10-table. """
