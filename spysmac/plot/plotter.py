@@ -119,46 +119,46 @@ class Plotter(object):
 
         if same_x:
             f, ax1 = plt.subplots()
-            ax1.plot(data['default']['combined'][0],
+            ax1.step(data['default']['combined'][0],
                      data['default']['combined'][1], color='red',
                      label='default allinst')
-            ax1.plot(data['incumbent']['combined'][0],
+            ax1.step(data['incumbent']['combined'][0],
                      data['incumbent']['combined'][1], color='blue',
                      label='incumbent allinst')
             if train and test:
-                ax1.plot(data['default']['train'][0],
+                ax1.step(data['default']['train'][0],
                          data['default']['train'][1], color='red',
                          linestyle='--', label='default train')
-                ax1.plot(data['incumbent']['train'][0],
+                ax1.step(data['incumbent']['train'][0],
                          data['incumbent']['train'][1], color='blue',
                          linestyle='--', label='incumbent train')
-                ax1.plot(data['default']['test'][0],
+                ax1.step(data['default']['test'][0],
                          data['default']['test'][1], color='red',
                          linestyle='-.', label='default train')
-                ax1.plot(data['incumbent']['test'][0],
+                ax1.step(data['incumbent']['test'][0],
                          data['incumbent']['test'][1], color='blue',
                          linestyle='-.', label='incumbent test')
 
             ax1.set_title('{}+{} - SpySMAC CDF'.format('default', 'incumbent'))
         else:
             f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
-            ax1.plot(data['default']['combined'][0],
+            ax1.step(data['default']['combined'][0],
                      data['default']['combined'][1], color='red',
                      label='default allinst')
-            ax2.plot(data['incumbent']['combined'][0],
+            ax2.step(data['incumbent']['combined'][0],
                      data['incumbent']['combined'][1], color='blue',
                      label='incumbent allinst')
             if train and test:
-                ax1.plot(data['default']['train'][0],
+                ax1.step(data['default']['train'][0],
                          data['default']['train'][1], color='red',
                          linestyle='--', label='default train')
-                ax2.plot(data['incumbent']['train'][0],
+                ax2.step(data['incumbent']['train'][0],
                          data['incumbent']['train'][1], color='blue',
                          linestyle='--', label='incumbent train')
-                ax1.plot(data['default']['test'][0],
+                ax1.step(data['default']['test'][0],
                          data['default']['test'][1], color='red',
                          linestyle='-.', label='default train')
-                ax2.plot(data['incumbent']['test'][0],
+                ax2.step(data['incumbent']['test'][0],
                          data['incumbent']['test'][1], color='blue',
                          linestyle='-.', label='incumbent test')
             ax1.set_title('{} - SpySMAC CDF'.format('default'))
