@@ -3,6 +3,7 @@ import sys
 import logging as log
 
 import numpy as np
+from pandas import DataFrame
 
 from smac.runhistory.runhistory import RunKey, RunValue
 
@@ -224,28 +225,9 @@ class Analyzer(object):
 
     def create_html_table(self):
         """ Create PAR10-table. """
-        table = """
-        <table style="width:100%">
-          <tr>
-            <th> </th>
-            <th>Train</th>
-            <th>Test</th>
-            <th>Combined</th>
-          </tr>
-          <tr>
-            <td>Default</td>
-            <td> {} </td>
-            <td> {} </td>
-            <td> {} </td>
-          </tr>
-          <tr>
-            <td>Incumbent</td>
-            <td> {} </td>
-            <td> {} </td>
-            <td> {} </td>
-          </tr>
-        </table>
-	""".format(self.def_par10_train, self.def_par10_test,
-                self.def_par10_combined, self.inc_par10_train,
-                self.inc_par10_test, self.inc_par10_combined)
+        array = np.array([[self.def_par10_train, self.def_par10_test, self.def_par10_combined],
+                          [self.inc_par10_train, self.inc_par10_test, self.inc_par10_combined]])
+        df = DataFrame(data=array, index=['Default', 'Incumbent'],
+                       columns=['Train', 'Test', 'Combined'])
+        table = df.to_html()
         return table
