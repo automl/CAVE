@@ -44,9 +44,9 @@ header {
 .logo {
 	width: 200px;
 }
-.logo--coseal {
+.logo--smac3 {
 	float: left;
-	width: 150px;
+	padding-top: 45px;
 }
 .logo--ml {
 	float: right;
