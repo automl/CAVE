@@ -22,8 +22,8 @@ class Plotter(object):
         self.logger = logging.getLogger("spysmac.plotter")
 
     def plot_scatter(self, cost_conf1, cost_conf2, timeout,
-                     labels=('default', 'incumbent'),
-                     title='SpySMAC scatterplot', metric='runtime',
+                     labels=('default cost', 'incumbent cost'),
+                     metric='runtime',
                      output='scatter.png'):
         """
         Creates a scatterplot of the two configurations on the given set of
@@ -62,8 +62,8 @@ class Plotter(object):
                 conf2.append(cost_conf2[i])
 
         fig = plot_scatter_plot(np.array(conf1), np.array(conf2),
-                                labels, title=title, metric=metric,
-                                user_fontsize=10, max_val=timeout,
+                                labels, metric=metric,
+                                user_fontsize=12, max_val=timeout,
                                 jitter_timeout=True)
         fig.savefig(output)
         plt.close(fig)
