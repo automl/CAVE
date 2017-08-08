@@ -1,11 +1,19 @@
 import os
 import sys
 import logging as log
+from collections import OrderedDict
 
 import numpy as np
 from pandas import DataFrame
 
-from smac.runhistory.runhistory import RunKey, RunValue
+from smac.optimizer.objective import average_cost
+from smac.runhistory.runhistory import RunKey, RunValue, RunHistory
+from smac.utils.io.traj_logging import TrajLogger
+from smac.utils.io.input_reader import InputReader
+from smac.scenario.scenario import Scenario
+from smac.utils.validate import Validator
+
+from pimp.importance.importance import Importance
 
 from spysmac.html.html_builder import HTMLBuilder
 from spysmac.plot.plotter import Plotter
@@ -24,18 +32,18 @@ class Analyzer(object):
     PAR10, timeouts, scatterplots, etc.
     """
 
-    def __init__(self, scenario, runhistory, incumbent, output):
+    def __init__(self, scenario_fn, runhistory_fn, traj_fn, output):
         """
         Constructor
 
         Arguments
         ---------
-        scenario: Scenario
-            scenario object for train/test and cutoff
-        runhistory: RunHistory
-            runhistory from which to take data
-        incumbent: Configuration
-            incumbent which is to be compared to default
+        scenario_fn: string
+            scenario file for train/test and cutoff
+        runhistory_fn: string
+            runhistory file from which to take data
+        traj_fn: string
+            trajectory file
         output: string
             output to which to write
         """
@@ -47,11 +55,34 @@ class Analyzer(object):
         if not os.path.exists(output):
             os.makedirs(output)
 
-        self.scenario = scenario
-        self.runhistory = runhistory
-        self.incumbent = incumbent
+        # Create Scenario (disable output_dir to avoid cluttering)
+        in_reader = InputReader()
+        scen = in_reader.read_scenario_file(scenario_fn)
+        scen['output_dir'] = ""
+        self.scenario = Scenario(scen)
+
+        # Load runhistory and trajectory
+        self.runhistory = RunHistory(average_cost)
+        self.runhistory.load_json(runhistory_fn, self.scenario.cs)
+        self.trajectory = TrajLogger.read_traj_aclib_format(fn=traj_fn,
+                cs=self.scenario.cs)
+
+        self.incumbent = self.trajectory[-1]['incumbent']
         self.train_inst = self.scenario.train_insts
         self.test_inst = self.scenario.test_insts
+
+        # Generate missing data via validation
+        new_rh_path = os.path.join(output, 'validated_rh.json')
+        self.logger.info("Validating to complete data, saving validated "
+                    "runhistory in %s.", new_rh_path)
+        validator = Validator(self.scenario, self.trajectory, new_rh_path) # args_.seed)
+        self.runhistory = validator.validate('def+inc', 'train+test', 1, -1,
+                self.runhistory, None)
+
+        self.importance = Importance(scenario_fn, runhistory_fn,
+                                parameters_to_evaluate=-1,
+                                traj_file=traj_fn,
+                                save_folder=os.path.join(output, "PIMP"))  # create importance object
 
         # Paths
         self.scatter_path = os.path.join(self.output, 'scatter.png')
@@ -75,6 +106,8 @@ class Analyzer(object):
                                 "re-validating your results.",
                                 len(default_cost),
                                 len(incumbent_cost))
+
+        self.overview = self.create_overview_table()
 
         # Analysis
         self.logger.debug("Calculate par10-values")
@@ -102,6 +135,8 @@ class Analyzer(object):
                                  #train=self.train_inst, test=self.test_inst,
                                  output=self.cdf_single_path)
 
+        self.importance.evaluate_scenario(evaluation_method='all')
+
     def build_html(self):
         """ Build website using the HTMLBuilder. Return website as dictionary
         for further stacking. Also saves website in
@@ -115,19 +150,21 @@ class Analyzer(object):
         """
         builder = HTMLBuilder(self.output, "SpySMAC")
 
-        website = {
-                   "PAR10":
-                    {"table": self.par10_table},
-                   "Scatterplot":
-                    {
-                     "figure" : self.scatter_path
-                    },
-                   "Cumulative distribution function (CDF)":
+        website = OrderedDict([
+                   ("Overview",
+                    {"table": self.overview}),
+                   ("PAR10",
+                    {"table": self.par10_table}),
+                   ("Scatterplot",
+                    {"figure" : self.scatter_path}),
+                   ("Cumulative distribution function (CDF)",
                     {
                      "Single": {"figure": self.cdf_single_path},
                      "Combined": {"figure": self.cdf_combined_path},
-                    }
-                  }
+                    }),
+                   #("Parameter Importance" :
+                       
+                  ])
         builder.generate_html(website)
         return website
 
@@ -223,11 +260,37 @@ class Analyzer(object):
         self.inc_par10_test = np.mean([c for i, c in incumbent.items() if i in
                                        self.test_inst])
 
+    def create_overview_table(self):
+        """ Create overview-table. """
+        # TODO: left-align, make first and third column bold
+        d = OrderedDict([('Scenario name', self.scenario.output_dir),
+                         ('# Train instances', len(self.scenario.train_insts)),
+                         ('# Test instances', len(self.scenario.test_insts)),
+                         ('# Parameters', len(self.scenario.cs.get_hyperparameters())),
+                         ('Cutoff time', self.scenario.cutoff),
+                         ('Deterministic', self.scenario.deterministic),
+                         ('# Configs evaluated', len(self.runhistory.config_ids))])
+        a = []
+        keys = list(d.keys())
+        half_size_d = len(keys)//2
+        for i in range(half_size_d):
+            j = i + half_size_d
+            a.append((keys[i], d[keys[i]], keys[j], d[keys[j]]))
+        if len(keys)%2 == 1:
+            a.append((keys[half_size_d], d[keys[half_size_d]], '', ''))
+        df = DataFrame(data=a)
+        table = df.to_html(header=False, index=False, justify='left')
+        return table
+
     def create_html_table(self):
-        """ Create PAR10-table. """
+        """ Create PAR10-table, compare default against incumbent on train-,
+        test- and combined instances. """
         array = np.array([[self.def_par10_train, self.def_par10_test, self.def_par10_combined],
                           [self.inc_par10_train, self.inc_par10_test, self.inc_par10_combined]])
         df = DataFrame(data=array, index=['Default', 'Incumbent'],
                        columns=['Train', 'Test', 'Combined'])
         table = df.to_html()
         return table
+
+    def parameter_importance(self):
+        """ Calculate parameter-importance using the PIMP-package. """

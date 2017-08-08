@@ -13,18 +13,15 @@ class TestPlot(unittest.TestCase):
     """ Testing whether plotting generally works without throwing errors. """
 
     def setUp(self):
-        scen = Scenario("test/test_files/scenario.txt")
-        rh = RunHistory(average_cost)
-        rh.load_json("test/test_files/output/runhistory.json", scen.cs)
+        scen_fn = "test/test_files/scenario_svm.txt"
+        rh_fn = "test/test_files/output/runhistory.json"
         traj_fn = "test/test_files/output/traj_aclib2.json"
-        trajectory = TrajLogger.read_traj_aclib_format(fn=traj_fn, cs=scen.cs)
-        train = scen.train_insts
-        analyzer = Analyzer(scen, rh, train, "test/test_files/tmp")
-        default = scen.cs.get_default_configuration()
-        incumbent = trajectory[-1]["incumbent"]
+        analyzer = Analyzer(scen_fn, rh_fn, traj_fn, "test/test_files/tmp")
+        train = analyzer.scenario.train_insts
+        default = analyzer.scenario.cs.get_default_configuration()
         self.default_cost = analyzer.get_cost_per_instance(default,
                                                                   aggregate=np.mean)
-        self.inc_cost = analyzer.get_cost_per_instance(incumbent,
+        self.inc_cost = analyzer.get_cost_per_instance(analyzer.incumbent,
                                                               aggregate=np.mean)
         self.cost_dict = {'default' : self.default_cost, 'incumbent' :
                 self.inc_cost}
