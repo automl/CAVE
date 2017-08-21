@@ -30,7 +30,7 @@ class SpySMACCLI(object):
         req_opts = parser.add_argument_group("Required Options")
         req_opts.add_argument("--folders", required=True, nargs='+',
                               help="path(s) to SMAC output-directory/ies, "
-                                   "containing at least a runhistory and "
+                                   "containing each at least a runhistory and "
                                    "a trajectory.")
 
         opt_opts = parser.add_argument_group("Optional Options")

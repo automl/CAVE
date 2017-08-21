@@ -2,6 +2,7 @@ import os
 import sys
 import logging as log
 from collections import OrderedDict
+from contextlib import contextmanager
 
 import numpy as np
 from pandas import DataFrame
@@ -9,14 +10,13 @@ from pandas import DataFrame
 from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunKey, RunValue, RunHistory
 from smac.utils.io.traj_logging import TrajLogger
-from smac.utils.io.input_reader import InputReader
-from smac.scenario.scenario import Scenario
 from smac.utils.validate import Validator
 
 from pimp.importance.importance import Importance
 
 from spysmac.html.html_builder import HTMLBuilder
 from spysmac.plot.plotter import Plotter
+from spysmac.smacrun import SMACrun
 
 
 __author__ = "Joshua Marben"
@@ -25,27 +25,30 @@ __license__ = "3-clause BSD"
 __maintainer__ = "Joshua Marben"
 __email__ = "joshua.marben@neptun.uni-freiburg.de"
 
+@contextmanager
+def changedir(newdir):
+    olddir = os.getcwd()
+    os.chdir(os.path.expanduser(newdir))
+    try:
+        yield
+    finally:
+        os.chdir(olddir)
+
 class Analyzer(object):
     """
     Analyze SMAC-output data.
-    Compares two configurations (default vs incumbent).
-    PAR10, timeouts, scatterplots, etc.
+    Compares two configurations (default vs incumbent) over multiple SMAC-runs
+    and outputs PAR10, timeouts, scatterplots, etc.
     """
 
-    def __init__(self, scenario_fn, runhistory_fn, traj_fn, output):
+    def __init__(self, folders, output, ta_exec_dir='.'):
         """
-        Constructor
-
         Arguments
         ---------
-        scenario_fn: string
-            scenario file for train/test and cutoff
-        runhistory_fn: string
-            runhistory file from which to take data
-        traj_fn: string
-            trajectory file
+        folder: list<strings>
+            paths to relevant SMAC runs
         output: string
-            output to which to write
+            output for spysmac to write results (figures + report)
         """
         self.logger = log.getLogger("spysmac.analyzer")
 
@@ -53,36 +56,31 @@ class Analyzer(object):
         self.output = output
         self.logger.info("Writing to %s", self.output)
         if not os.path.exists(output):
+            self.logger.info("Output-dir %s does not exist, creating", self.output)
             os.makedirs(output)
 
-        # Create Scenario (disable output_dir to avoid cluttering)
-        in_reader = InputReader()
-        scen = in_reader.read_scenario_file(scenario_fn)
-        scen['output_dir'] = ""
-        self.scenario = Scenario(scen)
+        # Global runhistory combines all runs of individual SMAC-runs to avoid
+        # recalculation of configurations (such as default)
+        self.global_rh = RunHistory(average_cost)
+        self.ta_exec_dir = ta_exec_dir
 
-        # Load runhistory and trajectory
-        self.runhistory = RunHistory(average_cost)
-        self.runhistory.load_json(runhistory_fn, self.scenario.cs)
-        self.trajectory = TrajLogger.read_traj_aclib_format(fn=traj_fn,
-                cs=self.scenario.cs)
+        # Save all relevant SMAC-runs in a list and validate them
+        # TODO check for consistency in scenarios
+        self.runs = []
+        with changedir(ta_exec_dir):
+            for folder in folders:
+                self.logger.debug("Collecting data from %s.", folder)
+                self.runs.append(SMACrun(folder, self.global_rh))
+            for run in self.runs:
+                self.global_rh.update(run.validate())
+            self.best_run = min(self.runs, key=lambda run: run.get_incumbent()[1])
+            self.scenario = self.best_run.scen
+            # Check scenarios for consistency in relevant attributes
+            for run in self.runs:
+                if not run.scen == self.scenario:
+                    #raise ValueError("Scenarios don't match up ({})".format(run.folder))
+                    pass
 
-        self.incumbent = self.trajectory[-1]['incumbent']
-        self.train_inst = self.scenario.train_insts
-        self.test_inst = self.scenario.test_insts
-
-        # Generate missing data via validation
-        new_rh_path = os.path.join(output, 'validated_rh.json')
-        self.logger.info("Validating to complete data, saving validated "
-                    "runhistory in %s.", new_rh_path)
-        validator = Validator(self.scenario, self.trajectory, new_rh_path) # args_.seed)
-        self.runhistory = validator.validate('def+inc', 'train+test', 1, -1,
-                self.runhistory, None)
-
-        self.importance = Importance(scenario_fn, runhistory_fn,
-                                parameters_to_evaluate=-1,
-                                traj_file=traj_fn,
-                                save_folder=os.path.join(output, "PIMP"))  # create importance object
 
         # Paths
         self.scatter_path = os.path.join(self.output, 'scatter.png')
@@ -92,50 +90,59 @@ class Analyzer(object):
     def analyze(self):
         """
         Performs analysis of scenario by scrutinizing the runhistory.
-        Calculate PAR10-values and plot CDF and scatter.
+
+        Creates:
+            - PAR10-values for default and incumbent (best of all runs)
+            - CDF-plot for default and incumbent (best of all runs)
+            - Scatter-plot for default and incumbent (best of all runs)
+            - (TODO) Importance
+            - (TODO) Search space heat map
+            - (TODO) Parameter search space flow map
         """
-        default = self.scenario.cs.get_default_configuration()
-        incumbent = self.incumbent
-        # Extract data from runhistory
-        default_cost = self.get_cost_per_instance(default, aggregate=np.mean)
-        incumbent_cost = self.get_cost_per_instance(incumbent, aggregate=np.mean)
-        if not len(default_cost) == len(incumbent_cost):
+        default = self.best_run.scen.cs.get_default_configuration()
+        default_loss_per_inst = self.best_run.get_loss_per_instance(default, aggregate=np.mean)
+        inc = self.best_run.get_incumbent()[0]
+        incumbent_loss_per_inst = self.best_run.get_loss_per_instance(inc, aggregate=np.mean)
+        if not len(default_loss_per_inst) == len(incumbent_loss_per_inst):
             self.logger.warning("Default evaluated on %d instances, "
                                 "incumbent evaluated on %d instances! "
                                 "Might lead to unexpected results, consider "
                                 "re-validating your results.",
-                                len(default_cost),
-                                len(incumbent_cost))
+                                len(default_loss_per_inst), len(incumbent_loss_per_inst))
 
+        # Create table with basic information on scenario and runs
         self.overview = self.create_overview_table()
 
         # Analysis
         self.logger.debug("Calculate par10-values")
-        self.calculate_par10(default_cost, incumbent_cost)
+        def_par10 = self.calculate_par10(default_loss_per_inst)
+        self.def_par10_train, self.def_par10_test, self.def_par10_combined = def_par10
+        inc_par10 = self.calculate_par10(incumbent_loss_per_inst)
+        self.inc_par10_train, self.inc_par10_test, self.inc_par10_combined = inc_par10
         self.par10_table = self.create_html_table()
 
         # Plotting
         plotter = Plotter()
         # Scatterplot
         self.logger.debug("Plot scatter")
-        plotter.plot_scatter(default_cost, incumbent_cost,
+        plotter.plot_scatter(default_loss_per_inst, incumbent_loss_per_inst,
                              output=self.scatter_path,
                              timeout=self.scenario.cutoff)
-        # CDF
+        # CDF, once with a shared axis, once two separate
         self.logger.debug("Plot CDF")
-        cost_dict = {'default' : default_cost, 'incumbent' : incumbent_cost}
-        plotter.plot_cdf_compare(cost_dict,
+        loss_dict = {'default' : default_loss_per_inst, 'incumbent' : incumbent_loss_per_inst}
+        plotter.plot_cdf_compare(loss_dict,
                                  timeout= self.scenario.cutoff,
                                  same_x=True,
                                  #train=self.train_inst, test=self.test_inst,
                                  output=self.cdf_combined_path)
-        plotter.plot_cdf_compare(cost_dict,
+        plotter.plot_cdf_compare(loss_dict,
                                  timeout= self.scenario.cutoff,
                                  same_x=False,
                                  #train=self.train_inst, test=self.test_inst,
                                  output=self.cdf_single_path)
 
-        self.importance.evaluate_scenario(evaluation_method='all')
+        self.parameter_importance()
 
     def build_html(self):
         """ Build website using the HTMLBuilder. Return website as dictionary
@@ -163,122 +170,56 @@ class Analyzer(object):
                      "Combined": {"figure": self.cdf_combined_path},
                     }),
                    #("Parameter Importance" :
-                       
                   ])
         builder.generate_html(website)
         return website
 
-    def get_cost_per_instance(self, conf, aggregate=None):
-        """
-        Aggregates cost for configuration on given over seeds.
-        Raises LookupError if instance not evaluated on configuration.
 
-        Parameters:
-        -----------
-        conf: Configuration
-            configuration to evaluate
-        aggregate: function or None
-            used to aggregate cost over different seeds, takes a list as
-            argument
-
-        Returns:
-        --------
-        cost: dict(instance->cost)
-            cost per instance (aggregated or as list per seeds)
-        """
-        # Check if config is in runhistory
-        conf_id = self.runhistory.config_ids[conf]
-
-        # Map instances to seeds in dict
-        runs = self.runhistory.get_runs_for_config(conf)
-        instance_seeds = dict()
-        for r in runs:
-            i, s = r
-            if i in instance_seeds:
-                instance_seeds[i].append(s)
-            else:
-                instance_seeds[i] = [s]
-
-        # Get cost per instance
-        instance_costs = {i: [self.runhistory.data[RunKey(conf_id, i, s)].cost for s in
-                              instance_seeds[i]] for i in instance_seeds}
-
-        # Aggregate:
-        if aggregate:
-            instance_costs = {i: aggregate(instance_costs[i]) for i in instance_costs}
-
-        return instance_costs
-
-    def get_costs_per_instance(self, conf1, conf2, aggregate=None, keep_missing=False):
-        """
-        Get costs for two configurations
+    def calculate_par10(self, losses):
+        """ Calculate par10-values of default and incumbent configs.
 
         Parameters
         ----------
-        conf1, conf2: Configuration
-            configs to be compared
-        aggregate: Function or None
-            used to aggregate cost over different seeds, takes a list as
-            argument
-        keep_missing: Boolean
-            keep instances with one or no configs for it
+        losses -- dict<str->float>
+            mapping of instance to loss
 
         Returns
         -------
-        instance_costs: dict(instance->tuple(cost1, cost2))
-            costs for both configurations
+        (train, test, combined) -- tuple<float, float, float>
+            PAR10 values for train-, test- and combined instances
         """
-        conf1_cost = self.get_cost_per_instance(conf1, aggregate=aggregate)
-        conf2_cost = self.get_cost_per_instance(conf2, aggregate=aggregate)
-        instance_cost = dict()
-        for i in set(conf1_cost.keys()) | set(conf2_cost.keys()):
-            instance_cost[i] = (conf1_cost.get(i), conf2_cost.get(i))
-
-        if not keep_missing:
-            before = len(instance_cost)
-            instance_cost = {i: instance_cost[i] for i in instance_cost if
-                             instance_cost[i][0] and instance_cost[i][1]}
-            self.logger.info("Remove %d/%d instances because they are not "
-                             "evaluated on both configurations.",
-                             before - len(instance_cost), before)
-        return instance_cost
-
-    def calculate_par10(self, def_costs, inc_costs):
-        """ Calculate par10-values of default and incumbent configs. """
-        default = {i:c if c < self.scenario.cutoff else self.scenario.cutoff*10
-                   for i, c in def_costs.items()}
-        incumbent = {i:c if c < self.scenario.cutoff else self.scenario.cutoff*10
-                     for i, c in inc_costs.items()}
-        self.def_par10_combined = np.mean(list(default.values()))
-        self.inc_par10_combined = np.mean(list(incumbent.values()))
-        self.def_par10_train = np.mean([c for i, c in default.items() if i in
-                                        self.train_inst])
-        self.def_par10_test = np.mean([c for i, c in default.items() if i in
-                                       self.test_inst])
-        self.inc_par10_train = np.mean([c for i, c in incumbent.items() if i in
-                                        self.train_inst])
-        self.inc_par10_test = np.mean([c for i, c in incumbent.items() if i in
-                                       self.test_inst])
+        losses = {i:c if c < self.scenario.cutoff else self.scenario.cutoff*10
+                   for i, c in losses.items()}
+        train = np.mean([c for i, c in losses.items() if i in
+                         self.scenario.train_insts])
+        test = np.mean([c for i, c in losses.items() if i in
+                        self.scenario.test_insts])
+        combined = np.mean(list(losses.values()))
+        return (train, test, combined)
 
     def create_overview_table(self):
         """ Create overview-table. """
         # TODO: left-align, make first and third column bold
-        d = OrderedDict([('Scenario name', self.scenario.output_dir),
+        overview = OrderedDict([('Run with best incumbent', self.scenario.output_dir),
                          ('# Train instances', len(self.scenario.train_insts)),
                          ('# Test instances', len(self.scenario.test_insts)),
                          ('# Parameters', len(self.scenario.cs.get_hyperparameters())),
                          ('Cutoff time', self.scenario.cutoff),
                          ('Deterministic', self.scenario.deterministic),
-                         ('# Configs evaluated', len(self.runhistory.config_ids))])
-        a = []
-        keys = list(d.keys())
-        half_size_d = len(keys)//2
-        for i in range(half_size_d):
-            j = i + half_size_d
-            a.append((keys[i], d[keys[i]], keys[j], d[keys[j]]))
+                         ('Best configuration', self.best_run.get_incumbent()[0])
+                         ])
+        # Split into two columns
+        overview_split = []
+        keys = list(overview.keys())
+        half_size = len(keys)//2
+        for i in range(half_size):
+            j = i + half_size
+            overview_split.append((keys[i], overview[keys[i]],
+                                   keys[j], overview[keys[j]]))
         if len(keys)%2 == 1:
-            a.append((keys[half_size_d], d[keys[half_size_d]], '', ''))
-        df = DataFrame(data=a)
+            overview_split.append((keys[half_size], overview[keys[half_size]], '', ''))
+        # Convert to HTML
+        df = DataFrame(data=overview_split)
         table = df.to_html(header=False, index=False, justify='left')
         return table
 
@@ -294,3 +235,23 @@ class Analyzer(object):
 
     def parameter_importance(self):
         """ Calculate parameter-importance using the PIMP-package. """
+        with changedir(self.ta_exec_dir):
+            importance = Importance(scenario_file=self.best_run.scen_fn,
+                                runhistory_file=self.best_run.rh_fn,# runhistory=self.runhistory,
+                                parameters_to_evaluate=-1,
+                                traj_file=self.best_run.traj_fn,
+                                save_folder=os.path.join(self.output, "PIMP"))  # create importance object
+        importance.evaluate_scenario(evaluation_method='all')
+
+    def _eq_scenarios(self, scen1, scen2):
+        """Custom function to compare relevant features of scenarios.
+
+        Parameters
+        ----------
+        scen1, scen2 -- Scenario
+            scenarios to be compared
+        """
+        relevant = ["train_insts", "test_insts", "cs", "features_dict",
+                    "initial_incumbent", "cutoff", "cost_for_crash"]
+        #for member in 
+
