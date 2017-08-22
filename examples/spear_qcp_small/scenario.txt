@@ -9,4 +9,3 @@ cutoff_time = 5
 wallclock-limit = 50
 instance_file = SWV-GZIP-train.txt
 test_instance_file = SWV-GZIP-test.txt
-output_dir = example_output

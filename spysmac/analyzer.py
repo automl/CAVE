@@ -1,5 +1,4 @@
 import os
-import sys
 import logging as log
 from collections import OrderedDict
 from contextlib import contextmanager
@@ -12,7 +11,8 @@ from smac.runhistory.runhistory import RunKey, RunValue, RunHistory
 from smac.utils.io.traj_logging import TrajLogger
 from smac.utils.validate import Validator
 
-from pimp.importance.importance import Importance
+#from pimp.importance.importance import Importance
+#from pimp.pimp import PIMP
 
 from spysmac.html.html_builder import HTMLBuilder
 from spysmac.plot.plotter import Plotter
@@ -73,6 +73,7 @@ class Analyzer(object):
                 self.runs.append(SMACrun(folder, self.global_rh))
             for run in self.runs:
                 self.global_rh.update(run.validate())
+                self.global_rh.update_from_json(run.rh_fn, run.scen.cs)
             self.best_run = min(self.runs, key=lambda run: run.get_incumbent()[1])
             self.scenario = self.best_run.scen
             # Check scenarios for consistency in relevant attributes
@@ -142,7 +143,7 @@ class Analyzer(object):
                                  #train=self.train_inst, test=self.test_inst,
                                  output=self.cdf_single_path)
 
-        self.parameter_importance()
+        #self.parameter_importance()
 
     def build_html(self):
         """ Build website using the HTMLBuilder. Return website as dictionary
@@ -158,8 +159,11 @@ class Analyzer(object):
         builder = HTMLBuilder(self.output, "SpySMAC")
 
         website = OrderedDict([
-                   ("Overview",
+                   ("Meta Data",
                     {"table": self.overview}),
+                   ("Best configuration",
+                    {"table":
+                        self.config_to_html(self.best_run.get_incumbent()[0])}),
                    ("PAR10",
                     {"table": self.par10_table}),
                    ("Scatterplot",
@@ -200,13 +204,16 @@ class Analyzer(object):
     def create_overview_table(self):
         """ Create overview-table. """
         # TODO: left-align, make first and third column bold
-        overview = OrderedDict([('Run with best incumbent', self.scenario.output_dir),
+        overview = OrderedDict([('Run with best incumbent', self.best_run.folder),
                          ('# Train instances', len(self.scenario.train_insts)),
                          ('# Test instances', len(self.scenario.test_insts)),
                          ('# Parameters', len(self.scenario.cs.get_hyperparameters())),
-                         ('Cutoff time', self.scenario.cutoff),
+                         ('Cutoff', self.scenario.cutoff),
                          ('Deterministic', self.scenario.deterministic),
-                         ('Best configuration', self.best_run.get_incumbent()[0])
+                         ('Walltime budget', self.scenario.wallclock_limit),
+                         ('Runcount budget', self.scenario.ta_run_limit),
+                         ('CPU budget', self.scenario.algo_runs_timelimit),
+                         ('Deterministic', self.scenario.deterministic),
                          ])
         # Split into two columns
         overview_split = []
@@ -233,15 +240,22 @@ class Analyzer(object):
         table = df.to_html()
         return table
 
+    def config_to_html(self, config):
+        df = DataFrame(data=config.get_array(), index=config.keys(),
+                )
+        table = df.to_html(header=False)
+        return table
+
     def parameter_importance(self):
         """ Calculate parameter-importance using the PIMP-package. """
+        configs = self.global_rh.get_all_configs()
+        X = np.array([c.get_array() for c in configs])
+        y = np.array([self.global_rh.get_cost(c) for c in configs])
+        log.info(len(configs))
         with changedir(self.ta_exec_dir):
-            importance = Importance(scenario_file=self.best_run.scen_fn,
-                                runhistory_file=self.best_run.rh_fn,# runhistory=self.runhistory,
-                                parameters_to_evaluate=-1,
-                                traj_file=self.best_run.traj_fn,
-                                save_folder=os.path.join(self.output, "PIMP"))  # create importance object
-        importance.evaluate_scenario(evaluation_method='all')
+            pimp = PIMP(scenario=self.scenario, X=X, y=y,
+                mode='forward-selection')
+            pimp.plot_results(pimp.compute_importances())
 
     def _eq_scenarios(self, scen1, scen2):
         """Custom function to compare relevant features of scenarios.

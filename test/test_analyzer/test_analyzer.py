@@ -26,9 +26,10 @@ class TestAnalyzer(unittest.TestCase):
         #trajectory = TrajLogger.read_traj_aclib_format(fn=traj_fn, cs=scen.cs)
 
         # Change into folder with ta for init of analyzer to ensure validation
-        logging.basicConfig(level='WARNING')
-        analyzer = Analyzer(["example_output_1", "example_output_2",
-                                 "example_output_3"],
+        analyzer = Analyzer([#"example_output_1", "example_output_2",
+                                 #"example_output_3"
+                                 "smac3-output_2017-08-22_18:12:32_(084000)_run1"
+                                 ],
                                  output="test/test_files/analyzer_output",
                                  ta_exec_dir="examples/spear_qcp_small")
         analyzer.analyze()
