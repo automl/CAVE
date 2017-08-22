@@ -1,10 +1,10 @@
 abort_on_first_run_crash = True
 run_obj = runtime
-paramfile = example_output/spear-params-mixed.pcs
-test_instance_file = example_output/SWV-GZIP-test.txt
+paramfile = example_output_1/spear-params-mixed.pcs
+test_instance_file = example_output_1/SWV-GZIP-test.txt
 cost_for_crash = 2147483647.0
 initial_incumbent = DEFAULT
-instance_file = example_output/SWV-GZIP-train.txt
+instance_file = example_output_1/SWV-GZIP-train.txt
 deterministic = False
 runcount_limit = inf
 intensification_percentage = 0.5

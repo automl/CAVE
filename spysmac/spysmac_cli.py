@@ -6,13 +6,9 @@ import shutil
 from spysmac.analyzer import Analyzer
 from spysmac.html.html_builder import HTMLBuilder
 
-from smac.utils.validate import Validator
 from smac.utils.io.cmd_reader import CMDReader
-from smac.utils.io.traj_logging import TrajLogger
-from smac.utils.io.input_reader import InputReader
 from smac.scenario.scenario import Scenario
 from smac.runhistory.runhistory import RunHistory
-from smac.optimizer.objective import average_cost
 
 
 __author__ = "Joshua Marben"
@@ -34,7 +30,7 @@ class SpySMACCLI(object):
         req_opts = parser.add_argument_group("Required Options")
         req_opts.add_argument("--folders", required=True, nargs='+',
                               help="path(s) to SMAC output-directory/ies, "
-                                   "containing at least a runhistory and "
+                                   "containing each at least a runhistory and "
                                    "a trajectory.")
 
         opt_opts = parser.add_argument_group("Optional Options")
@@ -62,17 +58,9 @@ class SpySMACCLI(object):
         for folder in folders:
             logger.info("Analyzing %s", folder)
 
-            # Create Scenario (disable output_dir to avoid cluttering)
-            in_reader = InputReader()
-            scen = in_reader.read_scenario_file(os.path.join(folder, 'scenario.txt'))
-            scen['output_dir'] = ""
-            scen = Scenario(scen)
-
-            # Load runhistory and trajectory
-            rh = RunHistory(average_cost)
-            rh.load_json(os.path.join(folder, 'runhistory.json'), scen.cs)
+            scen_fn = os.path.join(folder, 'scenario.txt')
+            rh_fn = os.path.join(folder, 'runhistory.json')
             traj_fn = os.path.join(folder, "traj_aclib2.json")
-            trajectory = TrajLogger.read_traj_aclib_format(fn=traj_fn, cs=scen.cs)
 
             # Create SpySMAC-folder
             output = os.path.join(folder, 'SpySMAC')
@@ -81,16 +69,10 @@ class SpySMACCLI(object):
                 logger.info("%s does not exist. Attempt to create.", output)
                 os.makedirs(output)
 
-            # Impute missing data via validation
-            new_rh_path = os.path.join(output, 'validated_rh.json')
-            logger.info("Validating to complete data, saving validated "
-                        "runhistory in %s.", new_rh_path)
-            validator = Validator(scen, trajectory, new_rh_path) # args_.seed)
-            new_rh = validator.validate('def+inc', 'train+test', 1, -1, rh, None)
 
             # Analyze and build HTML
             logger.info("Analyzing...")
-            analyzer = Analyzer(scen, new_rh, trajectory[-1]['incumbent'],
+            analyzer = Analyzer(scen_fn, rh_fn, traj_fn,
                                 output=output)
             analyzer.analyze()
             websites[folder] = analyzer.build_html()

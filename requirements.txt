@@ -1,3 +1,4 @@
 matplotlib
--e git+https://github.com/automl/SMAC3.git@0176b76f86ccbe0af4e75dbb9c6a79a92dfc55cf#egg=SMAC3
+-e git+https://github.com/automl/SMAC3.git@fac92001badd73273475e8281be8d14fe3dcb302#egg=SMAC3
 -e git+https://bitbucket.org/aadfreiburg/plotting_scripts.git#egg=plotting_scripts
+-e git+https://github.com/automl/ParameterImportance.git@development#egg=PIMP
