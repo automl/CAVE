@@ -5,7 +5,7 @@ import logging
 import numpy as np
 import matplotlib.pyplot as plt
 
-from plottingscripts.plotting.scatter import plot_scatter_plot
+from spysmac.plot.scatter import plot_scatter_plot
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
