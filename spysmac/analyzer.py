@@ -86,7 +86,6 @@ class Analyzer(object):
         # Paths
         self.scatter_path = os.path.join(self.output, 'scatter.png')
         self.cdf_combined_path = os.path.join(self.output, 'def_inc_cdf_comb.png')
-        self.cdf_single_path = os.path.join(self.output, 'def_inc_cdf_single.png')
 
     def analyze(self):
         """
@@ -134,14 +133,8 @@ class Analyzer(object):
         loss_dict = {'default' : default_loss_per_inst, 'incumbent' : incumbent_loss_per_inst}
         plotter.plot_cdf_compare(loss_dict,
                                  timeout= self.scenario.cutoff,
-                                 same_x=True,
                                  #train=self.train_inst, test=self.test_inst,
                                  output=self.cdf_combined_path)
-        plotter.plot_cdf_compare(loss_dict,
-                                 timeout= self.scenario.cutoff,
-                                 same_x=False,
-                                 #train=self.train_inst, test=self.test_inst,
-                                 output=self.cdf_single_path)
 
         #self.parameter_importance()
 
@@ -169,10 +162,7 @@ class Analyzer(object):
                    ("Scatterplot",
                     {"figure" : self.scatter_path}),
                    ("Cumulative distribution function (CDF)",
-                    {
-                     "Single": {"figure": self.cdf_single_path},
-                     "Combined": {"figure": self.cdf_combined_path},
-                    }),
+                    {"figure": self.cdf_combined_path}),
                    #("Parameter Importance" :
                   ])
         builder.generate_html(website)
