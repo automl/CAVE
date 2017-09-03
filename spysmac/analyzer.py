@@ -209,7 +209,6 @@ class Analyzer(object):
                          ('# Test instances', len(self.scenario.test_insts)),
                          ('# Parameters', len(self.scenario.cs.get_hyperparameters())),
                          ('Cutoff', self.scenario.cutoff),
-                         ('Deterministic', self.scenario.deterministic),
                          ('Walltime budget', self.scenario.wallclock_limit),
                          ('Runcount budget', self.scenario.ta_run_limit),
                          ('CPU budget', self.scenario.algo_runs_timelimit),
@@ -224,7 +223,7 @@ class Analyzer(object):
             overview_split.append((keys[i], overview[keys[i]],
                                    keys[j], overview[keys[j]]))
         if len(keys)%2 == 1:
-            overview_split.append((keys[half_size], overview[keys[half_size]], '', ''))
+            overview_split.append((keys[-1], overview[keys[-1]], '', ''))
         # Convert to HTML
         df = DataFrame(data=overview_split)
         table = df.to_html(header=False, index=False, justify='left')
