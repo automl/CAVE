@@ -205,15 +205,7 @@ class Analyzer(object):
                          ('Deterministic', self.scenario.deterministic),
                          ])
         # Split into two columns
-        overview_split = []
-        keys = list(overview.keys())
-        half_size = len(keys)//2
-        for i in range(half_size):
-            j = i + half_size
-            overview_split.append((keys[i], overview[keys[i]],
-                                   keys[j], overview[keys[j]]))
-        if len(keys)%2 == 1:
-            overview_split.append((keys[-1], overview[keys[-1]], '', ''))
+        overview_split = self._split_table(overview)
         # Convert to HTML
         df = DataFrame(data=overview_split)
         table = df.to_html(header=False, index=False, justify='left')
@@ -230,9 +222,21 @@ class Analyzer(object):
         return table
 
     def config_to_html(self, config):
-        df = DataFrame(data=config.get_array(), index=config.keys(),
-                )
-        table = df.to_html(header=False)
+        """Create HTML-table from Configuration. Removes unused parameters.
+        Creates two-column-table.
+
+        Parameters
+        ----------
+        config: Configuration
+            configuration to be converted
+        """
+        # Remove unused parameters
+        keys = [k for k in config.keys() if config[k]]
+        conf = [p for p in config.get_array() if not np.isnan(p)]
+        table = OrderedDict(zip(keys, conf))
+        split_table = self._split_table(table)
+        df = DataFrame(data=split_table)
+        table = df.to_html(header=False, index=False)
         return table
 
     def parameter_importance(self):
@@ -257,4 +261,24 @@ class Analyzer(object):
         relevant = ["train_insts", "test_insts", "cs", "features_dict",
                     "initial_incumbent", "cutoff", "cost_for_crash"]
         #for member in 
+
+    def _split_table(self, table):
+        """Splits an OrderedDict into a list of tuples that can be turned into a
+        HTML-table with pandas DataFrame
+
+        Parameters
+        ----------
+        table: OrderedDict
+            table that is to be split into two columns
+        """
+        table_split = []
+        keys = list(table.keys())
+        half_size = len(keys)//2
+        for i in range(half_size):
+            j = i + half_size
+            table_split.append((keys[i], table[keys[i]],
+                                keys[j], table[keys[j]]))
+        if len(keys)%2 == 1:
+            table_split.append((keys[-1], table[keys[-1]], '', ''))
+        return table_split
 
