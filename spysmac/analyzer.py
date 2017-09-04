@@ -81,7 +81,7 @@ class Analyzer(object):
                 if not run.scen == self.scenario:
                     #raise ValueError("Scenarios don't match up ({})".format(run.folder))
                     pass
-
+        self.default = self.scenario.cs.get_default_configuration()
 
         # Paths
         self.scatter_path = os.path.join(self.output, 'scatter.png')
@@ -99,8 +99,7 @@ class Analyzer(object):
             - (TODO) Search space heat map
             - (TODO) Parameter search space flow map
         """
-        default = self.best_run.scen.cs.get_default_configuration()
-        default_loss_per_inst = self.best_run.get_loss_per_instance(default, aggregate=np.mean)
+        default_loss_per_inst = self.best_run.get_loss_per_instance(self.default, aggregate=np.mean)
         inc = self.best_run.get_incumbent()[0]
         incumbent_loss_per_inst = self.best_run.get_loss_per_instance(inc, aggregate=np.mean)
         if not len(default_loss_per_inst) == len(incumbent_loss_per_inst):
@@ -119,7 +118,7 @@ class Analyzer(object):
         self.def_par10_train, self.def_par10_test, self.def_par10_combined = def_par10
         inc_par10 = self.calculate_par10(incumbent_loss_per_inst)
         self.inc_par10_train, self.inc_par10_test, self.inc_par10_combined = inc_par10
-        self.par10_table = self.create_html_table()
+        self.par10_table = self.create_performance_table()
 
         # Plotting
         plotter = Plotter()
@@ -156,7 +155,7 @@ class Analyzer(object):
                     {"table": self.overview}),
                    ("Best configuration",
                     {"table":
-                        self.config_to_html(self.best_run.get_incumbent()[0])}),
+                        self.config_to_html(self.default, self.best_run.get_incumbent()[0])}),
                    ("PAR10",
                     {"table": self.par10_table}),
                    ("Scatterplot",
@@ -208,35 +207,53 @@ class Analyzer(object):
         overview_split = self._split_table(overview)
         # Convert to HTML
         df = DataFrame(data=overview_split)
-        table = df.to_html(header=False, index=False, justify='left')
+        table = df.to_html(escape=False, header=False, index=False, justify='left')
         return table
 
-    def create_html_table(self):
+    def create_performance_table(self):
         """ Create PAR10-table, compare default against incumbent on train-,
         test- and combined instances. """
-        array = np.array([[self.def_par10_train, self.def_par10_test, self.def_par10_combined],
-                          [self.inc_par10_train, self.inc_par10_test, self.inc_par10_combined]])
-        df = DataFrame(data=array, index=['Default', 'Incumbent'],
-                       columns=['Train', 'Test', 'Combined'])
+        array = np.array([[self.def_par10_train, self.def_par10_test,
+                           self.inc_par10_train, self.inc_par10_test]])
+        df = DataFrame(data=array, index=['PAR10'],
+                       columns=['Train', 'Test', 'Train', 'Test'])
         table = df.to_html()
-        return table
+        # Insert two-column-header
+        table = table.split(sep='</thead>', maxsplit=1)[1]
+        new_table = "<table border=\"3\" class=\"dataframe\">\n"\
+                    "  <col>\n"\
+                    "  <colgroup span=\"2\"></colgroup>\n"\
+                    "  <colgroup span=\"2\"></colgroup>\n"\
+                    "  <thead>\n"\
+                    "    <tr>\n"\
+                    "      <td rowspan=\"2\"></td>\n"\
+                    "      <th colspan=\"2\" scope=\"colgroup\">Default</th>\n"\
+                    "      <th colspan=\"2\" scope=\"colgroup\">Incumbent</th>\n"\
+                    "    </tr>\n"\
+                    "    <tr>\n"\
+                    "      <th scope=\"col\">Train</th>\n"\
+                    "      <th scope=\"col\">Test</th>\n"\
+                    "      <th scope=\"col\">Train</th>\n"\
+                    "      <th scope=\"col\">Test</th>\n"\
+                    "    </tr>\n"\
+                    "</thead>\n"
+        return new_table + table
 
-    def config_to_html(self, config):
-        """Create HTML-table from Configuration. Removes unused parameters.
-        Creates two-column-table.
+    def config_to_html(self, default, incumbent):
+        """Create HTML-table from Configurations. Removes unused parameters.
 
         Parameters
         ----------
-        config: Configuration
-            configuration to be converted
+        default, incumbent: Configurations
+            configurations to be converted
         """
         # Remove unused parameters
-        keys = [k for k in config.keys() if config[k]]
-        conf = [p for p in config.get_array() if not np.isnan(p)]
-        table = OrderedDict(zip(keys, conf))
-        split_table = self._split_table(table)
-        df = DataFrame(data=split_table)
-        table = df.to_html(header=False, index=False)
+        keys = [k for k in default.keys() if default[k] or incumbent[k]]
+        default = [default[k] for k in keys]
+        incumbent = [incumbent[k] for k in keys]
+        table = list(zip(default, incumbent))
+        df = DataFrame(data=table, columns=["Default", "Incumbent"], index=keys)
+        table = df.to_html()
         return table
 
     def parameter_importance(self):
@@ -276,9 +293,9 @@ class Analyzer(object):
         half_size = len(keys)//2
         for i in range(half_size):
             j = i + half_size
-            table_split.append((keys[i], table[keys[i]],
-                                keys[j], table[keys[j]]))
+            table_split.append(("<b>"+keys[i]+"</b>", table[keys[i]],
+                                "<b>"+keys[j]+"</b>", table[keys[j]]))
         if len(keys)%2 == 1:
-            table_split.append((keys[-1], table[keys[-1]], '', ''))
+            table_split.append(("<b>"+keys[-1]+"</b>", table[keys[-1]], '', ''))
         return table_split
 
