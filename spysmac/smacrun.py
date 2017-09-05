@@ -1,5 +1,6 @@
 import os
 import logging as log
+from contextlib import contextmanager
 
 from smac.optimizer.objective import average_cost
 from smac.utils.io.input_reader import InputReader
@@ -8,25 +9,39 @@ from smac.scenario.scenario import Scenario
 from smac.utils.io.traj_logging import TrajLogger
 from smac.utils.validate import Validator
 
+@contextmanager
+def changedir(newdir):
+    olddir = os.getcwd()
+    os.chdir(os.path.expanduser(newdir))
+    try:
+        yield
+    finally:
+        os.chdir(olddir)
 
 class SMACrun(object):
     """
     SMACrun keeps all information on a specific SMAC run.
     """
-    def __init__(self, folder, global_rh):
+    def __init__(self, folder, global_rh, ta_exec_dir="."):
         """
         Parameters
         ----------
-        folder -- string
+        folder: string
             output-dir of this run
-        global_rh -- RunHistory
+        global_rh: RunHistory
             runhistory with runs from other (validated) SMAC-folders, so no
             runs need to be repeated multiple times (for example defaults).
+        ta_exec_dir: string
+            if the execution directory for the SMAC-run differs from the cwd,
+            there might be problems loading instance-, feature- or PCS-files
+            in the scenario-object. since instance- and PCS-files are necessary,
+            specify the path to the execution-dir of SMAC here
         """
         self.logger = log.getLogger("spysmac.SMACrun.{}".format(folder))
         in_reader = InputReader()
 
         self.folder = folder
+        self.logger.debug("Loading from %s", folder)
 
         self.scen_fn = os.path.join(folder, 'scenario.txt')
         self.rh_fn = os.path.join(folder, 'runhistory.json')
@@ -35,7 +50,8 @@ class SMACrun(object):
         # Create Scenario (disable output_dir to avoid cluttering)
         self.scen = in_reader.read_scenario_file(self.scen_fn)
         self.scen['output_dir'] = ""
-        self.scen = Scenario(self.scen)
+        with changedir(ta_exec_dir):
+            self.scen = Scenario(self.scen)
 
         # Load runhistory and trajectory
         self.rh = RunHistory(average_cost)
@@ -50,13 +66,25 @@ class SMACrun(object):
         self.train_inst = self.scen.train_insts
         self.test_inst = self.scen.test_insts
 
-    def validate(self):
+    def validate(self, ta_exec_dir):
+        """Validate this run
+
+        Parameters
+        ----------
+        ta_exec_dir: string
+            directory from which to execute target algorithm
+
+        Returns
+        -------
+        self.rh: RunHistory
+            validated runhistory
+        """
         # Generate missing data via validation
-        new_rh_path = os.path.join(self.folder, 'validated_rh.json')
         self.logger.info("Validating to complete data, saving validated "
-                    "runhistory in %s.", new_rh_path)
-        validator = Validator(self.scen, self.traj, new_rh_path) # args_.seed)
-        self.rh = validator.validate('def+inc', 'train+test', 1, -1)
+                         "runhistory in %s.")
+        with changedir(ta_exec_dir):
+            validator = Validator(self.scen, self.traj, "")
+            self.rh = validator.validate('def+inc', 'train+test', 1, -1)
         return self.rh
 
     def get_incumbent(self):

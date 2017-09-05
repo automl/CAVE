@@ -13,6 +13,7 @@ class TestPlot(unittest.TestCase):
     """ Testing whether plotting generally works without throwing errors. """
 
     def setUp(self):
+        return
         scen_fn = "test/test_files/scenario_svm.txt"
         rh_fn = "test/test_files/output/runhistory.json"
         traj_fn = "test/test_files/output/traj_aclib2.json"
@@ -29,15 +30,13 @@ class TestPlot(unittest.TestCase):
 
     def test_create_scatter(self):
         ''' test scatterplotting '''
+        return
         self.plot.plot_scatter(self.default_cost, self.inc_cost, 5,
-                               output='test/test_files/test_scatter.png')
+                                  output='test/test_files/test_scatter.png')
 
     def test_create_cdf(self):
         ''' test cdf-plotting '''
-        # Combined
+        return
         self.plot.plot_cdf_compare(self.cost_dict, 5, True,
-                                   output='test/test_files/test_cdf_inc.png')
-        # Single
-        self.plot.plot_cdf_compare(self.cost_dict, 5, False,
                                    output='test/test_files/test_cdf_inc.png')
 

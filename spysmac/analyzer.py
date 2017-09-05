@@ -41,7 +41,8 @@ class Analyzer(object):
     and outputs PAR10, timeouts, scatterplots, etc.
     """
 
-    def __init__(self, folders, output, ta_exec_dir='.'):
+    def __init__(self, folders, output, ta_exec_dir='.',
+                 method='validation'):
         """
         Arguments
         ---------
@@ -49,8 +50,16 @@ class Analyzer(object):
             paths to relevant SMAC runs
         output: string
             output for spysmac to write results (figures + report)
+        ta_exec_dir: string
+            execution directory for target algorithm
+        method: string
+            from [validation, epm], how to estimate missing runs
         """
         self.logger = log.getLogger("spysmac.analyzer")
+
+        if method not in ["validation", "epm"]:
+            raise ValueError("Analyzer got invalid argument \"%s\" for method",
+                             method)
 
         # Create output if necessary
         self.output = output
@@ -60,27 +69,27 @@ class Analyzer(object):
             os.makedirs(output)
 
         # Global runhistory combines all runs of individual SMAC-runs to avoid
-        # recalculation of configurations (such as default)
+        # recalculation of shared configurations (like default)
         self.global_rh = RunHistory(average_cost)
         self.ta_exec_dir = ta_exec_dir
 
         # Save all relevant SMAC-runs in a list and validate them
-        # TODO check for consistency in scenarios
         self.runs = []
-        with changedir(ta_exec_dir):
-            for folder in folders:
-                self.logger.debug("Collecting data from %s.", folder)
-                self.runs.append(SMACrun(folder, self.global_rh))
-            for run in self.runs:
-                self.global_rh.update(run.validate())
-                self.global_rh.update_from_json(run.rh_fn, run.scen.cs)
-            self.best_run = min(self.runs, key=lambda run: run.get_incumbent()[1])
-            self.scenario = self.best_run.scen
-            # Check scenarios for consistency in relevant attributes
-            for run in self.runs:
-                if not run.scen == self.scenario:
-                    #raise ValueError("Scenarios don't match up ({})".format(run.folder))
-                    pass
+        for folder in folders:
+            self.logger.debug("Collecting data from %s.", folder)
+            self.runs.append(SMACrun(folder, self.global_rh, ta_exec_dir))
+        for run in self.runs:
+            self.global_rh.update_from_json(run.rh_fn, run.scen.cs)
+            self.global_rh.update(run.validate(ta_exec_dir))
+        # Extract general information
+        self.best_run = min(self.runs, key=lambda run: run.get_incumbent()[1])
+        self.scenario = self.best_run.scen
+        # Check scenarios for consistency in relevant attributes
+        # TODO check for consistency in scenarios
+        for run in self.runs:
+            if not run.scen == self.scenario:
+                #raise ValueError("Scenarios don't match up ({})".format(run.folder))
+                pass
         self.default = self.scenario.cs.get_default_configuration()
 
         # Paths
