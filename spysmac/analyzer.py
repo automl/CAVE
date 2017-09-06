@@ -178,10 +178,15 @@ class Analyzer(object):
                 # Which runs are missing?
                 instances = self.scenario.train_insts.extend(self.scenario.test_insts)
                 for conf in [self.default, self.incumbent]:
+                    inst_seeds = self.global_rh.get_runs_for_config(conf)
                     for inst in instances:
                         # If run exists in global_rh, add it
-                        #if self.global_rh.
-                        pass
+                        for i_s in inst_seeds:
+                            if i_s.instance == inst:
+                                # TODO add run
+                                #run.rh.add(self.global_rh.data[RunKey(
+                                pass
+                        # TODO Else predict!
                 model = RandomForestWithInstances(types=np.array([0, 0, 0],
                                                                  dtype=np.uint),
                                                   bounds=np.array([(0, np.nan),
