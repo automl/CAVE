@@ -6,8 +6,10 @@ from contextlib import contextmanager
 import numpy as np
 from pandas import DataFrame
 
+from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunKey, RunValue, RunHistory
+from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
 from smac.utils.io.traj_logging import TrajLogger
 from smac.utils.validate import Validator
 
@@ -17,6 +19,7 @@ from smac.utils.validate import Validator
 from spysmac.html.html_builder import HTMLBuilder
 from spysmac.plot.plotter import Plotter
 from spysmac.smacrun import SMACrun
+from spysmac.utils.helpers import get_loss_per_instance
 
 
 __author__ = "Joshua Marben"
@@ -42,7 +45,7 @@ class Analyzer(object):
     """
 
     def __init__(self, folders, output, ta_exec_dir='.',
-                 method='validation'):
+                 missing_data_method='validation'):
         """
         Arguments
         ---------
@@ -52,14 +55,15 @@ class Analyzer(object):
             output for spysmac to write results (figures + report)
         ta_exec_dir: string
             execution directory for target algorithm
-        method: string
+        missing_data_method: string
             from [validation, epm], how to estimate missing runs
         """
         self.logger = log.getLogger("spysmac.analyzer")
 
-        if method not in ["validation", "epm"]:
+        if missing_data_method not in ["validation", "epm"]:
             raise ValueError("Analyzer got invalid argument \"%s\" for method",
-                             method)
+                             missing_data_method)
+        self.missing_data_method = missing_data_method
 
         # Create output if necessary
         self.output = output
@@ -77,10 +81,16 @@ class Analyzer(object):
         self.runs = []
         for folder in folders:
             self.logger.debug("Collecting data from %s.", folder)
-            self.runs.append(SMACrun(folder, self.global_rh, ta_exec_dir))
+            self.runs.append(SMACrun(folder, ta_exec_dir))
+
+        # Update global runhistory with all available runhistories
+        self.logger.debug("Update global rh with all available rhs!")
         for run in self.runs:
             self.global_rh.update_from_json(run.rh_fn, run.scen.cs)
-            self.global_rh.update(run.validate(ta_exec_dir))
+
+        # Estimate all missing costs using validation or EPM
+        self.complete_data()
+
         # Extract general information
         self.best_run = min(self.runs, key=lambda run: run.get_incumbent()[1])
         self.scenario = self.best_run.scen
@@ -91,6 +101,7 @@ class Analyzer(object):
                 #raise ValueError("Scenarios don't match up ({})".format(run.folder))
                 pass
         self.default = self.scenario.cs.get_default_configuration()
+        self.incumbent = self.best_run.get_incumbent()[0]
 
         # Paths
         self.scatter_path = os.path.join(self.output, 'scatter.png')
@@ -108,9 +119,10 @@ class Analyzer(object):
             - (TODO) Search space heat map
             - (TODO) Parameter search space flow map
         """
-        default_loss_per_inst = self.best_run.get_loss_per_instance(self.default, aggregate=np.mean)
-        inc = self.best_run.get_incumbent()[0]
-        incumbent_loss_per_inst = self.best_run.get_loss_per_instance(inc, aggregate=np.mean)
+        default_loss_per_inst = get_loss_per_instance(self.best_run.rh,
+                                                      self.default, aggregate=np.mean)
+        incumbent_loss_per_inst = get_loss_per_instance(self.best_run.rh,
+                                                        self.incumbent, aggregate=np.mean)
         if not len(default_loss_per_inst) == len(incumbent_loss_per_inst):
             self.logger.warning("Default evaluated on %d instances, "
                                 "incumbent evaluated on %d instances! "
@@ -146,6 +158,44 @@ class Analyzer(object):
 
         #self.parameter_importance()
 
+    def complete_data(self):
+        """Complete missing data of runs to be analyzed. Either using validation
+        or EPM.
+        """
+        if self.missing_data_method == "validation":
+            for run in self.runs:
+                self.global_rh.update(run.validate(self.ta_exec_dir,
+                                                   self.global_rh))
+        elif self.missing_data_method == "epm":
+            # Global rh is updated with all available data -> use for
+            #  training EPM and use trained EPM to predict missing runs
+            # TODO add imputation
+            rh2epm = RunHistory2EPM4Cost(num_params=len(self.default.keys()),
+                                         scenario=self.scenario)
+            X, y, censored = rh2epm.get_X_y(self.global_rh)
+
+            for run in self.runs:
+                # Which runs are missing?
+                instances = self.scenario.train_insts.extend(self.scenario.test_insts)
+                for conf in [self.default, self.incumbent]:
+                    for inst in instances:
+                        # If run exists in global_rh, add it
+                        #if self.global_rh.
+                        pass
+                model = RandomForestWithInstances(types=np.array([0, 0, 0],
+                                                                 dtype=np.uint),
+                                                  bounds=np.array([(0, np.nan),
+                                                                   (0, np.nan),
+                                                                   (0, np.nan)],
+                                                                 dtype=object),
+                                                  instance_features=None,
+                                                  seed=12345, ratio_features=1.0)
+                model.train(X, y)
+
+                pass
+
+
+
     def build_html(self):
         """ Build website using the HTMLBuilder. Return website as dictionary
         for further stacking. Also saves website in
@@ -164,7 +214,7 @@ class Analyzer(object):
                     {"table": self.overview}),
                    ("Best configuration",
                     {"table":
-                        self.config_to_html(self.default, self.best_run.get_incumbent()[0])}),
+                        self.config_to_html(self.default, self.incumbent)}),
                    ("PAR10",
                     {"table": self.par10_table}),
                    ("Scatterplot",

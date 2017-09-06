@@ -22,7 +22,7 @@ class SMACrun(object):
     """
     SMACrun keeps all information on a specific SMAC run.
     """
-    def __init__(self, folder, global_rh, ta_exec_dir="."):
+    def __init__(self, folder, ta_exec_dir="."):
         """
         Parameters
         ----------
@@ -55,18 +55,14 @@ class SMACrun(object):
 
         # Load runhistory and trajectory
         self.rh = RunHistory(average_cost)
-        self.rh.load_json(self.rh_fn, self.scen.cs)
         self.traj = TrajLogger.read_traj_aclib_format(fn=self.traj_fn,
                                                       cs=self.scen.cs)
-
-        # Update rh with global rh to avoid rerunning target algorithm runs
-        self.rh.update(global_rh)
 
         self.incumbent = self.traj[-1]['incumbent']
         self.train_inst = self.scen.train_insts
         self.test_inst = self.scen.test_insts
 
-    def validate(self, ta_exec_dir):
+    def validate(self, ta_exec_dir, global_rh):
         """Validate this run
 
         Parameters
@@ -79,6 +75,10 @@ class SMACrun(object):
         self.rh: RunHistory
             validated runhistory
         """
+        # Update rh with global rh to avoid rerunning target algorithm runs
+        self.rh.load_json(self.rh_fn, self.scen.cs)
+        self.rh.update(global_rh)
+
         # Generate missing data via validation
         self.logger.info("Validating to complete data, saving validated "
                          "runhistory in %s.")
