@@ -41,7 +41,8 @@ class Analyzer(object):
     and outputs PAR10, timeouts, scatterplots, etc.
     """
 
-    def __init__(self, folders, output, ta_exec_dir='.'):
+    def __init__(self, folders, output, ta_exec_dir='.',
+                 method='validation'):
         """
         Arguments
         ---------
@@ -49,8 +50,16 @@ class Analyzer(object):
             paths to relevant SMAC runs
         output: string
             output for spysmac to write results (figures + report)
+        ta_exec_dir: string
+            execution directory for target algorithm
+        method: string
+            from [validation, epm], how to estimate missing runs
         """
         self.logger = log.getLogger("spysmac.analyzer")
+
+        if method not in ["validation", "epm"]:
+            raise ValueError("Analyzer got invalid argument \"%s\" for method",
+                             method)
 
         # Create output if necessary
         self.output = output
@@ -60,33 +69,32 @@ class Analyzer(object):
             os.makedirs(output)
 
         # Global runhistory combines all runs of individual SMAC-runs to avoid
-        # recalculation of configurations (such as default)
+        # recalculation of shared configurations (like default)
         self.global_rh = RunHistory(average_cost)
         self.ta_exec_dir = ta_exec_dir
 
         # Save all relevant SMAC-runs in a list and validate them
-        # TODO check for consistency in scenarios
         self.runs = []
-        with changedir(ta_exec_dir):
-            for folder in folders:
-                self.logger.debug("Collecting data from %s.", folder)
-                self.runs.append(SMACrun(folder, self.global_rh))
-            for run in self.runs:
-                self.global_rh.update(run.validate())
-                self.global_rh.update_from_json(run.rh_fn, run.scen.cs)
-            self.best_run = min(self.runs, key=lambda run: run.get_incumbent()[1])
-            self.scenario = self.best_run.scen
-            # Check scenarios for consistency in relevant attributes
-            for run in self.runs:
-                if not run.scen == self.scenario:
-                    #raise ValueError("Scenarios don't match up ({})".format(run.folder))
-                    pass
-
+        for folder in folders:
+            self.logger.debug("Collecting data from %s.", folder)
+            self.runs.append(SMACrun(folder, self.global_rh, ta_exec_dir))
+        for run in self.runs:
+            self.global_rh.update_from_json(run.rh_fn, run.scen.cs)
+            self.global_rh.update(run.validate(ta_exec_dir))
+        # Extract general information
+        self.best_run = min(self.runs, key=lambda run: run.get_incumbent()[1])
+        self.scenario = self.best_run.scen
+        # Check scenarios for consistency in relevant attributes
+        # TODO check for consistency in scenarios
+        for run in self.runs:
+            if not run.scen == self.scenario:
+                #raise ValueError("Scenarios don't match up ({})".format(run.folder))
+                pass
+        self.default = self.scenario.cs.get_default_configuration()
 
         # Paths
         self.scatter_path = os.path.join(self.output, 'scatter.png')
         self.cdf_combined_path = os.path.join(self.output, 'def_inc_cdf_comb.png')
-        self.cdf_single_path = os.path.join(self.output, 'def_inc_cdf_single.png')
 
     def analyze(self):
         """
@@ -100,8 +108,7 @@ class Analyzer(object):
             - (TODO) Search space heat map
             - (TODO) Parameter search space flow map
         """
-        default = self.best_run.scen.cs.get_default_configuration()
-        default_loss_per_inst = self.best_run.get_loss_per_instance(default, aggregate=np.mean)
+        default_loss_per_inst = self.best_run.get_loss_per_instance(self.default, aggregate=np.mean)
         inc = self.best_run.get_incumbent()[0]
         incumbent_loss_per_inst = self.best_run.get_loss_per_instance(inc, aggregate=np.mean)
         if not len(default_loss_per_inst) == len(incumbent_loss_per_inst):
@@ -120,7 +127,7 @@ class Analyzer(object):
         self.def_par10_train, self.def_par10_test, self.def_par10_combined = def_par10
         inc_par10 = self.calculate_par10(incumbent_loss_per_inst)
         self.inc_par10_train, self.inc_par10_test, self.inc_par10_combined = inc_par10
-        self.par10_table = self.create_html_table()
+        self.par10_table = self.create_performance_table()
 
         # Plotting
         plotter = Plotter()
@@ -134,14 +141,8 @@ class Analyzer(object):
         loss_dict = {'default' : default_loss_per_inst, 'incumbent' : incumbent_loss_per_inst}
         plotter.plot_cdf_compare(loss_dict,
                                  timeout= self.scenario.cutoff,
-                                 same_x=True,
                                  #train=self.train_inst, test=self.test_inst,
                                  output=self.cdf_combined_path)
-        plotter.plot_cdf_compare(loss_dict,
-                                 timeout= self.scenario.cutoff,
-                                 same_x=False,
-                                 #train=self.train_inst, test=self.test_inst,
-                                 output=self.cdf_single_path)
 
         #self.parameter_importance()
 
@@ -163,16 +164,13 @@ class Analyzer(object):
                     {"table": self.overview}),
                    ("Best configuration",
                     {"table":
-                        self.config_to_html(self.best_run.get_incumbent()[0])}),
+                        self.config_to_html(self.default, self.best_run.get_incumbent()[0])}),
                    ("PAR10",
                     {"table": self.par10_table}),
                    ("Scatterplot",
                     {"figure" : self.scatter_path}),
                    ("Cumulative distribution function (CDF)",
-                    {
-                     "Single": {"figure": self.cdf_single_path},
-                     "Combined": {"figure": self.cdf_combined_path},
-                    }),
+                    {"figure": self.cdf_combined_path}),
                    #("Parameter Importance" :
                   ])
         builder.generate_html(website)
@@ -209,41 +207,62 @@ class Analyzer(object):
                          ('# Test instances', len(self.scenario.test_insts)),
                          ('# Parameters', len(self.scenario.cs.get_hyperparameters())),
                          ('Cutoff', self.scenario.cutoff),
-                         ('Deterministic', self.scenario.deterministic),
                          ('Walltime budget', self.scenario.wallclock_limit),
                          ('Runcount budget', self.scenario.ta_run_limit),
                          ('CPU budget', self.scenario.algo_runs_timelimit),
                          ('Deterministic', self.scenario.deterministic),
                          ])
         # Split into two columns
-        overview_split = []
-        keys = list(overview.keys())
-        half_size = len(keys)//2
-        for i in range(half_size):
-            j = i + half_size
-            overview_split.append((keys[i], overview[keys[i]],
-                                   keys[j], overview[keys[j]]))
-        if len(keys)%2 == 1:
-            overview_split.append((keys[half_size], overview[keys[half_size]], '', ''))
+        overview_split = self._split_table(overview)
         # Convert to HTML
         df = DataFrame(data=overview_split)
-        table = df.to_html(header=False, index=False, justify='left')
+        table = df.to_html(escape=False, header=False, index=False, justify='left')
         return table
 
-    def create_html_table(self):
+    def create_performance_table(self):
         """ Create PAR10-table, compare default against incumbent on train-,
         test- and combined instances. """
-        array = np.array([[self.def_par10_train, self.def_par10_test, self.def_par10_combined],
-                          [self.inc_par10_train, self.inc_par10_test, self.inc_par10_combined]])
-        df = DataFrame(data=array, index=['Default', 'Incumbent'],
-                       columns=['Train', 'Test', 'Combined'])
+        array = np.array([[self.def_par10_train, self.def_par10_test,
+                           self.inc_par10_train, self.inc_par10_test]])
+        df = DataFrame(data=array, index=['PAR10'],
+                       columns=['Train', 'Test', 'Train', 'Test'])
         table = df.to_html()
-        return table
+        # Insert two-column-header
+        table = table.split(sep='</thead>', maxsplit=1)[1]
+        new_table = "<table border=\"3\" class=\"dataframe\">\n"\
+                    "  <col>\n"\
+                    "  <colgroup span=\"2\"></colgroup>\n"\
+                    "  <colgroup span=\"2\"></colgroup>\n"\
+                    "  <thead>\n"\
+                    "    <tr>\n"\
+                    "      <td rowspan=\"2\"></td>\n"\
+                    "      <th colspan=\"2\" scope=\"colgroup\">Default</th>\n"\
+                    "      <th colspan=\"2\" scope=\"colgroup\">Incumbent</th>\n"\
+                    "    </tr>\n"\
+                    "    <tr>\n"\
+                    "      <th scope=\"col\">Train</th>\n"\
+                    "      <th scope=\"col\">Test</th>\n"\
+                    "      <th scope=\"col\">Train</th>\n"\
+                    "      <th scope=\"col\">Test</th>\n"\
+                    "    </tr>\n"\
+                    "</thead>\n"
+        return new_table + table
 
-    def config_to_html(self, config):
-        df = DataFrame(data=config.get_array(), index=config.keys(),
-                )
-        table = df.to_html(header=False)
+    def config_to_html(self, default, incumbent):
+        """Create HTML-table from Configurations. Removes unused parameters.
+
+        Parameters
+        ----------
+        default, incumbent: Configurations
+            configurations to be converted
+        """
+        # Remove unused parameters
+        keys = [k for k in default.keys() if default[k] or incumbent[k]]
+        default = [default[k] for k in keys]
+        incumbent = [incumbent[k] for k in keys]
+        table = list(zip(default, incumbent))
+        df = DataFrame(data=table, columns=["Default", "Incumbent"], index=keys)
+        table = df.to_html()
         return table
 
     def parameter_importance(self):
@@ -268,4 +287,24 @@ class Analyzer(object):
         relevant = ["train_insts", "test_insts", "cs", "features_dict",
                     "initial_incumbent", "cutoff", "cost_for_crash"]
         #for member in 
+
+    def _split_table(self, table):
+        """Splits an OrderedDict into a list of tuples that can be turned into a
+        HTML-table with pandas DataFrame
+
+        Parameters
+        ----------
+        table: OrderedDict
+            table that is to be split into two columns
+        """
+        table_split = []
+        keys = list(table.keys())
+        half_size = len(keys)//2
+        for i in range(half_size):
+            j = i + half_size
+            table_split.append(("<b>"+keys[i]+"</b>", table[keys[i]],
+                                "<b>"+keys[j]+"</b>", table[keys[j]]))
+        if len(keys)%2 == 1:
+            table_split.append(("<b>"+keys[-1]+"</b>", table[keys[-1]], '', ''))
+        return table_split
 

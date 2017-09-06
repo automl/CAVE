@@ -5,7 +5,7 @@ import logging
 import numpy as np
 import matplotlib.pyplot as plt
 
-from plottingscripts.plotting.scatter import plot_scatter_plot
+from spysmac.plot.scatter import plot_scatter_plot
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -68,7 +68,7 @@ class Plotter(object):
         fig.savefig(output)
         plt.close(fig)
 
-    def plot_cdf_compare(self, data, timeout, same_x=True,
+    def plot_cdf_compare(self, data, timeout,
                          train=[], test=[],
                          output="CDF_compare.png"):
         """
@@ -82,8 +82,6 @@ class Plotter(object):
             maps config-names to their instance-cost dicts
         timeout: float
             timeout/cutoff
-        same_x: bool
-            whether the two configs should share a single x-axis and plot
         train: list(strings)
             train-instances, will be printed separately if test also specified
         test: list(strings)
@@ -110,60 +108,35 @@ class Plotter(object):
 
         # Generate y_data
         data = {config_name : {label : prepare_data(x_data) for label, x_data in
-            data[config_name].items()}
+                               data[config_name].items()}
                 for config_name in data}
 
         # Until here the code is usable for an arbitrary number of
         # configurations. Below, it is specified for plotting default vs
         # incumbent only.
 
-        if same_x:
-            f, ax1 = plt.subplots()
-            ax1.step(data['default']['combined'][0],
-                     data['default']['combined'][1], color='red',
-                     label='default allinst')
-            ax1.step(data['incumbent']['combined'][0],
-                     data['incumbent']['combined'][1], color='blue',
-                     label='incumbent allinst')
-            if train and test:
-                ax1.step(data['default']['train'][0],
-                         data['default']['train'][1], color='red',
-                         linestyle='--', label='default train')
-                ax1.step(data['incumbent']['train'][0],
-                         data['incumbent']['train'][1], color='blue',
-                         linestyle='--', label='incumbent train')
-                ax1.step(data['default']['test'][0],
-                         data['default']['test'][1], color='red',
-                         linestyle='-.', label='default train')
-                ax1.step(data['incumbent']['test'][0],
-                         data['incumbent']['test'][1], color='blue',
-                         linestyle='-.', label='incumbent test')
+        f, ax1 = plt.subplots()
+        ax1.step(data['default']['combined'][0],
+                 data['default']['combined'][1], color='red',
+                 label='default allinst')
+        ax1.step(data['incumbent']['combined'][0],
+                 data['incumbent']['combined'][1], color='blue',
+                 label='incumbent allinst')
+        if train and test:
+            ax1.step(data['default']['train'][0],
+                     data['default']['train'][1], color='red',
+                     linestyle='--', label='default train')
+            ax1.step(data['incumbent']['train'][0],
+                     data['incumbent']['train'][1], color='blue',
+                     linestyle='--', label='incumbent train')
+            ax1.step(data['default']['test'][0],
+                     data['default']['test'][1], color='red',
+                     linestyle='-.', label='default train')
+            ax1.step(data['incumbent']['test'][0],
+                     data['incumbent']['test'][1], color='blue',
+                     linestyle='-.', label='incumbent test')
 
-            ax1.set_title('{}+{} - SpySMAC CDF'.format('default', 'incumbent'))
-        else:
-            f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
-            ax1.step(data['default']['combined'][0],
-                     data['default']['combined'][1], color='red',
-                     label='default allinst')
-            ax2.step(data['incumbent']['combined'][0],
-                     data['incumbent']['combined'][1], color='blue',
-                     label='incumbent allinst')
-            if train and test:
-                ax1.step(data['default']['train'][0],
-                         data['default']['train'][1], color='red',
-                         linestyle='--', label='default train')
-                ax2.step(data['incumbent']['train'][0],
-                         data['incumbent']['train'][1], color='blue',
-                         linestyle='--', label='incumbent train')
-                ax1.step(data['default']['test'][0],
-                         data['default']['test'][1], color='red',
-                         linestyle='-.', label='default train')
-                ax2.step(data['incumbent']['test'][0],
-                         data['incumbent']['test'][1], color='blue',
-                         linestyle='-.', label='incumbent test')
-            ax1.set_title('{} - SpySMAC CDF'.format('default'))
-            ax2.set_title('{} - SpySMAC CDF'.format('incumbent'))
-            ax2.legend()
+        ax1.set_title('{}+{} - SpySMAC CDF'.format('default', 'incumbent'))
 
         # Always set props for ax1
         ax1.legend()
@@ -174,21 +147,11 @@ class Plotter(object):
         # Plot 'timeout'
         ax1.text(timeout,
                  ax1.get_ylim()[0] - 0.1 * np.abs(ax1.get_ylim()[0]),
-                 "timeout ",  horizontalalignment='center',
+                 "timeout ", horizontalalignment='center',
                  verticalalignment="top", rotation=30)
         ax1.axvline(x=timeout, linestyle='--')
 
-        # Set props for ax2 if exists
-        if not same_x:
-            ax2.grid(True)
-            ax2.set_xscale('log')
-            ax2.set_xlabel('Time')
-            ax2.text(timeout,
-                     ax2.get_ylim()[0] - 0.1 * np.abs(ax2.get_ylim()[0]),
-                     "timeout ",  horizontalalignment='center',
-                     verticalalignment="top", rotation=30)
-            ax2.axvline(x=timeout, linestyle='--')
-
+        f.tight_layout()
         f.savefig(output)
         plt.close(f)
 
