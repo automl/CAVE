@@ -42,7 +42,7 @@ class SpySMACCLI(object):
                                    "If not specified, spySMAC will only generate "
                                    "the individual reports in the corresponding "
                                    "output-folders.")
-        opt_opts.add_argument("--ta_exec_dir", default=None,
+        opt_opts.add_argument("--ta_exec_dir", required=True, default=None,
                               help="path to the execution-directory of the "
                                    "target algorithm. needed for validation.")
         args_, misc = parser.parse_known_args()
