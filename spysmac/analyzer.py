@@ -1,6 +1,7 @@
 import os
 import logging as log
 import json
+import glob
 from collections import OrderedDict
 from contextlib import contextmanager
 
@@ -84,17 +85,31 @@ class Analyzer(object):
             self.logger.debug("Collecting data from %s.", folder)
             self.runs.append(SMACrun(folder, ta_exec_dir))
 
+        self.scenario = self.runs[1].scen
+
         # Update global runhistory with all available runhistories
         self.logger.debug("Update global rh with all available rhs!")
-        for run in self.runs:
-            self.global_rh.update_from_json(run.rh_fn, run.scen.cs)
+        #globed_files = glob.glob(os.path.join(folders, "*/runhistory.json"))
+        globed_files = [os.path.join(f, "runhistory.json") for f in self.folders]
+        self.logger.info(globed_files)
+        self.logger.info('#RunHistories found: %d' % len(globed_files))
+        if not globed_files:
+            self.logger.error('No runhistory files found!')
+        self.global_rh.load_json(globed_files[0], self.scenario.cs)
+        for rh_file in globed_files[1:]:
+            self.global_rh.update_from_json(rh_file, self.scenario.cs)
+        #self.global_rh.load_json(self.runs[0].rh_fn, self.runs[0].scen.cs)
+        #for run in self.runs[1:]:
+        #    self.global_rh.update_from_json(run.rh_fn, run.scen.cs)
+        self.logger.info('Combined number of Runhistory data points: %d' %
+                len(self.global_rh.data))
+        self.logger.info('Number of Configurations: %d' % (len(self.global_rh.get_all_configs())))
+
 
         # Estimate all missing costs using validation or EPM
         self.complete_data()
-
-        # Extract general information
         self.best_run = min(self.runs, key=lambda run: run.get_incumbent()[1])
-        self.scenario = self.best_run.scen
+
         # Check scenarios for consistency in relevant attributes
         # TODO check for consistency in scenarios
         for run in self.runs:
@@ -109,6 +124,8 @@ class Analyzer(object):
         self.cdf_combined_path = os.path.join(self.output, 'def_inc_cdf_comb.png')
         self.f_s_barplot_path = os.path.join(self.output, "forward-selection-barplot.png")
         self.f_s_chng_path = os.path.join(self.output, "forward-selection-chng.png")
+        self.ablationpercentage_path = os.path.join(self.output, "ablationpercentage.png")
+        self.ablationperformance_path = os.path.join(self.output, "ablationperformance.png")
 
     def analyze(self):
         """
@@ -118,7 +135,8 @@ class Analyzer(object):
             - PAR10-values for default and incumbent (best of all runs)
             - CDF-plot for default and incumbent (best of all runs)
             - Scatter-plot for default and incumbent (best of all runs)
-            - (TODO) Importance
+            - Importance (forward-selection, ablation, TODO: influence-model,
+              TODO: fANOVA)
             - (TODO) Search space heat map
             - (TODO) Parameter search space flow map
         """
@@ -229,10 +247,16 @@ class Analyzer(object):
                     {"figure" : self.scatter_path}),
                    ("Cumulative distribution function (CDF)",
                     {"figure": self.cdf_combined_path}),
-                   ("Forward Selection (barplot)",
-                    {"figure": self.f_s_barplot_path}),
-                   ("Forward Selection (chng)",
-                    {"figure": self.f_s_chng.path}),
+                   ("Parameter Importance",
+                    OrderedDict([
+                       ("Forward Selection (barplot)",
+                        {"figure": self.f_s_barplot_path}),
+                       ("Forward Selection (chng)",
+                        {"figure": self.f_s_chng_path}),
+                       ("Ablation (percentage)",
+                        {"figure": self.ablationpercentage_path}),
+                       ("Ablation (performance)",
+                        {"figure": self.ablationperformance_path})]))
                   ])
         builder.generate_html(website)
         return website
@@ -332,23 +356,36 @@ class Analyzer(object):
         X = np.array([c.get_array() for c in configs])
         y = np.array([self.global_rh.get_cost(c) for c in configs])
 
-        modus = "forward-selection"
+        modi = ["forward-selection",
+                "ablation",
+                #"influence-model",
+               ]
 
         save_folder = self.output
-        num_params = len(self.default.keys())
 
         importance = Importance(scenario=self.scenario,
                                 runhistory=self.global_rh,
                                 incumbent=self.incumbent,
-                                parameters_to_evaluate=num_params,
                                 save_folder=save_folder,)
 
-        result = importance.evaluate_scenario(modus)
+        for modus in modi:
+            result = importance.evaluate_scenario(modus)
 
-        with open(os.path.join(save_folder, 'pimp_values_%s.json' % modus), 'w') as out_file:
-            json.dump(result, out_file, sort_keys=True, indent=4, separators=(',', ': '))
+            with open(os.path.join(save_folder, 'pimp_values_%s.json' % modus), 'w') as out_file:
+                json.dump(result, out_file, sort_keys=True, indent=4, separators=(',', ': '))
 
-        importance.plot_results(name=os.path.join(save_folder, modus), show=False)
+            importance.plot_results(name=os.path.join(save_folder, modus), show=False)
+
+    #    with open(os.path.join(save_folder, 'pimp_values_%s.json' % args.modus), 'w') as out_file:
+    #        json.dump(result[0], out_file, sort_keys=True, indent=4, separators=(',', ': '))
+    #    importance.plot_results(list(map(lambda x: os.path.join(save_folder, x.name.lower()), result[1])),
+    #                            result[1], show=False)
+    #    if args.table:
+    #        importance.table_for_comparison(evaluators=result[1], name=os.path.join(
+    #            save_folder, 'pimp_table_%s.tex' % args.modus), style='latex')
+    #    else:
+    #        importance.table_for_comparison(evaluators=result[1], style='cmd')
+    #else:
 
     def _eq_scenarios(self, scen1, scen2):
         """Custom function to compare relevant features of scenarios.

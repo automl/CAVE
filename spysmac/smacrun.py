@@ -75,16 +75,13 @@ class SMACrun(object):
         self.rh: RunHistory
             validated runhistory
         """
-        # Update rh with global rh to avoid rerunning target algorithm runs
-        self.rh.load_json(self.rh_fn, self.scen.cs)
-        self.rh.update(global_rh)
-
         # Generate missing data via validation
         self.logger.info("Validating to complete data, saving validated "
                          "runhistory in %s.")
         with changedir(ta_exec_dir):
             validator = Validator(self.scen, self.traj, "")
-            self.rh = validator.validate('def+inc', 'train+test', 1, -1)
+            self.rh = validator.validate('def+inc', 'train+test', 1, -1,
+                                         runhistory=global_rh)
         return self.rh
 
     def get_incumbent(self):

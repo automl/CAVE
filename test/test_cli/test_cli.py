@@ -38,6 +38,7 @@ class TestCLI(unittest.TestCase):
         testargs = ["python", "scripts/spy.py", "--folders",
                     "examples/spear_qcp_small/example_output_1",
                     "examples/spear_qcp_small/example_output_2",
+                    "examples/spear_qcp_small/example_output_3",
                     "--verbose", "DEBUG", "--output", self.output,
                     "--ta_exec_dir", "examples/spear_qcp_small"]
         with mock.patch.object(sys, 'argv', testargs):
