@@ -1,5 +1,6 @@
 import os
 import logging as log
+import json
 from collections import OrderedDict
 from contextlib import contextmanager
 
@@ -13,8 +14,7 @@ from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
 from smac.utils.io.traj_logging import TrajLogger
 from smac.utils.validate import Validator
 
-#from pimp.importance.importance import Importance
-#from pimp.pimp import PIMP
+from pimp.importance.importance import Importance
 
 from spysmac.html.html_builder import HTMLBuilder
 from spysmac.plot.plotter import Plotter
@@ -76,6 +76,7 @@ class Analyzer(object):
         # recalculation of shared configurations (like default)
         self.global_rh = RunHistory(average_cost)
         self.ta_exec_dir = ta_exec_dir
+        self.folders = folders
 
         # Save all relevant SMAC-runs in a list and validate them
         self.runs = []
@@ -106,6 +107,8 @@ class Analyzer(object):
         # Paths
         self.scatter_path = os.path.join(self.output, 'scatter.png')
         self.cdf_combined_path = os.path.join(self.output, 'def_inc_cdf_comb.png')
+        self.f_s_barplot_path = os.path.join(self.output, "forward-selection-barplot.png")
+        self.f_s_chng_path = os.path.join(self.output, "forward-selection-chng.png")
 
     def analyze(self):
         """
@@ -156,7 +159,7 @@ class Analyzer(object):
                                  #train=self.train_inst, test=self.test_inst,
                                  output=self.cdf_combined_path)
 
-        #self.parameter_importance()
+        self.parameter_importance()
 
     def complete_data(self):
         """Complete missing data of runs to be analyzed. Either using validation
@@ -226,7 +229,10 @@ class Analyzer(object):
                     {"figure" : self.scatter_path}),
                    ("Cumulative distribution function (CDF)",
                     {"figure": self.cdf_combined_path}),
-                   #("Parameter Importance" :
+                   ("Forward Selection (barplot)",
+                    {"figure": self.f_s_barplot_path}),
+                   ("Forward Selection (chng)",
+                    {"figure": self.f_s_chng.path}),
                   ])
         builder.generate_html(website)
         return website
@@ -325,11 +331,24 @@ class Analyzer(object):
         configs = self.global_rh.get_all_configs()
         X = np.array([c.get_array() for c in configs])
         y = np.array([self.global_rh.get_cost(c) for c in configs])
-        log.info(len(configs))
-        with changedir(self.ta_exec_dir):
-            pimp = PIMP(scenario=self.scenario, X=X, y=y,
-                mode='forward-selection')
-            pimp.plot_results(pimp.compute_importances())
+
+        modus = "forward-selection"
+
+        save_folder = self.output
+        num_params = len(self.default.keys())
+
+        importance = Importance(scenario=self.scenario,
+                                runhistory=self.global_rh,
+                                incumbent=self.incumbent,
+                                parameters_to_evaluate=num_params,
+                                save_folder=save_folder,)
+
+        result = importance.evaluate_scenario(modus)
+
+        with open(os.path.join(save_folder, 'pimp_values_%s.json' % modus), 'w') as out_file:
+            json.dump(result, out_file, sort_keys=True, indent=4, separators=(',', ': '))
+
+        importance.plot_results(name=os.path.join(save_folder, modus), show=False)
 
     def _eq_scenarios(self, scen1, scen2):
         """Custom function to compare relevant features of scenarios.
