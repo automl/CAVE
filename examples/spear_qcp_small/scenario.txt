@@ -9,4 +9,4 @@ cutoff_time = 5
 wallclock-limit = 50
 instance_file = SWV-GZIP-train.txt
 test_instance_file = SWV-GZIP-test.txt
-features = SWV-features.csv
+feature_file = SWV-features.csv
