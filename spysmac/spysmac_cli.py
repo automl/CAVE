@@ -34,7 +34,7 @@ class SpySMACCLI(object):
                                    "a trajectory.")
 
         opt_opts = parser.add_argument_group("Optional Options")
-        opt_opts.add_argument("--verbose_level", default=logging.INFO,
+        opt_opts.add_argument("--verbose_level", default="INFO",
                               choices=["INFO", "DEBUG"],
                               help="verbose level")
         opt_opts.add_argument("--output", default="",

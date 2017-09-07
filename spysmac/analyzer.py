@@ -65,6 +65,8 @@ class Analyzer(object):
             raise ValueError("Analyzer got invalid argument \"%s\" for method",
                              missing_data_method)
         self.missing_data_method = missing_data_method
+        self.ta_exec_dir = ta_exec_dir
+        self.folders = folders
 
         # Create output if necessary
         self.output = output
@@ -73,11 +75,8 @@ class Analyzer(object):
             self.logger.info("Output-dir %s does not exist, creating", self.output)
             os.makedirs(output)
 
-        # Global runhistory combines all runs of individual SMAC-runs to avoid
-        # recalculation of shared configurations (like default)
+        # Global runhistory combines all runs of individual SMAC-runs
         self.global_rh = RunHistory(average_cost)
-        self.ta_exec_dir = ta_exec_dir
-        self.folders = folders
 
         # Save all relevant SMAC-runs in a list and validate them
         self.runs = []
@@ -89,22 +88,13 @@ class Analyzer(object):
 
         # Update global runhistory with all available runhistories
         self.logger.debug("Update global rh with all available rhs!")
-        #globed_files = glob.glob(os.path.join(folders, "*/runhistory.json"))
-        globed_files = [os.path.join(f, "runhistory.json") for f in self.folders]
-        self.logger.info(globed_files)
-        self.logger.info('#RunHistories found: %d' % len(globed_files))
-        if not globed_files:
-            self.logger.error('No runhistory files found!')
-        self.global_rh.load_json(globed_files[0], self.scenario.cs)
-        for rh_file in globed_files[1:]:
+        runhistory_fns = [os.path.join(f, "runhistory.json") for f in self.folders]
+        self.logger.debug('#RunHistories found: %d' % len(runhistory_fns))
+        for rh_file in runhistory_fns:
             self.global_rh.update_from_json(rh_file, self.scenario.cs)
-        #self.global_rh.load_json(self.runs[0].rh_fn, self.runs[0].scen.cs)
-        #for run in self.runs[1:]:
-        #    self.global_rh.update_from_json(run.rh_fn, run.scen.cs)
-        self.logger.info('Combined number of Runhistory data points: %d' %
-                len(self.global_rh.data))
-        self.logger.info('Number of Configurations: %d' % (len(self.global_rh.get_all_configs())))
-
+        self.logger.debug('Combined number of Runhistory data points: %d' %
+                         len(self.global_rh.data))
+        self.logger.debug('Number of Configurations: %d' % (len(self.global_rh.get_all_configs())))
 
         # Estimate all missing costs using validation or EPM
         self.complete_data()
@@ -351,41 +341,25 @@ class Analyzer(object):
         return table
 
     def parameter_importance(self):
-        """ Calculate parameter-importance using the PIMP-package. """
+        """Calculate parameter-importance using the PIMP-package.
+        Currently ablation, forward-selection and fanova are used."""
+        # Get parameter-values and costs per config in arrays.
         configs = self.global_rh.get_all_configs()
         X = np.array([c.get_array() for c in configs])
         y = np.array([self.global_rh.get_cost(c) for c in configs])
 
-        modi = ["forward-selection",
-                "ablation",
-                #"influence-model",
-               ]
-
+        # Evaluate parameter importance
         save_folder = self.output
-
         importance = Importance(scenario=self.scenario,
                                 runhistory=self.global_rh,
                                 incumbent=self.incumbent,
-                                save_folder=save_folder,)
-
-        for modus in modi:
-            result = importance.evaluate_scenario(modus)
-
-            with open(os.path.join(save_folder, 'pimp_values_%s.json' % modus), 'w') as out_file:
-                json.dump(result, out_file, sort_keys=True, indent=4, separators=(',', ': '))
-
-            importance.plot_results(name=os.path.join(save_folder, modus), show=False)
-
-    #    with open(os.path.join(save_folder, 'pimp_values_%s.json' % args.modus), 'w') as out_file:
-    #        json.dump(result[0], out_file, sort_keys=True, indent=4, separators=(',', ': '))
-    #    importance.plot_results(list(map(lambda x: os.path.join(save_folder, x.name.lower()), result[1])),
-    #                            result[1], show=False)
-    #    if args.table:
-    #        importance.table_for_comparison(evaluators=result[1], name=os.path.join(
-    #            save_folder, 'pimp_table_%s.tex' % args.modus), style='latex')
-    #    else:
-    #        importance.table_for_comparison(evaluators=result[1], style='cmd')
-    #else:
+                                parameters_to_evaluate=len(self.scenario.cs.get_hyperparameters()),
+                                save_folder=save_folder,
+                                seed=12345)
+        result = importance.evaluate_scenario("all")
+        importance.plot_results(list(map(lambda x: os.path.join(save_folder, x.name.lower()),
+                                         result[1])), result[1], show=False)
+        importance.table_for_comparison(evaluators=result[1], style='cmd')
 
     def _eq_scenarios(self, scen1, scen2):
         """Custom function to compare relevant features of scenarios.

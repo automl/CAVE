@@ -75,6 +75,8 @@ class SMACrun(object):
         self.rh: RunHistory
             validated runhistory
         """
+        self.rh.update(global_rh)
+        return self.rh
         # Generate missing data via validation
         self.logger.info("Validating to complete data, saving validated "
                          "runhistory in %s.")
