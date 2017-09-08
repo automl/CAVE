@@ -147,9 +147,9 @@ class Analyzer(object):
         # Analysis
         self.logger.debug("Calculate par10-values")
         def_par10 = self.calculate_par10(default_loss_per_inst)
-        self.def_par10_train, self.def_par10_test, self.def_par10_combined = def_par10
+        self.def_par10_train, self.def_par10_test = def_par10
         inc_par10 = self.calculate_par10(incumbent_loss_per_inst)
-        self.inc_par10_train, self.inc_par10_test, self.inc_par10_combined = inc_par10
+        self.inc_par10_train, self.inc_par10_test = inc_par10
         self.par10_table = self.create_performance_table()
 
         # Plotting
@@ -262,8 +262,8 @@ class Analyzer(object):
 
         Returns
         -------
-        (train, test, combined) -- tuple<float, float, float>
-            PAR10 values for train-, test- and combined instances
+        (train, test) -- tuple<float, float>
+            PAR10 values for train- and test-instances
         """
         losses = {i:c if c < self.scenario.cutoff else self.scenario.cutoff*10
                    for i, c in losses.items()}
@@ -271,8 +271,7 @@ class Analyzer(object):
                          self.scenario.train_insts])
         test = np.mean([c for i, c in losses.items() if i in
                         self.scenario.test_insts])
-        combined = np.mean(list(losses.values()))
-        return (train, test, combined)
+        return (train, test)
 
     def create_overview_table(self):
         """ Create overview-table. """
