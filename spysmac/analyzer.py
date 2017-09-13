@@ -113,12 +113,12 @@ class Analyzer(object):
         self.incumbent = self.best_run.get_incumbent()[0]
 
         # Paths
-        self.scatter_path = os.path.join(self.output, 'scatter.png')
-        self.cdf_combined_path = os.path.join(self.output, 'def_inc_cdf_comb.png')
-        self.f_s_barplot_path = os.path.join(self.output, "forward-selection-barplot.png")
-        self.f_s_chng_path = os.path.join(self.output, "forward-selection-chng.png")
-        self.ablationpercentage_path = os.path.join(self.output, "ablationpercentage.png")
-        self.ablationperformance_path = os.path.join(self.output, "ablationperformance.png")
+        self.paths = {'scatter_path' : os.path.join(self.output, 'scatter.png'),
+                      'cdf_combined_path' : os.path.join(self.output, 'def_inc_cdf_comb.png'),
+                      'f_s_barplot_path' : os.path.join(self.output, "forward-selection-barplot.png"),
+                      'f_s_chng_path' : os.path.join(self.output, "forward-selection-chng.png"),
+                      'ablationpercentage_path' : os.path.join(self.output, "ablationpercentage.png"),
+                      'ablationperformance_path' : os.path.join(self.output, "ablationperformance.png")}
 
     def analyze(self):
         """
@@ -160,7 +160,7 @@ class Analyzer(object):
         # Scatterplot
         self.logger.debug("Plot scatter")
         plotter.plot_scatter(default_loss_per_inst, incumbent_loss_per_inst,
-                             output=self.scatter_path,
+                             output=self.paths['scatter_path'],
                              timeout=self.scenario.cutoff)
         # CDF, once with a shared axis, once two separate
         self.logger.debug("Plot CDF")
@@ -168,7 +168,7 @@ class Analyzer(object):
         plotter.plot_cdf_compare(loss_dict,
                                  timeout=self.scenario.cutoff,
                                  #train=self.train_inst, test=self.test_inst,
-                                 output=self.cdf_combined_path)
+                                 output=self.paths['cdf_combined_path'])
 
         self.parameter_importance()
 
@@ -195,7 +195,6 @@ class Analyzer(object):
 
                 self.global_rh.update(run.rh)
 
-
     def build_html(self):
         """ Build website using the HTMLBuilder. Return website as dictionary
         for further stacking. Also saves website in
@@ -218,19 +217,19 @@ class Analyzer(object):
                    ("PAR10",
                     {"table": self.par10_table}),
                    ("Scatterplot",
-                    {"figure" : self.scatter_path}),
+                    {"figure" : self.paths['scatter_path']}),
                    ("Cumulative distribution function (CDF)",
-                    {"figure": self.cdf_combined_path}),
+                    {"figure": self.paths['cdf_combined_path']}),
                    ("Parameter Importance",
                     OrderedDict([
                        ("Forward Selection (barplot)",
-                        {"figure": self.f_s_barplot_path}),
+                        {"figure": self.paths['f_s_barplot_path']}),
                        ("Forward Selection (chng)",
-                        {"figure": self.f_s_chng_path}),
+                        {"figure": self.paths['f_s_chng_path']}),
                        ("Ablation (percentage)",
-                        {"figure": self.ablationpercentage_path}),
+                        {"figure": self.paths['ablationpercentage_path']}),
                        ("Ablation (performance)",
-                        {"figure": self.ablationperformance_path})]))
+                        {"figure": self.paths['ablationperformance_path']})]))
                   ])
         builder.generate_html(website)
         return website
