@@ -62,28 +62,6 @@ class SMACrun(object):
         self.train_inst = self.scen.train_insts
         self.test_inst = self.scen.test_insts
 
-    def validate(self, ta_exec_dir, global_rh):
-        """Validate this run
-
-        Parameters
-        ----------
-        ta_exec_dir: string
-            directory from which to execute target algorithm
-
-        Returns
-        -------
-        self.rh: RunHistory
-            validated runhistory
-        """
-        # Generate missing data via validation
-        self.logger.info("Validating to complete data, saving validated "
-                         "runhistory in %s.")
-        with changedir(ta_exec_dir):
-            validator = Validator(self.scen, self.traj, "")
-            self.rh = validator.validate('def+inc', 'train+test', 1, -1,
-                                         runhistory=global_rh)
-        return self.rh
-
     def get_incumbent(self):
         """Return tuple (incumbent, loss)."""
         return (self.incumbent, self.rh.get_cost(self.incumbent))

@@ -171,18 +171,24 @@ class Analyzer(object):
         """Complete missing data of runs to be analyzed. Either using validation
         or EPM.
         """
-        if self.missing_data_method == "validation":
+        with changedir(self.ta_exec_dir):
+            self.logger.info("Completing data using %s.", self.missing_data_method)
+
             for run in self.runs:
-                self.global_rh.update(run.validate(self.ta_exec_dir,
-                                                   self.global_rh))
-        elif self.missing_data_method == "epm":
-            for run in self.runs:
-                with changedir(self.ta_exec_dir):
-                    validator = Validator(self.scenario, run.traj, "")
-                    new_rh = validator.validate_epm('def+inc', 'train+test', 1,
-                                         runhistory=self.global_rh)
-                    run.rh = new_rh
-                    self.global_rh.update(new_rh)
+                validator = Validator(run.scen, run.traj, "")
+
+                if self.missing_data_method == "validation":
+                    # TODO determine # repetitions
+                    run.rh = validator.validate('def+inc', 'train+test', 1, -1,
+                                                runhistory=self.global_rh)
+                elif self.missing_data_method == "epm":
+                    run.rh = validator.validate_epm('def+inc', 'train+test', 1,
+                                                    runhistory=self.global_rh)
+                else:
+                    raise ValueError("Missing data method illegal (%s)",
+                                     self.missing_data_method)
+
+                self.global_rh.update(run.rh)
 
 
     def build_html(self):
