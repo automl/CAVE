@@ -1,17 +1,17 @@
-import sys
-sys.path.append("~/SpySMAC/smac")
+#!/usr/bin/env python
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import logging
 import os
+import sys
 import shutil
 
 from spysmac.analyzer import Analyzer
 from spysmac.html.html_builder import HTMLBuilder
 
-from smac.utils.io.cmd_reader import CMDReader
-from smac.scenario.scenario import Scenario
 from smac.runhistory.runhistory import RunHistory
+from smac.scenario.scenario import Scenario
+from smac.utils.io.cmd_reader import CMDReader
 
 
 __author__ = "Joshua Marben"
@@ -42,15 +42,13 @@ class SpySMACCLI(object):
                               help="verbose level")
         opt_opts.add_argument("--missing_data_method", default="validation",
                               choices=["validation", "epm"],
-                              help="verbose level")
+                              help="how to complete missing runs for "
+                                   "config/inst-pairs.")
         opt_opts.add_argument("--output", default="",
-                              help="Path to folder in which to save the combined HTML-report. "
-                                   "If not specified, spySMAC will only generate "
-                                   "the individual reports in the corresponding "
-                                   "output-folders.")
-        opt_opts.add_argument("--ta_exec_dir", required=True, default=None,
+                              help="path to folder in which to save the HTML-report.")
+        opt_opts.add_argument("--ta_exec_dir", default='.',
                               help="path to the execution-directory of the "
-                                   "target algorithm. needed for validation.")
+                                   "SMAC run.")
         args_, misc = parser.parse_known_args()
 
         if args_.verbose_level == "INFO":
@@ -58,15 +56,8 @@ class SpySMACCLI(object):
         else:
             logging.basicConfig(level=logging.DEBUG)
 
-        logger = logging.getLogger('spysmac_cli')
-        logging.basicConfig(level=logging.DEBUG)
-
         # SMAC results
-        folders = args_.folders
-        ta_exec_dir = args_.ta_exec_dir
-        output = args_.output
-
-        analyzer = Analyzer(folders, output, ta_exec_dir,
-                missing_data_method=args_.missing_data_method)
+        analyzer = Analyzer(args_.folders, args_.output, args_.ta_exec_dir,
+                            missing_data_method=args_.missing_data_method)
         analyzer.analyze()
         analyzer.build_html()

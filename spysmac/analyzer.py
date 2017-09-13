@@ -1,7 +1,5 @@
 import os
 import logging
-import json
-import glob
 from collections import OrderedDict
 from contextlib import contextmanager
 
@@ -30,6 +28,10 @@ __email__ = "joshua.marben@neptun.uni-freiburg.de"
 
 @contextmanager
 def changedir(newdir):
+    """ Helper function to change directory, for example to create a scenario
+    from file, where paths to the instance- and feature-files are relative to
+    the original SMAC-execution-directory. Same with target algorithms that need
+    be executed for validation. """
     olddir = os.getcwd()
     os.chdir(os.path.expanduser(newdir))
     try:
@@ -41,7 +43,7 @@ class Analyzer(object):
     """
     Analyze SMAC-output data.
     Compares two configurations (default vs incumbent) over multiple SMAC-runs
-    and outputs PAR10, timeouts, scatterplots, etc.
+    and outputs PAR10, timeouts, scatterplots, parameter importance etc.
     """
 
     def __init__(self, folders, output, ta_exec_dir='.',
@@ -65,7 +67,9 @@ class Analyzer(object):
                              missing_data_method)
         self.missing_data_method = missing_data_method
         self.ta_exec_dir = ta_exec_dir
+
         self.folders = folders
+        self.logger.debug("Folders: %s", str(self.folders))
 
         # Create output if necessary
         self.output = output
@@ -79,11 +83,11 @@ class Analyzer(object):
 
         # Save all relevant SMAC-runs in a list and validate them
         self.runs = []
-        for folder in folders:
+        for folder in self.folders:
             self.logger.debug("Collecting data from %s.", folder)
             self.runs.append(SMACrun(folder, ta_exec_dir))
 
-        self.scenario = self.runs[1].scen
+        self.scenario = self.runs[0].scen
 
         # Update global runhistory with all available runhistories
         self.logger.debug("Update global rh with all available rhs!")

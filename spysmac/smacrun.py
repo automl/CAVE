@@ -1,5 +1,5 @@
 import os
-import logging as log
+import logging
 from contextlib import contextmanager
 
 from smac.optimizer.objective import average_cost
@@ -37,7 +37,7 @@ class SMACrun(object):
             in the scenario-object. since instance- and PCS-files are necessary,
             specify the path to the execution-dir of SMAC here
         """
-        self.logger = log.getLogger("spysmac.SMACrun.{}".format(folder))
+        self.logger = logging.getLogger("spysmac.SMACrun.{}".format(folder))
         in_reader = InputReader()
 
         self.folder = folder
