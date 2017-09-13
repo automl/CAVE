@@ -22,7 +22,7 @@ class SMACrun(object):
     """
     SMACrun keeps all information on a specific SMAC run.
     """
-    def __init__(self, folder, ta_exec_dir="."):
+    def __init__(self, folder: str, ta_exec_dir: str="."):
         """
         Parameters
         ----------
@@ -55,6 +55,7 @@ class SMACrun(object):
 
         # Load runhistory and trajectory
         self.rh = RunHistory(average_cost)
+        self.rh.update_from_json(self.rh_fn, self.scen.cs)
         self.traj = TrajLogger.read_traj_aclib_format(fn=self.traj_fn,
                                                       cs=self.scen.cs)
 

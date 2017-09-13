@@ -2,14 +2,17 @@ import os
 import logging
 from collections import OrderedDict
 from contextlib import contextmanager
+import typing
 
 import numpy as np
 from pandas import DataFrame
 
+from smac.configspace import Configuration
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunKey, RunValue, RunHistory
 from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
+from smac.scenario.scenario import Scenario
 from smac.utils.io.traj_logging import TrajLogger
 from smac.utils.validate import Validator
 
@@ -46,12 +49,12 @@ class Analyzer(object):
     and outputs PAR10, timeouts, scatterplots, parameter importance etc.
     """
 
-    def __init__(self, folders, output, ta_exec_dir='.',
-                 missing_data_method='validation'):
+    def __init__(self, folders: typing.List[str], output: str,
+                 ta_exec_dir: str='.', missing_data_method: str='validation'):
         """
         Arguments
         ---------
-        folder: list<strings>
+        folders: list<strings>
             paths to relevant SMAC runs
         output: string
             output for spysmac to write results (figures + report)
@@ -62,9 +65,6 @@ class Analyzer(object):
         """
         self.logger = logging.getLogger("spysmac.analyzer")
 
-        if missing_data_method not in ["validation", "epm"]:
-            raise ValueError("Analyzer got invalid argument \"%s\" for method",
-                             missing_data_method)
         self.missing_data_method = missing_data_method
         self.ta_exec_dir = ta_exec_dir
 
@@ -81,7 +81,7 @@ class Analyzer(object):
         # Global runhistory combines all runs of individual SMAC-runs
         self.global_rh = RunHistory(average_cost)
 
-        # Save all relevant SMAC-runs in a list and validate them
+        # Save all relevant SMAC-runs in a list
         self.runs = []
         for folder in self.folders:
             self.logger.debug("Collecting data from %s.", folder)
@@ -132,6 +132,7 @@ class Analyzer(object):
             - (TODO) Search space heat map
             - (TODO) Parameter search space flow map
         """
+        #TODO argument to disable pimp
         default_loss_per_inst = get_loss_per_instance(self.best_run.rh,
                                                       self.default, aggregate=np.mean)
         incumbent_loss_per_inst = get_loss_per_instance(self.best_run.rh,
@@ -165,7 +166,7 @@ class Analyzer(object):
         self.logger.debug("Plot CDF")
         loss_dict = {'default' : default_loss_per_inst, 'incumbent' : incumbent_loss_per_inst}
         plotter.plot_cdf_compare(loss_dict,
-                                 timeout= self.scenario.cutoff,
+                                 timeout=self.scenario.cutoff,
                                  #train=self.train_inst, test=self.test_inst,
                                  output=self.cdf_combined_path)
 
@@ -234,8 +235,7 @@ class Analyzer(object):
         builder.generate_html(website)
         return website
 
-
-    def calculate_par10(self, losses):
+    def calculate_par10(self, losses:typing.Tuple[float]):
         """ Calculate par10-values of default and incumbent configs.
 
         Parameters
@@ -249,7 +249,7 @@ class Analyzer(object):
             PAR10 values for train- and test-instances
         """
         losses = {i:c if c < self.scenario.cutoff else self.scenario.cutoff*10
-                   for i, c in losses.items()}
+                  for i, c in losses.items()}
         train = np.mean([c for i, c in losses.items() if i in
                          self.scenario.train_insts])
         test = np.mean([c for i, c in losses.items() if i in
@@ -260,15 +260,15 @@ class Analyzer(object):
         """ Create overview-table. """
         # TODO: left-align, make first and third column bold
         overview = OrderedDict([('Run with best incumbent', self.best_run.folder),
-                         ('# Train instances', len(self.scenario.train_insts)),
-                         ('# Test instances', len(self.scenario.test_insts)),
-                         ('# Parameters', len(self.scenario.cs.get_hyperparameters())),
-                         ('Cutoff', self.scenario.cutoff),
-                         ('Walltime budget', self.scenario.wallclock_limit),
-                         ('Runcount budget', self.scenario.ta_run_limit),
-                         ('CPU budget', self.scenario.algo_runs_timelimit),
-                         ('Deterministic', self.scenario.deterministic),
-                         ])
+                                ('# Train instances', len(self.scenario.train_insts)),
+                                ('# Test instances', len(self.scenario.test_insts)),
+                                ('# Parameters', len(self.scenario.cs.get_hyperparameters())),
+                                ('Cutoff', self.scenario.cutoff),
+                                ('Walltime budget', self.scenario.wallclock_limit),
+                                ('Runcount budget', self.scenario.ta_run_limit),
+                                ('CPU budget', self.scenario.algo_runs_timelimit),
+                                ('Deterministic', self.scenario.deterministic),
+                               ])
         # Split into two columns
         overview_split = self._split_table(overview)
         # Convert to HTML
@@ -305,7 +305,7 @@ class Analyzer(object):
                     "</thead>\n"
         return new_table + table
 
-    def config_to_html(self, default, incumbent):
+    def config_to_html(self, default: Configuration, incumbent: Configuration):
         """Create HTML-table from Configurations. Removes unused parameters.
 
         Parameters
@@ -343,7 +343,7 @@ class Analyzer(object):
                                          result[1])), result[1], show=False)
         importance.table_for_comparison(evaluators=result[1], style='cmd')
 
-    def _eq_scenarios(self, scen1, scen2):
+    def _eq_scenarios(self, scen1: Scenario, scen2: Scenario):
         """Custom function to compare relevant features of scenarios.
 
         Parameters
@@ -355,7 +355,7 @@ class Analyzer(object):
                     "initial_incumbent", "cutoff", "cost_for_crash"]
         #for member in 
 
-    def _split_table(self, table):
+    def _split_table(self, table: OrderedDict):
         """Splits an OrderedDict into a list of tuples that can be turned into a
         HTML-table with pandas DataFrame
 
