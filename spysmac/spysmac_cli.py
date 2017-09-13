@@ -1,3 +1,6 @@
+import sys
+sys.path.append("~/SpySMAC/smac")
+
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import logging
 import os
@@ -37,6 +40,9 @@ class SpySMACCLI(object):
         opt_opts.add_argument("--verbose_level", default="INFO",
                               choices=["INFO", "DEBUG"],
                               help="verbose level")
+        opt_opts.add_argument("--missing_data_method", default="validation",
+                              choices=["validation", "epm"],
+                              help="verbose level")
         opt_opts.add_argument("--output", default="",
                               help="Path to folder in which to save the combined HTML-report. "
                                    "If not specified, spySMAC will only generate "
@@ -53,11 +59,14 @@ class SpySMACCLI(object):
             logging.basicConfig(level=logging.DEBUG)
 
         logger = logging.getLogger('spysmac_cli')
+        logging.basicConfig(level=logging.DEBUG)
 
         # SMAC results
         folders = args_.folders
         ta_exec_dir = args_.ta_exec_dir
         output = args_.output
 
-        analyzer = Analyzer(folders, output, ta_exec_dir)
+        analyzer = Analyzer(folders, output, ta_exec_dir,
+                missing_data_method=args_.missing_data_method)
         analyzer.analyze()
+        analyzer.build_html()

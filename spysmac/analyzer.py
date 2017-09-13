@@ -1,5 +1,5 @@
 import os
-import logging as log
+import logging
 import json
 import glob
 from collections import OrderedDict
@@ -21,7 +21,6 @@ from spysmac.html.html_builder import HTMLBuilder
 from spysmac.plot.plotter import Plotter
 from spysmac.smacrun import SMACrun
 from spysmac.utils.helpers import get_loss_per_instance
-
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -59,7 +58,7 @@ class Analyzer(object):
         missing_data_method: string
             from [validation, epm], how to estimate missing runs
         """
-        self.logger = log.getLogger("spysmac.analyzer")
+        self.logger = logging.getLogger("spysmac.analyzer")
 
         if missing_data_method not in ["validation", "epm"]:
             raise ValueError("Analyzer got invalid argument \"%s\" for method",
@@ -125,8 +124,7 @@ class Analyzer(object):
             - PAR10-values for default and incumbent (best of all runs)
             - CDF-plot for default and incumbent (best of all runs)
             - Scatter-plot for default and incumbent (best of all runs)
-            - Importance (forward-selection, ablation, TODO: influence-model,
-              TODO: fANOVA)
+            - Importance (forward-selection, ablation, fanova)
             - (TODO) Search space heat map
             - (TODO) Parameter search space flow map
         """
@@ -178,38 +176,13 @@ class Analyzer(object):
                 self.global_rh.update(run.validate(self.ta_exec_dir,
                                                    self.global_rh))
         elif self.missing_data_method == "epm":
-            # Global rh is updated with all available data -> use for
-            #  training EPM and use trained EPM to predict missing runs
-            # TODO add imputation
-            rh2epm = RunHistory2EPM4Cost(num_params=len(self.default.keys()),
-                                         scenario=self.scenario)
-            X, y, censored = rh2epm.get_X_y(self.global_rh)
-
             for run in self.runs:
-                # Which runs are missing?
-                instances = self.scenario.train_insts.extend(self.scenario.test_insts)
-                for conf in [self.default, self.incumbent]:
-                    inst_seeds = self.global_rh.get_runs_for_config(conf)
-                    for inst in instances:
-                        # If run exists in global_rh, add it
-                        for i_s in inst_seeds:
-                            if i_s.instance == inst:
-                                # TODO add run
-                                #run.rh.add(self.global_rh.data[RunKey(
-                                pass
-                        # TODO Else predict!
-                model = RandomForestWithInstances(types=np.array([0, 0, 0],
-                                                                 dtype=np.uint),
-                                                  bounds=np.array([(0, np.nan),
-                                                                   (0, np.nan),
-                                                                   (0, np.nan)],
-                                                                 dtype=object),
-                                                  instance_features=None,
-                                                  seed=12345, ratio_features=1.0)
-                model.train(X, y)
-
-                pass
-
+                with changedir(self.ta_exec_dir):
+                    validator = Validator(self.scenario, run.traj, "")
+                    new_rh = validator.validate_epm('def+inc', 'train+test', 1,
+                                         runhistory=self.global_rh)
+                    run.rh = new_rh
+                    self.global_rh.update(new_rh)
 
 
     def build_html(self):
