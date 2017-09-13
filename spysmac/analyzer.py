@@ -1,17 +1,18 @@
 import os
-import logging as log
-import json
-import glob
+import logging
 from collections import OrderedDict
 from contextlib import contextmanager
+import typing
 
 import numpy as np
 from pandas import DataFrame
 
+from smac.configspace import Configuration
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunKey, RunValue, RunHistory
 from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
+from smac.scenario.scenario import Scenario
 from smac.utils.io.traj_logging import TrajLogger
 from smac.utils.validate import Validator
 
@@ -22,7 +23,6 @@ from spysmac.plot.plotter import Plotter
 from spysmac.smacrun import SMACrun
 from spysmac.utils.helpers import get_loss_per_instance
 
-
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
 __license__ = "3-clause BSD"
@@ -31,6 +31,10 @@ __email__ = "joshua.marben@neptun.uni-freiburg.de"
 
 @contextmanager
 def changedir(newdir):
+    """ Helper function to change directory, for example to create a scenario
+    from file, where paths to the instance- and feature-files are relative to
+    the original SMAC-execution-directory. Same with target algorithms that need
+    be executed for validation. """
     olddir = os.getcwd()
     os.chdir(os.path.expanduser(newdir))
     try:
@@ -42,15 +46,15 @@ class Analyzer(object):
     """
     Analyze SMAC-output data.
     Compares two configurations (default vs incumbent) over multiple SMAC-runs
-    and outputs PAR10, timeouts, scatterplots, etc.
+    and outputs PAR10, timeouts, scatterplots, parameter importance etc.
     """
 
-    def __init__(self, folders, output, ta_exec_dir='.',
-                 missing_data_method='validation'):
+    def __init__(self, folders: typing.List[str], output: str,
+                 ta_exec_dir: str='.', missing_data_method: str='validation'):
         """
         Arguments
         ---------
-        folder: list<strings>
+        folders: list<strings>
             paths to relevant SMAC runs
         output: string
             output for spysmac to write results (figures + report)
@@ -59,14 +63,13 @@ class Analyzer(object):
         missing_data_method: string
             from [validation, epm], how to estimate missing runs
         """
-        self.logger = log.getLogger("spysmac.analyzer")
+        self.logger = logging.getLogger("spysmac.analyzer")
 
-        if missing_data_method not in ["validation", "epm"]:
-            raise ValueError("Analyzer got invalid argument \"%s\" for method",
-                             missing_data_method)
         self.missing_data_method = missing_data_method
         self.ta_exec_dir = ta_exec_dir
+
         self.folders = folders
+        self.logger.debug("Folders: %s", str(self.folders))
 
         # Create output if necessary
         self.output = output
@@ -78,13 +81,13 @@ class Analyzer(object):
         # Global runhistory combines all runs of individual SMAC-runs
         self.global_rh = RunHistory(average_cost)
 
-        # Save all relevant SMAC-runs in a list and validate them
+        # Save all relevant SMAC-runs in a list
         self.runs = []
-        for folder in folders:
+        for folder in self.folders:
             self.logger.debug("Collecting data from %s.", folder)
             self.runs.append(SMACrun(folder, ta_exec_dir))
 
-        self.scenario = self.runs[1].scen
+        self.scenario = self.runs[0].scen
 
         # Update global runhistory with all available runhistories
         self.logger.debug("Update global rh with all available rhs!")
@@ -110,12 +113,12 @@ class Analyzer(object):
         self.incumbent = self.best_run.get_incumbent()[0]
 
         # Paths
-        self.scatter_path = os.path.join(self.output, 'scatter.png')
-        self.cdf_combined_path = os.path.join(self.output, 'def_inc_cdf_comb.png')
-        self.f_s_barplot_path = os.path.join(self.output, "forward-selection-barplot.png")
-        self.f_s_chng_path = os.path.join(self.output, "forward-selection-chng.png")
-        self.ablationpercentage_path = os.path.join(self.output, "ablationpercentage.png")
-        self.ablationperformance_path = os.path.join(self.output, "ablationperformance.png")
+        self.paths = {'scatter_path' : os.path.join(self.output, 'scatter.png'),
+                      'cdf_combined_path' : os.path.join(self.output, 'def_inc_cdf_comb.png'),
+                      'f_s_barplot_path' : os.path.join(self.output, "forward-selection-barplot.png"),
+                      'f_s_chng_path' : os.path.join(self.output, "forward-selection-chng.png"),
+                      'ablationpercentage_path' : os.path.join(self.output, "ablationpercentage.png"),
+                      'ablationperformance_path' : os.path.join(self.output, "ablationperformance.png")}
 
     def analyze(self):
         """
@@ -125,11 +128,11 @@ class Analyzer(object):
             - PAR10-values for default and incumbent (best of all runs)
             - CDF-plot for default and incumbent (best of all runs)
             - Scatter-plot for default and incumbent (best of all runs)
-            - Importance (forward-selection, ablation, TODO: influence-model,
-              TODO: fANOVA)
+            - Importance (forward-selection, ablation, fanova)
             - (TODO) Search space heat map
             - (TODO) Parameter search space flow map
         """
+        #TODO argument to disable pimp
         default_loss_per_inst = get_loss_per_instance(self.best_run.rh,
                                                       self.default, aggregate=np.mean)
         incumbent_loss_per_inst = get_loss_per_instance(self.best_run.rh,
@@ -147,9 +150,9 @@ class Analyzer(object):
         # Analysis
         self.logger.debug("Calculate par10-values")
         def_par10 = self.calculate_par10(default_loss_per_inst)
-        self.def_par10_train, self.def_par10_test, self.def_par10_combined = def_par10
+        self.def_par10_train, self.def_par10_test = def_par10
         inc_par10 = self.calculate_par10(incumbent_loss_per_inst)
-        self.inc_par10_train, self.inc_par10_test, self.inc_par10_combined = inc_par10
+        self.inc_par10_train, self.inc_par10_test = inc_par10
         self.par10_table = self.create_performance_table()
 
         # Plotting
@@ -157,15 +160,15 @@ class Analyzer(object):
         # Scatterplot
         self.logger.debug("Plot scatter")
         plotter.plot_scatter(default_loss_per_inst, incumbent_loss_per_inst,
-                             output=self.scatter_path,
+                             output=self.paths['scatter_path'],
                              timeout=self.scenario.cutoff)
         # CDF, once with a shared axis, once two separate
         self.logger.debug("Plot CDF")
         loss_dict = {'default' : default_loss_per_inst, 'incumbent' : incumbent_loss_per_inst}
         plotter.plot_cdf_compare(loss_dict,
-                                 timeout= self.scenario.cutoff,
+                                 timeout=self.scenario.cutoff,
                                  #train=self.train_inst, test=self.test_inst,
-                                 output=self.cdf_combined_path)
+                                 output=self.paths['cdf_combined_path'])
 
         self.parameter_importance()
 
@@ -173,44 +176,24 @@ class Analyzer(object):
         """Complete missing data of runs to be analyzed. Either using validation
         or EPM.
         """
-        if self.missing_data_method == "validation":
-            for run in self.runs:
-                self.global_rh.update(run.validate(self.ta_exec_dir,
-                                                   self.global_rh))
-        elif self.missing_data_method == "epm":
-            # Global rh is updated with all available data -> use for
-            #  training EPM and use trained EPM to predict missing runs
-            # TODO add imputation
-            rh2epm = RunHistory2EPM4Cost(num_params=len(self.default.keys()),
-                                         scenario=self.scenario)
-            X, y, censored = rh2epm.get_X_y(self.global_rh)
+        with changedir(self.ta_exec_dir):
+            self.logger.info("Completing data using %s.", self.missing_data_method)
 
             for run in self.runs:
-                # Which runs are missing?
-                instances = self.scenario.train_insts.extend(self.scenario.test_insts)
-                for conf in [self.default, self.incumbent]:
-                    inst_seeds = self.global_rh.get_runs_for_config(conf)
-                    for inst in instances:
-                        # If run exists in global_rh, add it
-                        for i_s in inst_seeds:
-                            if i_s.instance == inst:
-                                # TODO add run
-                                #run.rh.add(self.global_rh.data[RunKey(
-                                pass
-                        # TODO Else predict!
-                model = RandomForestWithInstances(types=np.array([0, 0, 0],
-                                                                 dtype=np.uint),
-                                                  bounds=np.array([(0, np.nan),
-                                                                   (0, np.nan),
-                                                                   (0, np.nan)],
-                                                                 dtype=object),
-                                                  instance_features=None,
-                                                  seed=12345, ratio_features=1.0)
-                model.train(X, y)
+                validator = Validator(run.scen, run.traj, "")
 
-                pass
+                if self.missing_data_method == "validation":
+                    # TODO determine # repetitions
+                    run.rh = validator.validate('def+inc', 'train+test', 1, -1,
+                                                runhistory=self.global_rh)
+                elif self.missing_data_method == "epm":
+                    run.rh = validator.validate_epm('def+inc', 'train+test', 1,
+                                                    runhistory=self.global_rh)
+                else:
+                    raise ValueError("Missing data method illegal (%s)",
+                                     self.missing_data_method)
 
-
+                self.global_rh.update(run.rh)
 
     def build_html(self):
         """ Build website using the HTMLBuilder. Return website as dictionary
@@ -234,25 +217,24 @@ class Analyzer(object):
                    ("PAR10",
                     {"table": self.par10_table}),
                    ("Scatterplot",
-                    {"figure" : self.scatter_path}),
+                    {"figure" : self.paths['scatter_path']}),
                    ("Cumulative distribution function (CDF)",
-                    {"figure": self.cdf_combined_path}),
+                    {"figure": self.paths['cdf_combined_path']}),
                    ("Parameter Importance",
                     OrderedDict([
                        ("Forward Selection (barplot)",
-                        {"figure": self.f_s_barplot_path}),
+                        {"figure": self.paths['f_s_barplot_path']}),
                        ("Forward Selection (chng)",
-                        {"figure": self.f_s_chng_path}),
+                        {"figure": self.paths['f_s_chng_path']}),
                        ("Ablation (percentage)",
-                        {"figure": self.ablationpercentage_path}),
+                        {"figure": self.paths['ablationpercentage_path']}),
                        ("Ablation (performance)",
-                        {"figure": self.ablationperformance_path})]))
+                        {"figure": self.paths['ablationperformance_path']})]))
                   ])
         builder.generate_html(website)
         return website
 
-
-    def calculate_par10(self, losses):
+    def calculate_par10(self, losses:typing.Tuple[float]):
         """ Calculate par10-values of default and incumbent configs.
 
         Parameters
@@ -262,31 +244,30 @@ class Analyzer(object):
 
         Returns
         -------
-        (train, test, combined) -- tuple<float, float, float>
-            PAR10 values for train-, test- and combined instances
+        (train, test) -- tuple<float, float>
+            PAR10 values for train- and test-instances
         """
         losses = {i:c if c < self.scenario.cutoff else self.scenario.cutoff*10
-                   for i, c in losses.items()}
+                  for i, c in losses.items()}
         train = np.mean([c for i, c in losses.items() if i in
                          self.scenario.train_insts])
         test = np.mean([c for i, c in losses.items() if i in
                         self.scenario.test_insts])
-        combined = np.mean(list(losses.values()))
-        return (train, test, combined)
+        return (train, test)
 
     def create_overview_table(self):
         """ Create overview-table. """
         # TODO: left-align, make first and third column bold
         overview = OrderedDict([('Run with best incumbent', self.best_run.folder),
-                         ('# Train instances', len(self.scenario.train_insts)),
-                         ('# Test instances', len(self.scenario.test_insts)),
-                         ('# Parameters', len(self.scenario.cs.get_hyperparameters())),
-                         ('Cutoff', self.scenario.cutoff),
-                         ('Walltime budget', self.scenario.wallclock_limit),
-                         ('Runcount budget', self.scenario.ta_run_limit),
-                         ('CPU budget', self.scenario.algo_runs_timelimit),
-                         ('Deterministic', self.scenario.deterministic),
-                         ])
+                                ('# Train instances', len(self.scenario.train_insts)),
+                                ('# Test instances', len(self.scenario.test_insts)),
+                                ('# Parameters', len(self.scenario.cs.get_hyperparameters())),
+                                ('Cutoff', self.scenario.cutoff),
+                                ('Walltime budget', self.scenario.wallclock_limit),
+                                ('Runcount budget', self.scenario.ta_run_limit),
+                                ('CPU budget', self.scenario.algo_runs_timelimit),
+                                ('Deterministic', self.scenario.deterministic),
+                               ])
         # Split into two columns
         overview_split = self._split_table(overview)
         # Convert to HTML
@@ -323,7 +304,7 @@ class Analyzer(object):
                     "</thead>\n"
         return new_table + table
 
-    def config_to_html(self, default, incumbent):
+    def config_to_html(self, default: Configuration, incumbent: Configuration):
         """Create HTML-table from Configurations. Removes unused parameters.
 
         Parameters
@@ -361,7 +342,7 @@ class Analyzer(object):
                                          result[1])), result[1], show=False)
         importance.table_for_comparison(evaluators=result[1], style='cmd')
 
-    def _eq_scenarios(self, scen1, scen2):
+    def _eq_scenarios(self, scen1: Scenario, scen2: Scenario):
         """Custom function to compare relevant features of scenarios.
 
         Parameters
@@ -373,7 +354,7 @@ class Analyzer(object):
                     "initial_incumbent", "cutoff", "cost_for_crash"]
         #for member in 
 
-    def _split_table(self, table):
+    def _split_table(self, table: OrderedDict):
         """Splits an OrderedDict into a list of tuples that can be turned into a
         HTML-table with pandas DataFrame
 

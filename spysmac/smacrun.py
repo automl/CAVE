@@ -1,5 +1,5 @@
 import os
-import logging as log
+import logging
 from contextlib import contextmanager
 
 from smac.optimizer.objective import average_cost
@@ -22,7 +22,7 @@ class SMACrun(object):
     """
     SMACrun keeps all information on a specific SMAC run.
     """
-    def __init__(self, folder, ta_exec_dir="."):
+    def __init__(self, folder: str, ta_exec_dir: str="."):
         """
         Parameters
         ----------
@@ -37,7 +37,7 @@ class SMACrun(object):
             in the scenario-object. since instance- and PCS-files are necessary,
             specify the path to the execution-dir of SMAC here
         """
-        self.logger = log.getLogger("spysmac.SMACrun.{}".format(folder))
+        self.logger = logging.getLogger("spysmac.SMACrun.{}".format(folder))
         in_reader = InputReader()
 
         self.folder = folder
@@ -55,36 +55,13 @@ class SMACrun(object):
 
         # Load runhistory and trajectory
         self.rh = RunHistory(average_cost)
+        self.rh.update_from_json(self.rh_fn, self.scen.cs)
         self.traj = TrajLogger.read_traj_aclib_format(fn=self.traj_fn,
                                                       cs=self.scen.cs)
 
         self.incumbent = self.traj[-1]['incumbent']
         self.train_inst = self.scen.train_insts
         self.test_inst = self.scen.test_insts
-
-    def validate(self, ta_exec_dir, global_rh):
-        """Validate this run
-
-        Parameters
-        ----------
-        ta_exec_dir: string
-            directory from which to execute target algorithm
-
-        Returns
-        -------
-        self.rh: RunHistory
-            validated runhistory
-        """
-        self.rh.update(global_rh)
-        return self.rh
-        # Generate missing data via validation
-        self.logger.info("Validating to complete data, saving validated "
-                         "runhistory in %s.")
-        with changedir(ta_exec_dir):
-            validator = Validator(self.scen, self.traj, "")
-            self.rh = validator.validate('def+inc', 'train+test', 1, -1,
-                                         runhistory=global_rh)
-        return self.rh
 
     def get_incumbent(self):
         """Return tuple (incumbent, loss)."""

@@ -13,8 +13,5 @@ from spysmac.spysmac_cli import SpySMACCLI
 
 
 if __name__ == "__main__":
-
-    logging.basicConfig(level=logging.INFO)
-
     spysmac = SpySMACCLI()
     spysmac.main_cli()
