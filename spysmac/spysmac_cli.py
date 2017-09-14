@@ -49,6 +49,9 @@ class SpySMACCLI(object):
         opt_opts.add_argument("--ta_exec_dir", default='.',
                               help="path to the execution-directory of the "
                                    "SMAC run.")
+        opt_opts.add_argument("--param_importance", default=True,
+                              help="whether to calculate (time-intensive) "
+                                   "parameter importance.")
         args_, misc = parser.parse_known_args()
 
         if args_.verbose_level == "INFO":
@@ -57,7 +60,10 @@ class SpySMACCLI(object):
             logging.basicConfig(level=logging.DEBUG)
 
         # SMAC results
-        analyzer = Analyzer(args_.folders, args_.output, args_.ta_exec_dir,
-                            missing_data_method=args_.missing_data_method)
-        analyzer.analyze()
+            analyzer = Analyzer(args_.folders, args_.output, args_.ta_exec_dir,
+                                missing_data_method=args_.missing_data_method)
+        if args_.param_importance not in ('no', 'false', 'False', 'f', 'n', '0'):
+            analyzer.analyze()
+        else:
+            analyzer.analyze(ablation=False, forward_selection=False, fanova=False)
         analyzer.build_html()
