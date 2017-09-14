@@ -60,8 +60,8 @@ class SpySMACCLI(object):
             logging.basicConfig(level=logging.DEBUG)
 
         # SMAC results
-            analyzer = Analyzer(args_.folders, args_.output, args_.ta_exec_dir,
-                                missing_data_method=args_.missing_data_method)
+        analyzer = Analyzer(args_.folders, args_.output, args_.ta_exec_dir,
+                            missing_data_method=args_.missing_data_method)
         if args_.param_importance not in ('no', 'false', 'False', 'f', 'n', '0'):
             analyzer.analyze()
         else:
