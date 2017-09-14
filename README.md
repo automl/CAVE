@@ -21,33 +21,19 @@ git clone https://github.com/automl/SpySMAC.git && cd SpySMAC
 pip install -r requirements.txt
 ```
 
-# PACKAGE CONTENTS
-examples - spear_qcp_small: SAT-solver + few instances
-scripts - scripts to start SpySMAC from the commandline
-spysmac - source code of analyzing and plotting
-LICENSE - the projects license
-README.md - This file
-
 # USAGE
 To run SpySMAC, change into a directory from which the target algorithm can be executed. This is needed to impute any data via SMACs validation.
-You can analyze multiple folders with one execution, simply provide all paths to the SMAC3-results. If you wish to have one summary of all the folders, specify an output-folder.
+You can analyze multiple folders with one execution, simply provide the paths to all the SMAC3-results in `--folders`.
 For further information on how to use SpySMAC, see:
 `python scripts/spy.py -h`
-
-SpySMAC will generate results in the form of a HTML-report, which is located in the subfolder SpySMAC in the analyzed SMAC-directory.
 
 # EXAMPLE
 You can run the spear-qcp example like this:
 ```
 cd examples/spear_qcp_small
-python ../../scripts/spy.py --folders example_output_run --output testing_output --verbose_level DEBUG
+python ../../scripts/spy.py --folders example_output_* --output testing_output
 ```
-or
-```
-cd examples/spear_qcp_small
-bash run.py
-```
-This will analyze the results located in `example_output_run`.
-You can find the individual reports in `example_output_run/SpySMAC/report.html`.
+This will analyze the results located in `example_output_1`, `example_output_2` and `example_output_3`.
+The report is located in `testing_output/report.html`.
 
 
