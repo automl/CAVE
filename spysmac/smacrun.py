@@ -45,7 +45,8 @@ class SMACrun(object):
 
         self.scen_fn = os.path.join(folder, 'scenario.txt')
         self.rh_fn = os.path.join(folder, 'runhistory.json')
-        self.traj_fn = os.path.join(folder, "traj_aclib2.json")
+        self.traj_fn = os.path.join(folder, 'traj_aclib2.json')
+        self.traj_old_fn = os.path.join(folder, 'traj_old.csv')
 
         # Create Scenario (disable output_dir to avoid cluttering)
         self.scen = in_reader.read_scenario_file(self.scen_fn)

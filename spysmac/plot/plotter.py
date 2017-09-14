@@ -115,28 +115,43 @@ class Plotter(object):
         # configurations. Below, it is specified for plotting default vs
         # incumbent only.
 
-        f, ax1 = plt.subplots()
-        ax1.step(data['default']['combined'][0],
-                 data['default']['combined'][1], color='red',
-                 label='default allinst')
-        ax1.step(data['incumbent']['combined'][0],
-                 data['incumbent']['combined'][1], color='blue',
-                 label='incumbent allinst')
         if train and test:
+            f, (ax1, ax2) = plt.subplots(1, 2)
             ax1.step(data['default']['train'][0],
                      data['default']['train'][1], color='red',
                      linestyle='--', label='default train')
             ax1.step(data['incumbent']['train'][0],
                      data['incumbent']['train'][1], color='blue',
                      linestyle='--', label='incumbent train')
-            ax1.step(data['default']['test'][0],
+            ax2.step(data['default']['test'][0],
                      data['default']['test'][1], color='red',
-                     linestyle='-.', label='default train')
-            ax1.step(data['incumbent']['test'][0],
+                     linestyle='-', label='default test')
+            ax2.step(data['incumbent']['test'][0],
                      data['incumbent']['test'][1], color='blue',
-                     linestyle='-.', label='incumbent test')
+                     linestyle='-', label='incumbent test')
+            ax2.legend()
+            ax2.grid(True)
+            ax2.set_xscale('log')
+            ax2.set_ylabel('Probability of being solved')
+            ax2.set_xlabel('Time')
+            # Plot 'timeout'
+            ax2.text(timeout,
+                     ax2.get_ylim()[0] - 0.1 * np.abs(ax2.get_ylim()[0]),
+                     "timeout ", horizontalalignment='center',
+                     verticalalignment="top", rotation=30)
+            ax2.axvline(x=timeout, linestyle='--')
 
-        ax1.set_title('{}+{} - SpySMAC CDF'.format('default', 'incumbent'))
+            ax1.set_title('Training - SpySMAC CDF')
+            ax2.set_title('Test - SpySMAC CDF')
+        else:
+            f, ax1 = plt.subplots()
+            ax1.step(data['default']['combined'][0],
+                     data['default']['combined'][1], color='red',
+                     label='default all instances')
+            ax1.step(data['incumbent']['combined'][0],
+                     data['incumbent']['combined'][1], color='blue',
+                     label='incumbent all instances')
+            ax1.set_title('PAR10 - SpySMAC CDF')
 
         # Always set props for ax1
         ax1.legend()

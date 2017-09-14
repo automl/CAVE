@@ -12,14 +12,7 @@ else:
     from unittest import mock
 
 
-#from smac.optimizer.objective import average_cost
-#from smac.scenario.scenario import Scenario
-#from smac.runhistory.runhistory import RunHistory
-#from smac.utils.io.traj_logging import TrajLogger
-#from smac.utils.validate import Validator
-#
 from spysmac.spysmac_cli import SpySMACCLI
-#from spysmac.plot.plotter import Plotter
 
 
 
@@ -40,7 +33,8 @@ class TestCLI(unittest.TestCase):
                     "examples/spear_qcp_small/example_output_2",
                     "examples/spear_qcp_small/example_output_3",
                     "--verbose", "DEBUG", "--output", self.output,
-                    "--ta_exec_dir", "examples/spear_qcp_small"]
+                    "--ta_exec_dir", "examples/spear_qcp_small",
+                    "--missing_data_method", "epm"]
         with mock.patch.object(sys, 'argv', testargs):
             self.cli.main_cli()
 
