@@ -196,9 +196,9 @@ class Analyzer(object):
         # Analysis
         if par10:
             self.logger.debug("Calculate par10-values")
-            def_par10 = self.calculate_par10(default_loss_per_inst)
+            def_par10 = self.get_parX(default_loss_per_inst, 10)
             self.par10[self.default] = def_par10
-            inc_par10 = self.calculate_par10(incumbent_loss_per_inst)
+            inc_par10 = self.get_parX(incumbent_loss_per_inst, 10)
             self.par10[self.incumbent] = inc_par10
 
         # Plotting
@@ -278,20 +278,22 @@ class Analyzer(object):
         builder.generate_html(website)
         return website
 
-    def calculate_par10(self, losses:typing.Tuple[float]):
-        """ Calculate par10-values of default and incumbent configs.
+    def get_parX(self, losses:typing.Tuple[float], par=10):
+        """ Calculate parX-values of default and incumbent configs.
 
         Parameters
         ----------
-        losses -- dict<str->float>
+        losses: dict<str->float>
             mapping of instance to loss
+        par: int
+            par-factor to use
 
         Returns
         -------
         (train, test) -- tuple<float, float>
             PAR10 values for train- and test-instances
         """
-        losses = {i:c if c < self.scenario.cutoff else self.scenario.cutoff*10
+        losses = {i:c if c < self.scenario.cutoff else self.scenario.cutoff*par
                   for i, c in losses.items()}
         train = np.mean([c for i, c in losses.items() if i in
                          self.scenario.train_insts])
@@ -350,9 +352,37 @@ class Analyzer(object):
         """ Create PAR10-table, compare default against incumbent on train-,
         test- and combined instances. """
         #TODO add par1, timeouts
+        def_loss_inst = get_loss_per_instance(self.global_rh,
+                                                      self.default, aggregate=np.mean)
+        inc_loss_per_inst = get_loss_per_instance(self.global_rh,
+                                                        self.default, aggregate=np.mean)
+        def_par1 = self.get_parX(def_loss_inst, 1)
+        inc_par1 = self.get_parX(def_loss_inst, 1)
+        #for k, v in global_rh.data:
+        #    if (self.scenario.train_insts == [[None]] or
+        #        (self.scenario.train_insts != [[None]] and
+        #         k.instance_id in self.scenario.train_insts)):
+        #        if (self.global_rh.ids_config[k.config_id] == self.default and
+        #            v.time > cutoff):
+        #            def_timeout_train += 1
+        #        if (self.global_rh.ids_config[k.config_id] == self.incumbent and
+        #            v.time > cutoff):
+        #            inc_timeout_train += 1
+        #    elif (self.scenario.test_insts != [[None]] and
+        #         k.instance_id in self.scenario.test_insts):
+        #        if (self.global_rh.ids_config[k.config_id] == self.default and
+        #            v.time > cutoff):
+        #            def_timeout_train += 1
+        #        if (self.global_rh.ids_config[k.config_id] == self.incumbent and
+        #            v.time > cutoff):
+        #            inc_timeout_train += 1
+
+
         array = np.array([[self.par10[self.default][0], self.par10[self.default][1],
-                           self.par10[self.incumbent][0], self.par10[self.incumbent][1]]])
-        df = DataFrame(data=array, index=['PAR10'],
+                           self.par10[self.incumbent][0], self.par10[self.incumbent][1]],
+                          [def_par1[0], def_par1[1], inc_par1[0], inc_par1[1]],
+                          [-1, -1, -1, -1]])
+        df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
                        columns=['Train', 'Test', 'Train', 'Test'])
         table = df.to_html()
         # Insert two-column-header
