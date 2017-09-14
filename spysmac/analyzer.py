@@ -3,6 +3,7 @@ import logging
 from collections import OrderedDict
 from contextlib import contextmanager
 import typing
+import json
 
 import numpy as np
 from pandas import DataFrame
@@ -92,12 +93,12 @@ class Analyzer(object):
         # Update global runhistory with all available runhistories
         self.logger.debug("Update global rh with all available rhs!")
         runhistory_fns = [os.path.join(f, "runhistory.json") for f in self.folders]
-        self.logger.debug('#RunHistories found: %d' % len(runhistory_fns))
         for rh_file in runhistory_fns:
             self.global_rh.update_from_json(rh_file, self.scenario.cs)
-        self.logger.debug('Combined number of Runhistory data points: %d' %
-                         len(self.global_rh.data))
-        self.logger.debug('Number of Configurations: %d' % (len(self.global_rh.get_all_configs())))
+        self.logger.debug('Combined number of Runhistory data points: %d. '
+                          '# Configurations: %d. # Runhistories: %d',
+                          len(runhistory_fns), len(self.global_rh.data),
+                          len(self.global_rh.get_all_configs()))
 
         # Estimate all missing costs using validation or EPM
         self.complete_data()
@@ -112,65 +113,16 @@ class Analyzer(object):
         self.default = self.scenario.cs.get_default_configuration()
         self.incumbent = self.best_run.get_incumbent()[0]
 
+        # Dict to save par10 in as tuple (train, test)
+        self.par10 = {}
+
         # Paths
-        self.paths = {'scatter_path' : os.path.join(self.output, 'scatter.png'),
-                      'cdf_combined_path' : os.path.join(self.output, 'def_inc_cdf_comb.png'),
+        self.paths = {'scatter_path' : False,
+                      'cdf_combined_path' : False,
                       'f_s_barplot_path' : os.path.join(self.output, "forward-selection-barplot.png"),
                       'f_s_chng_path' : os.path.join(self.output, "forward-selection-chng.png"),
                       'ablationpercentage_path' : os.path.join(self.output, "ablationpercentage.png"),
                       'ablationperformance_path' : os.path.join(self.output, "ablationperformance.png")}
-
-    def analyze(self):
-        """
-        Performs analysis of scenario by scrutinizing the runhistory.
-
-        Creates:
-            - PAR10-values for default and incumbent (best of all runs)
-            - CDF-plot for default and incumbent (best of all runs)
-            - Scatter-plot for default and incumbent (best of all runs)
-            - Importance (forward-selection, ablation, fanova)
-            - (TODO) Search space heat map
-            - (TODO) Parameter search space flow map
-        """
-        #TODO argument to disable pimp
-        default_loss_per_inst = get_loss_per_instance(self.best_run.rh,
-                                                      self.default, aggregate=np.mean)
-        incumbent_loss_per_inst = get_loss_per_instance(self.best_run.rh,
-                                                        self.incumbent, aggregate=np.mean)
-        if not len(default_loss_per_inst) == len(incumbent_loss_per_inst):
-            self.logger.warning("Default evaluated on %d instances, "
-                                "incumbent evaluated on %d instances! "
-                                "Might lead to unexpected results, consider "
-                                "re-validating your results.",
-                                len(default_loss_per_inst), len(incumbent_loss_per_inst))
-
-        # Create table with basic information on scenario and runs
-        self.overview = self.create_overview_table()
-
-        # Analysis
-        self.logger.debug("Calculate par10-values")
-        def_par10 = self.calculate_par10(default_loss_per_inst)
-        self.def_par10_train, self.def_par10_test = def_par10
-        inc_par10 = self.calculate_par10(incumbent_loss_per_inst)
-        self.inc_par10_train, self.inc_par10_test = inc_par10
-        self.par10_table = self.create_performance_table()
-
-        # Plotting
-        plotter = Plotter()
-        # Scatterplot
-        self.logger.debug("Plot scatter")
-        plotter.plot_scatter(default_loss_per_inst, incumbent_loss_per_inst,
-                             output=self.paths['scatter_path'],
-                             timeout=self.scenario.cutoff)
-        # CDF, once with a shared axis, once two separate
-        self.logger.debug("Plot CDF")
-        loss_dict = {'default' : default_loss_per_inst, 'incumbent' : incumbent_loss_per_inst}
-        plotter.plot_cdf_compare(loss_dict,
-                                 timeout=self.scenario.cutoff,
-                                 #train=self.train_inst, test=self.test_inst,
-                                 output=self.paths['cdf_combined_path'])
-
-        self.parameter_importance()
 
     def complete_data(self):
         """Complete missing data of runs to be analyzed. Either using validation
@@ -195,6 +147,84 @@ class Analyzer(object):
 
                 self.global_rh.update(run.rh)
 
+    def analyze(self, par10=True, cdf=True, scatter=True,
+                forward_selection=True, ablation=True, fanova=True):
+        """
+        Performs analysis of scenario by scrutinizing the runhistory.
+
+        Creates:
+            - PAR10-values for default and incumbent (best of all runs)
+            - CDF-plot for default and incumbent (best of all runs)
+            - Scatter-plot for default and incumbent (best of all runs)
+            - Importance (forward-selection, ablation, fanova)
+            - (TODO) Search space heat map
+            - (TODO) Parameter search space flow map
+
+        Parameters
+        ----------
+        par10: bool
+            whether to calculate par10-values
+        cdf: bool
+            whether to plot cdf
+        scatter: bool
+            whether to plot scatter
+        forward_selection: bool
+            whether to apply forward selection
+        ablation: bool
+            whether to apply ablation
+        fanova: bool
+            whether to apply fanova
+        """
+        # TODO loss to cost
+        default_loss_per_inst = get_loss_per_instance(self.global_rh,
+                                                      self.default, aggregate=np.mean)
+        incumbent_loss_per_inst = get_loss_per_instance(self.global_rh,
+                                                        self.incumbent, aggregate=np.mean)
+        if not len(default_loss_per_inst) == len(incumbent_loss_per_inst):
+            self.logger.warning("Default evaluated on %d instances, "
+                                "incumbent evaluated on %d instances! "
+                                "Might lead to unexpected results, consider "
+                                "validating your results.",
+                                len(default_loss_per_inst), len(incumbent_loss_per_inst))
+
+        # Create table with basic information on scenario and runs
+        self.overview = self.create_overview_table()
+
+        # Analysis
+        if par10:
+            self.logger.debug("Calculate par10-values")
+            def_par10 = self.calculate_par10(default_loss_per_inst)
+            self.par10[self.default] = def_par10
+            inc_par10 = self.calculate_par10(incumbent_loss_per_inst)
+            self.par10[self.incumbent] = inc_par10
+
+        # Plotting
+        plotter = Plotter()
+        if scatter:
+            scatter_path = os.path.join(self.output, 'scatter.png')
+            self.logger.debug("Plot scatter to %s", scatter_path)
+            plotter.plot_scatter(default_loss_per_inst, incumbent_loss_per_inst,
+                                 output=scatter_path,
+                                 timeout=self.scenario.cutoff)
+            self.paths['scatter_path'] = scatter_path
+        if cdf:
+            cdf_path = os.path.join(self.output, 'cdf.png')
+            self.logger.debug("Plot CDF to %s", cdf_path)
+            loss_dict = {'default' : default_loss_per_inst, 'incumbent' : incumbent_loss_per_inst}
+            plotter.plot_cdf_compare(loss_dict,
+                                     timeout=self.scenario.cutoff,
+                                     train=self.scenario.train_insts,
+                                     test=self.scenario.test_insts,
+                                     output=cdf_path)
+            self.paths['cdf_path'] = cdf_path
+
+        if ablation:
+            self.parameter_importance("ablation")
+        if forward_selection:
+            self.parameter_importance("forward-selection")
+        if fanova:
+            self.parameter_importance("fanova")
+
     def build_html(self):
         """ Build website using the HTMLBuilder. Return website as dictionary
         for further stacking. Also saves website in
@@ -210,18 +240,30 @@ class Analyzer(object):
 
         website = OrderedDict([
                    ("Meta Data",
-                    {"table": self.overview}),
+                    {"table": self.overview,
+                     "tooltip": "Meta data such as number of instances, "
+                                "parameters, general configurations..." }),
                    ("Best configuration",
                     {"table":
-                        self.config_to_html(self.default, self.incumbent)}),
-                   ("PAR10",
-                    {"table": self.par10_table}),
-                   ("Scatterplot",
-                    {"figure" : self.paths['scatter_path']}),
-                   ("Cumulative distribution function (CDF)",
-                    {"figure": self.paths['cdf_combined_path']}),
-                   ("Parameter Importance",
-                    OrderedDict([
+                        self.config_to_html(self.default, self.incumbent),
+                     "tooltip": "Comparing parameters of default and incumbent."})])
+
+        if self.default in self.par10 and self.incumbent in self.par10:
+            par10_table = self.create_performance_table()
+            website["PAR10"] = {"table": par10_table}
+
+        if self.paths['scatter_path']:
+            website["Scatterplot"] = {
+                     "figure" : self.paths['scatter_path'],
+                     "tooltip": "Plot all instances in direct comparison of "
+                                "default and incumbent costs."}
+
+        if self.paths['cdf_path']:
+            website["Cumulative distribution function (CDF)"] = {
+                     "figure": self.paths['cdf_path'],
+                     "tooltip": "Plotting default vs incumbent on the time to "
+                                "solve instances. Timeouts are excluded."}
+        website["Parameter Importance"] = OrderedDict([
                        ("Forward Selection (barplot)",
                         {"figure": self.paths['f_s_barplot_path']}),
                        ("Forward Selection (chng)",
@@ -229,8 +271,7 @@ class Analyzer(object):
                        ("Ablation (percentage)",
                         {"figure": self.paths['ablationpercentage_path']}),
                        ("Ablation (performance)",
-                        {"figure": self.paths['ablationperformance_path']})]))
-                  ])
+                        {"figure": self.paths['ablationperformance_path']})])
         builder.generate_html(website)
         return website
 
@@ -255,9 +296,36 @@ class Analyzer(object):
                         self.scenario.test_insts])
         return (train, test)
 
+    def parameter_importance(self, modus):
+        """Calculate parameter-importance using the PIMP-package.
+        Currently ablation, forward-selection and fanova are used.
+
+        Parameters
+        ----------
+        modus: str
+            modus for parameter importance, from [forward-selection, ablation,
+            fanova]
+        """
+        # Get parameter-values and costs per config in arrays.
+        configs = self.global_rh.get_all_configs()
+        X = np.array([c.get_array() for c in configs])
+        y = np.array([self.global_rh.get_cost(c) for c in configs])
+
+        # Evaluate parameter importance
+        save_folder = self.output
+        importance = Importance(scenario=self.scenario,
+                                runhistory=self.global_rh,
+                                incumbent=self.incumbent,
+                                parameters_to_evaluate=len(self.scenario.cs.get_hyperparameters()),
+                                save_folder=save_folder,
+                                seed=12345)
+        result = importance.evaluate_scenario(modus)
+        with open(os.path.join(save_folder, 'pimp_values_%s.json' % modus), 'w') as out_file:
+            json.dump(result, out_file, sort_keys=True, indent=4, separators=(',', ': '))
+        importance.plot_results(name=os.path.join(save_folder, modus), show=False)
+
     def create_overview_table(self):
         """ Create overview-table. """
-        # TODO: left-align, make first and third column bold
         overview = OrderedDict([('Run with best incumbent', self.best_run.folder),
                                 ('# Train instances', len(self.scenario.train_insts)),
                                 ('# Test instances', len(self.scenario.test_insts)),
@@ -278,8 +346,9 @@ class Analyzer(object):
     def create_performance_table(self):
         """ Create PAR10-table, compare default against incumbent on train-,
         test- and combined instances. """
-        array = np.array([[self.def_par10_train, self.def_par10_test,
-                           self.inc_par10_train, self.inc_par10_test]])
+        #TODO add par1, timeouts
+        array = np.array([[self.par10[self.default][0], self.par10[self.default][1],
+                           self.par10[self.incumbent][0], self.par10[self.incumbent][1]]])
         df = DataFrame(data=array, index=['PAR10'],
                        columns=['Train', 'Test', 'Train', 'Test'])
         table = df.to_html()
@@ -305,12 +374,18 @@ class Analyzer(object):
         return new_table + table
 
     def config_to_html(self, default: Configuration, incumbent: Configuration):
-        """Create HTML-table from Configurations. Removes unused parameters.
+        """Create HTML-table to compare Configurations.
+        Removes unused parameters.
 
         Parameters
         ----------
         default, incumbent: Configurations
             configurations to be converted
+
+        Returns
+        -------
+        table: str
+            HTML-table comparing default and incumbent
         """
         # Remove unused parameters
         keys = [k for k in default.keys() if default[k] or incumbent[k]]
@@ -320,27 +395,6 @@ class Analyzer(object):
         df = DataFrame(data=table, columns=["Default", "Incumbent"], index=keys)
         table = df.to_html()
         return table
-
-    def parameter_importance(self):
-        """Calculate parameter-importance using the PIMP-package.
-        Currently ablation, forward-selection and fanova are used."""
-        # Get parameter-values and costs per config in arrays.
-        configs = self.global_rh.get_all_configs()
-        X = np.array([c.get_array() for c in configs])
-        y = np.array([self.global_rh.get_cost(c) for c in configs])
-
-        # Evaluate parameter importance
-        save_folder = self.output
-        importance = Importance(scenario=self.scenario,
-                                runhistory=self.global_rh,
-                                incumbent=self.incumbent,
-                                parameters_to_evaluate=len(self.scenario.cs.get_hyperparameters()),
-                                save_folder=save_folder,
-                                seed=12345)
-        result = importance.evaluate_scenario("all")
-        importance.plot_results(list(map(lambda x: os.path.join(save_folder, x.name.lower()),
-                                         result[1])), result[1], show=False)
-        importance.table_for_comparison(evaluators=result[1], style='cmd')
 
     def _eq_scenarios(self, scen1: Scenario, scen2: Scenario):
         """Custom function to compare relevant features of scenarios.
@@ -362,6 +416,12 @@ class Analyzer(object):
         ----------
         table: OrderedDict
             table that is to be split into two columns
+
+        Returns
+        -------
+        table_split: List[tuple(key, value, key, value)]
+            list with two key-value pairs per entry that can be used by pandas
+            df.to_html()
         """
         table_split = []
         keys = list(table.keys())

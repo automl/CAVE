@@ -44,7 +44,7 @@ class SpySMACCLI(object):
                               choices=["validation", "epm"],
                               help="how to complete missing runs for "
                                    "config/inst-pairs.")
-        opt_opts.add_argument("--output", default="",
+        opt_opts.add_argument("--output", default="SpySMAC_output",
                               help="path to folder in which to save the HTML-report.")
         opt_opts.add_argument("--ta_exec_dir", default='.',
                               help="path to the execution-directory of the "

@@ -17,20 +17,23 @@ from spysmac.plot.plotter import Plotter
 
 class TestAnalyzer(unittest.TestCase):
 
-    def test_whole_workflow(self):
-        # Using example for now, until svm-train/test-issue is resolved
-        #scen = Scenario("test/test_files/scenario.txt")
-        #rh = RunHistory(average_cost)
-        #rh.load_json("test/test_files/output/runhistory.json", scen.cs)
-        #traj_fn = "test/test_files/output/traj_aclib2.json"
-        #trajectory = TrajLogger.read_traj_aclib_format(fn=traj_fn, cs=scen.cs)
+    def setUp(self):
+        self.analyzer = Analyzer(["examples/spear_qcp_small/example_output_1",
+                                  "examples/spear_qcp_small/example_output_2",
+                                  "examples/spear_qcp_small/example_output_3"],
+                                 output="test/test_files/analyzer_output",
+                                 missing_data_method="epm",
+                                 ta_exec_dir="examples/spear_qcp_small")
 
-        # Change into folder with ta for init of analyzer to ensure validation
-        analyzer = Analyzer(["examples/spear_qcp_small/example_output_1",
-                             "examples/spear_qcp_small/example_output_2",
-                             "examples/spear_qcp_small/example_output_3"],
-                            output="test/test_files/analyzer_output",
-                            ta_exec_dir="examples/spear_qcp_small")
-        analyzer.analyze()
-        analyzer.build_html()
+    def test_par10(self):
+        self.analyzer.analyze(par10=True, cdf=False, scatter=False,
+                              forward_selection=False, ablation=False,
+                              fanova=False)
+
+    def test_plot(self):
+        # Using example for now, until svm-train/test-issue is resolved
+        self.analyzer.analyze(par10=False, cdf=True, scatter=True,
+                              forward_selection=False, ablation=False,
+                              fanova=False)
+        self.analyzer.build_html()
 
