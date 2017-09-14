@@ -85,6 +85,9 @@ class Analyzer(object):
         # Save all relevant SMAC-runs in a list
         self.runs = []
         for folder in self.folders:
+            if not os.path.exists(folder):
+                raise ValueError("The specified SMAC-output in %s doesn't exist.",
+                                 folder)
             self.logger.debug("Collecting data from %s.", folder)
             self.runs.append(SMACrun(folder, ta_exec_dir))
 
