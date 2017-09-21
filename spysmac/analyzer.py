@@ -256,9 +256,9 @@ class Analyzer(object):
                         self.config_to_html(self.default, self.incumbent),
                      "tooltip": "Comparing parameters of default and incumbent."})])
 
-        if self.default in self.par10 and self.incumbent in self.par10:
-            par10_table = self.create_performance_table()
-            website["PAR10"] = {"table": par10_table}
+        #if self.default in self.par10 and self.incumbent in self.par10:
+        par10_table = self.create_performance_table()
+        website["Performance"] = {"table": par10_table}
 
         if self.paths['scatter_path']:
             website["Scatterplot"] = {
@@ -283,6 +283,37 @@ class Analyzer(object):
         builder.generate_html(website)
         return website
 
+    def get_timeouts(self, config):
+        """ Get number of timeouts in config per runs in total (not per
+        instance) """
+        costs = get_cost_dict_for_config(self.global_rh, config)
+        cutoff = self.scenario.cutoff
+        if self.train_test:
+            train_timeout, test_timeout = 0, 0
+            train_no_timeout, test_no_timeout = 0, 0
+            for run in costs:
+                if (cutoff and run.instance in self.scenario.train_insts and
+                        costs[run].time >= cutoff):
+                    train_timeout += 1
+                elif (cutoff and run.instance in self.scenario.train_insts and
+                        costs[run].time < cutoff):
+                    train_no_timeout += 1
+                if (cutoff and run.instance in self.scenario.test_insts and
+                        costs[run].time >= cutoff):
+                    test_timeout += 1
+                elif (cutoff and run.instance in self.scenario.test_insts and
+                        costs[run].time < cutoff):
+                    test_no_timeout += 1
+            return ((train_timeout, train_no_timeout), (test_timeout, test_no_timeout))
+        else:
+            timeout, no_timeout = 0, 0
+            for run in costs:
+                if cutoff and costs[run].time >= cutoff:
+                    timeout += 1
+                else:
+                    no_timeout += 1
+            return (timeout, no_timeout)
+
     def get_parX(self, config, par=10):
         """Calculate parX-values of default and incumbent configs.
         First determine PAR-timeouts for each run on each instances,
@@ -301,11 +332,20 @@ class Analyzer(object):
             PAR10 values for train- and test-instances, if available as tuple
             else the general average
         """
-        runs = self.global_rh.get_runs_for_config(config)
+        runs = get_cost_dict_for_config(self.global_rh, config)
+        self.logger.debug(runs)
         # Penalize
-        runs = [(i,c) if c < self.scenario.cutoff else self.scenario.cutoff*par
-                  for i, c in runs]
+        if self.scenario.cutoff:
+            runs = [(k.instance, runs[k].cost) if runs[k].cost < self.scenario.cutoff
+                        else (k.instance, self.scenario.cutoff*par)
+                        for k in runs]
+        else:
+            runs = [(k.instance, runs[k].cost) for k in runs]
+            self.logger.info("Calculating penalized average runtime without "
+                             "cutoff...")
+
         # Average
+        self.logger.debug(runs)
         if self.train_test:
             train = np.mean([c for i, c in runs if i in
                              self.scenario.train_insts])
@@ -365,33 +405,21 @@ class Analyzer(object):
     def create_performance_table(self):
         """ Create PAR10-table, compare default against incumbent on train-,
         test- and combined instances. """
-        #TODO add par1, timeouts
-        #for k, v in global_rh.data:
-        #    if (self.scenario.train_insts == [[None]] or
-        #        (self.scenario.train_insts != [[None]] and
-        #         k.instance_id in self.scenario.train_insts)):
-        #        if (self.global_rh.ids_config[k.config_id] == self.default and
-        #            v.time > cutoff):
-        #            def_timeout_train += 1
-        #        if (self.global_rh.ids_config[k.config_id] == self.incumbent and
-        #            v.time > cutoff):
-        #            inc_timeout_train += 1
-        #    elif (self.scenario.test_insts != [[None]] and
-        #         k.instance_id in self.scenario.test_insts):
-        #        if (self.global_rh.ids_config[k.config_id] == self.default and
-        #            v.time > cutoff):
-        #            def_timeout_train += 1
-        #        if (self.global_rh.ids_config[k.config_id] == self.incumbent and
-        #            v.time > cutoff):
-        #            inc_timeout_train += 1
-
-        def_par10, inc_par10 = self.get_PARX(self.default, 10), self.get_PARX(self.incumbent, 10)
-        def_par1, inc_par1 = self.get_PARX(self.default, 1), self.get_PARX(self.incumbent, 1)
+        #TODO timeouts over runs or over instances? instance-average over PAR1
+        # or PAR10?
+        def_timeout, inc_timeout = self.get_timeouts(self.default), self.get_timeouts(self.incumbent)
+        def_par10, inc_par10 = self.get_parX(self.default, 10), self.get_parX(self.incumbent, 10)
+        def_par1, inc_par1 = self.get_parX(self.default, 1), self.get_parX(self.incumbent, 1)
         if self.train_test:
             # Distinction between train and test
+            # Create table
             array = np.array([[def_par10[0], def_par10[1], inc_par10[0], inc_par10[1]],
                               [def_par1[0], def_par1[1], inc_par1[0], inc_par1[1]],
-                              [-1, -1, -1, -1]])
+                              [str(def_timeout[0][0])+"/"+str(def_timeout[0][1]),
+                               str(def_timeout[1][0])+"/"+str(def_timeout[1][1]),
+                               str(inc_timeout[0][0])+"/"+str(inc_timeout[0][1]),
+                               str(inc_timeout[1][0])+"/"+str(inc_timeout[1][1])
+                               ]])
             df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
                            columns=['Train', 'Test', 'Train', 'Test'])
             table = df.to_html()
