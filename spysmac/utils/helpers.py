@@ -1,5 +1,17 @@
 from smac.runhistory.runhistory import RunKey
 
+def get_cost_dict_for_config(rh, conf):
+    """
+    """
+    # Check if config is in runhistory
+    conf_id = rh.config_ids[conf]
+
+    costs = {}
+    runs = rh.get_runs_for_config(conf)
+    for run in runs:
+        costs[run] = rh.data[RunKey(conf_id, run[0], run[1])]
+    return costs
+
 def get_loss_per_instance(rh, conf, aggregate=None):
     """
     Aggregates loss for configuration on evaluated instances over seeds.

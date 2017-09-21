@@ -3,6 +3,4 @@ paramfile = branin_pcs.pcs
 run_obj = quality
 runcount_limit = 500
 deterministic = 1
-instance_file = train_nospecs.txt
-test_instance_file = test.txt
-feature_file = features.csv
+output_dir = qual_notrain_notest_nofeat

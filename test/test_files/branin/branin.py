@@ -1,14 +1,14 @@
 import numpy as np
 
-def branin(x, inst=None, inst_specs=None):
+def branin(x, inst=None, inst_spec=None):
     x1 = x[0]
     x2 = x[1]
     a = 1.
     b = 5.1 / (4.*np.pi**2)
     if inst:
-        a = a * float(inst)
-    if inst_specs:
-        b = b / float(inst_specs)
+        a = a * float(inst) + 1
+    if inst_spec:
+        b = b + float(inst_spec)
     c = 5. / np.pi
     r = 6.
     s = 10.

@@ -22,7 +22,7 @@ from pimp.importance.importance import Importance
 from spysmac.html.html_builder import HTMLBuilder
 from spysmac.plot.plotter import Plotter
 from spysmac.smacrun import SMACrun
-from spysmac.utils.helpers import get_loss_per_instance
+from spysmac.utils.helpers import get_loss_per_instance, get_cost_dict_for_config
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -116,6 +116,10 @@ class Analyzer(object):
         self.default = self.scenario.cs.get_default_configuration()
         self.incumbent = self.best_run.get_incumbent()[0]
 
+        # Following variable determines whether a distinction is made
+        self.train_test = bool(self.scenario.train_insts != [[None]] and
+                               self.scenario.test_insts != [[None]])
+
         # Dict to save par10 in as tuple (train, test)
         self.par10 = {}
 
@@ -194,33 +198,34 @@ class Analyzer(object):
         self.overview = self.create_overview_table()
 
         # Analysis
-        if par10:
-            self.logger.debug("Calculate par10-values")
-            def_par10 = self.get_parX(default_loss_per_inst, 10)
-            self.par10[self.default] = def_par10
-            inc_par10 = self.get_parX(incumbent_loss_per_inst, 10)
-            self.par10[self.incumbent] = inc_par10
 
         # Plotting
         plotter = Plotter()
-        if scatter:
+        if scatter and (self.scenario.train_insts != [[None]]):
             scatter_path = os.path.join(self.output, 'scatter.png')
             self.logger.debug("Plot scatter to %s", scatter_path)
             plotter.plot_scatter(default_loss_per_inst, incumbent_loss_per_inst,
+                                 timeout=self.scenario.cutoff,
                                  output=scatter_path,
-                                 timeout=self.scenario.cutoff)
+                                 metric=self.scenario.run_obj)
             self.paths['scatter_path'] = scatter_path
+        elif scatter:
+            self.logger.info("Scatter plot desired, but no instances available.")
         if cdf:
             cdf_path = os.path.join(self.output, 'cdf.png')
             self.logger.debug("Plot CDF to %s", cdf_path)
-            loss_dict = {'default' : default_loss_per_inst, 'incumbent' : incumbent_loss_per_inst}
-            plotter.plot_cdf_compare(loss_dict,
+            plotter.plot_cdf_compare(get_cost_dict_for_config(self.global_rh, self.default),
+                                     get_cost_dict_for_config(self.global_rh, self.incumbent),
                                      timeout=self.scenario.cutoff,
+                                     run_obj=self.scenario.run_obj,
                                      train=self.scenario.train_insts,
                                      test=self.scenario.test_insts,
                                      output=cdf_path)
             self.paths['cdf_path'] = cdf_path
+        elif cdf:
+            self.logger.info("CDF plot desired, but no instances available.")
 
+        # PARAMETER IMPORTANCE
         if ablation:
             self.parameter_importance("ablation")
         if forward_selection:
@@ -278,28 +283,37 @@ class Analyzer(object):
         builder.generate_html(website)
         return website
 
-    def get_parX(self, losses:typing.Tuple[float], par=10):
-        """ Calculate parX-values of default and incumbent configs.
+    def get_parX(self, config, par=10):
+        """Calculate parX-values of default and incumbent configs.
+        First determine PAR-timeouts for each run on each instances,
+        Second average over train/test if available, else just average.
 
         Parameters
         ----------
-        losses: dict<str->float>
-            mapping of instance to loss
+        config: Configuration
+            config to be calculated
         par: int
             par-factor to use
 
         Returns
         -------
-        (train, test) -- tuple<float, float>
-            PAR10 values for train- and test-instances
+        (train, test) OR average -- tuple<float, float> OR float
+            PAR10 values for train- and test-instances, if available as tuple
+            else the general average
         """
-        losses = {i:c if c < self.scenario.cutoff else self.scenario.cutoff*par
-                  for i, c in losses.items()}
-        train = np.mean([c for i, c in losses.items() if i in
-                         self.scenario.train_insts])
-        test = np.mean([c for i, c in losses.items() if i in
-                        self.scenario.test_insts])
-        return (train, test)
+        runs = self.global_rh.get_runs_for_config(config)
+        # Penalize
+        runs = [(i,c) if c < self.scenario.cutoff else self.scenario.cutoff*par
+                  for i, c in runs]
+        # Average
+        if self.train_test:
+            train = np.mean([c for i, c in runs if i in
+                             self.scenario.train_insts])
+            test = np.mean([c for i, c in runs if i in
+                            self.scenario.test_insts])
+            return (train, test)
+        else:
+            return np.mean([c for i, c in runs])
 
     def parameter_importance(self, modus):
         """Calculate parameter-importance using the PIMP-package.
@@ -352,12 +366,6 @@ class Analyzer(object):
         """ Create PAR10-table, compare default against incumbent on train-,
         test- and combined instances. """
         #TODO add par1, timeouts
-        def_loss_inst = get_loss_per_instance(self.global_rh,
-                                                      self.default, aggregate=np.mean)
-        inc_loss_per_inst = get_loss_per_instance(self.global_rh,
-                                                        self.default, aggregate=np.mean)
-        def_par1 = self.get_parX(def_loss_inst, 1)
-        inc_par1 = self.get_parX(def_loss_inst, 1)
         #for k, v in global_rh.data:
         #    if (self.scenario.train_insts == [[None]] or
         #        (self.scenario.train_insts != [[None]] and
@@ -377,34 +385,45 @@ class Analyzer(object):
         #            v.time > cutoff):
         #            inc_timeout_train += 1
 
-
-        array = np.array([[self.par10[self.default][0], self.par10[self.default][1],
-                           self.par10[self.incumbent][0], self.par10[self.incumbent][1]],
-                          [def_par1[0], def_par1[1], inc_par1[0], inc_par1[1]],
-                          [-1, -1, -1, -1]])
-        df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
-                       columns=['Train', 'Test', 'Train', 'Test'])
-        table = df.to_html()
-        # Insert two-column-header
-        table = table.split(sep='</thead>', maxsplit=1)[1]
-        new_table = "<table border=\"3\" class=\"dataframe\">\n"\
-                    "  <col>\n"\
-                    "  <colgroup span=\"2\"></colgroup>\n"\
-                    "  <colgroup span=\"2\"></colgroup>\n"\
-                    "  <thead>\n"\
-                    "    <tr>\n"\
-                    "      <td rowspan=\"2\"></td>\n"\
-                    "      <th colspan=\"2\" scope=\"colgroup\">Default</th>\n"\
-                    "      <th colspan=\"2\" scope=\"colgroup\">Incumbent</th>\n"\
-                    "    </tr>\n"\
-                    "    <tr>\n"\
-                    "      <th scope=\"col\">Train</th>\n"\
-                    "      <th scope=\"col\">Test</th>\n"\
-                    "      <th scope=\"col\">Train</th>\n"\
-                    "      <th scope=\"col\">Test</th>\n"\
-                    "    </tr>\n"\
-                    "</thead>\n"
-        return new_table + table
+        def_par10, inc_par10 = self.get_PARX(self.default, 10), self.get_PARX(self.incumbent, 10)
+        def_par1, inc_par1 = self.get_PARX(self.default, 1), self.get_PARX(self.incumbent, 1)
+        if self.train_test:
+            # Distinction between train and test
+            array = np.array([[def_par10[0], def_par10[1], inc_par10[0], inc_par10[1]],
+                              [def_par1[0], def_par1[1], inc_par1[0], inc_par1[1]],
+                              [-1, -1, -1, -1]])
+            df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
+                           columns=['Train', 'Test', 'Train', 'Test'])
+            table = df.to_html()
+            # Insert two-column-header
+            table = table.split(sep='</thead>', maxsplit=1)[1]
+            new_table = "<table border=\"3\" class=\"dataframe\">\n"\
+                        "  <col>\n"\
+                        "  <colgroup span=\"2\"></colgroup>\n"\
+                        "  <colgroup span=\"2\"></colgroup>\n"\
+                        "  <thead>\n"\
+                        "    <tr>\n"\
+                        "      <td rowspan=\"2\"></td>\n"\
+                        "      <th colspan=\"2\" scope=\"colgroup\">Default</th>\n"\
+                        "      <th colspan=\"2\" scope=\"colgroup\">Incumbent</th>\n"\
+                        "    </tr>\n"\
+                        "    <tr>\n"\
+                        "      <th scope=\"col\">Train</th>\n"\
+                        "      <th scope=\"col\">Test</th>\n"\
+                        "      <th scope=\"col\">Train</th>\n"\
+                        "      <th scope=\"col\">Test</th>\n"\
+                        "    </tr>\n"\
+                        "</thead>\n"
+            table = new_table + table
+        else:
+            # No distinction between train and test
+            array = np.array([[def_par10, inc_par10],
+                              [def_par1, inc_par1],
+                              [-1, -1]])
+            df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
+                           columns=['Default', 'Incumbent'])
+            table = df.to_html()
+        return table
 
     def config_to_html(self, default: Configuration, incumbent: Configuration):
         """Create HTML-table to compare Configurations.

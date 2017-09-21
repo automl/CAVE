@@ -52,7 +52,7 @@ class TestCLI(unittest.TestCase):
         with mock.patch.object(sys, 'argv', testargs):
             self.cli.main_cli()
 
-    def test_run_with_multiple_outputs(self):
+    def test_run_with_multiple_folders(self):
         """
         Testing basic functionality.
         """
@@ -67,3 +67,77 @@ class TestCLI(unittest.TestCase):
                     "--param_importance", "False"]
         with mock.patch.object(sys, 'argv', testargs):
             self.cli.main_cli()
+
+    def test_notrain_notest_nofeat(self):
+        """
+        Testing analysis w/o train- or test-insts (and without features)
+        Optimized on quality, deterministic, without instance-specifics.
+        """
+        with changedir("test/test_files/branin"):
+            testargs = ["python", "../../../scripts/spy.py", "--folders",
+                        "qual_notrain_notest_nofeat_run1",
+                        "qual_notrain_notest_nofeat_run2",
+                        "--verbose", "DEBUG",
+                        "--output", "qual_notrain_notest_nofeat_SPY",
+                        "--param_importance", "False"]
+            with mock.patch.object(sys, 'argv', testargs):
+                self.cli.main_cli()
+
+    def test_train_notest_nofeat(self):
+        """
+        Testing analysis with train- but without test-insts (and without features)
+        Optimized on quality, deterministic, with and without instance-specifics.
+        """
+        with changedir("test/test_files/branin"):
+            testargs = ["python", "../../../scripts/spy.py", "--folders",
+                        "qual_train_nospecs_notest_nofeat_run1",
+                        "--verbose", "DEBUG",
+                        "--output", "qual_train_nospecs_notest_nofeat_SPY",
+                        "--param_importance", "False"]
+            with mock.patch.object(sys, 'argv', testargs):
+                self.cli.main_cli()
+            # With instance specifics
+            testargs[3] = "qual_train_specs_notest_nofeat_run1"
+            testargs[7] = "qual_train_specs_notest_nofeat_SPY"
+            with mock.patch.object(sys, 'argv', testargs):
+                self.cli.main_cli()
+
+    def test_train_test_nofeat(self):
+        """
+        Testing analysis with train- and test-insts (and without features)
+        Optimized on quality, deterministic, with and without instance-specifics.
+        """
+        with changedir("test/test_files/branin"):
+            testargs = ["python", "../../../scripts/spy.py", "--folders",
+                        "qual_train_nospecs_test_nofeat_run1",
+                        "--verbose", "DEBUG",
+                        "--output", "qual_train_nospecs_test_nofeat_SPY",
+                        "--param_importance", "False"]
+            with mock.patch.object(sys, 'argv', testargs):
+                self.cli.main_cli()
+            # With instance specifics
+            testargs[3] = "qual_train_specs_test_nofeat_run1"
+            testargs[7] = "qual_train_specs_test_nofeat_SPY"
+            with mock.patch.object(sys, 'argv', testargs):
+                self.cli.main_cli()
+
+    def test_train_test_feat(self):
+        """
+        Testing analysis with train- and test-insts (and with features)
+        Optimized on quality, deterministic, with and without instance-specifics.
+        """
+        with changedir("test/test_files/branin"):
+            testargs = ["python", "../../../scripts/spy.py", "--folders",
+                        "qual_train_nospecs_test_feat_run1",
+                        "--verbose", "DEBUG",
+                        "--output", "qual_train_nospecs_test_feat_SPY",
+                        "--param_importance", "False"]
+            with mock.patch.object(sys, 'argv', testargs):
+                self.cli.main_cli()
+            # With instance specifics
+            testargs[3] = "qual_train_specs_test_feat_run1"
+            testargs[7] = "qual_train_specs_test_feat_SPY"
+            with mock.patch.object(sys, 'argv', testargs):
+                self.cli.main_cli()
+
+    # TODO tests on runtime
