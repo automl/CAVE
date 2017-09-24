@@ -81,6 +81,8 @@ def plot_scatter_plot(x_data, y_data, labels, title="", debug=False,
     # time_out_val : location for timeout points
     # -----
 
+    if max_val == None:
+        raise ValueError("max_val cannot be None")
     maximum_value = max_val
 
     # Colors
@@ -106,7 +108,7 @@ def plot_scatter_plot(x_data, y_data, labels, title="", debug=False,
     else:
         auto_min_val = min([min(x_data), min(y_data)])
 
-    if metric == "runtime":
+    if metric == "runtime" or metric == "quality":
         timeout_factor = 2
         timeout_val = maximum_value * timeout_factor
         auto_max_val = maximum_value
@@ -119,7 +121,7 @@ def plot_scatter_plot(x_data, y_data, labels, title="", debug=False,
     out_up = auto_max_val
     out_lo = max(10**-6, auto_min_val)
 
-    if metric == "runtime":
+    if metric == "runtime" or metric == "quality":
         ax1.plot([out_lo, out_up], [out_lo, out_up], c=c_angle_bisector)
     
         if linefactors is not None:
@@ -170,7 +172,7 @@ def plot_scatter_plot(x_data, y_data, labels, title="", debug=False,
     ax1.scatter(x_data[rest_idx], y_data[rest_idx], marker=regular_marker,
                 c=c_other_points, s=s_r)
 
-    if metric == "runtime":
+    if metric == "runtime" or metric == "quality":
         # max_val lines
         ax1.plot([maximum_value, maximum_value], [auto_min_val, maximum_value],
                  c=c_other_points, linestyle="--", zorder=0, linewidth=size)
@@ -207,7 +209,7 @@ def plot_scatter_plot(x_data, y_data, labels, title="", debug=False,
                     label="original data")
 
     # Set axes scale and limits
-    if metric == "runtime":
+    if metric == "runtime" or metric == "quality":
         ax1.set_xscale("log")
         ax1.set_yscale("log")
 
@@ -243,7 +245,7 @@ def plot_scatter_plot(x_data, y_data, labels, title="", debug=False,
     else:
         maximum_str = r"$%5.2f$" % maximum_value
 
-    if metric == "runtime":
+    if metric == "runtime" or metric == "quality":
 
         if int(np.log10(maximum_value)) != np.log10(maximum_value):
             # If we do not already have this ticklabel as a regular label

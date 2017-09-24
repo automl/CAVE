@@ -21,7 +21,7 @@ class Plotter(object):
     def __init__(self):
         self.logger = logging.getLogger("spysmac.plotter")
 
-    def plot_scatter(self, cost_conf1, cost_conf2, timeout,
+    def plot_scatter(self, conf_cost1, conf_cost2, timeout,
                      labels=('default cost', 'incumbent cost'),
                      metric='runtime',
                      output='scatter.png'):
@@ -32,8 +32,8 @@ class Plotter(object):
 
         Parameters:
         -----------
-        cost_conf1, cost_conf2: dict(string->float)
-            dicts with instance->cost mapping
+        conf_cost1, conf_cost2: list(string,float)
+            lists with instance,cost -tuples
         timeout: float
             timeout/cutoff
         label: tuple of strings
@@ -50,26 +50,33 @@ class Plotter(object):
         conf1, conf2 = [], []
 
         # Make sure both dicts have same keys
-        if not set(cost_conf1) == set(cost_conf2):
+        if not set(conf_cost1) == set(conf_cost2):
             self.logger.warning("Bad input to scatterplot (unequal cost-dictionaries). "
                                 "Will use only instances evaluated for both configs, "
                                 "this might lead to unexpected behaviour or results.")
 
         # Only consider instances that are present in both configs
-        for i in cost_conf1:
-            if i in cost_conf2:
-                conf1.append(cost_conf1[i])
-                conf2.append(cost_conf2[i])
+        for i in conf_cost1:
+            if i in conf_cost2:
+                conf1.append(conf_cost1[i])
+                conf2.append(conf_cost2[i])
 
-        fig = plot_scatter_plot(np.array(conf1), np.array(conf2),
+        if not timeout:
+            timeout = max(max(conf1),max(conf2))
+
+        conf1, conf2 = np.array(conf1), np.array(conf2)
+        self.logger.debug(conf1)
+        self.logger.debug(conf2)
+        self.logger.debug(np.array([1,2,3,4,5,6]))
+        fig = plot_scatter_plot(conf1, conf2,
                                 labels, metric=metric,
                                 user_fontsize=12, max_val=timeout,
                                 jitter_timeout=True)
         fig.savefig(output)
         plt.close(fig)
 
-    def plot_cdf_compare(self, data, timeout,
-                         train=[], test=[],
+    def plot_cdf_compare(self, conf1_runs, conf2_runs,
+                         timeout, run_obj, train=[], test=[],
                          output="CDF_compare.png"):
         """
         Plot the cumulated distribution functions for given configurations,
@@ -78,10 +85,13 @@ class Plotter(object):
 
         Parameters
         ----------
-        data: dict(string->dict(string->float))
-            maps config-names to their instance-cost dicts
+        conf1_runs, conf2_runs: list(RunValue)
+            lists with smac.runhistory.runhistory.RunValue, from which to read
+            cost or time
         timeout: float
             timeout/cutoff
+        run_obj: str
+            quality or runtime
         train: list(strings)
             train-instances, will be printed separately if test also specified
         test: list(strings)
@@ -89,19 +99,44 @@ class Plotter(object):
         output: string
             filename, default: CDF_compare.png
         """
-        data = {config_name : {'combined' : sorted(list(data[config_name].values())),
-                               'train' : sorted([c for i, c in
-                                    data[config_name].items() if i in train]),
-                               'test' : sorted([c for i, c in
-                                    data[config_name].items() if i in test])}
-                for config_name in data}
+        # Make sure train and test is only differentiated if data is available
+        if train == [[None]] or train == [None]:
+            train = []
+        if test == [[None]] or test == [None]:
+            test = []
+
+        def extract_cost(runvalue):
+            """ extract either cost or time, depending on run_obj """
+            self.logger.debug(runvalue)
+            if run_obj == "runtime":
+                return runvalue.time
+            else:
+                return runvalue.cost
+
+        # Split data into train and test
+        data = {"default" : {"combined" : [], "train" : [], "test" : []},
+                "incumbent" : {"combined" : [], "train" : [], "test" : []}}
+        for k in conf1_runs:
+            data["default"]["combined"].append(extract_cost(conf1_runs[k]))
+            if k.instance in train:
+                data["default"]["train"].append(extract_cost(conf1_runs[k]))
+            if k.instance in test:
+                data["default"]["test"].append(extract_cost(conf1_runs[k]))
+        for k in conf2_runs:
+            data["incumbent"]["combined"].append(extract_cost(conf2_runs[k]))
+            if k.instance in train:
+                data["incumbent"]["train"].append(extract_cost(conf2_runs[k]))
+            if k.instance in test:
+                data["incumbent"]["test"].append(extract_cost(conf2_runs[k]))
+        self.logger.debug("DATA: "+ str(data))
 
         def prepare_data(x_data):
             """ Helper function to keep things easy, generates y_data and
             manages x_data-timeouts """
+            x_data = sorted(x_data)
             y_data = np.array(range(len(x_data)))/(len(x_data)-1)
             for idx in range(len(x_data)):
-                if x_data[idx] >= timeout:
+                if (timeout != None) and (x_data[idx] >= timeout):
                     x_data[idx] = timeout
                     y_data[idx] = y_data[idx-1]
             return (x_data, y_data)
@@ -135,11 +170,12 @@ class Plotter(object):
             ax2.set_ylabel('Probability of being solved')
             ax2.set_xlabel('Time')
             # Plot 'timeout'
-            ax2.text(timeout,
-                     ax2.get_ylim()[0] - 0.1 * np.abs(ax2.get_ylim()[0]),
-                     "timeout ", horizontalalignment='center',
-                     verticalalignment="top", rotation=30)
-            ax2.axvline(x=timeout, linestyle='--')
+            if timeout:
+                ax2.text(timeout,
+                         ax2.get_ylim()[0] - 0.1 * np.abs(ax2.get_ylim()[0]),
+                         "timeout ", horizontalalignment='center',
+                         verticalalignment="top", rotation=30)
+                ax2.axvline(x=timeout, linestyle='--')
 
             ax1.set_title('Training - SpySMAC CDF')
             ax2.set_title('Test - SpySMAC CDF')
@@ -160,11 +196,12 @@ class Plotter(object):
         ax1.set_ylabel('Probability of being solved')
         ax1.set_xlabel('Time')
         # Plot 'timeout'
-        ax1.text(timeout,
-                 ax1.get_ylim()[0] - 0.1 * np.abs(ax1.get_ylim()[0]),
-                 "timeout ", horizontalalignment='center',
-                 verticalalignment="top", rotation=30)
-        ax1.axvline(x=timeout, linestyle='--')
+        if timeout:
+            ax1.text(timeout,
+                     ax1.get_ylim()[0] - 0.1 * np.abs(ax1.get_ylim()[0]),
+                     "timeout ", horizontalalignment='center',
+                     verticalalignment="top", rotation=30)
+            ax1.axvline(x=timeout, linestyle='--')
 
         f.tight_layout()
         f.savefig(output)

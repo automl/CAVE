@@ -47,15 +47,15 @@
 }.dataframe tr:hover td{
 	
 }
-/*.dataframe tr:nth-child(odd) { background-color:rgb(145, 205, 63); }*/
-.dataframe tr:nth-child(odd){ background-color:#ffffff; }
+.dataframe tr:nth-child(odd) { background-color:rgb(145, 205, 63); }
+/*.dataframe tr:nth-child(odd){ background-color:#ffffff; }*/
 .dataframe tr:nth-child(even){ background-color:#ffffff; }
 .dataframe td{
 	vertical-align:middle;
 	border:0px solid #000000;
 	border-width:0px 1px 1px 0px;
 	text-align:left;
-	padding:7px;
+/*	padding:7px;*/
 /*	font-size:10px;
 	font-family:Arial;
 	font-weight:normal;*/

@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import logging
+import shutil
 
 import unittest
 
@@ -18,10 +19,12 @@ from spysmac.plot.plotter import Plotter
 class TestAnalyzer(unittest.TestCase):
 
     def setUp(self):
+        self.output = "test/test_files/analyzer_output"
+        shutil.rmtree(self.output, ignore_errors=True)
         self.analyzer = Analyzer(["examples/spear_qcp_small/example_output_1",
                                   "examples/spear_qcp_small/example_output_2",
                                   "examples/spear_qcp_small/example_output_3"],
-                                 output="test/test_files/analyzer_output",
+                                 output=self.output,
                                  missing_data_method="epm",
                                  ta_exec_dir="examples/spear_qcp_small")
 
@@ -36,4 +39,8 @@ class TestAnalyzer(unittest.TestCase):
                               forward_selection=False, ablation=False,
                               fanova=False)
         self.analyzer.build_html()
+
+    def test_nonexisting_folder(self):
+        self.assertRaises(ValueError, Analyzer, ["examples/spear_qcp_small/nonsense"],
+                          self.output)
 

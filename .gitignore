@@ -4,6 +4,9 @@ examples/spear_qcp_small/example_output_1/validated_rh.json
 examples/spear_qcp_small/example_output_2/validated_rh.json
 examples/spear_qcp_small/example_output_3/validated_rh.json
 
+# Old versions
+*.old
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
