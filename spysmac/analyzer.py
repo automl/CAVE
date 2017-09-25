@@ -154,7 +154,7 @@ class Analyzer(object):
 
                 self.global_rh.update(run.rh)
 
-    def analyze(self, par10=True, cdf=True, scatter=True,
+    def analyze(self, par10=True, cdf=True, scatter=True, confviz=True,
                 forward_selection=True, ablation=True, fanova=True):
         """
         Performs analysis of scenario by scrutinizing the runhistory.
@@ -211,6 +211,7 @@ class Analyzer(object):
             self.paths['scatter_path'] = scatter_path
         elif scatter:
             self.logger.info("Scatter plot desired, but no instances available.")
+
         if cdf:
             cdf_path = os.path.join(self.output, 'cdf.png')
             self.logger.debug("Plot CDF to %s", cdf_path)
@@ -222,8 +223,14 @@ class Analyzer(object):
                                      test=self.scenario.test_insts,
                                      output=cdf_path)
             self.paths['cdf_path'] = cdf_path
-        elif cdf:
-            self.logger.info("CDF plot desired, but no instances available.")
+
+        # Visualizing configurations (via plotter)
+        self.confviz = None
+        if self.scenario.feature_array is not None and confviz: #confviz:
+            self.confviz = plotter.visualize_configs(self.scenario, self.global_rh)
+        elif confviz:
+            self.logger.info("Configuration visualization desired, but no "
+                             "instance-features available.")
 
         # PARAMETER IMPORTANCE
         if ablation:
@@ -280,6 +287,9 @@ class Analyzer(object):
                         {"figure": self.paths['ablationpercentage_path']}),
                        ("Ablation (performance)",
                         {"figure": self.paths['ablationperformance_path']})])
+
+        website["Configuration Visualization"] = {"table" :
+                               self.confviz}
         builder.generate_html(website)
         return website
 
@@ -333,7 +343,6 @@ class Analyzer(object):
             else the general average
         """
         runs = get_cost_dict_for_config(self.global_rh, config)
-        self.logger.debug(runs)
         # Penalize
         if self.scenario.cutoff:
             runs = [(k.instance, runs[k].cost) if runs[k].cost < self.scenario.cutoff
