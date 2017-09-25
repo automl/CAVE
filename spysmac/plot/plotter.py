@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from spysmac.plot.scatter import plot_scatter_plot
+from spysmac.plot.confs_viz.viz_sampled_confs import SampleViz
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -65,9 +66,6 @@ class Plotter(object):
             timeout = max(max(conf1),max(conf2))
 
         conf1, conf2 = np.array(conf1), np.array(conf2)
-        self.logger.debug(conf1)
-        self.logger.debug(conf2)
-        self.logger.debug(np.array([1,2,3,4,5,6]))
         fig = plot_scatter_plot(conf1, conf2,
                                 labels, metric=metric,
                                 user_fontsize=12, max_val=timeout,
@@ -107,7 +105,6 @@ class Plotter(object):
 
         def extract_cost(runvalue):
             """ extract either cost or time, depending on run_obj """
-            self.logger.debug(runvalue)
             if run_obj == "runtime":
                 return runvalue.time
             else:
@@ -128,7 +125,6 @@ class Plotter(object):
                 data["incumbent"]["train"].append(extract_cost(conf2_runs[k]))
             if k.instance in test:
                 data["incumbent"]["test"].append(extract_cost(conf2_runs[k]))
-        self.logger.debug("DATA: "+ str(data))
 
         def prepare_data(x_data):
             """ Helper function to keep things easy, generates y_data and
@@ -206,4 +202,10 @@ class Plotter(object):
         f.tight_layout()
         f.savefig(output)
         plt.close(f)
+
+    def visualize_configs(self, scen, rh):
+        sz = SampleViz(scenario=scen,
+                       runhistory=rh,
+                       incs=None)
+        sz.run()
 

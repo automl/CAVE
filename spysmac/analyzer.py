@@ -222,8 +222,10 @@ class Analyzer(object):
                                      test=self.scenario.test_insts,
                                      output=cdf_path)
             self.paths['cdf_path'] = cdf_path
-        elif cdf:
-            self.logger.info("CDF plot desired, but no instances available.")
+        if True: #confviz:
+            confviz_path = os.path.join(self.output, 'confviz')
+            plotter.visualize_configs(self.scenario, self.global_rh)
+            self.paths['confviz_path'] = confviz_path
 
         # PARAMETER IMPORTANCE
         if ablation:
