@@ -119,7 +119,7 @@ table, th, td
         #    inc_list = self.read_traj(
         #        traj_fn=self.traj_fn, cs=self.scenario.cs)
 
-        self.plot(red_dists, conf_list, runs_per_conf,
+        return self.plot(red_dists, conf_list, runs_per_conf,
                   inc_list, contour_data=contour_data)
         
     def get_pred_surface(self, X_scaled, conf_list: list):
@@ -160,7 +160,6 @@ table, th, td
                                    runhistory=self.runhistory)
         
         types = np.array(np.zeros((2+n_feats)), dtype=np.uint)
-        # del: types = np.array(types, dtype=np.uint)
         
         num_params = len(self.scenario.cs.get_hyperparameters())
 
@@ -183,12 +182,12 @@ table, th, td
                                           instance_features=np.array(self.scenario.feature_array),
                                           ratio_features=1.0)
 
-        self.logger.debug(
-                "Shape of data for training RF: (X: %d, y: %d)",
-                X_trans.shape[0], y.shape[0])
-        self.logger.debug(types)
-        self.logger.debug(bounds)
-        self.logger.debug(self.scenario.feature_array)
+        #self.logger.debug(
+        #        "Shape of data for training RF: (X: %d, y: %d)",
+        #        X_trans.shape[0], y.shape[0])
+        #self.logger.debug(types)
+        #self.logger.debug(bounds)
+        #self.logger.debug(self.scenario.feature_array)
         model.train(X_trans, y)
         
         self.logger.debug("RF fitted")

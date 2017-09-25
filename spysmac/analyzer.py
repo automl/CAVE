@@ -224,7 +224,7 @@ class Analyzer(object):
             self.paths['cdf_path'] = cdf_path
         if True: #confviz:
             confviz_path = os.path.join(self.output, 'confviz')
-            plotter.visualize_configs(self.scenario, self.global_rh)
+            self.confviz = plotter.visualize_configs(self.scenario, self.global_rh)
             self.paths['confviz_path'] = confviz_path
 
         # PARAMETER IMPORTANCE
@@ -282,6 +282,9 @@ class Analyzer(object):
                         {"figure": self.paths['ablationpercentage_path']}),
                        ("Ablation (performance)",
                         {"figure": self.paths['ablationperformance_path']})])
+
+        website["Configuration Visualization"] = {"table" :
+                               self.conf_viz}
         builder.generate_html(website)
         return website
 
