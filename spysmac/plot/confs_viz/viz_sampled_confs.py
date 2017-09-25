@@ -390,4 +390,6 @@ class SampleViz(object):
             with open(self.output, "w") as fp:
                 mpld3.save_html(fig, fp)
 
-        return mpld3.fig_to_html(fig)
+        html = mpld3.fig_to_html(fig)
+        plt.close(fig)
+        return html
