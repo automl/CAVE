@@ -368,7 +368,9 @@ class SampleViz(object):
                     names.append(str(p))
 
             label = pd.DataFrame(
-                data=values, index=names, columns=["Conf %d" % (idx + 1)]).to_html()
+                data=values, index=names, columns=["Conf %d" % (idx +
+                    1)]).to_html()
+            label = label.replace("dataframe", "config")
             labels.append(label)
 
         #self.logger.debug("Save test.png")

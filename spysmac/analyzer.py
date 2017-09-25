@@ -288,7 +288,8 @@ class Analyzer(object):
                        ("Ablation (performance)",
                         {"figure": self.paths['ablationperformance_path']})])
 
-        website["Configuration Visualization"] = {"table" :
+        if self.confviz:
+            website["Configuration Visualization"] = {"table" :
                                self.confviz}
         builder.generate_html(website)
         return website
