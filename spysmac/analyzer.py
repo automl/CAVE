@@ -154,7 +154,7 @@ class Analyzer(object):
 
                 self.global_rh.update(run.rh)
 
-    def analyze(self, par10=True, cdf=True, scatter=True,
+    def analyze(self, par10=True, cdf=True, scatter=True, confviz=True,
                 forward_selection=True, ablation=True, fanova=True):
         """
         Performs analysis of scenario by scrutinizing the runhistory.
@@ -226,7 +226,7 @@ class Analyzer(object):
 
         # Visualizing configurations (via plotter)
         self.confviz = None
-        if self.scenario.feature_array and confviz: #confviz:
+        if self.scenario.feature_array is not None and confviz: #confviz:
             self.confviz = plotter.visualize_configs(self.scenario, self.global_rh)
         elif confviz:
             self.logger.info("Configuration visualization desired, but no "

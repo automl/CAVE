@@ -54,7 +54,8 @@ class SampleViz(object):
     def __init__(self, scenario: Scenario,
                  runhistory: RunHistory,
                  incs: list=None,
-                 contour_step_size = 0.2):
+                 contour_step_size=0.2,
+                 output: str=None):
         '''
         Constructor
 
@@ -76,28 +77,10 @@ class SampleViz(object):
         self.incs = incs
 
         self.contour_step_size = contour_step_size
-
-        self.css = """
-table
-{
-  border-collapse: collapse;
-}
-th
-{
-  color: #ffffff;
-  background-color: #000000;
-}
-td
-{
-  background-color: #cccccc;
-}
-table, th, td
-{
-  font-family:Arial, Helvetica, sans-serif;
-  border: 1px solid black;
-  text-align: right;
-}
-"""
+        if output and not self.output.endswith('.html'):
+            self.output = os.path.join(output, 'conf_vizs.html')
+        else:
+            self.output = output
 
     def run(self):
         '''
@@ -115,16 +98,13 @@ table, th, td
             X_scaled=red_dists, conf_list=conf_list)
 
         inc_list = self.incs
-        #if self.traj_fn:
-        #    inc_list = self.read_traj(
-        #        traj_fn=self.traj_fn, cs=self.scenario.cs)
 
         return self.plot(red_dists, conf_list, runs_per_conf,
-                  inc_list, contour_data=contour_data)
-        
+                         inc_list, contour_data=contour_data)
+
     def get_pred_surface(self, X_scaled, conf_list: list):
         '''
-            fit epm on the scaled input dimension and 
+            fit epm on the scaled input dimension and
             return data to plot a contour plot
 
             Parameters
@@ -155,12 +135,12 @@ table, th, td
             self.scenario.feature_array = feature_array
             self.scenario.feature_dict = dict([(inst, feature_array[idx,:]) for idx, inst in enumerate(insts)])
             self.scenario.n_features = 2
-            
+
         X, y, types = convert_data(scenario=self.scenario,
                                    runhistory=self.runhistory)
-        
+
         types = np.array(np.zeros((2+n_feats)), dtype=np.uint)
-        
+
         num_params = len(self.scenario.cs.get_hyperparameters())
 
         # impute missing values in configs
@@ -168,7 +148,7 @@ table, th, td
         for idx, c in enumerate(conf_list):
             conf_list[idx] = impute_inactive_values(c)
             conf_dict[str(conf_list[idx].get_array())] = X_scaled[idx, :]
-            
+
         X_trans = []
         for x in X:
             x_scaled_conf = conf_dict[str(x[:num_params])]
@@ -176,14 +156,14 @@ table, th, td
                         (x_scaled_conf, x[num_params:]), axis=0)
             X_trans.append(x_new)
         X_trans = np.array(X_trans)
-        
+
         bounds = np.array([(0, np.nan), (0, np.nan)], dtype=object)
         model = RandomForestWithInstances(types=types, bounds=bounds,
                                           instance_features=np.array(self.scenario.feature_array),
                                           ratio_features=1.0)
 
         model.train(X_trans, y)
-        
+
         self.logger.debug("RF fitted")
 
         plot_step = self.contour_step_size
@@ -192,56 +172,23 @@ table, th, td
         y_min, y_max = X_scaled[:, 1].min() - 1, X_scaled[:, 1].max() + 1
         xx, yy = np.meshgrid(np.arange(x_min, x_max, plot_step),
                              np.arange(y_min, y_max, plot_step))
-        
+
         self.logger.debug("x_min: %f, x_max: %f, y_min: %f, y_max: %f" %(x_min, x_max, y_min, y_max))
 
         self.logger.debug("Predict on %d samples in grid to get surface" %(np.c_[xx.ravel(), yy.ravel()].shape[0]))
         Z, _ = model.predict_marginalized_over_instances(
             np.c_[xx.ravel(), yy.ravel()])
-        
+
         Z = Z.reshape(xx.shape)
 
         return xx, yy, Z
-
-    def read_traj(self, traj_fn: str, cs: ConfigurationSpace):
-        '''
-            read trajectory file -- each line one json dictionary
-
-            Parameters
-            ----------
-            traj_fn: str
-                trajectory file name 
-            cs: ConfigurationSpace
-                ConfigurationSpace object to get Configuration objects
-
-            Returns
-            -------
-            list of incumbent configurations
-        '''
-
-        inc_list = []
-        with open(traj_fn) as fp:
-            for line in fp:
-                conf = json.loads(line)["incumbent"]
-                conf_dict = dict(
-                    (param.split("=")[0], param.split("=")[1].strip("'")) for param in conf)
-                for p, v in conf_dict.items():
-                    param_cs = cs.get_hyperparameter(p)
-                    if isinstance(param_cs, FloatHyperparameter):
-                        conf_dict[p] = float(v)
-                    elif isinstance(param_cs, IntegerHyperparameter):
-                        conf_dict[p] = int(v)
-                inc_list.append(
-                    Configuration(configuration_space=cs, values=conf_dict))
-
-        return inc_list
 
     def get_distance(self, conf_matrix, cs: ConfigurationSpace):
         '''
             computes the distance between all pairs of configurations
 
             Parameters
-            ----------        
+            ----------
             conf_matrx: np.array
                 numpy array with cols as parameter values
             cs: ConfigurationSpace
@@ -285,7 +232,7 @@ table, th, td
             ----------
             cs :ConfigurationSpace
                 ConfigurationSpace to get parents of a parameter
-            param: str    
+            param: str
                 name of parameter to inspect
         '''
         parents = cs.get_parents_of(param)
@@ -358,7 +305,7 @@ table, th, td
     def plot(self, X, conf_list: list, runs_per_conf, inc_list: list, contour_data=None):
         '''
             plots sampled configuration in 2d-space;
-            saves results in "space_vis.html"
+            saves results in self.output, if set
 
             Parameters
             ----------
@@ -372,6 +319,11 @@ table, th, td
                 list of incumbents (Configuration)
             contour_data: list
                 contour data (xx,yy,Z)
+
+            Returns
+            -------
+            html_script: str
+                HTML script representing the visualization
 
         '''
 
@@ -401,9 +353,9 @@ table, th, td
                 if conf in inc_list:
                     inc_indx.append(idx)
             self.logger.debug("Indexes of Incumbent configurations: %s" %(str(inc_indx)))
-            scatter_inc = ax.scatter(X[inc_indx, 0], 
-                                     X[inc_indx, 1], 
-                                     color="black", edgecolors="white", 
+            scatter_inc = ax.scatter(X[inc_indx, 0],
+                                     X[inc_indx, 1],
+                                     color="black", edgecolors="white",
                                      sizes=runs_per_conf[inc_indx] + 10)
 
         labels = []
@@ -418,12 +370,12 @@ table, th, td
             label = pd.DataFrame(
                 data=values, index=names, columns=["Conf %d" % (idx + 1)]).to_html()
             labels.append(label)
-            
-        self.logger.debug("Save test.png")
-        fig.savefig("test.png")
+
+        #self.logger.debug("Save test.png")
+        #fig.savefig("test.png")
 
         tooltip = mpld3.plugins.PointHTMLTooltip(scatter, labels,
-                                                 voffset=10, hoffset=10, css=self.css)
+                                                 voffset=10, hoffset=10)#, css=self.css)
 
         mpld3.plugins.connect(fig, tooltip)
 
@@ -433,42 +385,9 @@ table, th, td
 
         mpld3.plugins.connect(fig, tooltip)
 
-        self.logger.debug("Save space_vis.html")
-        with open("space_vis.html", "w") as fp:
-            mpld3.save_html(fig, fp)
+        if self.output:
+            self.logger.debug("Save to %s", self.output)
+            with open(self.output, "w") as fp:
+                mpld3.save_html(fig, fp)
 
         return mpld3.fig_to_html(fig)
-
-
-if __name__ == "__main__":
-
-    parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
-    req_opts = parser.add_argument_group("Required Options")
-    req_opts.add_argument("--scenario_file", required=True,
-                          help="scenario file in AClib format")
-    req_opts.add_argument("--runhistory", required=True, nargs="+",
-                          help="runhistory file")
-    req_opts.add_argument("--traj_json",
-                          help="trajectory json file of SMAC3")
-    req_opts.add_argument("--contour_step_size", default=0.2, type=float,
-                          help="step size of meshgrid to compute contour of predicted fitness landscape")
-
-    req_opts.add_argument("--verbose_level", default=logging.INFO,
-                          choices=["INFO", "DEBUG"],
-                          help="random seed")
-
-    args_ = parser.parse_args()
-
-    logging.basicConfig(level=args_.verbose_level)
-
-    scen = Scenario(args_.scenario_file)
-    hist = RunHistory()
-    for runhist_fn in args_.runhistory:
-        hist.update_from_json(fn=runhist_fn, cs=scen.cs)
-
-    sz = SampleViz(scenario=scen,
-                   runhistory=hist,
-                   traj_fn=args_.traj_json,
-                   contour_step_size=args_.contour_step_size)
-
-    sz.run()
