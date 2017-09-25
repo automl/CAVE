@@ -211,6 +211,7 @@ class Analyzer(object):
             self.paths['scatter_path'] = scatter_path
         elif scatter:
             self.logger.info("Scatter plot desired, but no instances available.")
+
         if cdf:
             cdf_path = os.path.join(self.output, 'cdf.png')
             self.logger.debug("Plot CDF to %s", cdf_path)
@@ -222,10 +223,14 @@ class Analyzer(object):
                                      test=self.scenario.test_insts,
                                      output=cdf_path)
             self.paths['cdf_path'] = cdf_path
-        if True: #confviz:
-            confviz_path = os.path.join(self.output, 'confviz')
+
+        # Visualizing configurations (via plotter)
+        self.confviz = None
+        if self.scenario.feature_array and confviz: #confviz:
             self.confviz = plotter.visualize_configs(self.scenario, self.global_rh)
-            self.paths['confviz_path'] = confviz_path
+        elif confviz:
+            self.logger.info("Configuration visualization desired, but no "
+                             "instance-features available.")
 
         # PARAMETER IMPORTANCE
         if ablation:
@@ -284,7 +289,7 @@ class Analyzer(object):
                         {"figure": self.paths['ablationperformance_path']})])
 
         website["Configuration Visualization"] = {"table" :
-                               self.conf_viz}
+                               self.confviz}
         builder.generate_html(website)
         return website
 
@@ -338,7 +343,6 @@ class Analyzer(object):
             else the general average
         """
         runs = get_cost_dict_for_config(self.global_rh, config)
-        self.logger.debug(runs)
         # Penalize
         if self.scenario.cutoff:
             runs = [(k.instance, runs[k].cost) if runs[k].cost < self.scenario.cutoff

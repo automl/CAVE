@@ -182,12 +182,6 @@ table, th, td
                                           instance_features=np.array(self.scenario.feature_array),
                                           ratio_features=1.0)
 
-        #self.logger.debug(
-        #        "Shape of data for training RF: (X: %d, y: %d)",
-        #        X_trans.shape[0], y.shape[0])
-        #self.logger.debug(types)
-        #self.logger.debug(bounds)
-        #self.logger.debug(self.scenario.feature_array)
         model.train(X_trans, y)
         
         self.logger.debug("RF fitted")
