@@ -34,7 +34,6 @@ class TestAnalyzer(unittest.TestCase):
                               fanova=False)
 
     def test_plot(self):
-        # Using example for now, until svm-train/test-issue is resolved
         self.analyzer.analyze(par10=False, cdf=True, scatter=True,
                               forward_selection=False, ablation=False,
                               fanova=False)

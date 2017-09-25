@@ -117,8 +117,8 @@ class Analyzer(object):
         self.incumbent = self.best_run.get_incumbent()[0]
 
         # Following variable determines whether a distinction is made
-        self.train_test = bool(self.scenario.train_insts != [[None]] and
-                               self.scenario.test_insts != [[None]])
+        self.train_test = bool(self.scenario.train_insts != [None] and
+                               self.scenario.test_insts != [None])
 
         # Dict to save par10 in as tuple (train, test)
         self.par10 = {}
@@ -200,28 +200,20 @@ class Analyzer(object):
         # Analysis
 
         # Plotting
-        plotter = Plotter()
+        conf1_runs = get_cost_dict_for_config(self.global_rh, self.default)
+        conf2_runs = get_cost_dict_for_config(self.global_rh, self.incumbent)
+        plotter = Plotter(self.scenario, self.train_test, conf1_runs,
+                conf2_runs)
         if scatter and (self.scenario.train_insts != [[None]]):
             scatter_path = os.path.join(self.output, 'scatter.png')
-            self.logger.debug("Plot scatter to %s", scatter_path)
-            plotter.plot_scatter(default_loss_per_inst, incumbent_loss_per_inst,
-                                 timeout=self.scenario.cutoff,
-                                 output=scatter_path,
-                                 metric=self.scenario.run_obj)
+            plotter.plot_scatter(output=scatter_path)
             self.paths['scatter_path'] = scatter_path
         elif scatter:
             self.logger.info("Scatter plot desired, but no instances available.")
 
         if cdf:
             cdf_path = os.path.join(self.output, 'cdf.png')
-            self.logger.debug("Plot CDF to %s", cdf_path)
-            plotter.plot_cdf_compare(get_cost_dict_for_config(self.global_rh, self.default),
-                                     get_cost_dict_for_config(self.global_rh, self.incumbent),
-                                     timeout=self.scenario.cutoff,
-                                     run_obj=self.scenario.run_obj,
-                                     train=self.scenario.train_insts,
-                                     test=self.scenario.test_insts,
-                                     output=cdf_path)
+            plotter.plot_cdf_compare(output=cdf_path)
             self.paths['cdf_path'] = cdf_path
 
         # Visualizing configurations (via plotter)
@@ -297,29 +289,33 @@ class Analyzer(object):
     def get_timeouts(self, config):
         """ Get number of timeouts in config per runs in total (not per
         instance) """
-        costs = get_cost_dict_for_config(self.global_rh, config)
+        costs = get_cost_dict_for_config(self.global_rh, config, metric='time')
         cutoff = self.scenario.cutoff
         if self.train_test:
+            if not cutoff:
+                return (("N/A","N/A"),("N/A","N/A"))
             train_timeout, test_timeout = 0, 0
             train_no_timeout, test_no_timeout = 0, 0
             for run in costs:
                 if (cutoff and run.instance in self.scenario.train_insts and
-                        costs[run].time >= cutoff):
+                        costs[run] >= cutoff):
                     train_timeout += 1
                 elif (cutoff and run.instance in self.scenario.train_insts and
-                        costs[run].time < cutoff):
+                        costs[run] < cutoff):
                     train_no_timeout += 1
                 if (cutoff and run.instance in self.scenario.test_insts and
-                        costs[run].time >= cutoff):
+                        costs[run] >= cutoff):
                     test_timeout += 1
                 elif (cutoff and run.instance in self.scenario.test_insts and
-                        costs[run].time < cutoff):
+                        costs[run] < cutoff):
                     test_no_timeout += 1
             return ((train_timeout, train_no_timeout), (test_timeout, test_no_timeout))
         else:
+            if not cutoff:
+                return ("N/A","N/A")
             timeout, no_timeout = 0, 0
             for run in costs:
-                if cutoff and costs[run].time >= cutoff:
+                if cutoff and costs[run] >= cutoff:
                     timeout += 1
                 else:
                     no_timeout += 1
@@ -346,11 +342,11 @@ class Analyzer(object):
         runs = get_cost_dict_for_config(self.global_rh, config)
         # Penalize
         if self.scenario.cutoff:
-            runs = [(k.instance, runs[k].cost) if runs[k].cost < self.scenario.cutoff
+            runs = [(k.instance, runs[k]) if runs[k] < self.scenario.cutoff
                         else (k.instance, self.scenario.cutoff*par)
                         for k in runs]
         else:
-            runs = [(k.instance, runs[k].cost) for k in runs]
+            runs = [(k.instance, runs[k]) for k in runs]
             self.logger.info("Calculating penalized average runtime without "
                              "cutoff...")
 
@@ -457,7 +453,8 @@ class Analyzer(object):
             # No distinction between train and test
             array = np.array([[def_par10, inc_par10],
                               [def_par1, inc_par1],
-                              [-1, -1]])
+                              [str(def_timeout[0])+"/"+str(def_timeout[1]),
+                               str(inc_timeout[0])+"/"+str(inc_timeout[1])]])
             df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
                            columns=['Default', 'Incumbent'])
             table = df.to_html()

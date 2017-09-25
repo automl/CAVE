@@ -19,13 +19,45 @@ class Plotter(object):
     Responsible for plotting (scatter, CDF, etc.)
     """
 
-    def __init__(self):
+    def __init__(self, scenario, train_test, conf1_runs, conf2_runs):
+        """
+        Parameters
+        ----------
+        scenario: Scenario
+            scenario to take cutoff, train- test, etc from
+        train_test: bool
+            whether to make a distinction between train and test
+        conf1_runs, conf2_runs: list(RunValue)
+            lists with smac.runhistory.runhistory.RunValue, from which to read
+            cost or time
+        """
         self.logger = logging.getLogger("spysmac.plotter")
+        self.scenario = scenario
+        self.train_test = train_test
 
-    def plot_scatter(self, conf_cost1, conf_cost2, timeout,
-                     labels=('default cost', 'incumbent cost'),
-                     metric='runtime',
-                     output='scatter.png'):
+        # Split data into train and test
+        data = {"default" : {"combined" : [], "train" : [], "test" : []},
+                "incumbent" : {"combined" : [], "train" : [], "test" : []}}
+        train = scenario.train_insts
+        test = scenario.test_insts
+        for k in conf1_runs:
+            data["default"]["combined"].append(conf1_runs[k])
+            if k.instance in train:
+                data["default"]["train"].append(conf1_runs[k])
+            if k.instance in test:
+                data["default"]["test"].append(conf1_runs[k])
+        for k in conf2_runs:
+            data["incumbent"]["combined"].append(conf2_runs[k])
+            if k.instance in train:
+                data["incumbent"]["train"].append(conf2_runs[k])
+            if k.instance in test:
+                data["incumbent"]["test"].append(conf2_runs[k])
+        for c in ["default", "incumbent"]:
+            for s in ["combined", "train", "test"]:
+                data[c][s] = np.array(data[c][s])
+        self.data = data
+
+    def plot_scatter(self, output='scatter.png'):
         """
         Creates a scatterplot of the two configurations on the given set of
         instances.
@@ -33,39 +65,24 @@ class Plotter(object):
 
         Parameters:
         -----------
-        conf_cost1, conf_cost2: list(string,float)
-            lists with instance,cost -tuples
-        timeout: float
-            timeout/cutoff
-        label: tuple of strings
-            labels of plot
-        title: string
-            title of plot
-        metric: string
-            metric, runtime or quality
         output: string
             path to save plot in
         """
-        # Create data, raise error if instance not evaluated on one of the
-        # configurations
-        conf1, conf2 = [], []
+        self.logger.debug("Plot scatter to %s", output)
 
-        # Make sure both dicts have same keys
-        if not set(conf_cost1) == set(conf_cost2):
-            self.logger.warning("Bad input to scatterplot (unequal cost-dictionaries). "
-                                "Will use only instances evaluated for both configs, "
-                                "this might lead to unexpected behaviour or results.")
+        metric = self.scenario.run_obj
+        timeout = self.scenario.cutoff
+        labels = ["default cost", "incumbent cost"]
 
-        # Only consider instances that are present in both configs
-        for i in conf_cost1:
-            if i in conf_cost2:
-                conf1.append(conf_cost1[i])
-                conf2.append(conf_cost2[i])
+        if self.train_test:
+            conf1 = (self.data["default"]["train"],
+                    self.data["default"]["test"])
+            conf2 = (self.data["incumbent"]["train"],
+                    self.data["incumbent"]["test"])
+        else:
+            conf1 = (self.data["default"]["combined"],)
+            conf2 = (self.data["incumbent"]["combined"],)
 
-        if not timeout:
-            timeout = max(max(conf1),max(conf2))
-
-        conf1, conf2 = np.array(conf1), np.array(conf2)
         fig = plot_scatter_plot(conf1, conf2,
                                 labels, metric=metric,
                                 user_fontsize=12, max_val=timeout,
@@ -73,9 +90,7 @@ class Plotter(object):
         fig.savefig(output)
         plt.close(fig)
 
-    def plot_cdf_compare(self, conf1_runs, conf2_runs,
-                         timeout, run_obj, train=[], test=[],
-                         output="CDF_compare.png"):
+    def plot_cdf_compare(self, output="CDF_compare.png"):
         """
         Plot the cumulated distribution functions for given configurations,
         plots will share y-axis and if desired x-axis.
@@ -83,48 +98,14 @@ class Plotter(object):
 
         Parameters
         ----------
-        conf1_runs, conf2_runs: list(RunValue)
-            lists with smac.runhistory.runhistory.RunValue, from which to read
-            cost or time
-        timeout: float
-            timeout/cutoff
-        run_obj: str
-            quality or runtime
-        train: list(strings)
-            train-instances, will be printed separately if test also specified
-        test: list(strings)
-            test-instances, will be printed separately if train also specified
         output: string
             filename, default: CDF_compare.png
         """
-        # Make sure train and test is only differentiated if data is available
-        if train == [[None]] or train == [None]:
-            train = []
-        if test == [[None]] or test == [None]:
-            test = []
+        self.logger.debug("Plot CDF to %s", output)
 
-        def extract_cost(runvalue):
-            """ extract either cost or time, depending on run_obj """
-            if run_obj == "runtime":
-                return runvalue.time
-            else:
-                return runvalue.cost
+        timeout = self.scenario.cutoff
 
-        # Split data into train and test
-        data = {"default" : {"combined" : [], "train" : [], "test" : []},
-                "incumbent" : {"combined" : [], "train" : [], "test" : []}}
-        for k in conf1_runs:
-            data["default"]["combined"].append(extract_cost(conf1_runs[k]))
-            if k.instance in train:
-                data["default"]["train"].append(extract_cost(conf1_runs[k]))
-            if k.instance in test:
-                data["default"]["test"].append(extract_cost(conf1_runs[k]))
-        for k in conf2_runs:
-            data["incumbent"]["combined"].append(extract_cost(conf2_runs[k]))
-            if k.instance in train:
-                data["incumbent"]["train"].append(extract_cost(conf2_runs[k]))
-            if k.instance in test:
-                data["incumbent"]["test"].append(extract_cost(conf2_runs[k]))
+        data = self.data
 
         def prepare_data(x_data):
             """ Helper function to keep things easy, generates y_data and
@@ -146,14 +127,14 @@ class Plotter(object):
         # configurations. Below, it is specified for plotting default vs
         # incumbent only.
 
-        if train and test:
+        if self.train_test:
             f, (ax1, ax2) = plt.subplots(1, 2)
             ax1.step(data['default']['train'][0],
                      data['default']['train'][1], color='red',
-                     linestyle='--', label='default train')
+                     linestyle='-', label='default train')
             ax1.step(data['incumbent']['train'][0],
                      data['incumbent']['train'][1], color='blue',
-                     linestyle='--', label='incumbent train')
+                     linestyle='-', label='incumbent train')
             ax2.step(data['default']['test'][0],
                      data['default']['test'][1], color='red',
                      linestyle='-', label='default test')
