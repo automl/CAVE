@@ -1,6 +1,6 @@
 from smac.runhistory.runhistory import RunKey
 
-def get_cost_dict_for_config(rh, conf):
+def get_cost_dict_for_config(rh, conf, metric='cost'):
     """
     """
     # Check if config is in runhistory
@@ -9,7 +9,10 @@ def get_cost_dict_for_config(rh, conf):
     costs = {}
     runs = rh.get_runs_for_config(conf)
     for run in runs:
-        costs[run] = rh.data[RunKey(conf_id, run[0], run[1])]
+        if metric == 'cost':
+            costs[run] = rh.data[RunKey(conf_id, run[0], run[1])].cost
+        elif metric == 'time':
+            costs[run] = rh.data[RunKey(conf_id, run[0], run[1])].time
     return costs
 
 def get_loss_per_instance(rh, conf, aggregate=None):
