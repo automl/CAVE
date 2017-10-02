@@ -1,0 +1,25 @@
+{
+    "ablation": {
+        "-source-": 0,
+        "-target-": 0,
+        "sp-clause-activity-inc": 0.0,
+        "sp-clause-decay": 4.470135516642984e-05,
+        "sp-clause-del-heur": 2.0421854117062256e-05,
+        "sp-first-restart": -6.729608298360767e-06,
+        "sp-learned-clause-sort-heur": 0.0012122767584418668,
+        "sp-learned-clauses-inc": 2.712545604612717e-06,
+        "sp-learned-size-factor": 1.1633638501306936e-05,
+        "sp-orig-clause-sort-heur": 0.15305504249114085,
+        "sp-phase-dec-heur": 1.0419758083487103e-05,
+        "sp-rand-phase-dec-freq": 1.0879871501689774e-05,
+        "sp-rand-phase-scaling": 1.300466493446376e-05,
+        "sp-rand-var-dec-freq": 0.008645498281994547,
+        "sp-rand-var-dec-scaling": 7.056151620408805e-05,
+        "sp-resolution": 2.203164739987227e-05,
+        "sp-restart-inc": 2.3138943136834382e-05,
+        "sp-use-pure-literal-rule": -3.4364974194239207e-07,
+        "sp-var-activity-inc": 0.05844633196066716,
+        "sp-var-dec-heur": 0.7784208477212496,
+        "sp-variable-decay": -2.429750103586142e-06
+    }
+}
