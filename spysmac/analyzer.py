@@ -351,7 +351,6 @@ class Analyzer(object):
                              "cutoff...")
 
         # Average
-        self.logger.debug(runs)
         if self.train_test:
             train = np.mean([c for i, c in runs if i in
                              self.scenario.train_insts])
@@ -416,15 +415,22 @@ class Analyzer(object):
         def_timeout, inc_timeout = self.get_timeouts(self.default), self.get_timeouts(self.incumbent)
         def_par10, inc_par10 = self.get_parX(self.default, 10), self.get_parX(self.incumbent, 10)
         def_par1, inc_par1 = self.get_parX(self.default, 1), self.get_parX(self.incumbent, 1)
+        dec_place = 3
         if self.train_test:
             # Distinction between train and test
             # Create table
-            array = np.array([[def_par10[0], def_par10[1], inc_par10[0], inc_par10[1]],
-                              [def_par1[0], def_par1[1], inc_par1[0], inc_par1[1]],
-                              [str(def_timeout[0][0])+"/"+str(def_timeout[0][1]),
-                               str(def_timeout[1][0])+"/"+str(def_timeout[1][1]),
-                               str(inc_timeout[0][0])+"/"+str(inc_timeout[0][1]),
-                               str(inc_timeout[1][0])+"/"+str(inc_timeout[1][1])
+            array = np.array([[round(def_par10[0], dec_place),
+                               round(def_par10[1], dec_place),
+                               round(inc_par10[0], dec_place),
+                               round(inc_par10[1], dec_place)],
+                              [round(def_par1[0], dec_place),
+                               round(def_par1[1], dec_place),
+                               round(inc_par1[0], dec_place),
+                               round(inc_par1[1], dec_place)],
+                              ["{}/{}".format(def_timeout[0][0], def_timeout[0][1]),
+                               "{}/{}".format(def_timeout[1][0], def_timeout[1][1]),
+                               "{}/{}".format(inc_timeout[0][0], inc_timeout[0][1]),
+                               "{}/{}".format(inc_timeout[1][0], inc_timeout[1][1])
                                ]])
             df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
                            columns=['Train', 'Test', 'Train', 'Test'])
@@ -451,10 +457,12 @@ class Analyzer(object):
             table = new_table + table
         else:
             # No distinction between train and test
-            array = np.array([[def_par10, inc_par10],
-                              [def_par1, inc_par1],
-                              [str(def_timeout[0])+"/"+str(def_timeout[1]),
-                               str(inc_timeout[0])+"/"+str(inc_timeout[1])]])
+            array = np.array([[round(def_par10, dec_place),
+                               round(inc_par10, dec_place)],
+                              [round(def_par1, dec_place),
+                               round(inc_par1, dec_place)],
+                              ["{}/{}".format(def_timeout[0], def_timeout[1]),
+                               "{}/{}".format(inc_timeout[0], inc_timeout[1])]])
             df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
                            columns=['Default', 'Incumbent'])
             table = df.to_html()
