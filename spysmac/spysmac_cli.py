@@ -6,7 +6,7 @@ import os
 import sys
 import shutil
 
-from spysmac.analyzer import Analyzer
+from spysmac.spyfacade import SpySMAC
 from spysmac.html.html_builder import HTMLBuilder
 
 from smac.runhistory.runhistory import RunHistory
@@ -60,10 +60,11 @@ class SpySMACCLI(object):
             logging.basicConfig(level=logging.DEBUG)
 
         # SMAC results
-        analyzer = Analyzer(args_.folders, args_.output, args_.ta_exec_dir,
+        spySMAC = SpySMAC(args_.folders, args_.output, args_.ta_exec_dir,
                             missing_data_method=args_.missing_data_method)
         if args_.param_importance not in ('no', 'false', 'False', 'f', 'n', '0'):
-            analyzer.analyze()
+            spySMAC.analyze(performance=True, cdf=True, scatter=True, confviz=True,
+                            forward_selection=False, ablation=False, fanova=False)
         else:
-            analyzer.analyze(ablation=False, forward_selection=False, fanova=False)
-        analyzer.build_html()
+            spySMAC.analyze(performance=True, cdf=True, scatter=True, confviz=True,
+                            forward_selection=True, ablation=True, fanova=True)

@@ -1,7 +1,6 @@
 import os
 import logging
 from collections import OrderedDict
-from contextlib import contextmanager
 import typing
 import json
 
@@ -30,19 +29,6 @@ __license__ = "3-clause BSD"
 __maintainer__ = "Joshua Marben"
 __email__ = "joshua.marben@neptun.uni-freiburg.de"
 
-@contextmanager
-def changedir(newdir):
-    """ Helper function to change directory, for example to create a scenario
-    from file, where paths to the instance- and feature-files are relative to
-    the original SMAC-execution-directory. Same with target algorithms that need
-    be executed for validation. """
-    olddir = os.getcwd()
-    os.chdir(os.path.expanduser(newdir))
-    try:
-        yield
-    finally:
-        os.chdir(olddir)
-
 class Analyzer(object):
     """
     Analyze SMAC-output data.
@@ -50,241 +36,15 @@ class Analyzer(object):
     and outputs PAR10, timeouts, scatterplots, parameter importance etc.
     """
 
-    def __init__(self, folders: typing.List[str], output: str,
-                 ta_exec_dir: str='.', missing_data_method: str='validation'):
-        """
-        Arguments
-        ---------
-        folders: list<strings>
-            paths to relevant SMAC runs
-        output: string
-            output for spysmac to write results (figures + report)
-        ta_exec_dir: string
-            execution directory for target algorithm
-        missing_data_method: string
-            from [validation, epm], how to estimate missing runs
-        """
+    def __init__(self, global_rh, train_test, scenario):
+        """Saves all relevant information that arises during the analysis. """
         self.logger = logging.getLogger("spysmac.analyzer")
 
-        self.missing_data_method = missing_data_method
-        self.ta_exec_dir = ta_exec_dir
+        self.global_rh = global_rh
+        self.train_test = train_test
+        self.scenario = scenario
 
-        self.folders = folders
-        self.logger.debug("Folders: %s", str(self.folders))
-
-        # Create output if necessary
-        self.output = output
-        self.logger.info("Writing to %s", self.output)
-        if not os.path.exists(output):
-            self.logger.info("Output-dir %s does not exist, creating", self.output)
-            os.makedirs(output)
-
-        # Global runhistory combines all runs of individual SMAC-runs
-        self.global_rh = RunHistory(average_cost)
-
-        # Save all relevant SMAC-runs in a list
-        self.runs = []
-        for folder in self.folders:
-            if not os.path.exists(folder):
-                raise ValueError("The specified SMAC-output in %s doesn't exist.",
-                                 folder)
-            self.logger.debug("Collecting data from %s.", folder)
-            self.runs.append(SMACrun(folder, ta_exec_dir))
-
-        self.scenario = self.runs[0].scen
-
-        # Update global runhistory with all available runhistories
-        self.logger.debug("Update global rh with all available rhs!")
-        runhistory_fns = [os.path.join(f, "runhistory.json") for f in self.folders]
-        for rh_file in runhistory_fns:
-            self.global_rh.update_from_json(rh_file, self.scenario.cs)
-        self.logger.debug('Combined number of Runhistory data points: %d. '
-                          '# Configurations: %d. # Runhistories: %d',
-                          len(runhistory_fns), len(self.global_rh.data),
-                          len(self.global_rh.get_all_configs()))
-
-        # Estimate all missing costs using validation or EPM
-        self.complete_data()
-        self.best_run = min(self.runs, key=lambda run: run.get_incumbent()[1])
-
-        # Check scenarios for consistency in relevant attributes
-        # TODO check for consistency in scenarios
-        for run in self.runs:
-            if not run.scen == self.scenario:
-                #raise ValueError("Scenarios don't match up ({})".format(run.folder))
-                pass
-        self.default = self.scenario.cs.get_default_configuration()
-        self.incumbent = self.best_run.get_incumbent()[0]
-
-        # Following variable determines whether a distinction is made
-        self.train_test = bool(self.scenario.train_insts != [None] and
-                               self.scenario.test_insts != [None])
-
-        # Dict to save par10 in as tuple (train, test)
-        self.par10 = {}
-
-        # Paths
-        self.paths = {'scatter_path' : False,
-                      'cdf_combined_path' : False,
-                      'f_s_barplot_path' : os.path.join(self.output, "forward-selection-barplot.png"),
-                      'f_s_chng_path' : os.path.join(self.output, "forward-selection-chng.png"),
-                      'ablationpercentage_path' : os.path.join(self.output, "ablationpercentage.png"),
-                      'ablationperformance_path' : os.path.join(self.output, "ablationperformance.png")}
-
-    def complete_data(self):
-        """Complete missing data of runs to be analyzed. Either using validation
-        or EPM.
-        """
-        with changedir(self.ta_exec_dir):
-            self.logger.info("Completing data using %s.", self.missing_data_method)
-
-            for run in self.runs:
-                validator = Validator(run.scen, run.traj, "")
-
-                if self.missing_data_method == "validation":
-                    # TODO determine # repetitions
-                    run.rh = validator.validate('def+inc', 'train+test', 1, -1,
-                                                runhistory=self.global_rh)
-                elif self.missing_data_method == "epm":
-                    run.rh = validator.validate_epm('def+inc', 'train+test', 1,
-                                                    runhistory=self.global_rh)
-                else:
-                    raise ValueError("Missing data method illegal (%s)",
-                                     self.missing_data_method)
-
-                self.global_rh.update(run.rh)
-
-    def analyze(self, par10=True, cdf=True, scatter=True, confviz=True,
-                forward_selection=True, ablation=True, fanova=True):
-        """
-        Performs analysis of scenario by scrutinizing the runhistory.
-
-        Creates:
-            - PAR10-values for default and incumbent (best of all runs)
-            - CDF-plot for default and incumbent (best of all runs)
-            - Scatter-plot for default and incumbent (best of all runs)
-            - Importance (forward-selection, ablation, fanova)
-            - (TODO) Search space heat map
-            - (TODO) Parameter search space flow map
-
-        Parameters
-        ----------
-        par10: bool
-            whether to calculate par10-values
-        cdf: bool
-            whether to plot cdf
-        scatter: bool
-            whether to plot scatter
-        forward_selection: bool
-            whether to apply forward selection
-        ablation: bool
-            whether to apply ablation
-        fanova: bool
-            whether to apply fanova
-        """
-        # TODO loss to cost
-        default_loss_per_inst = get_loss_per_instance(self.global_rh,
-                                                      self.default, aggregate=np.mean)
-        incumbent_loss_per_inst = get_loss_per_instance(self.global_rh,
-                                                        self.incumbent, aggregate=np.mean)
-        if not len(default_loss_per_inst) == len(incumbent_loss_per_inst):
-            self.logger.warning("Default evaluated on %d instances, "
-                                "incumbent evaluated on %d instances! "
-                                "Might lead to unexpected results, consider "
-                                "validating your results.",
-                                len(default_loss_per_inst), len(incumbent_loss_per_inst))
-
-        # Create table with basic information on scenario and runs
-        self.overview = self.create_overview_table()
-
-        # Analysis
-
-        # Plotting
-        conf1_runs = get_cost_dict_for_config(self.global_rh, self.default)
-        conf2_runs = get_cost_dict_for_config(self.global_rh, self.incumbent)
-        plotter = Plotter(self.scenario, self.train_test, conf1_runs,
-                conf2_runs)
-        if scatter and (self.scenario.train_insts != [[None]]):
-            scatter_path = os.path.join(self.output, 'scatter.png')
-            plotter.plot_scatter(output=scatter_path)
-            self.paths['scatter_path'] = scatter_path
-        elif scatter:
-            self.logger.info("Scatter plot desired, but no instances available.")
-
-        if cdf:
-            cdf_path = os.path.join(self.output, 'cdf.png')
-            plotter.plot_cdf_compare(output=cdf_path)
-            self.paths['cdf_path'] = cdf_path
-
-        # Visualizing configurations (via plotter)
-        self.confviz = None
-        if self.scenario.feature_array is not None and confviz: #confviz:
-            self.confviz = plotter.visualize_configs(self.scenario, self.global_rh)
-        elif confviz:
-            self.logger.info("Configuration visualization desired, but no "
-                             "instance-features available.")
-
-        # PARAMETER IMPORTANCE
-        if ablation:
-            self.parameter_importance("ablation")
-        if forward_selection:
-            self.parameter_importance("forward-selection")
-        if fanova:
-            self.parameter_importance("fanova")
-
-    def build_html(self):
-        """ Build website using the HTMLBuilder. Return website as dictionary
-        for further stacking. Also saves website in
-        'self.output/SpySMAC/report.html'
-
-        Return
-        ------
-        website: dict
-            website in dict as used in HTMLBuilder, can be stacked recursively
-            into another dict
-        """
-        builder = HTMLBuilder(self.output, "SpySMAC")
-
-        website = OrderedDict([
-                   ("Meta Data",
-                    {"table": self.overview,
-                     "tooltip": "Meta data such as number of instances, "
-                                "parameters, general configurations..." }),
-                   ("Best configuration",
-                    {"table":
-                        self.config_to_html(self.default, self.incumbent),
-                     "tooltip": "Comparing parameters of default and incumbent."})])
-
-        #if self.default in self.par10 and self.incumbent in self.par10:
-        par10_table = self.create_performance_table()
-        website["Performance"] = {"table": par10_table}
-
-        if self.paths['scatter_path']:
-            website["Scatterplot"] = {
-                     "figure" : self.paths['scatter_path'],
-                     "tooltip": "Plot all instances in direct comparison of "
-                                "default and incumbent costs."}
-
-        if self.paths['cdf_path']:
-            website["Cumulative distribution function (CDF)"] = {
-                     "figure": self.paths['cdf_path'],
-                     "tooltip": "Plotting default vs incumbent on the time to "
-                                "solve instances. Timeouts are excluded."}
-        website["Parameter Importance"] = OrderedDict([
-                       ("Forward Selection (barplot)",
-                        {"figure": self.paths['f_s_barplot_path']}),
-                       ("Forward Selection (chng)",
-                        {"figure": self.paths['f_s_chng_path']}),
-                       ("Ablation (percentage)",
-                        {"figure": self.paths['ablationpercentage_path']}),
-                       ("Ablation (performance)",
-                        {"figure": self.paths['ablationperformance_path']})])
-
-        if self.confviz:
-            website["Configuration Visualization"] = {"table" :
-                               self.confviz}
-        builder.generate_html(website)
-        return website
+        self.performance_table = None
 
     def get_timeouts(self, config):
         """ Get number of timeouts in config per runs in total (not per
@@ -293,7 +53,7 @@ class Analyzer(object):
         cutoff = self.scenario.cutoff
         if self.train_test:
             if not cutoff:
-                return (("N/A","N/A"),("N/A","N/A"))
+                return (("N","A"),("N","A"))
             train_timeout, test_timeout = 0, 0
             train_no_timeout, test_no_timeout = 0, 0
             for run in costs:
@@ -312,7 +72,7 @@ class Analyzer(object):
             return ((train_timeout, train_no_timeout), (test_timeout, test_no_timeout))
         else:
             if not cutoff:
-                return ("N/A","N/A")
+                return ("N","A")
             timeout, no_timeout = 0, 0
             for run in costs:
                 if cutoff and costs[run] >= cutoff:
@@ -360,7 +120,7 @@ class Analyzer(object):
         else:
             return np.mean([c for i, c in runs])
 
-    def parameter_importance(self, modus):
+    def parameter_importance(self, modus, incumbent, output):
         """Calculate parameter-importance using the PIMP-package.
         Currently ablation, forward-selection and fanova are used.
 
@@ -376,10 +136,10 @@ class Analyzer(object):
         y = np.array([self.global_rh.get_cost(c) for c in configs])
 
         # Evaluate parameter importance
-        save_folder = self.output
+        save_folder = output
         importance = Importance(scenario=self.scenario,
                                 runhistory=self.global_rh,
-                                incumbent=self.incumbent,
+                                incumbent=incumbent,
                                 parameters_to_evaluate=len(self.scenario.cs.get_hyperparameters()),
                                 save_folder=save_folder,
                                 seed=12345)
@@ -388,9 +148,9 @@ class Analyzer(object):
             json.dump(result, out_file, sort_keys=True, indent=4, separators=(',', ': '))
         importance.plot_results(name=os.path.join(save_folder, modus), show=False)
 
-    def create_overview_table(self):
+    def create_overview_table(self, best_folder):
         """ Create overview-table. """
-        overview = OrderedDict([('Run with best incumbent', self.best_run.folder),
+        overview = OrderedDict([('Run with best incumbent', best_folder),
                                 ('# Train instances', len(self.scenario.train_insts)),
                                 ('# Test instances', len(self.scenario.test_insts)),
                                 ('# Parameters', len(self.scenario.cs.get_hyperparameters())),
@@ -407,14 +167,13 @@ class Analyzer(object):
         table = df.to_html(escape=False, header=False, index=False, justify='left')
         return table
 
-    def create_performance_table(self):
-        """ Create PAR10-table, compare default against incumbent on train-,
-        test- and combined instances. """
-        #TODO timeouts over runs or over instances? instance-average over PAR1
-        # or PAR10?
-        def_timeout, inc_timeout = self.get_timeouts(self.default), self.get_timeouts(self.incumbent)
-        def_par10, inc_par10 = self.get_parX(self.default, 10), self.get_parX(self.incumbent, 10)
-        def_par1, inc_par1 = self.get_parX(self.default, 1), self.get_parX(self.incumbent, 1)
+    def create_performance_table(self, default, incumbent):
+        """Create table, compare default against incumbent on train-,
+        test- and combined instances. Listing PAR10, PAR1 and timeouts.
+        Distinguishes between train and test, if available."""
+        def_timeout, inc_timeout = self.get_timeouts(default), self.get_timeouts(incumbent)
+        def_par10, inc_par10 = self.get_parX(default, 10), self.get_parX(incumbent, 10)
+        def_par1, inc_par1 = self.get_parX(default, 1), self.get_parX(incumbent, 1)
         dec_place = 3
         if self.train_test:
             # Distinction between train and test
@@ -466,6 +225,7 @@ class Analyzer(object):
             df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
                            columns=['Default', 'Incumbent'])
             table = df.to_html()
+        self.performance_table = table
         return table
 
     def config_to_html(self, default: Configuration, incumbent: Configuration):
@@ -490,18 +250,6 @@ class Analyzer(object):
         df = DataFrame(data=table, columns=["Default", "Incumbent"], index=keys)
         table = df.to_html()
         return table
-
-    def _eq_scenarios(self, scen1: Scenario, scen2: Scenario):
-        """Custom function to compare relevant features of scenarios.
-
-        Parameters
-        ----------
-        scen1, scen2 -- Scenario
-            scenarios to be compared
-        """
-        relevant = ["train_insts", "test_insts", "cs", "features_dict",
-                    "initial_incumbent", "cutoff", "cost_for_crash"]
-        #for member in 
 
     def _split_table(self, table: OrderedDict):
         """Splits an OrderedDict into a list of tuples that can be turned into a

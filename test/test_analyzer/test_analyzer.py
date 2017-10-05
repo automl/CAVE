@@ -12,34 +12,33 @@ from smac.utils.io.traj_logging import TrajLogger
 from smac.utils.validate import Validator
 
 from spysmac.analyzer import Analyzer
+from spysmac.spyfacade import SpySMAC
 from spysmac.plot.plotter import Plotter
 
 
-
-class TestAnalyzer(unittest.TestCase):
+class TestFacade(unittest.TestCase):
 
     def setUp(self):
-        self.output = "test/test_files/analyzer_output"
+        self.output = "test/test_files/facade_output"
         shutil.rmtree(self.output, ignore_errors=True)
-        self.analyzer = Analyzer(["examples/spear_qcp_small/example_output_1",
-                                  "examples/spear_qcp_small/example_output_2",
-                                  "examples/spear_qcp_small/example_output_3"],
-                                 output=self.output,
-                                 missing_data_method="epm",
-                                 ta_exec_dir="examples/spear_qcp_small")
+        self.spysmac = SpySMAC(["examples/spear_qcp_small/example_output_1",
+                                "examples/spear_qcp_small/example_output_2",
+                                "examples/spear_qcp_small/example_output_3"],
+                               output=self.output,
+                               missing_data_method="epm",
+                               ta_exec_dir="examples/spear_qcp_small")
 
     def test_par10(self):
-        self.analyzer.analyze(par10=True, cdf=False, scatter=False,
-                              forward_selection=False, ablation=False,
-                              fanova=False)
+        self.spysmac.analyze(performance=True, cdf=False, scatter=False,
+                             forward_selection=False, ablation=False,
+                             fanova=False)
 
     def test_plot(self):
-        self.analyzer.analyze(par10=False, cdf=True, scatter=True,
-                              forward_selection=False, ablation=False,
-                              fanova=False)
-        self.analyzer.build_html()
+        self.spysmac.analyze(performance=False, cdf=True, scatter=True,
+                             forward_selection=False, ablation=False,
+                             fanova=False)
 
     def test_nonexisting_folder(self):
-        self.assertRaises(ValueError, Analyzer, ["examples/spear_qcp_small/nonsense"],
+        self.assertRaises(ValueError, SpySMAC, ["examples/spear_qcp_small/nonsense"],
                           self.output)
 

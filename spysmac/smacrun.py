@@ -2,6 +2,7 @@ import os
 import logging
 from contextlib import contextmanager
 
+from smac.facade.smac_facade import SMAC
 from smac.optimizer.objective import average_cost
 from smac.utils.io.input_reader import InputReader
 from smac.runhistory.runhistory import RunKey, RunValue, RunHistory
@@ -18,12 +19,13 @@ def changedir(newdir):
     finally:
         os.chdir(olddir)
 
-class SMACrun(object):
+class SMACrun(SMAC):
     """
     SMACrun keeps all information on a specific SMAC run.
     """
     def __init__(self, folder: str, ta_exec_dir: str="."):
-        """
+        """Initialize scenario, runhistory and incumbent from folder, execute
+        init-method of SMAC facade (so you could simply use SMAC-runs instead)
         Parameters
         ----------
         folder: string
@@ -49,22 +51,28 @@ class SMACrun(object):
         self.traj_old_fn = os.path.join(folder, 'traj_old.csv')
 
         # Create Scenario (disable output_dir to avoid cluttering)
-        self.scen = in_reader.read_scenario_file(self.scen_fn)
-        self.scen['output_dir'] = ""
+        scen_dict = in_reader.read_scenario_file(self.scen_fn)
+        scen_dict['output_dir'] = ""
         with changedir(ta_exec_dir):
-            self.scen = Scenario(self.scen)
+            self.scen = Scenario(scen_dict)
 
         # Load runhistory and trajectory
-        self.rh = RunHistory(average_cost)
-        self.rh.update_from_json(self.rh_fn, self.scen.cs)
+        self.runhistory = RunHistory(average_cost)
+        self.runhistory.update_from_json(self.rh_fn, self.scen.cs)
         self.traj = TrajLogger.read_traj_aclib_format(fn=self.traj_fn,
                                                       cs=self.scen.cs)
 
-        self.incumbent = self.traj[-1]['incumbent']
+        incumbent = self.traj[-1]['incumbent']
         self.train_inst = self.scen.train_insts
         self.test_inst = self.scen.test_insts
 
+        # Initialize SMAC-object
+        super().__init__(scenario=self.scen, runhistory=self.runhistory)
+                #restore_incumbent=incumbent)
+        # TODO use restore, delete next line
+        self.solver.incumbent = incumbent
+
     def get_incumbent(self):
         """Return tuple (incumbent, loss)."""
-        return (self.incumbent, self.rh.get_cost(self.incumbent))
+        return (self.solver.incumbent, self.solver.runhistory.get_cost(self.solver.incumbent))
 
