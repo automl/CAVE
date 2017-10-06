@@ -21,7 +21,7 @@ from pimp.importance.importance import Importance
 from spysmac.html.html_builder import HTMLBuilder
 from spysmac.plot.plotter import Plotter
 from spysmac.smacrun import SMACrun
-from spysmac.utils.helpers import get_cost_dict_for_config
+from spysmac.utils.helpers import get_cost_dict_for_config, get_timeout
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -49,36 +49,25 @@ class Analyzer(object):
     def get_timeouts(self, config):
         """ Get number of timeouts in config per runs in total (not per
         instance) """
-        costs = get_cost_dict_for_config(self.global_rh, config, metric='time')
         cutoff = self.scenario.cutoff
+        timeouts = get_timeout(self.global_rh, config, cutoff)
         if self.train_test:
             if not cutoff:
                 return (("N","A"),("N","A"))
-            train_timeout, test_timeout = 0, 0
-            train_no_timeout, test_no_timeout = 0, 0
-            for run in costs:
-                if (cutoff and run.instance in self.scenario.train_insts and
-                        costs[run] >= cutoff):
-                    train_timeout += 1
-                elif (cutoff and run.instance in self.scenario.train_insts and
-                        costs[run] < cutoff):
-                    train_no_timeout += 1
-                if (cutoff and run.instance in self.scenario.test_insts and
-                        costs[run] >= cutoff):
-                    test_timeout += 1
-                elif (cutoff and run.instance in self.scenario.test_insts and
-                        costs[run] < cutoff):
-                    test_no_timeout += 1
+            train_timeout = len([i for i in timeouts if (timeouts[i] == False
+                                  and i in self.scenario.train_insts)])
+            train_no_timeout = len([i for i in timeouts if (timeouts[i] == True
+                                  and i in self.scenario.train_insts)])
+            test_timeout = len([i for i in timeouts if (timeouts[i] == False
+                                  and i in self.scenario.test_insts)])
+            test_no_timeout = len([i for i in timeouts if (timeouts[i] == True
+                                  and i in self.scenario.test_insts)])
             return ((train_timeout, train_no_timeout), (test_timeout, test_no_timeout))
         else:
             if not cutoff:
                 return ("N","A")
-            timeout, no_timeout = 0, 0
-            for run in costs:
-                if cutoff and costs[run] >= cutoff:
-                    timeout += 1
-                else:
-                    no_timeout += 1
+            timeout = len([i for i in timeouts if timeouts[i] == False])
+            no_timeout = len([i for i in timeouts if timeouts[i] == True])
             return (timeout, no_timeout)
 
     def get_parX(self, config, par=10):
@@ -102,11 +91,11 @@ class Analyzer(object):
         runs = get_cost_dict_for_config(self.global_rh, config)
         # Penalize
         if self.scenario.cutoff:
-            runs = [(k.instance, runs[k]) if runs[k] < self.scenario.cutoff
-                        else (k.instance, self.scenario.cutoff*par)
+            runs = [(k, runs[k]) if runs[k] < self.scenario.cutoff
+                        else (k, self.scenario.cutoff*par)
                         for k in runs]
         else:
-            runs = [(k.instance, runs[k]) for k in runs]
+            runs = [(k, runs[k]) for k in runs]
             self.logger.info("Calculating penalized average runtime without "
                              "cutoff...")
 

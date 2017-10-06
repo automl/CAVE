@@ -21,6 +21,8 @@ def get_timeout(rh, conf, cutoff):
     timeouts: Dict(str: bool)
         mapping instances to [True, False], where True indicates a timeout
     """
+    if not cutoff:
+        return {}
     # Check if config is in runhistory
     conf_id = rh.config_ids[conf]
 
