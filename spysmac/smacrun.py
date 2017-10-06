@@ -25,7 +25,8 @@ class SMACrun(SMAC):
     """
     def __init__(self, folder: str, ta_exec_dir: str="."):
         """Initialize scenario, runhistory and incumbent from folder, execute
-        init-method of SMAC facade (so you could simply use SMAC-runs instead)
+        init-method of SMAC facade (so you could simply use SMAC-instances instead)
+
         Parameters
         ----------
         folder: string
@@ -71,8 +72,3 @@ class SMACrun(SMAC):
                 #restore_incumbent=incumbent)
         # TODO use restore, delete next line
         self.solver.incumbent = incumbent
-
-    def get_incumbent(self):
-        """Return tuple (incumbent, loss)."""
-        return (self.solver.incumbent, self.solver.runhistory.get_cost(self.solver.incumbent))
-
