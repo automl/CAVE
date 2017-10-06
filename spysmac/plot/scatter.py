@@ -82,7 +82,8 @@ def plot_scatter_plot(x_data, y_data, labels, title="", debug=False,
     # -----
 
     if max_val == None:
-        raise ValueError("max_val cannot be None")
+        max_val = 1000
+        #raise ValueError("max_val cannot be None")
     maximum_value = max_val
 
     # Colors
