@@ -42,15 +42,15 @@ class Plotter(object):
         test = scenario.test_insts
         for k in conf1_runs:
             data["default"]["combined"].append(conf1_runs[k])
-            if k.instance in train:
+            if k in train:
                 data["default"]["train"].append(conf1_runs[k])
-            if k.instance in test:
+            if k in test:
                 data["default"]["test"].append(conf1_runs[k])
         for k in conf2_runs:
             data["incumbent"]["combined"].append(conf2_runs[k])
-            if k.instance in train:
+            if k in train:
                 data["incumbent"]["train"].append(conf2_runs[k])
-            if k.instance in test:
+            if k in test:
                 data["incumbent"]["test"].append(conf2_runs[k])
         for c in ["default", "incumbent"]:
             for s in ["combined", "train", "test"]:

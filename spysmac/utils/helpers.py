@@ -3,21 +3,6 @@ import numpy as np
 from smac.runhistory.runhistory import RunKey
 from smac.tae.execute_ta_run import StatusType
 
-def get_cost_dict_for_config(rh, conf, metric='cost'):
-    """
-    """
-    # Check if config is in runhistory
-    conf_id = rh.config_ids[conf]
-
-    costs = {}
-    runs = rh.get_runs_for_config(conf)
-    for run in runs:
-        if metric == 'cost':
-            costs[run] = rh.data[RunKey(conf_id, run[0], run[1])].cost
-        elif metric == 'time':
-            costs[run] = rh.data[RunKey(conf_id, run[0], run[1])].time
-    return costs
-
 def get_timeout(rh, conf, cutoff):
     """Check for timeouts. If multiple runs for an inst/config-pair are
     available, using the median (not the mean: no fractional timeouts)
@@ -53,7 +38,7 @@ def get_timeout(rh, conf, cutoff):
     timeouts = {i : np.floor(np.median(timeouts[i])) for i in timeouts.keys()}
     return timeouts
 
-def get_loss_per_instance(rh, conf, aggregate=None):
+def get_cost_dict_for_config(rh, conf, aggregate=np.mean):
     """
     Aggregates loss for configuration on evaluated instances over seeds.
 

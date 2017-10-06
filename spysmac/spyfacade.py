@@ -23,7 +23,7 @@ from spysmac.html.html_builder import HTMLBuilder
 from spysmac.plot.plotter import Plotter
 from spysmac.smacrun import SMACrun
 from spysmac.analyzer import Analyzer
-from spysmac.utils.helpers import get_loss_per_instance, get_cost_dict_for_config
+from spysmac.utils.helpers import get_cost_dict_for_config
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -88,7 +88,7 @@ class SpySMAC(object):
             self.logger.debug("Collecting data from %s.", folder)
             self.runs.append(SMACrun(folder, ta_exec_dir))
 
-        self.scenario = self.runs[0].scen
+        self.scenario = self.runs[0].solver.scenario
 
         # Update global runhistory with all available runhistories
         self.logger.debug("Update global rh with all available rhs!")
@@ -102,7 +102,8 @@ class SpySMAC(object):
 
         # Estimate all missing costs using validation or EPM
         self.complete_data(method=missing_data_method)
-        self.best_run = min(self.runs, key=lambda run: run.get_incumbent()[1])
+        self.best_run = min(self.runs, key=lambda run:
+                self.global_rh.get_cost(run.solver.incumbent))
 
         # Check scenarios for consistency in relevant attributes
         # TODO check for consistency in scenarios
@@ -111,7 +112,7 @@ class SpySMAC(object):
                 #raise ValueError("Scenarios don't match up ({})".format(run.folder))
                 pass
         self.default = self.scenario.cs.get_default_configuration()
-        self.incumbent = self.best_run.get_incumbent()[0]
+        self.incumbent = self.best_run.solver.incumbent
 
         # Following variable determines whether a distinction is made
         self.train_test = bool(self.scenario.train_insts != [None] and

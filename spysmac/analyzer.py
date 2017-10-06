@@ -21,7 +21,7 @@ from pimp.importance.importance import Importance
 from spysmac.html.html_builder import HTMLBuilder
 from spysmac.plot.plotter import Plotter
 from spysmac.smacrun import SMACrun
-from spysmac.utils.helpers import get_loss_per_instance, get_cost_dict_for_config
+from spysmac.utils.helpers import get_cost_dict_for_config
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
