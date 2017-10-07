@@ -31,7 +31,7 @@ class TestCLI(unittest.TestCase):
                     "examples/spear_qcp_small/example_output_1",
                     "--verbose", "DEBUG",
                     "--ta_exec_dir", "examples/spear_qcp_small",
-                    "--param_importance", "False"]
+                    "--param_importance", "none"]
         with mock.patch.object(sys, 'argv', testargs):
             self.cli.main_cli()
 
@@ -39,7 +39,7 @@ class TestCLI(unittest.TestCase):
         with changedir("examples/spear_qcp_small"):
             testargs = ["python", "scripts/spy.py", "--folders",
                         "example_output_1", "--verbose", "DEBUG",
-                        "--param_importance", "False"]
+                        "--param_importance", "none"]
             with mock.patch.object(sys, 'argv', testargs):
                 self.cli.main_cli()
 
@@ -48,7 +48,7 @@ class TestCLI(unittest.TestCase):
                     "examples/spear_qcp_small/example_output_1",
                     "--verbose", "DEBUG",
                     "--ta_exec_dir", "examples/spear_qcp_small",
-                    "--param_importance", "true"]
+                    "--param_importance", "all"]
         with mock.patch.object(sys, 'argv', testargs):
             self.cli.main_cli()
 
@@ -64,7 +64,7 @@ class TestCLI(unittest.TestCase):
                     "--verbose", "DEBUG", "--output", self.output,
                     "--ta_exec_dir", "examples/spear_qcp_small",
                     "--missing_data_method", "epm",
-                    "--param_importance", "False"]
+                    "--param_importance", "none"]
         with mock.patch.object(sys, 'argv', testargs):
             self.cli.main_cli()
 
@@ -83,7 +83,7 @@ class TestCLI(unittest.TestCase):
                             case+"_run1",
                             "--verbose", "DEBUG",
                             "--output", case+"_SPY",
-                            "--param_importance", "False"]
+                            "--param_importance", "none"]
                 with mock.patch.object(sys, 'argv', testargs):
                     self.cli.main_cli()
 

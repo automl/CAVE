@@ -49,9 +49,10 @@ class SpySMACCLI(object):
         opt_opts.add_argument("--ta_exec_dir", default='.',
                               help="path to the execution-directory of the "
                                    "SMAC run.")
-        opt_opts.add_argument("--param_importance", default=True,
-                              help="whether to calculate (time-intensive) "
-                                   "parameter importance.")
+        opt_opts.add_argument("--param_importance", default="all",
+                              help="what kind of parameter importance to "
+                                   "calculate", choices=["all", "ablation",
+                                   "forward_selection", "fanova", "none"])
         args_, misc = parser.parse_known_args()
 
         if args_.verbose_level == "INFO":
@@ -62,9 +63,13 @@ class SpySMACCLI(object):
         # SMAC results
         spySMAC = SpySMAC(args_.folders, args_.output, args_.ta_exec_dir,
                             missing_data_method=args_.missing_data_method)
-        if args_.param_importance not in ('no', 'false', 'False', 'f', 'n', '0'):
-            spySMAC.analyze(performance=True, cdf=True, scatter=True, confviz=True,
-                            forward_selection=False, ablation=False, fanova=False)
+        if args_.param_importance == "all":
+            param_imp = ["ablation", "forward_selection", "fanova"]
+        elif args_.param_importance == "none":
+            param_imp = []
         else:
-            spySMAC.analyze(performance=True, cdf=True, scatter=True, confviz=True,
-                            forward_selection=True, ablation=True, fanova=True)
+            param_imp = [args_.param_importance]
+        spySMAC.analyze(performance=True, cdf=True, scatter=True, confviz=True,
+                        forward_selection="forward_selection" in param_imp,
+                        ablation="ablation" in param_imp,
+                        fanova="fanova" in param_imp)
