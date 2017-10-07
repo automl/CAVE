@@ -247,7 +247,20 @@ class Analyzer(object):
         keys = [k for k in default.keys() if default[k] or incumbent[k]]
         default = [default[k] for k in keys]
         incumbent = [incumbent[k] for k in keys]
-        table = list(zip(default, incumbent))
+        table = list(zip(keys, default, incumbent))
+        # Show first parameters that changed
+        same = [x for x in table if x[1] == x[2]]
+        diff = [x for x in table if x[1] != x[2]]
+        table = []
+        if len(diff) > 0:
+            table.extend([("-------------- Changed parameters: "\
+                           "--------------", "-----", "-----")])
+            table.extend(diff)
+        if len(same) > 0:
+            table.extend([("-------------- Unchanged parameters: "\
+                           "--------------", "-----", "-----")])
+            table.extend(same)
+        keys, table = [k[0] for k in table], [k[1:] for k in table]
         df = DataFrame(data=table, columns=["Default", "Incumbent"], index=keys)
         table = df.to_html()
         return table
