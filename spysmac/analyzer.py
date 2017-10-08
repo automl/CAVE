@@ -109,6 +109,17 @@ class Analyzer(object):
         else:
             return np.mean([c for i, c in runs])
 
+    def fanova(self, incumbent, output, num_params=10):
+        """Wrapper for parameter_importance to save the importance-object/
+        extract the results. We want to show the top X (10) most important
+        parameter-fanova-plots.
+        """
+        importance = self.parameter_importance("fanova", incumbent, output)
+        parameter_imp = importance.evaluator.evaluated_parameter_importance
+        parameter_imp = sorted([(k, parameter_imp[k]) for k in
+            parameter_imp.keys()], key=lambda x:x[1], reverse=True)
+        return parameter_imp[:num_params]
+
     def parameter_importance(self, modus, incumbent, output):
         """Calculate parameter-importance using the PIMP-package.
         Currently ablation, forward-selection and fanova are used.
@@ -136,6 +147,7 @@ class Analyzer(object):
         with open(os.path.join(save_folder, 'pimp_values_%s.json' % modus), 'w') as out_file:
             json.dump(result, out_file, sort_keys=True, indent=4, separators=(',', ': '))
         importance.plot_results(name=os.path.join(save_folder, modus), show=False)
+        return importance
 
     def create_overview_table(self, best_folder):
         """ Create overview-table. """
@@ -233,9 +245,22 @@ class Analyzer(object):
         """
         # Remove unused parameters
         keys = [k for k in default.keys() if default[k] or incumbent[k]]
-        default = [default[k] for k in keys]
-        incumbent = [incumbent[k] for k in keys]
-        table = list(zip(default, incumbent))
+        default = [default[k] if default[k] != None else "inactive" for k in keys]
+        incumbent = [incumbent[k] if incumbent[k] != None else "inactive" for k in keys]
+        table = list(zip(keys, default, incumbent))
+        # Show first parameters that changed
+        same = [x for x in table if x[1] == x[2]]
+        diff = [x for x in table if x[1] != x[2]]
+        table = []
+        if len(diff) > 0:
+            table.extend([("-------------- Changed parameters: "\
+                           "--------------", "-----", "-----")])
+            table.extend(diff)
+        if len(same) > 0:
+            table.extend([("-------------- Unchanged parameters: "\
+                           "--------------", "-----", "-----")])
+            table.extend(same)
+        keys, table = [k[0] for k in table], [k[1:] for k in table]
         df = DataFrame(data=table, columns=["Default", "Incumbent"], index=keys)
         table = df.to_html()
         return table

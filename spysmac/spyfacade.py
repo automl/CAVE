@@ -178,7 +178,9 @@ class SpySMAC(object):
 
         best_config = self.analyzer.config_to_html(self.default, self.incumbent)
         self.website["Best configuration"] = {"table": best_config,
-                     "tooltip": "Comparing parameters of default and incumbent."}
+                     "tooltip": "Comparing parameters of default and incumbent. "
+                                "Parameters that differ from default to "
+                                "incumbent are presented first."}
 
         if performance:
             performance_table = self.analyzer.create_performance_table(
@@ -190,16 +192,17 @@ class SpySMAC(object):
             self.plotter.plot_cdf_compare(output=cdf_path)
             self.website["Cumulative distribution function (CDF)"] = {
                      "figure": cdf_path,
-                     "tooltip": "Plotting default vs incumbent on the time to "
-                                "solve instances. Timeouts are excluded."}
+                     "tooltip": "Plot default versus incumbent performance "
+                                "on a cumulative distribution plot."}
 
         if scatter and (self.scenario.train_insts != [[None]]):
             scatter_path = os.path.join(self.output, 'scatter.png')
             self.plotter.plot_scatter(output=scatter_path)
             self.website["Scatterplot"] = {
                      "figure" : scatter_path,
-                     "tooltip": "Plot all instances in direct comparison of "
-                                "default and incumbent costs."}
+                     "tooltip": "Plot all evaluated instances on a scatter plot, "
+                                "to directly compare performance of incumbent "
+                                "and default for each instance."}
         elif scatter:
             self.logger.info("Scatter plot desired, but no instances available.")
 
@@ -208,7 +211,7 @@ class SpySMAC(object):
             self.website["Configuration Visualization"] = {
                     "table" : confviz,
                     "tooltip" : "Using PCA to reduce dimensionality of the "
-                                "search space  and plot the distribution of"
+                                "search space  and plot the distribution of "
                                 "evaluated configurations. The bigger the dot, "
                                 "the more often the configuration was "
                                 "evaluated. The colours refer to the predicted "
@@ -219,8 +222,29 @@ class SpySMAC(object):
 
         # PARAMETER IMPORTANCE
         if ablation or forward_selection or fanova:
-            self.website["Parameter Importance"] = OrderedDict([])
+            self.website["Parameter Importance"] = OrderedDict([("tooltip",
+                "Parameter Importance explains the individual importance of the "
+                "parameters for the overall performance. Different techniques "
+                "are implemented, for example: fANOVA (functional analysis of "
+                "variance), ablation and forward selection.")])
+        if fanova:
+            self.logger.info("fANOVA...")
+            params = self.analyzer.fanova(self.incumbent, self.output, 10)
+            self.website["Parameter Importance"]["fANOVA"] = OrderedDict([
+                ("tooltip", "fANOVA stands for functional analysis of variance "
+                            "and predicts a parameters marginal performance, "
+                            "by analyzing the predicted local neighbourhood of "
+                            "this parameters optimized value, considering "
+                            "correlations to other parameters and isolating "
+                            "this parameters importance by predicting "
+                            "performance changes that depend on other "
+                            "parameters.")])
+            for p in params:
+                self.website["Parameter Importance"]["fANOVA"][p[0]] = {
+                        "figure": os.path.join(self.output, "fanova",
+                        p[0]+'.png')}
         if ablation:
+            self.logger.info("Ablation...")
             self.analyzer.parameter_importance("ablation", self.incumbent,
                                                self.output)
             ablationpercentage_path = os.path.join(self.output, "ablationpercentage.png")
@@ -230,6 +254,7 @@ class SpySMAC(object):
             self.website["Parameter Importance"]["Ablation (performance)"] = {
                         "figure": ablationperformance_path}
         if forward_selection:
+            self.logger.info("Forward Selection...")
             self.analyzer.parameter_importance("forward-selection", self.incumbent,
                                                self.output)
             f_s_barplot_path = os.path.join(self.output, "forward-selection-barplot.png")
@@ -238,8 +263,7 @@ class SpySMAC(object):
                         "figure": f_s_barplot_path}
             self.website["Parameter Importance"]["Forward Selection (chng)"] = {
                         "figure": f_s_chng_path}
-        if fanova:
-            self.analyzer.parameter_importance("fanova", self.incumbent, self.output)
+
 
         builder = HTMLBuilder(self.output, "SpySMAC")
         builder.generate_html(self.website)
