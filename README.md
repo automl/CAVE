@@ -1,5 +1,13 @@
 This package is not officially released yet and subject to heavy changes. Backwards-compatibility is at the moment unlikely.
 
+Status for master branch:
+
+[![Build Status](https://travis-ci.org/automl/SMAC3.svg?branch=master)](https://travis-ci.org/automl/SMAC3)
+
+Status for development branch
+
+[![Build Status](https://travis-ci.org/automl/SMAC3.svg?branch=development)](https://travis-ci.org/automl/SMAC3)
+
 # SpySMAC 
 SpySMAC is an analyzing tool that builds on SMAC3 (https://github.com/automl/SMAC3)
 
