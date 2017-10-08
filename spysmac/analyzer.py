@@ -48,7 +48,12 @@ class Analyzer(object):
 
     def get_timeouts(self, config):
         """ Get number of timeouts in config per runs in total (not per
-        instance) """
+        instance)
+
+        Parameters
+        ----------
+        config: Configuration
+            configuration from which to calculate the timeouts"""
         cutoff = self.scenario.cutoff
         timeouts = get_timeout(self.global_rh, config, cutoff)
         if self.train_test:
@@ -113,6 +118,20 @@ class Analyzer(object):
         """Wrapper for parameter_importance to save the importance-object/
         extract the results. We want to show the top X (10) most important
         parameter-fanova-plots.
+
+        Parameters
+        ----------
+        incumbent: Configuration
+            incumbent configuration
+        output: str
+            output-dir
+        num_params: int
+            how many of the top important parameters should be shown
+
+        Returns
+        -------
+        parameter_imp: list[str]
+            list with the most important parameters
         """
         importance = self.parameter_importance("fanova", incumbent, output)
         parameter_imp = importance.evaluator.evaluated_parameter_importance
@@ -129,6 +148,11 @@ class Analyzer(object):
         modus: str
             modus for parameter importance, from [forward-selection, ablation,
             fanova]
+
+        Returns
+        -------
+        importance: pimp.Importance
+            importance object with evaluated data
         """
         # Get parameter-values and costs per config in arrays.
         configs = self.global_rh.get_all_configs()
@@ -150,7 +174,18 @@ class Analyzer(object):
         return importance
 
     def create_overview_table(self, best_folder):
-        """ Create overview-table. """
+        """ Create overview-table.
+
+        Parameters
+        ----------
+        best_folder: str
+            path to folder/run with best incumbent
+
+        Returns
+        -------
+        table: str
+            overview table in HTML
+        """
         overview = OrderedDict([('Run with best incumbent', best_folder),
                                 ('# Train instances', len(self.scenario.train_insts)),
                                 ('# Test instances', len(self.scenario.test_insts)),

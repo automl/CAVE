@@ -7,12 +7,11 @@ SpySMAC is an analyzing tool that builds on SMAC3 (https://github.com/automl/SMA
 Please refer to LICENSE (https://github.com/automl/SpySMAC/blob/master/LICENSE)
 
 # OVERVIEW 
-SpySMAC is an analyzing tool. It is written in Python and uses SMAC3. SpySMAC generates PAR10-values, overview and plots, providing further inside into the optimization process.
+SpySMAC is an analyzing tool. It is written in Python 3.4 and uses SMAC3. SpySMAC generates performance-values (e.g. PAR10), scatter- and cdf-plots to compare the default and the optimized incumbent and providing further inside into the optimization process by quantifying the parameter importance.
 
 # REQUIREMENTS
 - Python 3.4
 - SMAC3 and all its dependencies
-- matplotlib
 
 # INSTALLATION
 Clone the repository and install requirements into your virtual environment.
