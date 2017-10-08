@@ -245,8 +245,8 @@ class Analyzer(object):
         """
         # Remove unused parameters
         keys = [k for k in default.keys() if default[k] or incumbent[k]]
-        default = [default[k] for k in keys]
-        incumbent = [incumbent[k] for k in keys]
+        default = [default[k] if default[k] != None else "inactive" for k in keys]
+        incumbent = [incumbent[k] if incumbent[k] != None else "inactive" for k in keys]
         table = list(zip(keys, default, incumbent))
         # Show first parameters that changed
         same = [x for x in table if x[1] == x[2]]
