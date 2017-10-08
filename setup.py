@@ -1,8 +1,3 @@
-"""
-This setup file was copied and adapted from the SMAC-project
-(https://github.com/automl/SMAC3)
-"""
-
 import setuptools
 
 import spysmac
@@ -18,15 +13,15 @@ with open("spysmac/__version__.py") as fh:
 
 
 setuptools.setup(
-    name="spysmac",
+    name="smac",
     version=version,
     author=spysmac.AUTHORS,
-    author_email="fh@cs.uni-freiburg.de",
-    description=("SpySMAC builds upon SMAC to provide an easy-to-use analysis tool "
-                 "for the output of SMAC optimization."),
+    # TODO author email
+    author_email="",
+    description=("SpySMAC, an analyzing tool for SMAC3"),
     license="3-clause BSD",
     keywords="machine learning algorithm configuration hyperparameter "
-             "optimization tuning",
+             "optimization tuning analyzing",
     url="",
     packages=setuptools.find_packages(exclude=['test', 'source']),
     classifiers=[
