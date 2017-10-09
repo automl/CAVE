@@ -6,8 +6,7 @@ import spysmac
 with open('requirements.txt') as fh:
     requirements = fh.read()
 requirements = requirements.split('\n')
-requirements = [requirement.strip() for requirement in requirements
-                  if not "http" in requirement]
+requirements = [requirement.strip() for requirement in requirements]
 
 with open("spysmac/__version__.py") as fh:
     version = fh.readlines()[-1].split()[-1].strip("\"'")
