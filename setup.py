@@ -6,7 +6,7 @@ import spysmac
 with open('requirements.txt') as fh:
     requirements = fh.read()
 requirements = requirements.split('\n')
-requirements = [requirement.strip() for requirement in requirements]
+requirements = [requirement.strip() for requirement in requirements
                   if not "http" in requirement]
 requirements.extend(["SMAC3", "PIMP", "fanova"])
 
