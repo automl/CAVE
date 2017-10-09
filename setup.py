@@ -8,7 +8,7 @@ with open('requirements.txt') as fh:
 requirements = requirements.split('\n')
 requirements = [requirement.strip() for requirement in requirements
                   if not "http" in requirement]
-requirements.extend(["SMAC3", "PIMP", "fanova"])
+requirements.extend(["smac", "pimp", "fanova"])
 
 with open("spysmac/__version__.py") as fh:
     version = fh.readlines()[-1].split()[-1].strip("\"'")
