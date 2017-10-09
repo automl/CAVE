@@ -2,6 +2,13 @@ matplotlib
 pandas
 sphinx
 sphinx_rtd_theme
+mpld3
 git+https://github.com/automl/fanova@b5d69a7db458f61b3a31e8fbb66edef6d8fce35f
 -e git+https://github.com/automl/SMAC3.git@e641576403e9de1a1188856b5f48e7232ac0d517#egg=smac
 -e git+https://github.com/automl/ParameterImportance.git@development#egg=pimp
+scipy
+sklearn
+orange3
+git+https://github.com/mlindauer/AutoFolio
+git+https://github.com/mlindauer/ASlibScenario
+git+https://bitbucket.org/aadfreiburg/plotting_scripts.git
