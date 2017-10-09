@@ -15,7 +15,7 @@ with open("spysmac/__version__.py") as fh:
 
 
 setuptools.setup(
-    name="smac",
+    name="spysmac",
     version=version,
     author=spysmac.AUTHORS,
     # TODO author email
