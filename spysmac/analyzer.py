@@ -6,6 +6,8 @@ import json
 
 import numpy as np
 from pandas import DataFrame
+import matplotlib
+matplotlib.use('Agg')
 
 from smac.configspace import Configuration
 from smac.epm.rf_with_instances import RandomForestWithInstances
