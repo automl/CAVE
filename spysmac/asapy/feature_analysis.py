@@ -52,7 +52,7 @@ class FeatureAnalysis(object):
         self.feature_data = {}
         for name in feat_names:
             insts = self.scenario.train_insts
-            #insts.extend(self.scenario.test_insts)
+            insts.extend(self.scenario.test_insts)
             self.feature_data[name] = {}
             for i in insts:
                 self.feature_data[name][i] = self.scenario.feature_dict[i][feat_names.index(name)]
@@ -239,6 +239,7 @@ class FeatureAnalysis(object):
 
         # feature data
         features = self.feature_data.values
+        print(self.feature_data.shape)
 
         # scale features
         ss = StandardScaler()
@@ -253,6 +254,10 @@ class FeatureAnalysis(object):
         for n_clusters in range(2, 12):
             km = KMeans(n_clusters=n_clusters)
             y_pred = km.fit_predict(features)
+            print(features)
+            print(y_pred)
+            print(features.shape)
+            print(y_pred.shape)
             score = silhouette_score(features, y_pred)
             scores.append(score)
 

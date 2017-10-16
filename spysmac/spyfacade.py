@@ -326,11 +326,11 @@ class SpySMAC(object):
             #    self.website["Feature Analysis"]["Feature importance"] = {"tooltip": "Using the approach of SATZilla'11, we train a cost-sensitive random forest for each pair of algorithms and average the feature importance (using gini as splitting criterion) across all forests. We show the median, 25th and 75th percentiles across all random forests of the 15 most important features.",
             #                                                      "figure": importance_plot}
 
-            ## cluster instances in feature space
-            #if "clustering" in feature_analysis:
-            #    cluster_plot = fa.cluster_instances()
-            #    self.website["Feature Analysis"]["Clustering"] = {"tooltip": "Clustering instances in 2d; the color encodes the cluster assigned to each cluster. Similar to ISAC, we use a k-means to cluster the instances in the feature space. As pre-processing, we use standard scaling and a PCA to 2 dimensions. To guess the number of clusters, we use the silhouette score on the range of 2 to 12 in the number of clusters",
-            #                                              "figure": cluster_plot}
+            # cluster instances in feature space
+            if "clustering" in feature_analysis:
+                cluster_plot = fa.cluster_instances()
+                self.website["Feature Analysis"]["Clustering"] = {"tooltip": "Clustering instances in 2d; the color encodes the cluster assigned to each cluster. Similar to ISAC, we use a k-means to cluster the instances in the feature space. As pre-processing, we use standard scaling and a PCA to 2 dimensions. To guess the number of clusters, we use the silhouette score on the range of 2 to 12 in the number of clusters",
+                                                          "figure": cluster_plot}
 
             ## get cdf plot
             #if "feature_cdf" in feature_analysis:
