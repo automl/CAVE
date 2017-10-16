@@ -48,20 +48,21 @@ class FeatureAnalysis(object):
         '''
         self.logger = logging.getLogger("Feature Analysis")
         self.scenario = scenario
+        self.feat_names = feat_names
         self.feature_data = {}
         for name in feat_names:
             insts = self.scenario.train_insts
-            insts.extend(self.scenario.train_insts)
+            #insts.extend(self.scenario.test_insts)
             self.feature_data[name] = {}
             for i in insts:
                 self.feature_data[name][i] = self.scenario.feature_dict[i][feat_names.index(name)]
+        self.feature_data = DataFrame(self.feature_data)
 
         self.output_dn = os.path.join(output_dn, "feature_plots")
         if not os.path.isdir(self.output_dn):
             os.makedirs(self.output_dn)
 
-    def get_box_violin_plots(self,
-            feat_names):
+    def get_box_violin_plots(self):
         '''
             for each feature generate a plot with box and vilion plot
 
@@ -78,10 +79,10 @@ class FeatureAnalysis(object):
 
         files_ = []
 
-        for feat_name in sorted(feat_names):
+        for feat_name in sorted(self.feat_names):
             matplotlib.pyplot.close()
             fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(15, 5))
-            vec = self.scenario.feature_data[feat_name].values
+            vec = self.feature_data[feat_name].values
             vec = vec[~np.isnan(vec)]
             axes[0].violinplot(
                 [vec], showmeans=False, showmedians=True, vert=False)
@@ -110,8 +111,8 @@ class FeatureAnalysis(object):
         matplotlib.pyplot.close()
         self.logger.info("Plotting correlation plots........")
 
-        feature_data = self.scenario.feature_data
-        features = list(self.scenario.feature_data.columns)
+        feature_data = self.feature_data
+        features = list(self.feature_data.columns)
         feature_data = feature_data.fillna(feature_data.mean())
         feature_data = feature_data.values
 
@@ -181,8 +182,8 @@ class FeatureAnalysis(object):
         '''
         matplotlib.pyplot.close()
         self.logger.info("Plotting feature importance........")
-        self.scenario.feature_data = self.scenario.feature_data.fillna(
-            self.scenario.feature_data.mean())
+        self.feature_data = self.feature_data.fillna(
+            self.feature_data.mean())
 
         pc = PairwiseClassifier(classifier_class=RandomForest)
         config = {}
@@ -201,7 +202,7 @@ class FeatureAnalysis(object):
         q25 = np.percentile(importances, 0.25, axis=0)
         q75 = np.percentile(importances, 0.75, axis=0)
 
-        feature_names = np.array(self.scenario.feature_data.columns)
+        feature_names = np.array(self.feature_data.columns)
 
         # sort features by average importance and look only at the first 15
         # features
@@ -233,11 +234,11 @@ class FeatureAnalysis(object):
         self.logger.info("Plotting clusters........")
         # impute missing data; probably already done, but to be on the safe
         # side
-        self.scenario.feature_data = self.scenario.feature_data.fillna(
-            self.scenario.feature_data.mean())
+        self.feature_data = self.feature_data.fillna(
+            self.feature_data.mean())
 
         # feature data
-        features = self.scenario.feature_data.values
+        features = self.feature_data.values
 
         # scale features
         ss = StandardScaler()
@@ -284,7 +285,7 @@ class FeatureAnalysis(object):
 
         count_stats = np.array(
             [runstatus_data[runstatus_data == status].count().values for status in stati])
-        count_stats = count_stats / len(self.scenario.instances)
+        count_stats = count_stats / (len(self.scenario.train_insts)+len(self.scenario.test_insts))
 
         colormap = plt.cm.gist_ncar
         cc = [colormap(i) for i in np.linspace(0, 0.9, len(stati))]

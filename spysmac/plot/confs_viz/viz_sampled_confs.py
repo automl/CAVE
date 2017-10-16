@@ -12,6 +12,7 @@ import sys
 import inspect
 import logging
 import json
+import copy
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import numpy as np
@@ -71,7 +72,7 @@ class SampleViz(object):
             step size of meshgrid to compute contour of fitness landscape
         '''
 
-        self.scenario = scenario
+        self.scenario = copy.deepcopy(scenario)  # pca changes feats
         self.runhistory = runhistory
         self.logger = logging.getLogger("SampleViz")
         self.incs = incs
