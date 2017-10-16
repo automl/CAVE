@@ -15,6 +15,7 @@ from smac.runhistory.runhistory import RunKey, RunValue, RunHistory
 from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
 from smac.scenario.scenario import Scenario
 from smac.utils.io.traj_logging import TrajLogger
+from smac.utils.io.input_reader import InputReader
 from smac.utils.validate import Validator
 
 from pimp.importance.importance import Importance
@@ -24,6 +25,8 @@ from spysmac.plot.plotter import Plotter
 from spysmac.smacrun import SMACrun
 from spysmac.analyzer import Analyzer
 from spysmac.utils.helpers import get_cost_dict_for_config
+
+from spysmac.asapy.feature_analysis import FeatureAnalysis
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -149,7 +152,8 @@ class SpySMAC(object):
 
     def analyze(self,
                 performance=False, cdf=False, scatter=False, confviz=False,
-                forward_selection=False, ablation=False, fanova=False):
+                forward_selection=False, ablation=False, fanova=False,
+                feature_analysis=["box_violin"]):
         """Analyze the available data and build HTML-webpage as dict.
         Save webpage in 'self.output/SpySMAC/report.html'.
         Analyzing is performed with the analyzer-instance that is initialized in
@@ -263,6 +267,40 @@ class SpySMAC(object):
                         "figure": f_s_barplot_path}
             self.website["Parameter Importance"]["Forward Selection (chng)"] = {
                         "figure": f_s_chng_path}
+
+        # FEATURE ANALYSIS (ASAPY)
+        if feature_analysis:
+            # TODO make the following line prettier
+            # TODO save feature-names in smac
+            in_reader = InputReader()
+            feat_fn = self.scenario.feature_fn
+            with changedir(self.ta_exec_dir):
+                if not feat_fn or not os.path.exists(feat_fn):
+                    self.logger.warning("Feature Analysis needs valid feature "
+                                        "file! Either {} is not a valid "
+                                        "filename or features are not saved in "
+                                        "the scenario.")
+                    self.logger.error("Skipping Feature Analysis.")
+                    feature_analysis = []  # empty list to skip all individual plots
+                else:
+                    feat_names = in_reader.read_instance_features_file(self.scenario.feature_fn)[0]
+
+            # TODO check if feats exist
+            fa = FeatureAnalysis(output_dn=os.path.join(self.output,
+                                    "feat_analysis"),
+                                 scenario=self.scenario,
+                                 feat_names=feat_names)
+            self.website["Feature Analysis"] = OrderedDict([])
+
+            # box and violin plots
+            if "box_violin" in feature_analysis:
+                name_plots = fa.get_box_violin_plots(feat_names)
+                self.website["Feature Analysis"]["Violin and box plots"] = OrderedDict({
+                    "tooltip": "Violin and Box plots to show the distribution of each instance feature. We removed NaN from the data."})
+                for plot_tuple in name_plots:
+                    key = "%s" % (plot_tuple[0])
+                    self.website["Feature Analysis"]["Violin and box plots"][
+                        key] = {"figure": plot_tuple[1]}
 
 
         builder = HTMLBuilder(self.output, "SpySMAC")
