@@ -239,7 +239,6 @@ class FeatureAnalysis(object):
 
         # feature data
         features = self.feature_data.values
-        print(self.feature_data.shape)
 
         # scale features
         ss = StandardScaler()
@@ -254,10 +253,6 @@ class FeatureAnalysis(object):
         for n_clusters in range(2, 12):
             km = KMeans(n_clusters=n_clusters)
             y_pred = km.fit_predict(features)
-            print(features)
-            print(y_pred)
-            print(features.shape)
-            print(y_pred.shape)
             score = silhouette_score(features, y_pred)
             scores.append(score)
 
