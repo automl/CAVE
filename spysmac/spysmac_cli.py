@@ -53,6 +53,9 @@ class SpySMACCLI(object):
                               help="what kind of parameter importance to "
                                    "calculate", choices=["all", "ablation",
                                    "forward_selection", "fanova", "none"])
+        opt_opts.add_argument("--feat_analysis", default="all",
+                              help="what kind of parameter importance to "
+                                   "calculate", choices=["all", "none"])
         args_, misc = parser.parse_known_args()
 
         if args_.verbose_level == "INFO":
@@ -63,13 +66,23 @@ class SpySMACCLI(object):
         # SMAC results
         spySMAC = SpySMAC(args_.folders, args_.output, args_.ta_exec_dir,
                             missing_data_method=args_.missing_data_method)
+        # Expand configs
         if args_.param_importance == "all":
             param_imp = ["ablation", "forward_selection", "fanova"]
         elif args_.param_importance == "none":
             param_imp = []
         else:
             param_imp = [args_.param_importance]
+
+        if args_.feat_analysis == "all":
+            feature_analysis=["box_violin", "correlation", "feat_importance",
+                              "clustering", "feature_cdf"]
+        elif args_.feat_analysis == "none":
+            feature_analysis=[]
+
+        # Analyze
         spySMAC.analyze(performance=True, cdf=True, scatter=True, confviz=True,
                         forward_selection="forward_selection" in param_imp,
                         ablation="ablation" in param_imp,
-                        fanova="fanova" in param_imp)
+                        fanova="fanova" in param_imp,
+                        feature_analysis=feature_analysis)
