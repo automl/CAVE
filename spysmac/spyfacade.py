@@ -285,11 +285,11 @@ class SpySMAC(object):
                     feature_analysis = []  # empty list to skip all individual plots
                 else:
                     feat_names = in_reader.read_instance_features_file(self.scenario.feature_fn)[0]
-                    fa = FeatureAnalysis(output_dn=os.path.join(self.output,
-                                            "feat_analysis"),
-                                         scenario=self.scenario,
-                                         feat_names=feat_names)
-                    self.website["Feature Analysis"] = OrderedDict([])
+            if feature_analysis:
+               fa = FeatureAnalysis(output_dn=self.output,
+                                    scenario=self.scenario,
+                                    feat_names=feat_names)
+               self.website["Feature Analysis"] = OrderedDict([])
 
             # box and violin plots
             if "box_violin" in feature_analysis:
