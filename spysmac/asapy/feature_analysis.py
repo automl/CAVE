@@ -16,7 +16,6 @@ from sklearn.metrics import silhouette_score
 
 import matplotlib
 from sklearn.tree.tests.test_tree import y_random
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 from plottingscripts.plotting.scatter import plot_scatter_plot

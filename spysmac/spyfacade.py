@@ -152,7 +152,7 @@ class SpySMAC(object):
 
     def analyze(self,
                 performance=False, cdf=False, scatter=False, confviz=False,
-                forward_selection=False, ablation=False, fanova=False,
+                param_importance=['forward_selection', 'ablation', 'fanova'],
                 feature_analysis=["box_violin", "correlation",
                     "feat_importance", "clustering", "feature_cdf"]):
         """Analyze the available data and build HTML-webpage as dict.
@@ -175,6 +175,17 @@ class SpySMAC(object):
         fanova: bool
             whether to apply fanova
         """
+        # Check arguments
+        for p in param_importance:
+            if p not in ['forward_selection', 'ablation', 'fanova']:
+                raise ValueError("%s not a valid option for parameter "
+                                 "importance!", p)
+        for f in feature_analysis:
+            if f not in ["box_violin", "correlation", "feat_importance",
+                         "clustering", "feature_cdf"]:
+                raise ValueError("%s not a valid option for feature analysis!", f)
+
+        # Start analysis
         overview = self.analyzer.create_overview_table(self.best_run.folder)
         self.website["Meta Data"] = {
                      "table": overview,
@@ -226,13 +237,15 @@ class SpySMAC(object):
                              "instance-features available.")
 
         # PARAMETER IMPORTANCE
-        if ablation or forward_selection or fanova:
+        if ('ablation' in param_importance or
+            'forward_selection' in param_importance or
+            'fanova' in param_importance):
             self.website["Parameter Importance"] = OrderedDict([("tooltip",
                 "Parameter Importance explains the individual importance of the "
                 "parameters for the overall performance. Different techniques "
                 "are implemented, for example: fANOVA (functional analysis of "
                 "variance), ablation and forward selection.")])
-        if fanova:
+        if 'fanova' in param_importance:
             self.logger.info("fANOVA...")
             params = self.analyzer.fanova(self.incumbent, self.output, 10)
             self.website["Parameter Importance"]["fANOVA"] = OrderedDict([
@@ -248,7 +261,7 @@ class SpySMAC(object):
                 self.website["Parameter Importance"]["fANOVA"][p[0]] = {
                         "figure": os.path.join(self.output, "fanova",
                         p[0]+'.png')}
-        if ablation:
+        if 'ablation' in param_importance:
             self.logger.info("Ablation...")
             self.analyzer.parameter_importance("ablation", self.incumbent,
                                                self.output)
@@ -258,7 +271,7 @@ class SpySMAC(object):
                         "figure": ablationpercentage_path}
             self.website["Parameter Importance"]["Ablation (performance)"] = {
                         "figure": ablationperformance_path}
-        if forward_selection:
+        if 'forward_selection' in param_importance:
             self.logger.info("Forward Selection...")
             self.analyzer.parameter_importance("forward-selection", self.incumbent,
                                                self.output)

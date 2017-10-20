@@ -9,6 +9,7 @@ import unittest
 from unittest import mock
 
 from spysmac.spysmac_cli import SpySMACCLI
+from spysmac.spyfacade import SpySMAC
 
 @contextmanager
 def changedir(newdir):
@@ -26,63 +27,116 @@ class TestCLI(unittest.TestCase):
         self.output = "test/test_files/cli_test_output"
         shutil.rmtree(self.output, ignore_errors=True)
 
-    def test_no_output(self):
-        testargs = ["python", "scripts/spy.py", "--folders",
-                    "examples/spear_qcp_small/example_output_1",
-                    "--verbose", "DEBUG",
-                    "--ta_exec_dir", "examples/spear_qcp_small",
-                    "--param_importance", "none",
-                    "--feat_analysis", "none"
-                    ]
-        with mock.patch.object(sys, 'argv', testargs):
-            self.cli.main_cli()
+        self.testargs = ["python", "scripts/spy.py", "--folders",
+                         "examples/spear_qcp_small/example_output_1",
+                         "--verbose", "DEBUG",
+                         "--ta_exec_dir", "examples/spear_qcp_small",
+                         "--param_importance", "none",
+                         "--feat_analysis", "none"]
 
-    def test_call_from_local_path(self):
+    @mock.patch('spysmac.spyfacade.SpySMAC.complete_data')
+    @mock.patch('spysmac.spyfacade.SpySMAC.analyze')
+    def test_call_from_local_path(self, mock_ana, mock_data):
         with changedir("examples/spear_qcp_small"):
-            testargs = ["python", "scripts/spy.py", "--folders",
-                        "example_output_1", "--verbose", "DEBUG",
-                        "--feat_analysis", "none",
-                        "--param_importance", "none"]
+            testargs = self.testargs
+            testargs.remove('--ta_exec_dir')
+            testargs.remove('examples/spear_qcp_small')
+            i = testargs.index('examples/spear_qcp_small/example_output_1')
+            del testargs[i]
+            testargs.insert(i, 'example_output_1')
+            testargs.extend(['--validation', 'epm'])
+
             with mock.patch.object(sys, 'argv', testargs):
                 self.cli.main_cli()
 
-    def test_feature_analysis(self):
-        testargs = ["python", "scripts/spy.py", "--folders",
-                    "examples/spear_qcp_small/example_output_1",
-                    "--verbose", "DEBUG",
-                    "--ta_exec_dir", "examples/spear_qcp_small",
-                    "--feat_analysis", "all",
-                    "--param_importance", "none"]
+    @mock.patch('spysmac.spyfacade.SpySMAC.complete_data')
+    @mock.patch('spysmac.spyfacade.SpySMAC.analyze')
+    def test_feature_analysis(self, mock_ana, mock_data):
+        """ Testing whether feature_analysis cmdline-args are processed
+        correctly. """
+        testargs = self.testargs
+        feat_index = testargs.index('--feat_analysis') + 1
+
+        # Test 'all' feature analysis
+        testargs[feat_index] = 'all'
         with mock.patch.object(sys, 'argv', testargs):
             self.cli.main_cli()
+            mock_ana.assert_called_once_with(
+                param_importance=[],
+                cdf=True, confviz=True, performance=True, scatter=True,
+                feature_analysis=['box_violin', 'correlation', 'feat_importance',
+                                  'clustering', 'feature_cdf'])
 
-    def test_param_importance(self):
-        testargs = ["python", "scripts/spy.py", "--folders",
-                    "examples/spear_qcp_small/example_output_1",
-                    "--verbose", "DEBUG",
-                    "--ta_exec_dir", "examples/spear_qcp_small",
-                    "--feat_analysis", "none",
-                    "--param_importance", "all"]
+        # Test 'none' feature analysis
+        testargs[feat_index] = 'none'
         with mock.patch.object(sys, 'argv', testargs):
             self.cli.main_cli()
+            mock_ana.assert_called_with(
+                param_importance=[],
+                cdf=True, confviz=True, performance=True, scatter=True,
+                feature_analysis=[])
 
-    def test_run_with_multiple_folders(self):
+        # test combination 'box_violin' and 'correlation'
+        testargs[feat_index] = 'box_violin'
+        testargs.insert(feat_index+1, 'correlation')
+        with mock.patch.object(sys, 'argv', testargs):
+            self.cli.main_cli()
+            mock_ana.assert_called_with(
+                param_importance=[],
+                cdf=True, confviz=True, performance=True, scatter=True,
+                feature_analysis=['box_violin', 'correlation'])
+
+    @mock.patch('spysmac.spyfacade.SpySMAC.complete_data')
+    @mock.patch('spysmac.spyfacade.SpySMAC.analyze')
+    def test_param_importance(self, mock_ana, mock_data):
+        """ Testing whether param_importance cmdline-args are processed
+        correctly. """
+        testargs = self.testargs
+        param_index = testargs.index('--param_importance') + 1
+
+        # Test 'all' feature analysis
+        testargs[param_index] = 'all'
+        with mock.patch.object(sys, 'argv', testargs):
+            self.cli.main_cli()
+            mock_ana.assert_called_once_with(
+                cdf=True, confviz=True, performance=True, scatter=True,
+                feature_analysis=[], param_importance=['ablation',
+                    'forward_selection', 'fanova'])
+
+        # Test 'none' feature analysis
+        testargs[param_index] = 'none'
+        with mock.patch.object(sys, 'argv', testargs):
+            self.cli.main_cli()
+            mock_ana.assert_called_with(
+                cdf=True, confviz=True, performance=True, scatter=True,
+                feature_analysis=[], param_importance=[])
+
+        # test combination 'ablation' and'fanova'
+        testargs[param_index] = 'ablation'
+        testargs.insert(param_index+1, 'fanova')
+        with mock.patch.object(sys, 'argv', testargs):
+            self.cli.main_cli()
+            mock_ana.assert_called_with(
+                cdf=True, confviz=True, performance=True, scatter=True,
+                feature_analysis=[], param_importance=['ablation', 'fanova'])
+
+    @mock.patch('spysmac.spyfacade.SpySMAC.complete_data')
+    @mock.patch('spysmac.spyfacade.SpySMAC.analyze')
+    def test_run_with_multiple_folders(self, mock_ana, mock_data):
         """
         Testing basic functionality.
         """
         # Run for 5 algo-calls
-        testargs = ["python", "scripts/spy.py", "--folders",
-                    "examples/spear_qcp_small/example_output_1",
-                    "examples/spear_qcp_small/example_output_2",
-                    "examples/spear_qcp_small/example_output_3",
-                    "--verbose", "DEBUG", "--output", self.output,
-                    "--ta_exec_dir", "examples/spear_qcp_small",
-                    "--missing_data_method", "epm",
-                    "--feat_analysis", "none",
-                    "--param_importance", "none"]
+        testargs = self.testargs
+        folder_index = testargs.index('--folders') + 1
+        testargs.insert(folder_index,
+                "examples/spear_qcp_small/example_output_2")
+        testargs.insert(folder_index,
+                "examples/spear_qcp_small/example_output_3")
         with mock.patch.object(sys, 'argv', testargs):
             self.cli.main_cli()
 
+    #TODO this is not really a unittest, but a cornercasing
     def test_branin_corners(self):
         """ Testing all possible combinations, using the branin target
         algorithm. """

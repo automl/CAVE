@@ -40,7 +40,7 @@ class SpySMACCLI(object):
         opt_opts.add_argument("--verbose_level", default="INFO",
                               choices=["INFO", "DEBUG"],
                               help="verbose level")
-        opt_opts.add_argument("--missing_data_method", default="validation",
+        opt_opts.add_argument("--validation", default="validation",
                               choices=["validation", "epm"],
                               help="how to complete missing runs for "
                                    "config/inst-pairs.")
@@ -49,13 +49,14 @@ class SpySMACCLI(object):
         opt_opts.add_argument("--ta_exec_dir", default='.',
                               help="path to the execution-directory of the "
                                    "SMAC run.")
-        opt_opts.add_argument("--param_importance", default="all",
+        opt_opts.add_argument("--param_importance", default="all", nargs='+',
                               help="what kind of parameter importance to "
                                    "calculate", choices=["all", "ablation",
                                    "forward_selection", "fanova", "none"])
-        opt_opts.add_argument("--feat_analysis", default="all",
+        opt_opts.add_argument("--feat_analysis", default="all", nargs='+',
                               help="what kind of parameter importance to "
-                                   "calculate", choices=["all", "none"])
+                                   "calculate", choices=["all", "box_violin",
+                                   "correlation", "feature_cdf", "none"])
         args_, misc = parser.parse_known_args()
 
         if args_.verbose_level == "INFO":
@@ -65,24 +66,24 @@ class SpySMACCLI(object):
 
         # SMAC results
         spySMAC = SpySMAC(args_.folders, args_.output, args_.ta_exec_dir,
-                            missing_data_method=args_.missing_data_method)
+                            missing_data_method=args_.validation)
         # Expand configs
-        if args_.param_importance == "all":
+        if "all" in args_.param_importance:
             param_imp = ["ablation", "forward_selection", "fanova"]
-        elif args_.param_importance == "none":
+        elif "none" in args_.param_importance:
             param_imp = []
         else:
-            param_imp = [args_.param_importance]
+            param_imp = args_.param_importance
 
-        if args_.feat_analysis == "all":
+        if "all" in args_.feat_analysis:
             feature_analysis=["box_violin", "correlation", "feat_importance",
                               "clustering", "feature_cdf"]
-        elif args_.feat_analysis == "none":
+        elif "none" in args_.feat_analysis:
             feature_analysis=[]
+        else:
+            feature_analysis = args_.feat_analysis
 
         # Analyze
         spySMAC.analyze(performance=True, cdf=True, scatter=True, confviz=True,
-                        forward_selection="forward_selection" in param_imp,
-                        ablation="ablation" in param_imp,
-                        fanova="fanova" in param_imp,
+                        param_importance=param_imp,
                         feature_analysis=feature_analysis)
