@@ -15,6 +15,7 @@ from smac.runhistory.runhistory import RunKey, RunValue, RunHistory
 from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
 from smac.scenario.scenario import Scenario
 from smac.utils.io.traj_logging import TrajLogger
+from smac.utils.io.input_reader import InputReader
 from smac.utils.validate import Validator
 
 from pimp.importance.importance import Importance
@@ -24,6 +25,8 @@ from spysmac.plot.plotter import Plotter
 from spysmac.smacrun import SMACrun
 from spysmac.analyzer import Analyzer
 from spysmac.utils.helpers import get_cost_dict_for_config
+
+from spysmac.asapy.feature_analysis import FeatureAnalysis
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -149,7 +152,9 @@ class SpySMAC(object):
 
     def analyze(self,
                 performance=False, cdf=False, scatter=False, confviz=False,
-                forward_selection=False, ablation=False, fanova=False):
+                forward_selection=False, ablation=False, fanova=False,
+                feature_analysis=["box_violin", "correlation",
+                    "feat_importance", "clustering", "feature_cdf"]):
         """Analyze the available data and build HTML-webpage as dict.
         Save webpage in 'self.output/SpySMAC/report.html'.
         Analyzing is performed with the analyzer-instance that is initialized in
@@ -264,6 +269,74 @@ class SpySMAC(object):
             self.website["Parameter Importance"]["Forward Selection (chng)"] = {
                         "figure": f_s_chng_path}
 
+        # FEATURE ANALYSIS (ASAPY)
+        if feature_analysis:
+            # TODO make the following line prettier
+            # TODO save feature-names in smac
+            in_reader = InputReader()
+            feat_fn = self.scenario.feature_fn
+            with changedir(self.ta_exec_dir):
+                if not feat_fn or not os.path.exists(feat_fn):
+                    self.logger.warning("Feature Analysis needs valid feature "
+                                        "file! Either {} is not a valid "
+                                        "filename or features are not saved in "
+                                        "the scenario.")
+                    self.logger.error("Skipping Feature Analysis.")
+                    feature_analysis = []  # empty list to skip all individual plots
+                else:
+                    feat_names = in_reader.read_instance_features_file(self.scenario.feature_fn)[0]
+            if feature_analysis:
+               fa = FeatureAnalysis(output_dn=self.output,
+                                    scenario=self.scenario,
+                                    feat_names=feat_names)
+               self.website["Feature Analysis"] = OrderedDict([])
+
+            # box and violin plots
+            if "box_violin" in feature_analysis:
+                name_plots = fa.get_box_violin_plots()
+                self.website["Feature Analysis"]["Violin and box plots"] = OrderedDict({
+                    "tooltip": "Violin and Box plots to show the distribution of each instance feature. We removed NaN from the data."})
+                for plot_tuple in name_plots:
+                    key = "%s" % (plot_tuple[0])
+                    self.website["Feature Analysis"]["Violin and box plots"][
+                        key] = {"figure": plot_tuple[1]}
+
+
+            # TODO: status_bar without scenario?
+            #if "status_bar" in feature_analysis:
+            #    status_plot = fa.get_bar_status_plot()
+            #    self.website["Feature Analysis"]["Status Bar Plot"] = OrderedDict({
+            #        "tooltip": "Stacked bar plots for runstatus of each feature groupe",
+            #        "figure": status_plot})
+
+            # correlation plot
+            if 'correlation' in feature_analysis:
+                correlation_plot = fa.correlation_plot()
+                self.website["Feature Analysis"]["Correlation plot"] = {"tooltip": "Correlation based on Pearson product-moment correlation coefficients between all features and clustered with Wards hierarchical clustering approach. Darker fields corresponds to a larger correlation between the features.",
+                                                                "figure": correlation_plot}
+            # TODO
+            #  File "/home/shuki/SpySMAC/spysmac/asapy/feature_analysis.py", line 197, in feature_importance
+            #    pc.fit(scenario=self.scenario, config=config)
+            #  File "/home/shuki/virtual-environments/spysmac/lib/python3.5/site-packages/autofolio/selector/pairwise_classification.py", line 66, in fit
+            #    self.algorithms = scenario.algorithms
+            #AttributeError: 'Scenario' object has no attribute 'algorithms'
+            ## feature importance
+            #if "feat_importance" in feature_analysis:
+            #    importance_plot = fa.feature_importance()
+            #    self.website["Feature Analysis"]["Feature importance"] = {"tooltip": "Using the approach of SATZilla'11, we train a cost-sensitive random forest for each pair of algorithms and average the feature importance (using gini as splitting criterion) across all forests. We show the median, 25th and 75th percentiles across all random forests of the 15 most important features.",
+            #                                                      "figure": importance_plot}
+
+            # cluster instances in feature space
+            if "clustering" in feature_analysis:
+                cluster_plot = fa.cluster_instances()
+                self.website["Feature Analysis"]["Clustering"] = {"tooltip": "Clustering instances in 2d; the color encodes the cluster assigned to each cluster. Similar to ISAC, we use a k-means to cluster the instances in the feature space. As pre-processing, we use standard scaling and a PCA to 2 dimensions. To guess the number of clusters, we use the silhouette score on the range of 2 to 12 in the number of clusters",
+                                                          "figure": cluster_plot}
+
+            ## get cdf plot
+            #if "feature_cdf" in feature_analysis:
+            #    cdf_plot = fa.get_feature_cost_cdf_plot()
+            #    self.website["Feature Analysis"]["CDF plot on feature costs"] = {"tooltip": "Cumulative Distribution function (CDF) plots. At each point x (e.g., running time cutoff), for how many of the instances (in percentage) have we computed the instance features. Faster feature computation steps have a higher curve. Missing values are imputed with the maximal value (or running time cutoff).",
+            #                                                             "figure": cdf_plot}
 
         builder = HTMLBuilder(self.output, "SpySMAC")
         builder.generate_html(self.website)

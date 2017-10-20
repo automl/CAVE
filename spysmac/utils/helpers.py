@@ -3,6 +3,9 @@ import numpy as np
 from smac.runhistory.runhistory import RunKey
 from smac.tae.execute_ta_run import StatusType
 
+# TODO Possibly inconsistent: median over timeouts is timeout, but mean over
+# costs is not. Possible?
+
 def get_timeout(rh, conf, cutoff):
     """Check for timeouts. If multiple runs for an inst/config-pair are
     available, using the median (not the mean: no fractional timeouts)

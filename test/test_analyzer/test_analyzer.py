@@ -31,12 +31,12 @@ class TestFacade(unittest.TestCase):
     def test_par10(self):
         self.spysmac.analyze(performance=True, cdf=False, scatter=False,
                              forward_selection=False, ablation=False,
-                             fanova=False)
+                             fanova=False, feature_analysis=[])
 
     def test_plot(self):
         self.spysmac.analyze(performance=False, cdf=True, scatter=True,
                              forward_selection=False, ablation=False,
-                             fanova=False)
+                             fanova=False, feature_analysis=[])
 
     def test_nonexisting_folder(self):
         self.assertRaises(ValueError, SpySMAC, ["examples/spear_qcp_small/nonsense"],

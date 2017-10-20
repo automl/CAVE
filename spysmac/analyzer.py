@@ -20,6 +20,8 @@ from smac.utils.validate import Validator
 
 from pimp.importance.importance import Importance
 
+from spysmac.asapy.feature_analysis import FeatureAnalysis
+
 from spysmac.html.html_builder import HTMLBuilder
 from spysmac.plot.plotter import Plotter
 from spysmac.smacrun import SMACrun
@@ -327,4 +329,49 @@ class Analyzer(object):
         if len(keys)%2 == 1:
             table_split.append(("<b>"+keys[-1]+"</b>", table[keys[-1]], '', ''))
         return table_split
+
+
+    def feature_analysis(self,
+            status_bar=True,
+            box_violin=True):
+        """Use asapys feature analysis.
+
+        Parameters
+        ----------
+        Returns
+        ----------
+        """
+        fa = FeatureAnalysis(output_dn=self.output_dn,
+                             scenario=self.scenario)
+
+        paths = []
+
+        #if status_bar:
+        #    status_plot = fa.get_bar_status_plot()
+        #    data["Feature Analysis"]["Status Bar Plot"] = {"tooltip": "Stacked bar plots for runstatus of each feature groupe",
+        #                                                   "figure": status_plot}
+
+        ## correlation plot
+        #if config["Feature Analysis"].get("Correlation plot"):
+        #    correlation_plot = fa.correlation_plot()
+        #    data["Feature Analysis"]["Correlation plot"] = {"tooltip": "Correlation based on Pearson product-moment correlation coefficients between all features and clustered with Wards hierarchical clustering approach. Darker fields corresponds to a larger correlation between the features.",
+        #                                                    "figure": correlation_plot}
+
+        ## feature importance
+        #if config["Feature Analysis"].get("Feature importance"):
+        #    importance_plot = fa.feature_importance()
+        #    data["Feature Analysis"]["Feature importance"] = {"tooltip": "Using the approach of SATZilla'11, we train a cost-sensitive random forest for each pair of algorithms and average the feature importance (using gini as splitting criterion) across all forests. We show the median, 25th and 75th percentiles across all random forests of the 15 most important features.",
+        #                                                      "figure": importance_plot}
+
+        ## cluster instances in feature space
+        #if config["Feature Analysis"].get("Clustering"):
+        #    cluster_plot = fa.cluster_instances()
+        #    data["Feature Analysis"]["Clustering"] = {"tooltip": "Clustering instances in 2d; the color encodes the cluster assigned to each cluster. Similar to ISAC, we use a k-means to cluster the instances in the feature space. As pre-processing, we use standard scaling and a PCA to 2 dimensions. To guess the number of clusters, we use the silhouette score on the range of 2 to 12 in the number of clusters",
+        #                                              "figure": cluster_plot}
+
+        ## get cdf plot
+        #if self.scenario.feature_cost_data is not None and config["Feature Analysis"].get("CDF plot on feature costs"):
+        #    cdf_plot = fa.get_feature_cost_cdf_plot()
+        #    data["Feature Analysis"]["CDF plot on feature costs"] = {"tooltip": "Cumulative Distribution function (CDF) plots. At each point x (e.g., running time cutoff), for how many of the instances (in percentage) have we computed the instance features. Faster feature computation steps have a higher curve. Missing values are imputed with the maximal value (or running time cutoff).",
+        #                                                             "figure": cdf_plot}
 
