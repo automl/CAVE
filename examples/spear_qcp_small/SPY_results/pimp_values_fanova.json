@@ -1,0 +1,30 @@
+{
+    "fanova": {
+        "sp-clause-activity-inc": 0.001317993865243598,
+        "sp-clause-decay": 0.001934792504332772,
+        "sp-clause-del-heur": 0.004437742649951632,
+        "sp-clause-inversion": 0.001837233460813222,
+        "sp-first-restart": 0.04086528843556987,
+        "sp-learned-clause-sort-heur": 0.13861713353817576,
+        "sp-learned-clauses-inc": 0.0001308618760246722,
+        "sp-learned-size-factor": 0.00011636604488472962,
+        "sp-max-res-lit-inc": 0.0011140065843677587,
+        "sp-max-res-runs": 3.0000123711193264e-05,
+        "sp-orig-clause-sort-heur": 0.08664418003019787,
+        "sp-phase-dec-heur": 0.0005361679371257501,
+        "sp-rand-phase-dec-freq": 0.0013822403376599248,
+        "sp-rand-phase-scaling": 0.002584911794072986,
+        "sp-rand-var-dec-freq": 0.17263285316373872,
+        "sp-rand-var-dec-scaling": 0.005201948557227878,
+        "sp-res-cutoff-cls": 0.0038348431022690093,
+        "sp-res-cutoff-lits": 0.0006334993632600033,
+        "sp-res-order-heur": 0.011228480726085472,
+        "sp-resolution": 0.0006328732033772831,
+        "sp-restart-inc": 0.0002559687629371443,
+        "sp-update-dec-queue": 4.544490564315089e-06,
+        "sp-use-pure-literal-rule": 3.320027240654396e-05,
+        "sp-var-activity-inc": 0.0755600820400551,
+        "sp-var-dec-heur": 0.09342346712774072,
+        "sp-variable-decay": 0.0006309486284749951
+    }
+}

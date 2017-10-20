@@ -1,0 +1,30 @@
+{
+    "forward-selection": {
+        "sp-clause-activity-inc": 0.381718523023269,
+        "sp-clause-decay": 0.37173354235882117,
+        "sp-clause-del-heur": 0.37856837278359795,
+        "sp-clause-inversion": 0.3845711443691912,
+        "sp-first-restart": 0.3804773057748214,
+        "sp-learned-clause-sort-heur": 0.3778875868991713,
+        "sp-learned-clauses-inc": 0.3761187824532922,
+        "sp-learned-size-factor": 0.3699840119037828,
+        "sp-max-res-lit-inc": 0.38104072526767474,
+        "sp-max-res-runs": 0.37222399036106485,
+        "sp-orig-clause-sort-heur": 0.3684582495799113,
+        "sp-phase-dec-heur": 0.3723881260902773,
+        "sp-rand-phase-dec-freq": 0.3684430631194832,
+        "sp-rand-phase-scaling": 0.3750904112909049,
+        "sp-rand-var-dec-freq": 0.3761718975334801,
+        "sp-rand-var-dec-scaling": 0.3747062914720583,
+        "sp-res-cutoff-cls": 0.37161528909272595,
+        "sp-res-cutoff-lits": 0.37648403457814533,
+        "sp-res-order-heur": 0.37547302237875385,
+        "sp-resolution": 0.38293206330023377,
+        "sp-restart-inc": 0.3769959790148352,
+        "sp-update-dec-queue": 0.37612011380507315,
+        "sp-use-pure-literal-rule": 0.3693039929512742,
+        "sp-var-activity-inc": 0.39314179598196125,
+        "sp-var-dec-heur": 0.3734886289012866,
+        "sp-variable-decay": 0.3913739888211875
+    }
+}

@@ -55,9 +55,7 @@ For further information on how to use SpySMAC, see:
 You can run the spear-qcp example like this:
 ```
 cd examples/spear_qcp_small
-python ../../scripts/spy.py --folders example_output_* --output testing_output
+python ../../scripts/spy.py --folders example_output_* --output SPY_results
 ```
 This will analyze the results located in `example_output_1`, `example_output_2` and `example_output_3`.
-The report is located in `testing_output/report.html`.
-
-
+The report is located in `SPY_results/report.html`.
