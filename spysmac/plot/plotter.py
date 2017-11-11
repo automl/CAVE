@@ -3,7 +3,9 @@ import os
 import logging
 
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib import ticker
 
 from spysmac.plot.scatter import plot_scatter_plot
 from spysmac.plot.confs_viz.viz_sampled_confs import SampleViz
@@ -184,9 +186,88 @@ class Plotter(object):
         f.savefig(output)
         plt.close(f)
 
-    def visualize_configs(self, scen, rh):
+    def visualize_configs(self, scen, rh, inc=None):
         sz = SampleViz(scenario=scen,
                        runhistory=rh,
-                       incs=None)
+                       incs=inc)
         return sz.run()
 
+    def plot_parallel_coordinates(self, rh):
+        # TODO order on importance
+        """ Plotting a parallel coordinates plot, visualizing the explored PCS.
+        """
+        params = rh.get_all_configs()[0].keys()[:5]  # which parameters to plot
+        index = params + ["cost", "runs"]  # indices for dataframe
+        x = [i for i, _ in enumerate(index)]
+
+        def colour(category):
+            """ TODO Returning colour for plotting, possibly dependent on
+            category/cost?
+            """
+            return np.random.choice(['#2e8ad8', '#cd3785', '#c64c00', '#889a00'])
+
+        # Create dataframe with configs + runs/cost
+        data = []
+        for conf in rh.get_all_configs():
+            new_entry = {"cost":rh.get_cost(conf),
+                         "runs":len(rh.get_runs_for_config(conf))}
+            pa_d = conf.get_dictionary()
+            for p in params:
+                if isinstance(pa_d[p], str):
+                    try:
+                        new_entry[p] = int(pa_d[p])
+                    except ValueError:
+                        new_entry[p] = float(pa_d[p])
+                else:
+                    new_entry[p] = pa_d[p]
+            data.append(pd.Series(new_entry))
+        data = pd.DataFrame(data)
+
+        # Create subplots
+        fig, axes = plt.subplots(1, len(index)-1, sharey=False, figsize=(15,5))
+
+        # Normalize the data for each parameter, so the displayed ranges are
+        # meaningful.
+        min_max = {}
+        for p in index:
+            min_max[p] = [data[p].min(), data[p].max(), np.ptp(data[p])]
+            data[p] = np.true_divide(data[p] - data[p].min(), np.ptp(data[p]))
+
+        # Plot data
+        for i, ax in enumerate(axes):
+            for idx in data.index:
+                category = data.loc[idx, 'cost']
+                ax.plot(x, data.loc[idx, index], colour(category))
+            ax.set_xlim([x[i], x[i+1]])
+
+        # Labeling axes
+        num_ticks = 10
+        for p, ax in enumerate(axes):
+            if p == len(axes)-1:
+                # Move the final axis' ticks to the right-hand side
+                ax = plt.twinx(axes[-1])
+                p = len(axes)
+                ax.xaxis.set_major_locator(ticker.FixedLocator([x[-2], x[-1]]))
+            ax.xaxis.set_major_locator(ticker.FixedLocator([p]))
+            minimum, maximum, param_range = min_max[index[p]]
+            step = param_range / float(num_ticks)
+            # TODO adjust tick-labels to int/float/categorical and maybe even log?
+            tick_labels = [round(minimum + step * i, 2) for i in
+                    range(num_ticks+1)]
+            norm_min = data[index[p]].min()
+            norm_range = np.ptp(data[index[p]])
+            norm_step = norm_range / float(num_ticks)
+            ticks = [round(norm_min + norm_step * i, 2) for i in
+                    range(num_ticks+1)]
+            ax.yaxis.set_ticks(ticks)
+            ax.set_yticklabels(tick_labels)
+            ax.set_xticklabels([index[p]])
+
+        ax.set_xticklabels([index[-2], index[-1]])
+
+        # Remove space between subplots
+        plt.subplots_adjust(wspace=0)
+
+        plt.title("Explored parameter ranges in parallel coordinates.")
+
+        plt.show()
