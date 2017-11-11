@@ -119,6 +119,8 @@ class SpySMAC(object):
                     c_runs=[self.estimated_best_run])
         self.best_run = min(self.runs, key=lambda run:
                 self.global_rh.get_cost(run.solver.incumbent))
+        # TODO for ablation and forward selection inject in self.imp
+        self.importance = None  # Used to store dictionary containing parameter importances
 
         # Check scenarios for consistency in relevant attributes
         # TODO check for consistency in scenarios
@@ -264,8 +266,12 @@ class SpySMAC(object):
         if parallel_coordinates:
             self.logger.info("Plotting parallel coordinates.")
             out_path = os.path.join(self.output, "parallel_coordinates.png")
-            # TODO determine which params to pass -> most important ones
-            params = list(self.importance.keys())[:6]
+            # TODO what if no parameter importance is done? plot all? random subset?
+            if self.importance:
+                params = list(self.importance.keys())[:6]
+            else:
+                params = list(self.default.keys())
+            self.logger.debug("Parallel coordinates plotting params: " + str(params))
             self.plotter.plot_parallel_coordinates(self.global_rh, out_path,
                     params)
             self.website["Parallel Coordinates"] = {
@@ -365,7 +371,7 @@ class SpySMAC(object):
                                     "filename or features are not saved in "
                                     "the scenario.")
                 self.logger.error("Skipping Feature Analysis.")
-                feature_analysis = []  # empty list to skip all individual plots
+                return
             else:
                 feat_names = in_reader.read_instance_features_file(self.scenario.feature_fn)[0]
         fa = FeatureAnalysis(output_dn=self.output,

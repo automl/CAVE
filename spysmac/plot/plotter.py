@@ -197,6 +197,11 @@ class Plotter(object):
         """
         if not params:
             params = rh.get_all_configs()[0].keys()[:5]  # which parameters to plot
+
+        if len(params) < 3:
+            self.logger.info("Only two parameters, skipping parallel coordinates.")
+            return
+
         full_index = params + ["cost", "runs"]  # indices for dataframe
         index = params  # plot only those
         x = [i for i, _ in enumerate(index)]
@@ -215,7 +220,10 @@ class Plotter(object):
                          "runs":len(rh.get_runs_for_config(conf))}
             pa_d = conf.get_dictionary()
             for p in params:
-                if isinstance(pa_d[p], str):
+                if not p in pa_d:
+                    #TODO parameter not set in configuration... mhm.
+                    new_entry[p] = 0
+                elif isinstance(pa_d[p], str):
                     try:
                         new_entry[p] = int(pa_d[p])
                     except ValueError:
