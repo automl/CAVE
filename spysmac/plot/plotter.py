@@ -192,18 +192,20 @@ class Plotter(object):
                        incs=inc)
         return sz.run()
 
-    def plot_parallel_coordinates(self, rh):
-        # TODO order on importance
+    def plot_parallel_coordinates(self, rh, output, params=None):
         """ Plotting a parallel coordinates plot, visualizing the explored PCS.
         """
-        params = rh.get_all_configs()[0].keys()[:5]  # which parameters to plot
-        index = params + ["cost", "runs"]  # indices for dataframe
+        if not params:
+            params = rh.get_all_configs()[0].keys()[:5]  # which parameters to plot
+        full_index = params + ["cost", "runs"]  # indices for dataframe
+        index = params  # plot only those
         x = [i for i, _ in enumerate(index)]
 
         def colour(category):
             """ TODO Returning colour for plotting, possibly dependent on
             category/cost?
             """
+            # TODO
             return np.random.choice(['#2e8ad8', '#cd3785', '#c64c00', '#889a00'])
 
         # Create dataframe with configs + runs/cost
@@ -221,7 +223,8 @@ class Plotter(object):
                 else:
                     new_entry[p] = pa_d[p]
             data.append(pd.Series(new_entry))
-        data = pd.DataFrame(data)
+        full_data = pd.DataFrame(data)
+        data = full_data.drop(['cost', 'runs'], axis=1)
 
         # Create subplots
         fig, axes = plt.subplots(1, len(index)-1, sharey=False, figsize=(15,5))
@@ -236,19 +239,19 @@ class Plotter(object):
         # Plot data
         for i, ax in enumerate(axes):
             for idx in data.index:
-                category = data.loc[idx, 'cost']
+                category = full_data.loc[idx, 'cost']
                 ax.plot(x, data.loc[idx, index], colour(category))
             ax.set_xlim([x[i], x[i+1]])
 
         # Labeling axes
         num_ticks = 10
         for p, ax in enumerate(axes):
+            ax.xaxis.set_major_locator(ticker.FixedLocator([p]))
             if p == len(axes)-1:
                 # Move the final axis' ticks to the right-hand side
                 ax = plt.twinx(axes[-1])
                 p = len(axes)
                 ax.xaxis.set_major_locator(ticker.FixedLocator([x[-2], x[-1]]))
-            ax.xaxis.set_major_locator(ticker.FixedLocator([p]))
             minimum, maximum, param_range = min_max[index[p]]
             step = param_range / float(num_ticks)
             # TODO adjust tick-labels to int/float/categorical and maybe even log?
@@ -261,13 +264,14 @@ class Plotter(object):
                     range(num_ticks+1)]
             ax.yaxis.set_ticks(ticks)
             ax.set_yticklabels(tick_labels)
-            ax.set_xticklabels([index[p]])
-
-        ax.set_xticklabels([index[-2], index[-1]])
+            if not p == len(axes)-1:
+                ax.set_xticklabels([index[p]], rotation=5)
+        ax.set_xticklabels([index[-2], index[-1]], rotation=5)
 
         # Remove space between subplots
         plt.subplots_adjust(wspace=0)
 
         plt.title("Explored parameter ranges in parallel coordinates.")
 
-        plt.show()
+        fig.savefig(output)
+        plt.close(fig)

@@ -21,7 +21,8 @@ def changedir(newdir):
 
 class SMACrun(SMAC):
     """
-    SMACrun keeps all information on a specific SMAC run.
+    SMACrun keeps all information on a specific SMAC run. Extends the standard
+    SMAC-facade.
     """
     def __init__(self, folder: str, ta_exec_dir: str="."):
         """Initialize scenario, runhistory and incumbent from folder, execute
@@ -31,9 +32,6 @@ class SMACrun(SMAC):
         ----------
         folder: string
             output-dir of this run
-        global_rh: RunHistory
-            runhistory with runs from other (validated) SMAC-folders, so no
-            runs need to be repeated multiple times (for example defaults).
         ta_exec_dir: string
             if the execution directory for the SMAC-run differs from the cwd,
             there might be problems loading instance-, feature- or PCS-files

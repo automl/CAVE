@@ -139,9 +139,7 @@ class Analyzer(object):
         """
         importance = self.parameter_importance("fanova", incumbent, output)
         parameter_imp = importance.evaluator.evaluated_parameter_importance
-        parameter_imp = sorted([(k, parameter_imp[k]) for k in
-            parameter_imp.keys()], key=lambda x:x[1], reverse=True)
-        return parameter_imp[:num_params]
+        return parameter_imp
 
     def parameter_importance(self, modus, incumbent, output):
         """Calculate parameter-importance using the PIMP-package.

@@ -4,6 +4,7 @@ from collections import OrderedDict
 from contextlib import contextmanager
 import typing
 import json
+import operator
 
 import numpy as np
 from pandas import DataFrame
@@ -72,6 +73,7 @@ class SpySMAC(object):
 
         self.ta_exec_dir = ta_exec_dir
 
+
         # Create output if necessary
         self.output = output
         self.logger.info("Writing to %s", self.output)
@@ -79,8 +81,11 @@ class SpySMAC(object):
             self.logger.debug("Output-dir %s does not exist, creating", self.output)
             os.makedirs(output)
 
-        # Global runhistory combines all runs of individual SMAC-runs
+        # Global runhistory combines all actual runs of individual SMAC-runs
         self.global_rh = RunHistory(average_cost)
+        # Runhistory for runs that are estimated using validation
+        # (including defaults and incumbents)
+        self.validated_rh = RunHistory(average_cost)
 
         # Save all relevant SMAC-runs in a list
         self.runs = []
@@ -103,8 +108,15 @@ class SpySMAC(object):
                           len(runhistory_fns), len(self.global_rh.data),
                           len(self.global_rh.get_all_configs()))
 
+        # Estimate best overall incumbent
+        self.estimated_best_run = min(self.runs, key=lambda run:
+                                      self.global_rh.get_cost(run.solver.incumbent))
         # Estimate all missing costs using validation or EPM
-        self.complete_data(method=missing_data_method)
+        try:
+            self.complete_data(method=missing_data_method)
+        except MemoryError:
+            self.complete_data(method=missing_data_method,
+                    c_runs=[self.estimated_best_run])
         self.best_run = min(self.runs, key=lambda run:
                 self.global_rh.get_cost(run.solver.incumbent))
 
@@ -114,6 +126,7 @@ class SpySMAC(object):
             if not run.scen == self.scenario:
                 #raise ValueError("Scenarios don't match up ({})".format(run.folder))
                 pass
+
         self.default = self.scenario.cs.get_default_configuration()
         self.incumbent = self.best_run.solver.incumbent
 
@@ -127,34 +140,39 @@ class SpySMAC(object):
         self.plotter = Plotter(self.scenario, self.train_test, conf1_runs, conf2_runs)
         self.website = OrderedDict([])
 
-    def complete_data(self, method="validation"):
+    def complete_data(self, method="validation", c_runs=None):
         """Complete missing data of runs to be analyzed. Either using validation
         or EPM.
         """
+        if not c_runs:
+            c_runs = self.runs
         with changedir(self.ta_exec_dir):
             self.logger.info("Completing data using %s.", method)
 
-            for run in self.runs:
-                validator = Validator(run.scen, run.traj, "")
+            path_for_validated_rhs = os.path.join(self.output, "validated_rhs")
+            for run in c_runs:
+            #for run in [self.best_run]:
+                out = os.path.join(path_for_validated_rhs, "rh_"+run.folder)
+                validator = Validator(run.scen, run.traj, out)
 
                 if method == "validation":
                     # TODO determine # repetitions
-                    run.runhistory = validator.validate('def+inc', 'train+test', 1, -1,
-                                                runhistory=self.global_rh)
+                    self.global_rh.update(validator.validate('def+inc',
+                                          'train+test', 1, -1,
+                                          runhistory=self.global_rh))
                 elif method == "epm":
-                    run.runhistory = validator.validate_epm('def+inc', 'train+test', 1,
-                                                    runhistory=self.global_rh)
+                    self.global_rh.update(validator.validate_epm('def+inc', 'train+test', 1,
+                                             runhistory=self.global_rh))
                 else:
                     raise ValueError("Missing data method illegal (%s)",
                                      method)
-
-                self.global_rh.update(run.runhistory)
 
     def analyze(self,
                 performance=False, cdf=False, scatter=False, confviz=False,
                 param_importance=['forward_selection', 'ablation', 'fanova'],
                 feature_analysis=["box_violin", "correlation",
-                    "feat_importance", "clustering", "feature_cdf"]):
+                    "feat_importance", "clustering", "feature_cdf"],
+                parallel_coordinates=True):
         """Analyze the available data and build HTML-webpage as dict.
         Save webpage in 'self.output/SpySMAC/report.html'.
         Analyzing is performed with the analyzer-instance that is initialized in
@@ -223,7 +241,9 @@ class SpySMAC(object):
             self.logger.info("Scatter plot desired, but no instances available.")
 
         if  confviz and self.scenario.feature_array is not None:
-            confviz = self.plotter.visualize_configs(self.scenario, self.global_rh)
+            incumbents = [r.solver.incumbent for r in self.runs]
+            confviz = self.plotter.visualize_configs(self.scenario,
+                        self.global_rh, incumbents)
             self.website["Configuration Visualization"] = {
                     "table" : confviz,
                     "tooltip" : "Using PCA to reduce dimensionality of the "
@@ -236,18 +256,42 @@ class SpySMAC(object):
             self.logger.info("Configuration visualization desired, but no "
                              "instance-features available.")
 
+        self.parameter_importance(ablation='ablation' in param_importance,
+                                  fanova='fanova' in param_importance,
+                                  forward_selection='forward_selection' in
+                                                    param_importance)
+
+        if parallel_coordinates:
+            self.logger.info("Plotting parallel coordinates.")
+            out_path = os.path.join(self.output, "parallel_coordinates.png")
+            # TODO determine which params to pass -> most important ones
+            params = list(self.importance.keys())[:6]
+            self.plotter.plot_parallel_coordinates(self.global_rh, out_path,
+                    params)
+            self.website["Parallel Coordinates"] = {
+                     "figure" : out_path,
+                     "tooltip": "Plot explored range of most important parameters."}
+
+        self.feature_analysis(box_violin='box_violin' in feature_analysis,
+                              correlation='correlation' in feature_analysis,
+                              clustering='clustering' in feature_analysis)
+
+
+    def parameter_importance(self, ablation=False, fanova=False,
+                             forward_selection=False):
+        """Perform the specified parameter importance procedures. """
         # PARAMETER IMPORTANCE
-        if ('ablation' in param_importance or
-            'forward_selection' in param_importance or
-            'fanova' in param_importance):
+        if (ablation or forward_selection or fanova):
             self.website["Parameter Importance"] = OrderedDict([("tooltip",
                 "Parameter Importance explains the individual importance of the "
                 "parameters for the overall performance. Different techniques "
                 "are implemented, for example: fANOVA (functional analysis of "
                 "variance), ablation and forward selection.")])
-        if 'fanova' in param_importance:
+        if fanova:
             self.logger.info("fANOVA...")
             params = self.analyzer.fanova(self.incumbent, self.output, 10)
+            self.importance = params
+
             self.website["Parameter Importance"]["fANOVA"] = OrderedDict([
                 ("tooltip", "fANOVA stands for functional analysis of variance "
                             "and predicts a parameters marginal performance, "
@@ -257,11 +301,33 @@ class SpySMAC(object):
                             "this parameters importance by predicting "
                             "performance changes that depend on other "
                             "parameters.")])
-            for p in params:
-                self.website["Parameter Importance"]["fANOVA"][p[0]] = {
-                        "figure": os.path.join(self.output, "fanova",
-                        p[0]+'.png')}
-        if 'ablation' in param_importance:
+
+            # Create table
+            fanova_table = self.analyzer._split_table(params)
+            df = DataFrame(data=fanova_table)
+            fanova_table = df.to_html(escape=False, header=False, index=False, justify='left')
+            self.website["Parameter Importance"]["fANOVA"]["Importance"] = {
+                        "table": fanova_table}
+
+            # Insert plots
+            self.website["Parameter Importance"]["fANOVA"]["Marginals"] = OrderedDict([])
+            for p in [x[0] for x in sorted(params.items(),
+                key=operator.itemgetter(1))]:
+                self.website["Parameter Importance"]["fANOVA"]["Marginals"][p] = {
+                        "figure": os.path.join(self.output, "fanova", p+'.png')}
+            # Check for pairwise plots (untested and hacky TODO)
+            # Right now no way to access paths of the plots -> file issue
+            pairwise = OrderedDict([])
+            for p1 in params.keys():
+                for p2 in params.keys():
+                    combi = str([p1, p2]).replace(os.sep, "_").replace("'","") + ".png"
+                    potential_path = os.path.join(self.output, 'fanova', combi)
+                    if os.path.exists(potential_path):
+                         pairwise[combi] = {"figure": potential_path}
+            if pairwise:
+                self.website["Parameter Importance"]["fANOVA"]["PairwiseMarginals"] = pairwise
+
+        if ablation:
             self.logger.info("Ablation...")
             self.analyzer.parameter_importance("ablation", self.incumbent,
                                                self.output)
@@ -271,7 +337,7 @@ class SpySMAC(object):
                         "figure": ablationpercentage_path}
             self.website["Parameter Importance"]["Ablation (performance)"] = {
                         "figure": ablationperformance_path}
-        if 'forward_selection' in param_importance:
+        if forward_selection:
             self.logger.info("Forward Selection...")
             self.analyzer.parameter_importance("forward-selection", self.incumbent,
                                                self.output)
@@ -282,74 +348,77 @@ class SpySMAC(object):
             self.website["Parameter Importance"]["Forward Selection (chng)"] = {
                         "figure": f_s_chng_path}
 
+    def feature_analysis(self, box_violin=False, correlation=False,
+                         clustering=False):
+        if not (box_violin or correlation or clustering):
+            self.logger.debug("No feature analysis.")
+
         # FEATURE ANALYSIS (ASAPY)
-        if feature_analysis:
-            # TODO make the following line prettier
-            # TODO save feature-names in smac
-            in_reader = InputReader()
-            feat_fn = self.scenario.feature_fn
-            with changedir(self.ta_exec_dir):
-                if not feat_fn or not os.path.exists(feat_fn):
-                    self.logger.warning("Feature Analysis needs valid feature "
-                                        "file! Either {} is not a valid "
-                                        "filename or features are not saved in "
-                                        "the scenario.")
-                    self.logger.error("Skipping Feature Analysis.")
-                    feature_analysis = []  # empty list to skip all individual plots
-                else:
-                    feat_names = in_reader.read_instance_features_file(self.scenario.feature_fn)[0]
-            if feature_analysis:
-               fa = FeatureAnalysis(output_dn=self.output,
-                                    scenario=self.scenario,
-                                    feat_names=feat_names)
-               self.website["Feature Analysis"] = OrderedDict([])
+        # TODO make the following line prettier
+        # TODO save feature-names in smac
+        in_reader = InputReader()
+        feat_fn = self.scenario.feature_fn
+        with changedir(self.ta_exec_dir):
+            if not feat_fn or not os.path.exists(feat_fn):
+                self.logger.warning("Feature Analysis needs valid feature "
+                                    "file! Either {} is not a valid "
+                                    "filename or features are not saved in "
+                                    "the scenario.")
+                self.logger.error("Skipping Feature Analysis.")
+                feature_analysis = []  # empty list to skip all individual plots
+            else:
+                feat_names = in_reader.read_instance_features_file(self.scenario.feature_fn)[0]
+        fa = FeatureAnalysis(output_dn=self.output,
+                             scenario=self.scenario,
+                             feat_names=feat_names)
+        self.website["Feature Analysis"] = OrderedDict([])
 
-            # box and violin plots
-            if "box_violin" in feature_analysis:
-                name_plots = fa.get_box_violin_plots()
-                self.website["Feature Analysis"]["Violin and box plots"] = OrderedDict({
-                    "tooltip": "Violin and Box plots to show the distribution of each instance feature. We removed NaN from the data."})
-                for plot_tuple in name_plots:
-                    key = "%s" % (plot_tuple[0])
-                    self.website["Feature Analysis"]["Violin and box plots"][
-                        key] = {"figure": plot_tuple[1]}
+        # box and violin plots
+        if box_violin:
+            name_plots = fa.get_box_violin_plots()
+            self.website["Feature Analysis"]["Violin and box plots"] = OrderedDict({
+                "tooltip": "Violin and Box plots to show the distribution of each instance feature. We removed NaN from the data."})
+            for plot_tuple in name_plots:
+                key = "%s" % (plot_tuple[0])
+                self.website["Feature Analysis"]["Violin and box plots"][
+                    key] = {"figure": plot_tuple[1]}
 
 
-            # TODO: status_bar without scenario?
-            #if "status_bar" in feature_analysis:
-            #    status_plot = fa.get_bar_status_plot()
-            #    self.website["Feature Analysis"]["Status Bar Plot"] = OrderedDict({
-            #        "tooltip": "Stacked bar plots for runstatus of each feature groupe",
-            #        "figure": status_plot})
+        # TODO: status_bar without scenario?
+        #if "status_bar" in feature_analysis:
+        #    status_plot = fa.get_bar_status_plot()
+        #    self.website["Feature Analysis"]["Status Bar Plot"] = OrderedDict({
+        #        "tooltip": "Stacked bar plots for runstatus of each feature groupe",
+        #        "figure": status_plot})
 
-            # correlation plot
-            if 'correlation' in feature_analysis:
-                correlation_plot = fa.correlation_plot()
-                self.website["Feature Analysis"]["Correlation plot"] = {"tooltip": "Correlation based on Pearson product-moment correlation coefficients between all features and clustered with Wards hierarchical clustering approach. Darker fields corresponds to a larger correlation between the features.",
-                                                                "figure": correlation_plot}
-            # TODO
-            #  File "/home/shuki/SpySMAC/spysmac/asapy/feature_analysis.py", line 197, in feature_importance
-            #    pc.fit(scenario=self.scenario, config=config)
-            #  File "/home/shuki/virtual-environments/spysmac/lib/python3.5/site-packages/autofolio/selector/pairwise_classification.py", line 66, in fit
-            #    self.algorithms = scenario.algorithms
-            #AttributeError: 'Scenario' object has no attribute 'algorithms'
-            ## feature importance
-            #if "feat_importance" in feature_analysis:
-            #    importance_plot = fa.feature_importance()
-            #    self.website["Feature Analysis"]["Feature importance"] = {"tooltip": "Using the approach of SATZilla'11, we train a cost-sensitive random forest for each pair of algorithms and average the feature importance (using gini as splitting criterion) across all forests. We show the median, 25th and 75th percentiles across all random forests of the 15 most important features.",
-            #                                                      "figure": importance_plot}
+        # correlation plot
+        if correlation:
+            correlation_plot = fa.correlation_plot()
+            self.website["Feature Analysis"]["Correlation plot"] = {"tooltip": "Correlation based on Pearson product-moment correlation coefficients between all features and clustered with Wards hierarchical clustering approach. Darker fields corresponds to a larger correlation between the features.",
+                                                            "figure": correlation_plot}
+        # TODO
+        #  File "/home/shuki/SpySMAC/spysmac/asapy/feature_analysis.py", line 197, in feature_importance
+        #    pc.fit(scenario=self.scenario, config=config)
+        #  File "/home/shuki/virtual-environments/spysmac/lib/python3.5/site-packages/autofolio/selector/pairwise_classification.py", line 66, in fit
+        #    self.algorithms = scenario.algorithms
+        #AttributeError: 'Scenario' object has no attribute 'algorithms'
+        ## feature importance
+        #if "feat_importance" in feature_analysis:
+        #    importance_plot = fa.feature_importance()
+        #    self.website["Feature Analysis"]["Feature importance"] = {"tooltip": "Using the approach of SATZilla'11, we train a cost-sensitive random forest for each pair of algorithms and average the feature importance (using gini as splitting criterion) across all forests. We show the median, 25th and 75th percentiles across all random forests of the 15 most important features.",
+        #                                                      "figure": importance_plot}
 
-            # cluster instances in feature space
-            if "clustering" in feature_analysis:
-                cluster_plot = fa.cluster_instances()
-                self.website["Feature Analysis"]["Clustering"] = {"tooltip": "Clustering instances in 2d; the color encodes the cluster assigned to each cluster. Similar to ISAC, we use a k-means to cluster the instances in the feature space. As pre-processing, we use standard scaling and a PCA to 2 dimensions. To guess the number of clusters, we use the silhouette score on the range of 2 to 12 in the number of clusters",
-                                                          "figure": cluster_plot}
+        # cluster instances in feature space
+        if clustering:
+            cluster_plot = fa.cluster_instances()
+            self.website["Feature Analysis"]["Clustering"] = {"tooltip": "Clustering instances in 2d; the color encodes the cluster assigned to each cluster. Similar to ISAC, we use a k-means to cluster the instances in the feature space. As pre-processing, we use standard scaling and a PCA to 2 dimensions. To guess the number of clusters, we use the silhouette score on the range of 2 to 12 in the number of clusters",
+                                                      "figure": cluster_plot}
 
-            ## get cdf plot
-            #if "feature_cdf" in feature_analysis:
-            #    cdf_plot = fa.get_feature_cost_cdf_plot()
-            #    self.website["Feature Analysis"]["CDF plot on feature costs"] = {"tooltip": "Cumulative Distribution function (CDF) plots. At each point x (e.g., running time cutoff), for how many of the instances (in percentage) have we computed the instance features. Faster feature computation steps have a higher curve. Missing values are imputed with the maximal value (or running time cutoff).",
-            #                                                             "figure": cdf_plot}
+        ## get cdf plot
+        #if "feature_cdf" in feature_analysis:
+        #    cdf_plot = fa.get_feature_cost_cdf_plot()
+        #    self.website["Feature Analysis"]["CDF plot on feature costs"] = {"tooltip": "Cumulative Distribution function (CDF) plots. At each point x (e.g., running time cutoff), for how many of the instances (in percentage) have we computed the instance features. Faster feature computation steps have a higher curve. Missing values are imputed with the maximal value (or running time cutoff).",
+        #                                                             "figure": cdf_plot}
 
         builder = HTMLBuilder(self.output, "SpySMAC")
         builder.generate_html(self.website)
