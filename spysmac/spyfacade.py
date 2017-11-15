@@ -5,6 +5,7 @@ from contextlib import contextmanager
 import typing
 import json
 import operator
+import copy
 
 import numpy as np
 from pandas import DataFrame
@@ -53,10 +54,14 @@ class SpySMAC(object):
     """
 
     def __init__(self, folders: typing.List[str], output: str,
-                 ta_exec_dir: str='.', missing_data_method: str='validation'):
+                 ta_exec_dir: str='.', missing_data_method: str='epm'):
         """
         Initialize SpySMAC facade to handle analyzing, plotting and building the
-        report-page easily.
+        report-page easily. During initialization, the analysis-infrastructure
+        is built and the data is validated, that means the overall best
+        incumbent is found and default+incumbent are evaluated for all
+        instances, usually using an EPM.
+        The analyze()-method performs an analysis and outputs a report.html.
 
         Arguments
         ---------
@@ -70,9 +75,7 @@ class SpySMAC(object):
             from [validation, epm], how to estimate missing runs
         """
         self.logger = logging.getLogger("spysmac.spyfacade")
-
         self.ta_exec_dir = ta_exec_dir
-
 
         # Create output if necessary
         self.output = output
@@ -82,10 +85,11 @@ class SpySMAC(object):
             os.makedirs(output)
 
         # Global runhistory combines all actual runs of individual SMAC-runs
+        # We save the combined (unvalidated) runhistory to disk, so we can use it later on.
+        # We keep the validated runhistory (with as many runs as possible) in
+        # memory. The distinction is made to avoid using runs that are
+        # only estimated using an EPM for further EPMs.
         self.global_rh = RunHistory(average_cost)
-        # Runhistory for runs that are estimated using validation
-        # (including defaults and incumbents)
-        self.validated_rh = RunHistory(average_cost)
 
         # Save all relevant SMAC-runs in a list
         self.runs = []
@@ -96,6 +100,8 @@ class SpySMAC(object):
             self.logger.debug("Collecting data from %s.", folder)
             self.runs.append(SMACrun(folder, ta_exec_dir))
 
+        # Use scenario of first run for general purposes (expecting they are all
+        # the same anyway!)
         self.scenario = self.runs[0].solver.scenario
 
         # Update global runhistory with all available runhistories
@@ -107,32 +113,24 @@ class SpySMAC(object):
                           '# Configurations: %d. # Runhistories: %d',
                           len(runhistory_fns), len(self.global_rh.data),
                           len(self.global_rh.get_all_configs()))
+        # Keep copy for plots/analysis that require only "pure" data (such as
+        # visualizing the actual explored configspace)
+        self.global_rh_actual = copy.deepcopy(self.global_rh)
 
-        # Estimate best overall incumbent
-        self.estimated_best_run = min(self.runs, key=lambda run:
-                                      self.global_rh.get_cost(run.solver.incumbent))
         # Estimate all missing costs using validation or EPM
-        try:
-            self.complete_data(method=missing_data_method)
-        except MemoryError:
-            self.complete_data(method=missing_data_method,
-                    c_runs=[self.estimated_best_run])
+        self.complete_data(method=missing_data_method)
         self.best_run = min(self.runs, key=lambda run:
                 self.global_rh.get_cost(run.solver.incumbent))
-        # TODO for ablation and forward selection inject in self.imp
-        self.importance = None  # Used to store dictionary containing parameter importances
 
-        # Check scenarios for consistency in relevant attributes
-        # TODO check for consistency in scenarios
-        for run in self.runs:
-            if not run.scen == self.scenario:
-                #raise ValueError("Scenarios don't match up ({})".format(run.folder))
-                pass
+        # TODO for ablation and forward selection inject in self.imp
+        self.importance = None  # Used to store dictionary containing parameter
+                                # importances, so it can be used by analysis
 
         self.default = self.scenario.cs.get_default_configuration()
         self.incumbent = self.best_run.solver.incumbent
 
         # Following variable determines whether a distinction is made
+        # between train and testinstance (e.g. in plotting)
         self.train_test = bool(self.scenario.train_insts != [None] and
                                self.scenario.test_insts != [None])
 
@@ -142,7 +140,7 @@ class SpySMAC(object):
         self.plotter = Plotter(self.scenario, self.train_test, conf1_runs, conf2_runs)
         self.website = OrderedDict([])
 
-    def complete_data(self, method="validation", c_runs=None):
+    def complete_data(self, method="epm", c_runs=None):
         """Complete missing data of runs to be analyzed. Either using validation
         or EPM.
         """
@@ -277,6 +275,8 @@ class SpySMAC(object):
             self.website["Parallel Coordinates"] = {
                      "figure" : out_path,
                      "tooltip": "Plot explored range of most important parameters."}
+
+        self.plotter.plot_cost_over_time(self.global_rh, self.best_run.traj)
 
         self.feature_analysis(box_violin='box_violin' in feature_analysis,
                               correlation='correlation' in feature_analysis,
@@ -428,17 +428,4 @@ class SpySMAC(object):
 
         builder = HTMLBuilder(self.output, "SpySMAC")
         builder.generate_html(self.website)
-
-
-    def _eq_scenarios(self, scen1: Scenario, scen2: Scenario):
-        """Custom function to compare relevant features of scenarios.
-
-        Parameters
-        ----------
-        scen1, scen2 -- Scenario
-            scenarios to be compared
-        """
-        relevant = ["train_insts", "test_insts", "cs", "features_dict",
-                    "initial_incumbent", "cutoff", "cost_for_crash"]
-        #for member in 
 

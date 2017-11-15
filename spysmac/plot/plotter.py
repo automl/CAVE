@@ -7,8 +7,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import ticker
 
+from ConfigSpace.util import impute_inactive_values
+
+from smac.utils.validate import Validator
+
 from spysmac.plot.scatter import plot_scatter_plot
 from spysmac.plot.confs_viz.viz_sampled_confs import SampleViz
+from spysmac.plot.parallel_coordinates import plot_parallel_coordinates
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -193,93 +198,92 @@ class Plotter(object):
         return sz.run()
 
     def plot_parallel_coordinates(self, rh, output, params=None):
-        """ Plotting a parallel coordinates plot, visualizing the explored PCS.
-        """
-        if not params:
-            params = rh.get_all_configs()[0].keys()[:5]  # which parameters to plot
+        """ Plot parallel coordinates (visualize higher dimensions), here used
+        to visualize pcs.
 
-        if len(params) < 3:
-            self.logger.info("Only two parameters, skipping parallel coordinates.")
-            return
+        Parameters
+        ----------
+        rh: RunHistory
+            rundata to take configs from
+        output: str
+            where to save plot
+        params: list[str]
+            parameters to be plotted
+        """
+        # TODO: plot only good configurations/configurations with at least n runs
+
+        # Get ALL parameter names
+        parameter_names = impute_inactive_values(rh.get_all_configs()[0]).keys()
+
+        if not params:
+            params = parameter_names[:5]  # which parameters to plot
 
         full_index = params + ["cost", "runs"]  # indices for dataframe
-        index = params  # plot only those
-        x = [i for i, _ in enumerate(index)]
-
-        def colour(category):
-            """ TODO Returning colour for plotting, possibly dependent on
-            category/cost?
-            """
-            # TODO
-            return np.random.choice(['#2e8ad8', '#cd3785', '#c64c00', '#889a00'])
 
         # Create dataframe with configs + runs/cost
         data = []
         for conf in rh.get_all_configs():
             new_entry = {"cost":rh.get_cost(conf),
                          "runs":len(rh.get_runs_for_config(conf))}
-            pa_d = conf.get_dictionary()
+            # Complete configuration with unused values
+            conf_dict = impute_inactive_values(conf).get_dictionary()
             for p in params:
-                if not p in pa_d:
-                    #TODO parameter not set in configuration... mhm.
-                    new_entry[p] = 0
-                elif isinstance(pa_d[p], str):
+                # No strings allowed for plotting -> cast to numerical
+                if isinstance(conf_dict[p], str):
                     try:
-                        new_entry[p] = int(pa_d[p])
+                        new_entry[p] = int(conf_dict[p])
                     except ValueError:
-                        new_entry[p] = float(pa_d[p])
+                        new_entry[p] = float(conf_dict[p])
                 else:
-                    new_entry[p] = pa_d[p]
+                    new_entry[p] = conf_dict[p]
             data.append(pd.Series(new_entry))
         full_data = pd.DataFrame(data)
-        data = full_data.drop(['cost', 'runs'], axis=1)
 
-        # Create subplots
-        fig, axes = plt.subplots(1, len(index)-1, sharey=False, figsize=(15,5))
+        plot_parallel_coordinates(full_data, params)
 
-        # Normalize the data for each parameter, so the displayed ranges are
-        # meaningful.
-        min_max = {}
-        for p in index:
-            min_max[p] = [data[p].min(), data[p].max(), np.ptp(data[p])]
-            data[p] = np.true_divide(data[p] - data[p].min(), np.ptp(data[p]))
 
-        # Plot data
-        for i, ax in enumerate(axes):
-            for idx in data.index:
-                category = full_data.loc[idx, 'cost']
-                ax.plot(x, data.loc[idx, index], colour(category))
-            ax.set_xlim([x[i], x[i+1]])
+    def plot_cost_over_time(self, rh, traj):
+        """ Plot performance over time according to SMACs validate-function. """
+        filename = "performance_over_time.png"
+        validator = Validator(self.scenario, trajectory=traj, output="")
+        time, configs, traj_costs = [], [], []
+        if (np.isfinite(self.scenario.wallclock_limit)):
+            max_time = self.scenario.wallclock_limit
+        else:
+            max_time = traj[-1][mode]
+        counter = 2**0
+        for entry in traj[::-1]:
+            if (entry["wallclock_time"] <= max_time/counter): # and
+                    #entry["incumbent"] not in configs):
+                time.append(entry["wallclock_time"])
+                configs.append(entry["incumbent"])
+                traj_costs.append(entry["cost"])
+                counter *= 2
+        if not traj[0]["incumbent"] in configs:
+            configs.append(traj[0]["incumbent"])
+            traj_costs.append(traj[0]["cost"])
+            time.append(traj[0]["wallclock_time"])  # add first
 
-        # Labeling axes
-        num_ticks = 10
-        for p, ax in enumerate(axes):
-            ax.xaxis.set_major_locator(ticker.FixedLocator([p]))
-            if p == len(axes)-1:
-                # Move the final axis' ticks to the right-hand side
-                ax = plt.twinx(axes[-1])
-                p = len(axes)
-                ax.xaxis.set_major_locator(ticker.FixedLocator([x[-2], x[-1]]))
-            minimum, maximum, param_range = min_max[index[p]]
-            step = param_range / float(num_ticks)
-            # TODO adjust tick-labels to int/float/categorical and maybe even log?
-            tick_labels = [round(minimum + step * i, 2) for i in
-                    range(num_ticks+1)]
-            norm_min = data[index[p]].min()
-            norm_range = np.ptp(data[index[p]])
-            norm_step = norm_range / float(num_ticks)
-            ticks = [round(norm_min + norm_step * i, 2) for i in
-                    range(num_ticks+1)]
-            ax.yaxis.set_ticks(ticks)
-            ax.set_yticklabels(tick_labels)
-            if not p == len(axes)-1:
-                ax.set_xticklabels([index[p]], rotation=5)
-        ax.set_xticklabels([index[-2], index[-1]], rotation=5)
+        validated_rh = validator.validate_epm(list(set(configs)), 'train+test', 1,
+                                              runhistory=rh)
+        # Plot performances over time
+        costs = [validated_rh.get_cost(c) for c in configs]
 
-        # Remove space between subplots
-        plt.subplots_adjust(wspace=0)
+        self.logger.debug(time)
 
-        plt.title("Explored parameter ranges in parallel coordinates.")
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        # Plot in reverse order!
+        # TODO train/test
+        time, costs, traj_costs = time[::-1], costs[::-1], traj_costs[::-1]
+        ax.plot(time, costs, 'r-', time, label="Actual Costs")
+        ax.plot(traj_costs, 'b--', label="Costs of trajectory")
+        ax.set_xscale("log", nonposx='clip')
+        # Set y-limits in case that traj_costs are very high and ruin the plot
+        ax.set_ylim(min(min(costs), min(traj_costs)), max(costs)+max(costs)*0.1)
+        ax.legend()
 
-        fig.savefig(output)
+        plt.title("Performance over time.")
+
+        fig.savefig(filename)
         plt.close(fig)

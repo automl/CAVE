@@ -40,7 +40,7 @@ class SpySMACCLI(object):
         opt_opts.add_argument("--verbose_level", default="INFO",
                               choices=["INFO", "DEBUG"],
                               help="verbose level")
-        opt_opts.add_argument("--validation", default="validation",
+        opt_opts.add_argument("--validation", default="epm",
                               choices=["validation", "epm"],
                               help="how to complete missing runs for "
                                    "config/inst-pairs.")
