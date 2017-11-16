@@ -59,7 +59,7 @@ class SpySMACCLI(object):
         opt_opts.add_argument("--feat_analysis", default="all", nargs='+',
                               help="what kind of parameter importance to "
                                    "calculate", choices=["all", "box_violin",
-                                   "correlation", "feature_cdf", "none"])
+                                   "correlation", "clustering", "none"])
         args_, misc = parser.parse_known_args()
 
         if args_.verbose_level == "INFO":
