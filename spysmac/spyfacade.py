@@ -4,7 +4,6 @@ from collections import OrderedDict
 from contextlib import contextmanager
 import typing
 import json
-import operator
 import copy
 
 import numpy as np
@@ -59,9 +58,9 @@ class SpySMAC(object):
         """
         Initialize SpySMAC facade to handle analyzing, plotting and building the
         report-page easily. During initialization, the analysis-infrastructure
-        is built and the data is validated, that means the overall best
+        is built and the data is validated, meaning the overall best
         incumbent is found and default+incumbent are evaluated for all
-        instances, usually using an EPM.
+        instances, by default using an EPM.
         The analyze()-method performs an analysis and outputs a report.html.
 
         Arguments
@@ -89,91 +88,89 @@ class SpySMAC(object):
         # We save the combined (unvalidated) runhistory to disk, so we can use it later on.
         # We keep the validated runhistory (with as many runs as possible) in
         # memory. The distinction is made to avoid using runs that are
-        # only estimated using an EPM for further EPMs.
-        self.global_rh = RunHistory(average_cost)
+        # only estimated using an EPM for further EPMs or to handle runs
+        # validated on different hardware (depending on validation-method).
+        self.original_rh = RunHistory(average_cost)
+        self.validated_rh = RunHistory(average_cost)
 
         # Save all relevant SMAC-runs in a list
         self.runs = []
         for folder in folders:
-            if not os.path.exists(folder):
-                raise ValueError("The specified SMAC-output in %s doesn't exist.",
-                                 folder)
-            self.logger.debug("Collecting data from %s.", folder)
-            self.runs.append(SMACrun(folder, ta_exec_dir))
+            try:
+                self.logger.debug("Collecting data from %s.", folder)
+                self.runs.append(SMACrun(folder, ta_exec_dir))
+            except Exception as err:
+                self.logger.warning("Folder %s could not be loaded, failed "
+                                    "with error message: %s", folder, err)
+                continue
+        if not len(self.runs):
+            raise ValueError("None of the specified SMAC-folders could be loaded.")
 
-        # Use scenario of first run for general purposes (expecting they are all
-        # the same anyway!)
+        # Use scenario of first run for general purposes (expecting they are all the same anyway!)
         self.scenario = self.runs[0].solver.scenario
 
         # Update global runhistory with all available runhistories
-        self.logger.debug("Update global rh with all available rhs!")
+        self.logger.debug("Update original rh with all available rhs!")
         runhistory_fns = [os.path.join(f, "runhistory.json") for f in folders]
         for rh_file in runhistory_fns:
-            self.global_rh.update_from_json(rh_file, self.scenario.cs)
+            self.original_rh.update_from_json(rh_file, self.scenario.cs)
         self.logger.debug('Combined number of Runhistory data points: %d. '
                           '# Configurations: %d. # Runhistories: %d',
-                          len(runhistory_fns), len(self.global_rh.data),
-                          len(self.global_rh.get_all_configs()))
-        # Keep copy for plots/analysis that require only "pure" data (such as
-        # visualizing the actual explored configspace)
-        self.global_rh_actual = copy.deepcopy(self.global_rh)
+                          len(runhistory_fns), len(self.original_rh.data),
+                          len(self.original_rh.get_all_configs()))
+        self.original_rh.save_json(os.path.join(self.output, "combined_rh.json"))
 
         # Estimate all missing costs using validation or EPM
         self.complete_data(method=missing_data_method)
         self.best_run = min(self.runs, key=lambda run:
-                self.global_rh.get_cost(run.solver.incumbent))
-
-        # TODO for ablation and forward selection inject in self.imp
-        self.importance = None  # Used to store dictionary containing parameter
-                                # importances, so it can be used by analysis
+                self.validated_rh.get_cost(run.solver.incumbent))
 
         self.default = self.scenario.cs.get_default_configuration()
         self.incumbent = self.best_run.solver.incumbent
 
         # Following variable determines whether a distinction is made
-        # between train and testinstance (e.g. in plotting)
+        # between train and test-instances (e.g. in plotting)
         self.train_test = bool(self.scenario.train_insts != [None] and
                                self.scenario.test_insts != [None])
 
-        self.analyzer = Analyzer(self.global_rh, self.train_test, self.scenario)
-        conf1_runs = get_cost_dict_for_config(self.global_rh, self.default)
-        conf2_runs = get_cost_dict_for_config(self.global_rh, self.incumbent)
-        self.plotter = Plotter(self.scenario, self.train_test, conf1_runs, conf2_runs)
+        self.analyzer = Analyzer(self.original_rh, self.validated_rh,
+                                 self.default, self.incumbent, self.train_test,
+                                 self.scenario, self.output)
+
         self.website = OrderedDict([])
 
-    def complete_data(self, method="epm", c_runs=None):
+    def complete_data(self, method="epm"):
         """Complete missing data of runs to be analyzed. Either using validation
         or EPM.
         """
-        if not c_runs:
-            c_runs = self.runs
         with changedir(self.ta_exec_dir):
             self.logger.info("Completing data using %s.", method)
 
             path_for_validated_rhs = os.path.join(self.output, "validated_rhs")
-            for run in c_runs:
-            #for run in [self.best_run]:
-                out = os.path.join(path_for_validated_rhs, "rh_"+run.folder)
+            for run in self.runs:
+                # out = os.path.join(path_for_validated_rhs, "rh_"+run.folder)
+                out = ""
                 validator = Validator(run.scen, run.traj, out)
 
                 if method == "validation":
                     # TODO determine # repetitions
-                    self.global_rh.update(validator.validate('def+inc',
-                                          'train+test', 1, -1,
-                                          runhistory=self.global_rh))
+                    new_rh = validator.validate('def+inc', 'train+test', 1, -1,
+                                                runhistory=self.original_rh)
                 elif method == "epm":
-                    self.global_rh.update(validator.validate_epm('def+inc', 'train+test', 1,
-                                             runhistory=self.global_rh))
+                    new_rh = validator.validate_epm('def+inc', 'train+test', 1,
+                                                    runhistory=self.original_rh)
                 else:
                     raise ValueError("Missing data method illegal (%s)",
                                      method)
+                self.validated_rh.update(new_rh)
 
     def analyze(self,
-                performance=False, cdf=False, scatter=False, confviz=False,
+                performance=True, cdf=True, scatter=True, confviz=True,
                 param_importance=['forward_selection', 'ablation', 'fanova'],
                 feature_analysis=["box_violin", "correlation",
                     "feat_importance", "clustering", "feature_cdf"],
-                parallel_coordinates=True):
+                parallel_coordinates=True, cost_over_time=True,
+                algo_footprint=True):
         """Analyze the available data and build HTML-webpage as dict.
         Save webpage in 'self.output/SpySMAC/report.html'.
         Analyzing is performed with the analyzer-instance that is initialized in
@@ -211,42 +208,16 @@ class SpySMAC(object):
                      "tooltip": "Meta data such as number of instances, "
                                 "parameters, general configurations..." }
 
-        best_config = self.analyzer.config_to_html(self.default, self.incumbent)
-        self.website["Best configuration"] = {"table": best_config,
+        compare_config = self.analyzer.config_to_html(self.default, self.incumbent)
+        self.website["Best configuration"] = {"table": compare_config,
                      "tooltip": "Comparing parameters of default and incumbent. "
                                 "Parameters that differ from default to "
                                 "incumbent are presented first."}
-
-        if performance:
-            performance_table = self.analyzer.create_performance_table(
-                                self.default, self.incumbent)
-            self.website["Performance"] = {"table": performance_table}
-
-        if cdf:
-            cdf_path = os.path.join(self.output, 'cdf.png')
-            self.plotter.plot_cdf_compare(output=cdf_path)
-            self.website["Cumulative distribution function (CDF)"] = {
-                     "figure": cdf_path,
-                     "tooltip": "Plot default versus incumbent performance "
-                                "on a cumulative distribution plot."}
-
-        if scatter and (self.scenario.train_insts != [[None]]):
-            scatter_path = os.path.join(self.output, 'scatter.png')
-            self.plotter.plot_scatter(output=scatter_path)
-            self.website["Scatterplot"] = {
-                     "figure" : scatter_path,
-                     "tooltip": "Plot all evaluated instances on a scatter plot, "
-                                "to directly compare performance of incumbent "
-                                "and default for each instance."}
-        elif scatter:
-            self.logger.info("Scatter plot desired, but no instances available.")
-
         if  confviz and self.scenario.feature_array is not None:
             incumbents = [r.solver.incumbent for r in self.runs]
-            confviz = self.plotter.visualize_configs(self.scenario,
-                        self.global_rh, incumbents)
+            confviz_script = self.analyzer.plot_confviz(incumbents)
             self.website["Configuration Visualization"] = {
-                    "table" : confviz,
+                    "table" : confviz_script,
                     "tooltip" : "Using PCA to reduce dimensionality of the "
                                 "search space  and plot the distribution of "
                                 "evaluated configurations. The bigger the dot, "
@@ -256,6 +227,37 @@ class SpySMAC(object):
         elif confviz:
             self.logger.info("Configuration visualization desired, but no "
                              "instance-features available.")
+        if cost_over_time:
+            cost_over_time_path = self.analyzer.plot_cost_over_time(self.best_run.traj)
+            self.website["Cost over time"] = {"figure": cost_over_time_path,
+                    "tooltip": "The cost of the incumbent estimated over the "
+                               "time. The cost is estimated using an EPM that "
+                               "is based on the actual runs."}
+
+        if performance:
+            performance_table = self.analyzer.create_performance_table(
+                                self.default, self.incumbent)
+            self.website["Performance"] = {"table": performance_table}
+
+        if cdf:
+            cdf_path = self.analyzer.plot_cdf()
+            self.website["Cumulative distribution function (CDF)"] = {
+                     "figure": cdf_path,
+                     "tooltip": "Plot default versus incumbent performance "
+                                "on a cumulative distribution plot. Uses "
+                                "validated data!"}
+
+        if scatter and (self.scenario.train_insts != [[None]]):
+            scatter_path = self.analyzer.plot_scatter()
+            self.website["Scatterplot"] = {
+                     "figure" : scatter_path,
+                     "tooltip": "Plot all evaluated instances on a scatter plot, "
+                                "to directly compare performance of incumbent "
+                                "and default for each instance. Uses validated "
+                                "data!"}
+        elif scatter:
+            self.logger.info("Scatter plot desired, but no instances available.")
+
 
         self.parameter_importance(ablation='ablation' in param_importance,
                                   fanova='fanova' in param_importance,
@@ -263,30 +265,23 @@ class SpySMAC(object):
                                                     param_importance)
 
         if parallel_coordinates:
+            # Should be after parameter importance, if performed.
             self.logger.info("Plotting parallel coordinates.")
-            out_path = os.path.join(self.output, "parallel_coordinates.png")
-            # TODO what if no parameter importance is done? plot all? random subset?
-            if self.importance:
-                params = list(self.importance.keys())[:6]
-            else:
-                params = list(self.default.keys())
-            self.logger.debug("Parallel coordinates plotting params: " + str(params))
-            self.plotter.plot_parallel_coordinates(self.global_rh, out_path,
-                    params)
+            n_params = 6
+            parallel_path = self.analyzer.plot_parallel_coordinates(n_params)
             self.website["Parallel Coordinates"] = {
-                     "figure" : out_path,
-                     "tooltip": "Plot explored range of most important parameters."}
+                         "figure" : parallel_path,
+                         "tooltip": "Plot explored range of most important parameters."}
 
-        self.plotter.plot_cost_over_time(self.global_rh, self.best_run.traj)
+
 
         self.feature_analysis(box_violin='box_violin' in feature_analysis,
                               correlation='correlation' in feature_analysis,
                               clustering='clustering' in feature_analysis)
 
-        footprint = AlgorithmFootprint(self.global_rh, self.scenario.feature_dict,
-                                       self.scenario.cutoff)
-        footprint.plot_points(self.incumbent, "inc.png")
-        footprint.plot_points(self.default, "def.png")
+        if algo_footprint:
+            algo_footprint_path = self.analyzer.plot_algorithm_footprint()
+
 
 
     def parameter_importance(self, ablation=False, fanova=False,
@@ -297,12 +292,11 @@ class SpySMAC(object):
             self.website["Parameter Importance"] = OrderedDict([("tooltip",
                 "Parameter Importance explains the individual importance of the "
                 "parameters for the overall performance. Different techniques "
-                "are implemented, for example: fANOVA (functional analysis of "
+                "are implemented: fANOVA (functional analysis of "
                 "variance), ablation and forward selection.")])
         if fanova:
             self.logger.info("fANOVA...")
-            params = self.analyzer.fanova(self.incumbent, self.output, 10)
-            self.importance = params
+            table, plots = self.analyzer.fanova(self.incumbent, 10)
 
             self.website["Parameter Importance"]["fANOVA"] = OrderedDict([
                 ("tooltip", "fANOVA stands for functional analysis of variance "
@@ -314,30 +308,25 @@ class SpySMAC(object):
                             "performance changes that depend on other "
                             "parameters.")])
 
-            # Create table
-            fanova_table = self.analyzer._split_table(params)
-            df = DataFrame(data=fanova_table)
-            fanova_table = df.to_html(escape=False, header=False, index=False, justify='left')
             self.website["Parameter Importance"]["fANOVA"]["Importance"] = {
-                        "table": fanova_table}
+                         "table": table}
 
-            # Insert plots
+            # Insert plots (the received plots is a dict, mapping param -> path)
             self.website["Parameter Importance"]["fANOVA"]["Marginals"] = OrderedDict([])
-            for p in [x[0] for x in sorted(params.items(),
-                key=operator.itemgetter(1))]:
-                self.website["Parameter Importance"]["fANOVA"]["Marginals"][p] = {
-                        "figure": os.path.join(self.output, "fanova", p+'.png')}
+            for param, plot in plots.items():
+                self.website["Parameter Importance"]["fANOVA"]["Marginals"][param] = {
+                        "figure": plot}
             # Check for pairwise plots (untested and hacky TODO)
             # Right now no way to access paths of the plots -> file issue
-            pairwise = OrderedDict([])
-            for p1 in params.keys():
-                for p2 in params.keys():
-                    combi = str([p1, p2]).replace(os.sep, "_").replace("'","") + ".png"
-                    potential_path = os.path.join(self.output, 'fanova', combi)
-                    if os.path.exists(potential_path):
-                         pairwise[combi] = {"figure": potential_path}
-            if pairwise:
-                self.website["Parameter Importance"]["fANOVA"]["PairwiseMarginals"] = pairwise
+            #pairwise = OrderedDict([])
+            #for p1 in params.keys():
+            #    for p2 in params.keys():
+            #        combi = str([p1, p2]).replace(os.sep, "_").replace("'","") + ".png"
+            #        potential_path = os.path.join(self.output, 'fanova', combi)
+            #        if os.path.exists(potential_path):
+            #             pairwise[combi] = {"figure": potential_path}
+            #if pairwise:
+            #    self.website["Parameter Importance"]["fANOVA"]["PairwiseMarginals"] = pairwise
 
         if ablation:
             self.logger.info("Ablation...")

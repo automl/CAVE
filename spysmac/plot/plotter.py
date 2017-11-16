@@ -23,7 +23,11 @@ __email__ = "joshua.marben@neptun.uni-freiburg.de"
 
 class Plotter(object):
     """
-    Responsible for plotting (scatter, CDF, etc.)
+    This class is used to outsource some plotting routines and some of the parts
+    of analysis that require lots of plot-related code (such as conf_viz or
+    parallel_coordinates). It should be invoked via the Analyzer-class. More
+    complicated or generalized plotting routines are outsourced and imported, so
+    they can be easily adapted into other projects.
     """
 
     def __init__(self, scenario, train_test, conf1_runs, conf2_runs):
@@ -198,9 +202,15 @@ class Plotter(object):
                        incs=inc)
         return sz.run()
 
-    def plot_parallel_coordinates(self, rh, output, params=None):
+    def plot_parallel_coordinates(self, rh, output, params):
         """ Plot parallel coordinates (visualize higher dimensions), here used
-        to visualize pcs.
+        to visualize pcs. This function prepares the data from a SMAC-related
+        format (using runhistories and parameters) to a more general format
+        (using a dataframe). The resulting dataframe is passed to the
+        parallel_coordinates-routine.
+
+        NOTE: the given runhistory should contain only optimization and no
+        validation to analyze the explored parameter-space.
 
         Parameters
         ----------
@@ -210,27 +220,37 @@ class Plotter(object):
             where to save plot
         params: list[str]
             parameters to be plotted
+
+        Returns
+        -------
+        output: str
+            path to plot
         """
         # TODO: plot only good configurations/configurations with at least n runs
 
-        # Get ALL parameter names
+        # Get ALL parameter names and metrics to be passed on
         parameter_names = impute_inactive_values(rh.get_all_configs()[0]).keys()
+        metrics = ["cost", "runs"]
 
-        if not params:
-            params = parameter_names[:5]  # which parameters to plot
-
-        full_index = params + ["cost", "runs"]  # indices for dataframe
+        full_index = params + metrics  # indices for dataframe
 
         # Create dataframe with configs + runs/cost
         data = []
         for conf in rh.get_all_configs():
+            # Add metrics
             new_entry = {"cost":rh.get_cost(conf),
                          "runs":len(rh.get_runs_for_config(conf))}
-            # Complete configuration with unused values
+            # Complete configuration with imputed unused values
             conf_dict = impute_inactive_values(conf).get_dictionary()
             for p in params:
+                # TODO handle log-scales and unused parameters
                 # No strings allowed for plotting -> cast to numerical
                 if isinstance(conf_dict[p], str):
+                    # Catch "on" and "off"
+                    if conf_dict[p] == "on":
+                        new_entry[p] = 1
+                    elif conf_dict[p] == "off":
+                        new_entry[p] = 0
                     try:
                         new_entry[p] = int(conf_dict[p])
                     except ValueError:
@@ -240,12 +260,13 @@ class Plotter(object):
             data.append(pd.Series(new_entry))
         full_data = pd.DataFrame(data)
 
-        plot_parallel_coordinates(full_data, params)
+        plot_parallel_coordinates(full_data, params, output)
+        return output
 
 
-    def plot_cost_over_time(self, rh, traj):
+    def plot_cost_over_time(self, rh, traj, output="performance_over_time.png"):
         """ Plot performance over time according to SMACs validate-function. """
-        filename = "performance_over_time.png"
+        self.logger.info("Estimating costs over time for best run.")
         validator = Validator(self.scenario, trajectory=traj, output="")
         time, configs, traj_costs = [], [], []
         if (np.isfinite(self.scenario.wallclock_limit)):
@@ -254,8 +275,7 @@ class Plotter(object):
             max_time = traj[-1][mode]
         counter = 2**0
         for entry in traj[::-1]:
-            if (entry["wallclock_time"] <= max_time/counter): # and
-                    #entry["incumbent"] not in configs):
+            if (entry["wallclock_time"] <= max_time/counter):
                 time.append(entry["wallclock_time"])
                 configs.append(entry["incumbent"])
                 traj_costs.append(entry["cost"])
@@ -286,5 +306,5 @@ class Plotter(object):
 
         plt.title("Performance over time.")
 
-        fig.savefig(filename)
+        fig.savefig(output)
         plt.close(fig)
