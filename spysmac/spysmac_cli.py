@@ -6,6 +6,9 @@ import os
 import sys
 import shutil
 
+import matplotlib
+matplotlib.use('agg')
+
 from spysmac.spyfacade import SpySMAC
 from spysmac.html.html_builder import HTMLBuilder
 
