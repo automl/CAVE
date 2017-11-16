@@ -6,6 +6,9 @@ import os
 import sys
 import shutil
 
+import matplotlib
+matplotlib.use('agg')
+
 from spysmac.spyfacade import SpySMAC
 from spysmac.html.html_builder import HTMLBuilder
 
@@ -56,7 +59,7 @@ class SpySMACCLI(object):
         opt_opts.add_argument("--feat_analysis", default="all", nargs='+',
                               help="what kind of parameter importance to "
                                    "calculate", choices=["all", "box_violin",
-                                   "correlation", "feature_cdf", "none"])
+                                   "correlation", "clustering", "none"])
         args_, misc = parser.parse_known_args()
 
         if args_.verbose_level == "INFO":
@@ -87,3 +90,5 @@ class SpySMACCLI(object):
         spySMAC.analyze(performance=True, cdf=True, scatter=True, confviz=True,
                         param_importance=param_imp,
                         feature_analysis=feature_analysis)
+        #spySMAC.analyze(performance=False, cdf=False, scatter=False, confviz=False,
+        #                param_importance=[], feature_analysis=[])

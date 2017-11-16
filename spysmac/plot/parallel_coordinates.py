@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import ticker
 
-def plot_parallel_coordinates(dataframe, index, colour=None, output="parallel_coordinates"):
+def plot_parallel_coordinates(dataframe, index, output="parallel_coordinates.png"):
     """ Plotting a parallel coordinates plot, visualizing the explored PCS.
 
     Parameters
@@ -11,12 +11,19 @@ def plot_parallel_coordinates(dataframe, index, colour=None, output="parallel_co
     dataframe: pd.DataFrame
         frame containing data to be plotted.
     index: list[str]
-        list with parameters to be plotted
+        list with parameters to be plotted (to be selected from the full
+        dataframe
+
+    Returns
+    -------
+    output: str
+        path for plot
     """
     if len(index) < 3:
         self.logger.info("Only two parameters, skipping parallel coordinates.")
         return
 
+    # Select only parameters we want to plot (specified in index)
     data = dataframe[index]
 
     def colour(category):
@@ -39,12 +46,13 @@ def plot_parallel_coordinates(dataframe, index, colour=None, output="parallel_co
     # Plot data
     for i, ax in enumerate(axes):
         for idx in data.index:
+            # Category is supposed to be used for coloring the plot
             category = dataframe.loc[idx, 'cost']
             ax.plot(range(len(index)), data.loc[idx, index], colour(category))
         ax.set_xlim([i, i+1])
 
     # Labeling axes
-    # TODO adjust tick-labels to int/float/categorical and maybe even log?
+    # TODO adjust tick-labels to int/float/categorical/unused and maybe even log?
     num_ticks = 10
     for p, ax in enumerate(axes):
         ax.xaxis.set_major_locator(ticker.FixedLocator([p]))
@@ -75,3 +83,5 @@ def plot_parallel_coordinates(dataframe, index, colour=None, output="parallel_co
 
     fig.savefig(output)
     plt.close(fig)
+
+    return output

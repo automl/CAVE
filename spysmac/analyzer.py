@@ -3,11 +3,10 @@ import logging
 from collections import OrderedDict
 import typing
 import json
+import operator
 
 import numpy as np
 from pandas import DataFrame
-import matplotlib
-matplotlib.use('Agg')
 
 from smac.configspace import Configuration
 from smac.epm.rf_with_instances import RandomForestWithInstances
@@ -24,6 +23,7 @@ from spysmac.asapy.feature_analysis import FeatureAnalysis
 
 from spysmac.html.html_builder import HTMLBuilder
 from spysmac.plot.plotter import Plotter
+from spysmac.plot.algorithm_footprint import AlgorithmFootprint
 from spysmac.smacrun import SMACrun
 from spysmac.utils.helpers import get_cost_dict_for_config, get_timeout
 
@@ -40,15 +40,26 @@ class Analyzer(object):
     and outputs PAR10, timeouts, scatterplots, parameter importance etc.
     """
 
-    def __init__(self, global_rh, train_test, scenario):
+    def __init__(self, original_rh, validated_rh, default, incumbent,
+                 train_test, scenario, output):
         """Saves all relevant information that arises during the analysis. """
         self.logger = logging.getLogger("spysmac.analyzer")
 
-        self.global_rh = global_rh
+        self.original_rh = original_rh
+        self.validated_rh = validated_rh
+        self.default = default
+        self.incumbent = incumbent
         self.train_test = train_test
         self.scenario = scenario
+        self.output = output
 
-        self.performance_table = None
+        # TODO for ablation and forward selection inject in self.imp
+        self.importance = None  # Used to store dictionary containing parameter
+                                # importances, so it can be used by analysis
+
+        conf1_runs = get_cost_dict_for_config(self.validated_rh, self.default)
+        conf2_runs = get_cost_dict_for_config(self.validated_rh, self.incumbent)
+        self.plotter = Plotter(self.scenario, self.train_test, conf1_runs, conf2_runs)
 
     def get_timeouts(self, config):
         """ Get number of timeouts in config per runs in total (not per
@@ -59,7 +70,7 @@ class Analyzer(object):
         config: Configuration
             configuration from which to calculate the timeouts"""
         cutoff = self.scenario.cutoff
-        timeouts = get_timeout(self.global_rh, config, cutoff)
+        timeouts = get_timeout(self.validated_rh, config, cutoff)
         if self.train_test:
             if not cutoff:
                 return (("N","A"),("N","A"))
@@ -97,7 +108,7 @@ class Analyzer(object):
             PAR10 values for train- and test-instances, if available as tuple
             else the general average
         """
-        runs = get_cost_dict_for_config(self.global_rh, config)
+        runs = get_cost_dict_for_config(self.validated_rh, config)
         # Penalize
         if self.scenario.cutoff:
             runs = [(k, runs[k]) if runs[k] < self.scenario.cutoff
@@ -118,62 +129,7 @@ class Analyzer(object):
         else:
             return np.mean([c for i, c in runs])
 
-    def fanova(self, incumbent, output, num_params=10):
-        """Wrapper for parameter_importance to save the importance-object/
-        extract the results. We want to show the top X (10) most important
-        parameter-fanova-plots.
-
-        Parameters
-        ----------
-        incumbent: Configuration
-            incumbent configuration
-        output: str
-            output-dir
-        num_params: int
-            how many of the top important parameters should be shown
-
-        Returns
-        -------
-        parameter_imp: list[str]
-            list with the most important parameters
-        """
-        importance = self.parameter_importance("fanova", incumbent, output)
-        parameter_imp = importance.evaluator.evaluated_parameter_importance
-        return parameter_imp
-
-    def parameter_importance(self, modus, incumbent, output):
-        """Calculate parameter-importance using the PIMP-package.
-        Currently ablation, forward-selection and fanova are used.
-
-        Parameters
-        ----------
-        modus: str
-            modus for parameter importance, from [forward-selection, ablation,
-            fanova]
-
-        Returns
-        -------
-        importance: pimp.Importance
-            importance object with evaluated data
-        """
-        # Get parameter-values and costs per config in arrays.
-        configs = self.global_rh.get_all_configs()
-        X = np.array([c.get_array() for c in configs])
-        y = np.array([self.global_rh.get_cost(c) for c in configs])
-
-        # Evaluate parameter importance
-        save_folder = output
-        importance = Importance(scenario=self.scenario,
-                                runhistory=self.global_rh,
-                                incumbent=incumbent,
-                                parameters_to_evaluate=len(self.scenario.cs.get_hyperparameters()),
-                                save_folder=save_folder,
-                                seed=12345)
-        result = importance.evaluate_scenario(modus)
-        with open(os.path.join(save_folder, 'pimp_values_%s.json' % modus), 'w') as out_file:
-            json.dump(result, out_file, sort_keys=True, indent=4, separators=(',', ': '))
-        importance.plot_results(name=os.path.join(save_folder, modus), show=False)
-        return importance
+####################################### TABLES #######################################
 
     def create_overview_table(self, best_folder):
         """ Create overview-table.
@@ -328,6 +284,145 @@ class Analyzer(object):
             table_split.append(("<b>"+keys[-1]+"</b>", table[keys[-1]], '', ''))
         return table_split
 
+####################################### PARAMETER IMPORTANCE #######################################
+    def fanova(self, incumbent, num_params=10):
+        """Wrapper for parameter_importance to save the importance-object/
+        extract the results. We want to show the top X (10) most important
+        parameter-fanova-plots.
+
+        Parameters
+        ----------
+        incumbent: Configuration
+            incumbent configuration
+        num_params: int
+            how many of the top important parameters should be shown
+
+        Returns
+        -------
+        fanova_table: str
+            html table with importances for all parameters
+        plots: Dict[str: st]
+            dictionary mapping parameters to their plots
+        """
+        importance = self.parameter_importance("fanova", incumbent, self.output)
+        parameter_imp = importance.evaluator.evaluated_parameter_importance
+        # Set internal parameter importance for further analysis (such as
+        # parallel coordinates)
+        self.importance = parameter_imp
+        # Create table
+        fanova_table = self._split_table(parameter_imp)
+        df = DataFrame(data=fanova_table)
+        fanova_table = df.to_html(escape=False, header=False, index=False, justify='left')
+        plots = {}
+        for p in [x[0] for x in sorted(parameter_imp.items(),
+                                       key=operator.itemgetter(1))]:
+            plots[p] = os.path.join(self.output, "fanova", p+'.png')
+        # Check for pairwise plots (untested and hacky TODO)
+        # Right now no way to access paths of the plots -> file issue
+        #pairwise = OrderedDict([])
+        #for p1 in params.keys():
+        #    for p2 in params.keys():
+        #        combi = str([p1, p2]).replace(os.sep, "_").replace("'","") + ".png"
+        #        potential_path = os.path.join(self.output, 'fanova', combi)
+        #        if os.path.exists(potential_path):
+        #             pairwise[combi] = {"figure": potential_path}
+        #if pairwise:
+        #    self.website["Parameter Importance"]["fANOVA"]["PairwiseMarginals"] = pairwise
+        return fanova_table, plots
+
+    def parameter_importance(self, modus, incumbent, output):
+        """Calculate parameter-importance using the PIMP-package.
+        Currently ablation, forward-selection and fanova are used.
+
+        Parameters
+        ----------
+        modus: str
+            modus for parameter importance, from [forward-selection, ablation,
+            fanova]
+
+        Returns
+        -------
+        importance: pimp.Importance
+            importance object with evaluated data
+        """
+        # Evaluate parameter importance
+        save_folder = output
+        importance = Importance(scenario=self.scenario,
+                                runhistory=self.original_rh,
+                                incumbent=incumbent,
+                                parameters_to_evaluate=len(self.scenario.cs.get_hyperparameters()),
+                                save_folder=save_folder,
+                                seed=12345)
+        result = importance.evaluate_scenario(modus)
+        with open(os.path.join(save_folder, 'pimp_values_%s.json' % modus), 'w') as out_file:
+            json.dump(result, out_file, sort_keys=True, indent=4, separators=(',', ': '))
+        importance.plot_results(name=os.path.join(save_folder, modus), show=False)
+        return importance
+
+####################################### PLOTS #######################################
+
+    def plot_parallel_coordinates(self, n_param=6):
+        """ Creates a parallel coordinates plot visualizing the explored
+        parameter configuration space. """
+        out_path = os.path.join(self.output, "parallel_coordinates.png")
+        # If a parameter importance has been performed in this analyzer-object,
+        # only plot the n_param most important parameters.
+        if self.importance:
+            params = list(self.importance.keys())[:n_param]
+        else:
+            # TODO what if no parameter importance is done? plot all? random subset?
+            # Currently: plot all
+            self.logger.info("No parameter importance performed. Plotting all "
+                             "parameters in parallel coordinates plot.")
+            params = list(self.default.keys())
+
+        self.logger.debug("Parallel coordinates plotting params: " + str(params))
+        self.plotter.plot_parallel_coordinates(self.original_rh, out_path, params)
+
+        return out_path
+
+    def plot_cdf(self):
+        cdf_path = os.path.join(self.output, 'cdf.png')
+        self.plotter.plot_cdf_compare(output=cdf_path)
+        return cdf_path
+
+    def plot_scatter(self):
+        scatter_path = os.path.join(self.output, 'scatter.png')
+        self.plotter.plot_scatter(output=scatter_path)
+        return scatter_path
+
+    def plot_confviz(self, incumbents):
+        """ Plot the visualization of configurations, highlightning the
+        incumbents. Using original rh, so the explored configspace can be
+        estimated.
+
+        Parameters
+        ----------
+        incumbents: List[Configuration]
+            list with incumbents, so they can be marked in plot
+
+        Returns
+        -------
+        confviz: str
+            script to generate the interactive html
+        """
+        confviz = self.plotter.visualize_configs(self.scenario,
+                    self.original_rh, incumbents)
+        return confviz
+
+    def plot_cost_over_time(self, traj):
+        path = os.path.join(self.output, 'cost_over_time.png')
+        self.plotter.plot_cost_over_time(self.validated_rh, traj, output=path)
+        return path
+
+    def plot_algorithm_footprint(self):
+        footprint = AlgorithmFootprint(self.original_rh, self.scenario.feature_dict,
+                                       self.scenario.cutoff)
+        footprint.plot_points(self.incumbent,
+                os.path.join(self.output,"inc.png"))
+        footprint.plot_points(self.default, os.path.join(self.output, "def.png"))
+
+####################################### FEATURE ANALYSIS #######################################
 
     def feature_analysis(self,
             status_bar=True,
