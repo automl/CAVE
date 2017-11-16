@@ -111,7 +111,7 @@ class SpySMAC(object):
 
         # Update global runhistory with all available runhistories
         self.logger.debug("Update original rh with all available rhs!")
-        runhistory_fns = [os.path.join(f, "runhistory.json") for f in folders]
+        runhistory_fns = [os.path.join(run.folder, "runhistory.json") for run in self.runs]
         for rh_file in runhistory_fns:
             self.original_rh.update_from_json(rh_file, self.scenario.cs)
         self.logger.debug('Combined number of Runhistory data points: %d. '
@@ -273,15 +273,12 @@ class SpySMAC(object):
                          "figure" : parallel_path,
                          "tooltip": "Plot explored range of most important parameters."}
 
-
-
         self.feature_analysis(box_violin='box_violin' in feature_analysis,
                               correlation='correlation' in feature_analysis,
                               clustering='clustering' in feature_analysis)
 
         if algo_footprint:
             algo_footprint_path = self.analyzer.plot_algorithm_footprint()
-
 
 
     def parameter_importance(self, ablation=False, fanova=False,
@@ -316,17 +313,6 @@ class SpySMAC(object):
             for param, plot in plots.items():
                 self.website["Parameter Importance"]["fANOVA"]["Marginals"][param] = {
                         "figure": plot}
-            # Check for pairwise plots (untested and hacky TODO)
-            # Right now no way to access paths of the plots -> file issue
-            #pairwise = OrderedDict([])
-            #for p1 in params.keys():
-            #    for p2 in params.keys():
-            #        combi = str([p1, p2]).replace(os.sep, "_").replace("'","") + ".png"
-            #        potential_path = os.path.join(self.output, 'fanova', combi)
-            #        if os.path.exists(potential_path):
-            #             pairwise[combi] = {"figure": potential_path}
-            #if pairwise:
-            #    self.website["Parameter Importance"]["fANOVA"]["PairwiseMarginals"] = pairwise
 
         if ablation:
             self.logger.info("Ablation...")
@@ -403,7 +389,7 @@ class SpySMAC(object):
         #  File "/home/shuki/virtual-environments/spysmac/lib/python3.5/site-packages/autofolio/selector/pairwise_classification.py", line 66, in fit
         #    self.algorithms = scenario.algorithms
         #AttributeError: 'Scenario' object has no attribute 'algorithms'
-        ## feature importance
+        # feature importance
         #if "feat_importance" in feature_analysis:
         #    importance_plot = fa.feature_importance()
         #    self.website["Feature Analysis"]["Feature importance"] = {"tooltip": "Using the approach of SATZilla'11, we train a cost-sensitive random forest for each pair of algorithms and average the feature importance (using gini as splitting criterion) across all forests. We show the median, 25th and 75th percentiles across all random forests of the 15 most important features.",
