@@ -47,6 +47,7 @@ class Plotter(object):
                 "incumbent" : {"combined" : [], "train" : [], "test" : []}}
         train = scenario.train_insts
         test = scenario.test_insts
+        # Create array for all instances
         for k in conf1_runs:
             data["default"]["combined"].append(conf1_runs[k])
             if k in train:

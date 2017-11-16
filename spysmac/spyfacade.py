@@ -29,6 +29,7 @@ from spysmac.analyzer import Analyzer
 from spysmac.utils.helpers import get_cost_dict_for_config
 
 from spysmac.asapy.feature_analysis import FeatureAnalysis
+from spysmac.plot.algorithm_footprint import AlgorithmFootprint
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -281,6 +282,11 @@ class SpySMAC(object):
         self.feature_analysis(box_violin='box_violin' in feature_analysis,
                               correlation='correlation' in feature_analysis,
                               clustering='clustering' in feature_analysis)
+
+        footprint = AlgorithmFootprint(self.global_rh, self.scenario.feature_dict,
+                                       self.scenario.cutoff)
+        footprint.plot_points(self.incumbent, "inc.png")
+        footprint.plot_points(self.default, "def.png")
 
 
     def parameter_importance(self, ablation=False, fanova=False,

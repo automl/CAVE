@@ -84,6 +84,8 @@ class SpySMACCLI(object):
             feature_analysis = args_.feat_analysis
 
         # Analyze
-        spySMAC.analyze(performance=True, cdf=True, scatter=True, confviz=True,
-                        param_importance=param_imp,
-                        feature_analysis=feature_analysis)
+        #spySMAC.analyze(performance=True, cdf=True, scatter=True, confviz=True,
+        #                param_importance=param_imp,
+        #                feature_analysis=feature_analysis)
+        spySMAC.analyze(performance=False, cdf=False, scatter=False, confviz=False,
+                        param_importance=[], feature_analysis=[])
