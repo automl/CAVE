@@ -29,8 +29,25 @@ pip install -r requirements.txt
 ```
 
 # USAGE
-To run SpySMAC, change into a directory from which the target algorithm can be executed. This is needed to impute any data via SMACs validation.
-You can analyze multiple folders with one execution, simply provide the paths to all the SMAC3-results in `--folders`.
+To run SpySMAC, change into a directory from which the target algorithm can be executed. This is necessary to impute any data via SMACs validation.
+You can analyze multiple folders (using the same scenario) with one execution, simply provide the paths to all the SMAC3-results in `--folders`.
+
+Commandline arguments:
+- --folders: path(s) to folder(s) containing the SMAC3-output
+
+Optional:
+- --validation: how to validate missing runs on config/inst-pairs
+- --output: where to save the SpySMAC-output
+- --ta_exec_dir: target algorithm execution directory, this should be a path to
+  the directory from which SMAC was run initially. used to find instances and
+  execute the `algo`-parameter of the SMAC-scenario
+- --param_importance: calculating parameter importance is expensive, so you can
+  specify which plots you desire: `ablation`, `forward_selection` and/or `fanova`.
+  either provide a combination of those or use `all` or `none`
+- --feat_analysis: analysis features is expensive, so you can specify which
+  algorithm to run: `box_violin`, `clustering` and/or `feature_cdf`.
+  either provide a combination of those or use `all` or `none`
+
 For further information on how to use SpySMAC, see:
 `python scripts/spy.py -h`
 
@@ -38,9 +55,7 @@ For further information on how to use SpySMAC, see:
 You can run the spear-qcp example like this:
 ```
 cd examples/spear_qcp_small
-python ../../scripts/spy.py --folders example_output_* --output testing_output
+python ../../scripts/spy.py --folders example_output_* --output SPY_results
 ```
 This will analyze the results located in `example_output_1`, `example_output_2` and `example_output_3`.
-The report is located in `testing_output/report.html`.
-
-
+The report is located in `SPY_results/report.html`.

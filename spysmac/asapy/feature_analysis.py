@@ -16,7 +16,6 @@ from sklearn.metrics import silhouette_score
 
 import matplotlib
 from sklearn.tree.tests.test_tree import y_random
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 from plottingscripts.plotting.scatter import plot_scatter_plot
@@ -256,7 +255,7 @@ class FeatureAnalysis(object):
             score = silhouette_score(features, y_pred)
             scores.append(score)
 
-        best_score = min(scores)
+        best_score = max(scores)
         best_run = scores.index(best_score)
         n_clusters = best_run + 2
         km = KMeans(n_clusters=n_clusters)

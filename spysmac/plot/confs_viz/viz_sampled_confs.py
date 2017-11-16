@@ -384,7 +384,7 @@ class SampleViz(object):
 
         if scatter_inc:
             tooltip = mpld3.plugins.PointHTMLTooltip(scatter_inc, np.array(labels)[inc_indx].tolist(),
-                                                     voffset=10, hoffset=10, css=self.css)
+                                                     voffset=10, hoffset=10)#, css=self.css)
 
         mpld3.plugins.connect(fig, tooltip)
 

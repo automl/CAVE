@@ -3,10 +3,17 @@ import os
 import logging
 
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib import ticker
+
+from ConfigSpace.util import impute_inactive_values
+
+from smac.utils.validate import Validator
 
 from spysmac.plot.scatter import plot_scatter_plot
 from spysmac.plot.confs_viz.viz_sampled_confs import SampleViz
+from spysmac.plot.parallel_coordinates import plot_parallel_coordinates
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -16,7 +23,11 @@ __email__ = "joshua.marben@neptun.uni-freiburg.de"
 
 class Plotter(object):
     """
-    Responsible for plotting (scatter, CDF, etc.)
+    This class is used to outsource some plotting routines and some of the parts
+    of analysis that require lots of plot-related code (such as conf_viz or
+    parallel_coordinates). It should be invoked via the Analyzer-class. More
+    complicated or generalized plotting routines are outsourced and imported, so
+    they can be easily adapted into other projects.
     """
 
     def __init__(self, scenario, train_test, conf1_runs, conf2_runs):
@@ -40,6 +51,7 @@ class Plotter(object):
                 "incumbent" : {"combined" : [], "train" : [], "test" : []}}
         train = scenario.train_insts
         test = scenario.test_insts
+        # Create array for all instances
         for k in conf1_runs:
             data["default"]["combined"].append(conf1_runs[k])
             if k in train:
@@ -184,9 +196,115 @@ class Plotter(object):
         f.savefig(output)
         plt.close(f)
 
-    def visualize_configs(self, scen, rh):
+    def visualize_configs(self, scen, rh, inc=None):
         sz = SampleViz(scenario=scen,
                        runhistory=rh,
-                       incs=None)
+                       incs=inc)
         return sz.run()
 
+    def plot_parallel_coordinates(self, rh, output, params):
+        """ Plot parallel coordinates (visualize higher dimensions), here used
+        to visualize pcs. This function prepares the data from a SMAC-related
+        format (using runhistories and parameters) to a more general format
+        (using a dataframe). The resulting dataframe is passed to the
+        parallel_coordinates-routine.
+
+        NOTE: the given runhistory should contain only optimization and no
+        validation to analyze the explored parameter-space.
+
+        Parameters
+        ----------
+        rh: RunHistory
+            rundata to take configs from
+        output: str
+            where to save plot
+        params: list[str]
+            parameters to be plotted
+
+        Returns
+        -------
+        output: str
+            path to plot
+        """
+        # TODO: plot only good configurations/configurations with at least n runs
+
+        # Get ALL parameter names and metrics to be passed on
+        parameter_names = impute_inactive_values(rh.get_all_configs()[0]).keys()
+        metrics = ["cost", "runs"]
+
+        full_index = params + metrics  # indices for dataframe
+
+        # Create dataframe with configs + runs/cost
+        data = []
+        for conf in rh.get_all_configs():
+            # Add metrics
+            new_entry = {"cost":rh.get_cost(conf),
+                         "runs":len(rh.get_runs_for_config(conf))}
+            # Complete configuration with imputed unused values
+            conf_dict = impute_inactive_values(conf).get_dictionary()
+            for p in params:
+                # TODO handle log-scales and unused parameters
+                # No strings allowed for plotting -> cast to numerical
+                if isinstance(conf_dict[p], str):
+                    # Catch "on" and "off"
+                    if conf_dict[p] == "on":
+                        new_entry[p] = 1
+                    elif conf_dict[p] == "off":
+                        new_entry[p] = 0
+                    try:
+                        new_entry[p] = int(conf_dict[p])
+                    except ValueError:
+                        new_entry[p] = float(conf_dict[p])
+                else:
+                    new_entry[p] = conf_dict[p]
+            data.append(pd.Series(new_entry))
+        full_data = pd.DataFrame(data)
+
+        plot_parallel_coordinates(full_data, params, output)
+        return output
+
+
+    def plot_cost_over_time(self, rh, traj, output="performance_over_time.png"):
+        """ Plot performance over time according to SMACs validate-function. """
+        self.logger.info("Estimating costs over time for best run.")
+        validator = Validator(self.scenario, trajectory=traj, output="")
+        time, configs, traj_costs = [], [], []
+        if (np.isfinite(self.scenario.wallclock_limit)):
+            max_time = self.scenario.wallclock_limit
+        else:
+            max_time = traj[-1][mode]
+        counter = 2**0
+        for entry in traj[::-1]:
+            if (entry["wallclock_time"] <= max_time/counter):
+                time.append(entry["wallclock_time"])
+                configs.append(entry["incumbent"])
+                traj_costs.append(entry["cost"])
+                counter *= 2
+        if not traj[0]["incumbent"] in configs:
+            configs.append(traj[0]["incumbent"])
+            traj_costs.append(traj[0]["cost"])
+            time.append(traj[0]["wallclock_time"])  # add first
+
+        validated_rh = validator.validate_epm(list(set(configs)), 'train+test', 1,
+                                              runhistory=rh)
+        # Plot performances over time
+        costs = [validated_rh.get_cost(c) for c in configs]
+
+        self.logger.debug(time)
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        # Plot in reverse order!
+        # TODO train/test
+        time, costs, traj_costs = time[::-1], costs[::-1], traj_costs[::-1]
+        ax.plot(time, costs, 'r-', time, label="Actual Costs")
+        ax.plot(traj_costs, 'b--', label="Costs of trajectory")
+        ax.set_xscale("log", nonposx='clip')
+        # Set y-limits in case that traj_costs are very high and ruin the plot
+        ax.set_ylim(min(min(costs), min(traj_costs)), max(costs)+max(costs)*0.1)
+        ax.legend()
+
+        plt.title("Performance over time.")
+
+        fig.savefig(output)
+        plt.close(fig)

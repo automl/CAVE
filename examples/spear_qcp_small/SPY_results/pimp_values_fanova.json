@@ -1,0 +1,30 @@
+{
+    "fanova": {
+        "sp-clause-activity-inc": 6.968938622939359e-05,
+        "sp-clause-decay": 0.0010361592723753918,
+        "sp-clause-del-heur": 0.00015950919925798195,
+        "sp-clause-inversion": 3.6140196779553176e-09,
+        "sp-first-restart": 0.07029795096562798,
+        "sp-learned-clause-sort-heur": 0.31203282528518583,
+        "sp-learned-clauses-inc": 0.003438651913741332,
+        "sp-learned-size-factor": 0.00014775230059186153,
+        "sp-max-res-lit-inc": 0.0003837251973656928,
+        "sp-max-res-runs": 0.0009023046361854148,
+        "sp-orig-clause-sort-heur": 0.03320708609574537,
+        "sp-phase-dec-heur": 0.08508038828345384,
+        "sp-rand-phase-dec-freq": 0.0007976202454491912,
+        "sp-rand-phase-scaling": 0.09202609369464226,
+        "sp-rand-var-dec-freq": 0.04045363974273316,
+        "sp-rand-var-dec-scaling": 0.001768150923624139,
+        "sp-res-cutoff-cls": 0.0018710683072356528,
+        "sp-res-cutoff-lits": 1.1107071122476029e-05,
+        "sp-res-order-heur": 0.022570908969858257,
+        "sp-resolution": 2.7335545261818e-05,
+        "sp-restart-inc": 0.0022294517435854167,
+        "sp-update-dec-queue": 0.0007964529990020417,
+        "sp-use-pure-literal-rule": 0.0,
+        "sp-var-activity-inc": 0.0004988348089485042,
+        "sp-var-dec-heur": 0.12246658685557354,
+        "sp-variable-decay": 0.0001841153910855805
+    }
+}
