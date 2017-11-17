@@ -214,17 +214,6 @@ class SpySMAC(object):
                      "tooltip": "Comparing parameters of default and incumbent. "
                                 "Parameters that differ from default to "
                                 "incumbent are presented first."}
-        if  confviz and self.scenario.feature_array is not None:
-            incumbents = [r.solver.incumbent for r in self.runs]
-            confviz_script = self.analyzer.plot_confviz(incumbents)
-            self.website["Configuration Visualization"] = {
-                    "table" : confviz_script,
-                    "tooltip" : "Using PCA to reduce dimensionality of the "
-                                "search space  and plot the distribution of "
-                                "evaluated configurations. The bigger the dot, "
-                                "the more often the configuration was "
-                                "evaluated. The colours refer to the predicted "
-                                "performance in that part of the search space."}
 
         if performance:
             performance_table = self.analyzer.create_performance_table(
@@ -253,6 +242,17 @@ class SpySMAC(object):
         # Build report before time-consuming analysis
         builder.generate_html(self.website)
 
+        if  confviz and self.scenario.feature_array is not None:
+            incumbents = [r.solver.incumbent for r in self.runs]
+            confviz_script = self.analyzer.plot_confviz(incumbents)
+            self.website["Configuration Visualization"] = {
+                    "table" : confviz_script,
+                    "tooltip" : "Using PCA to reduce dimensionality of the "
+                                "search space  and plot the distribution of "
+                                "evaluated configurations. The bigger the dot, "
+                                "the more often the configuration was "
+                                "evaluated. The colours refer to the predicted "
+                                "performance in that part of the search space."}
         elif confviz:
             self.logger.info("Configuration visualization desired, but no "
                              "instance-features available.")
