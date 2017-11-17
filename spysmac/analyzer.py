@@ -304,7 +304,8 @@ class Analyzer(object):
         plots: Dict[str: st]
             dictionary mapping parameters to their plots
         """
-        importance = self.parameter_importance("fanova", incumbent, self.output)
+        importance = self.parameter_importance("fanova", incumbent, self.output,
+                                               num_params)
         parameter_imp = importance.evaluator.evaluated_parameter_importance
         # Set internal parameter importance for further analysis (such as
         # parallel coordinates)
@@ -330,7 +331,7 @@ class Analyzer(object):
         #    self.website["Parameter Importance"]["fANOVA"]["PairwiseMarginals"] = pairwise
         return fanova_table, plots
 
-    def parameter_importance(self, modus, incumbent, output):
+    def parameter_importance(self, modus, incumbent, output, num_params=4):
         """Calculate parameter-importance using the PIMP-package.
         Currently ablation, forward-selection and fanova are used.
 
@@ -350,7 +351,7 @@ class Analyzer(object):
         importance = Importance(scenario=self.scenario,
                                 runhistory=self.original_rh,
                                 incumbent=incumbent,
-                                parameters_to_evaluate=len(self.scenario.cs.get_hyperparameters()),
+                                parameters_to_evaluate=num_params,
                                 save_folder=save_folder,
                                 seed=12345)
         result = importance.evaluate_scenario(modus)
