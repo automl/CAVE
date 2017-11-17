@@ -191,6 +191,7 @@ class SpySMAC(object):
         fanova: bool
             whether to apply fanova
         """
+        builder = HTMLBuilder(self.output, "SpySMAC")
         # Check arguments
         for p in param_importance:
             if p not in ['forward_selection', 'ablation', 'fanova']:
@@ -224,15 +225,6 @@ class SpySMAC(object):
                                 "the more often the configuration was "
                                 "evaluated. The colours refer to the predicted "
                                 "performance in that part of the search space."}
-        elif confviz:
-            self.logger.info("Configuration visualization desired, but no "
-                             "instance-features available.")
-        if cost_over_time:
-            cost_over_time_path = self.analyzer.plot_cost_over_time(self.best_run.traj)
-            self.website["Cost over time"] = {"figure": cost_over_time_path,
-                    "tooltip": "The cost of the incumbent estimated over the "
-                               "time. The cost is estimated using an EPM that "
-                               "is based on the actual runs."}
 
         if performance:
             performance_table = self.analyzer.create_performance_table(
@@ -258,6 +250,18 @@ class SpySMAC(object):
         elif scatter:
             self.logger.info("Scatter plot desired, but no instances available.")
 
+        # Build report before time-consuming analysis
+        builder.generate_html(self.website)
+
+        elif confviz:
+            self.logger.info("Configuration visualization desired, but no "
+                             "instance-features available.")
+        if cost_over_time:
+            cost_over_time_path = self.analyzer.plot_cost_over_time(self.best_run.traj)
+            self.website["Cost over time"] = {"figure": cost_over_time_path,
+                    "tooltip": "The cost of the incumbent estimated over the "
+                               "time. The cost is estimated using an EPM that "
+                               "is based on the actual runs."}
 
         self.parameter_importance(ablation='ablation' in param_importance,
                                   fanova='fanova' in param_importance,
@@ -279,6 +283,8 @@ class SpySMAC(object):
 
         if algo_footprint:
             algo_footprint_path = self.analyzer.plot_algorithm_footprint()
+
+        builder.generate_html(self.website)
 
 
     def parameter_importance(self, ablation=False, fanova=False,
@@ -407,6 +413,4 @@ class SpySMAC(object):
         #    self.website["Feature Analysis"]["CDF plot on feature costs"] = {"tooltip": "Cumulative Distribution function (CDF) plots. At each point x (e.g., running time cutoff), for how many of the instances (in percentage) have we computed the instance features. Faster feature computation steps have a higher curve. Missing values are imputed with the maximal value (or running time cutoff).",
         #                                                             "figure": cdf_plot}
 
-        builder = HTMLBuilder(self.output, "SpySMAC")
-        builder.generate_html(self.website)
 
