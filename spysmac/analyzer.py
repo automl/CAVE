@@ -285,7 +285,7 @@ class Analyzer(object):
         return table_split
 
 ####################################### PARAMETER IMPORTANCE #######################################
-    def fanova(self, incumbent, num_params=10):
+    def fanova(self, incumbent, num_params=10, num_pairs=0):
         """Wrapper for parameter_importance to save the importance-object/
         extract the results. We want to show the top X (10) most important
         parameter-fanova-plots.
@@ -296,6 +296,9 @@ class Analyzer(object):
             incumbent configuration
         num_params: int
             how many of the top important parameters should be shown
+        num_pairs: int
+            for how many parameters pairwise marginals are plotted
+            n parameters -> n^2 plots
 
         Returns
         -------
@@ -305,7 +308,7 @@ class Analyzer(object):
             dictionary mapping parameters to their plots
         """
         importance = self.parameter_importance("fanova", incumbent, self.output,
-                                               num_params)
+                                               num_params, n_pairs=n_pairs)
         parameter_imp = importance.evaluator.evaluated_parameter_importance
         # Set internal parameter importance for further analysis (such as
         # parallel coordinates)
