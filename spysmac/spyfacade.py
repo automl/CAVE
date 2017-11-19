@@ -220,6 +220,9 @@ class SpySMAC(object):
                                 self.default, self.incumbent)
             self.website["Performance"] = {"table": performance_table}
 
+        if algo_footprint:
+            algo_footprint_path = self.analyzer.plot_algorithm_footprint()
+
         if cdf:
             cdf_path = self.analyzer.plot_cdf()
             self.website["Cumulative distribution function (CDF)"] = {
@@ -280,9 +283,6 @@ class SpySMAC(object):
         self.feature_analysis(box_violin='box_violin' in feature_analysis,
                               correlation='correlation' in feature_analysis,
                               clustering='clustering' in feature_analysis)
-
-        if algo_footprint:
-            algo_footprint_path = self.analyzer.plot_algorithm_footprint()
 
         builder.generate_html(self.website)
 

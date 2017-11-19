@@ -420,11 +420,12 @@ class Analyzer(object):
         return path
 
     def plot_algorithm_footprint(self):
-        footprint = AlgorithmFootprint(self.original_rh, self.scenario.feature_dict,
-                                       self.scenario.cutoff)
+        footprint = AlgorithmFootprint(self.validated_rh, self.scenario.feature_dict,
+                                       self.scenario.cutoff, self.output)
         footprint.plot_points(self.incumbent,
                 os.path.join(self.output,"inc.png"))
         footprint.plot_points(self.default, os.path.join(self.output, "def.png"))
+        footprint.get_footprint(self.default, self.incumbent)
 
 ####################################### FEATURE ANALYSIS #######################################
 
