@@ -192,6 +192,7 @@ class SpySMAC(object):
             whether to apply fanova
         """
         builder = HTMLBuilder(self.output, "SpySMAC")
+
         # Check arguments
         for p in param_importance:
             if p not in ['forward_selection', 'ablation', 'fanova']:
@@ -215,17 +216,17 @@ class SpySMAC(object):
                                 "Parameters that differ from default to "
                                 "incumbent are presented first."}
 
+        ########## PERFORMANCE ANALYSIS
+        self.website["Performance Analysis"] = OrderedDict()
+
         if performance:
             performance_table = self.analyzer.create_performance_table(
                                 self.default, self.incumbent)
-            self.website["Performance"] = {"table": performance_table}
-
-        if algo_footprint:
-            algo_footprint_path = self.analyzer.plot_algorithm_footprint()
+            self.website["Performance Analysis"]["Performance Table"] = {"table": performance_table}
 
         if cdf:
             cdf_path = self.analyzer.plot_cdf()
-            self.website["Cumulative distribution function (CDF)"] = {
+            self.website["Performance Analysis"]["Cumulative distribution function (CDF)"] = {
                      "figure": cdf_path,
                      "tooltip": "Plot default versus incumbent performance "
                                 "on a cumulative distribution plot. Uses "
@@ -233,7 +234,7 @@ class SpySMAC(object):
 
         if scatter and (self.scenario.train_insts != [[None]]):
             scatter_path = self.analyzer.plot_scatter()
-            self.website["Scatterplot"] = {
+            self.website["Performance Analysis"]["Scatterplot"] = {
                      "figure" : scatter_path,
                      "tooltip": "Plot all evaluated instances on a scatter plot, "
                                 "to directly compare performance of incumbent "
@@ -241,14 +242,19 @@ class SpySMAC(object):
                                 "data!"}
         elif scatter:
             self.logger.info("Scatter plot desired, but no instances available.")
+        if algo_footprint:
+            algo_footprint_path = self.analyzer.plot_algorithm_footprint()
 
         # Build report before time-consuming analysis
         builder.generate_html(self.website)
 
+        ########### Configurator's behavior
+        self.website["Configurator's behavior"] = OrderedDict()
+
         if  confviz and self.scenario.feature_array is not None:
             incumbents = [r.solver.incumbent for r in self.runs]
             confviz_script = self.analyzer.plot_confviz(incumbents)
-            self.website["Configuration Visualization"] = {
+            self.website["Configurator's behavior"]["Configuration Visualization"] = {
                     "table" : confviz_script,
                     "tooltip" : "Using PCA to reduce dimensionality of the "
                                 "search space  and plot the distribution of "
@@ -261,7 +267,7 @@ class SpySMAC(object):
                              "instance-features available.")
         if cost_over_time:
             cost_over_time_path = self.analyzer.plot_cost_over_time(self.best_run.traj)
-            self.website["Cost over time"] = {"figure": cost_over_time_path,
+            self.website["Configurator's behavior"]["Cost over time"] = {"figure": cost_over_time_path,
                     "tooltip": "The cost of the incumbent estimated over the "
                                "time. The cost is estimated using an EPM that "
                                "is based on the actual runs."}
@@ -276,7 +282,7 @@ class SpySMAC(object):
             self.logger.info("Plotting parallel coordinates.")
             n_params = 6
             parallel_path = self.analyzer.plot_parallel_coordinates(n_params)
-            self.website["Parallel Coordinates"] = {
+            self.website["Configurator's behavior"]["Parallel Coordinates"] = {
                          "figure" : parallel_path,
                          "tooltip": "Plot explored range of most important parameters."}
 
