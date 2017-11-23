@@ -140,7 +140,9 @@ class Plotter(object):
         # incumbent only.
 
         if self.train_test:
-            f, (ax1, ax2) = plt.subplots(1, 2)
+            f = plt.figure(1, dpi=100, figsize=(10,5))
+            ax1 = f.add_subplot(1,2,1)
+            ax2 = f.add_subplot(1,2,2)
             ax1.step(data['default']['train'][0],
                      data['default']['train'][1], color='red',
                      linestyle='-', label='default train')
@@ -169,7 +171,8 @@ class Plotter(object):
             ax1.set_title('Training - SpySMAC CDF')
             ax2.set_title('Test - SpySMAC CDF')
         else:
-            f, ax1 = plt.subplots()
+            f = plt.figure(1, dpi=100, figsize=(10,10))
+            ax1 = f.add_subplot(1,1,1)
             ax1.step(data['default']['combined'][0],
                      data['default']['combined'][1], color='red',
                      label='default all instances')

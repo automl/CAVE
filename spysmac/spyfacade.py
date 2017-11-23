@@ -242,6 +242,10 @@ class SpySMAC(object):
                                 "data!"}
         elif scatter:
             self.logger.info("Scatter plot desired, but no instances available.")
+
+        # Build report before time-consuming analysis
+        builder.generate_html(self.website)
+
         if algo_footprint:
             algo_footprint_path = self.analyzer.plot_algorithm_footprint()
 
