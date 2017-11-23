@@ -168,8 +168,8 @@ class Plotter(object):
                          verticalalignment="top", rotation=30)
                 ax2.axvline(x=timeout, linestyle='--')
 
-            ax1.set_title('Training - SpySMAC CDF')
-            ax2.set_title('Test - SpySMAC CDF')
+            ax1.set_title('Training - CDF')
+            ax2.set_title('Test - CDF')
         else:
             f = plt.figure(1, dpi=100, figsize=(10,10))
             ax1 = f.add_subplot(1,1,1)
@@ -179,7 +179,7 @@ class Plotter(object):
             ax1.step(data['incumbent']['combined'][0],
                      data['incumbent']['combined'][1], color='blue',
                      label='incumbent all instances')
-            ax1.set_title('PAR10 - SpySMAC CDF')
+            ax1.set_title('PAR10 - CDF')
 
         # Always set props for ax1
         ax1.legend()
