@@ -107,7 +107,7 @@ class AlgorithmFootprint(object):
                 #for simplex in h1.simplices:
                 #    ax.plot(points[simplex, 0], points[simplex, 1], 'r-')
             if not h2 == 0:
-                ax.plot(points[h1.vertices,0], points[h1.vertices,1],
+                ax.plot(points[h2.vertices,0], points[h2.vertices,1],
                         'b--', lw=2.5)
                 ax.plot(points[h2.vertices[0],0], points[h2.vertices[0],1],
                         'b--')
