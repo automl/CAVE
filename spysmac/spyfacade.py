@@ -116,8 +116,9 @@ class SpySMAC(object):
             self.original_rh.update_from_json(rh_file, self.scenario.cs)
         self.logger.debug('Combined number of Runhistory data points: %d. '
                           '# Configurations: %d. # Runhistories: %d',
-                          len(runhistory_fns), len(self.original_rh.data),
-                          len(self.original_rh.get_all_configs()))
+                          len(self.original_rh.data),
+                          len(self.original_rh.get_all_configs()),
+                          len(runhistory_fns))
         self.original_rh.save_json(os.path.join(self.output, "combined_rh.json"))
 
         # Estimate all missing costs using validation or EPM
