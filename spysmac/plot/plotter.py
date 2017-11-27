@@ -10,6 +10,12 @@ from matplotlib import ticker
 from ConfigSpace.util import impute_inactive_values
 
 from smac.utils.validate import Validator
+from smac.configspace import Configuration, convert_configurations_to_array
+from smac.epm.rf_with_instances import RandomForestWithInstances
+from smac.optimizer.objective import average_cost
+from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
+from smac.utils.util_funcs import get_types
+from smac.runhistory.runhistory import RunHistory
 
 from spysmac.plot.scatter import plot_scatter_plot
 from spysmac.plot.confs_viz.viz_sampled_confs import SampleViz
@@ -281,31 +287,93 @@ class Plotter(object):
             if (entry["wallclock_time"] <= max_time/counter):
                 time.append(entry["wallclock_time"])
                 configs.append(entry["incumbent"])
-                traj_costs.append(entry["cost"])
                 counter *= 2
         if not traj[0]["incumbent"] in configs:
             configs.append(traj[0]["incumbent"])
-            traj_costs.append(traj[0]["cost"])
             time.append(traj[0]["wallclock_time"])  # add first
 
-        validated_rh = validator.validate_epm(list(set(configs)), 'train+test', 1,
-                                              runhistory=rh)
-        # Plot performances over time
-        costs = [validated_rh.get_cost(c) for c in configs]
+        # Reverse order to get increasing over time
+        configs = configs[::-1]
+        time = time[::-1]
 
-        self.logger.debug(time)
+        # Train random forest and transform training data (from given rh)
+        # Not using validator because we want to plot uncertainties
+        # TODO get epm from validator (needs SMAC update)
+        rh2epm = RunHistory2EPM4Cost(num_params=len(self.scenario.cs.get_hyperparameters()),
+                                     scenario=self.scenario)
+        X, y = rh2epm.transform(rh)
+        self.logger.debug("Training model with data of shape X: %s, y:%s",
+                          str(X.shape), str(y.shape))
+
+        types, bounds = get_types(self.scenario.cs, self.scenario.feature_array)
+        model = RandomForestWithInstances(types=types,
+                                          bounds=bounds,
+                                          instance_features=self.scenario.feature_array,
+                                          #seed=self.rng.randint(MAXINT),
+                                          ratio_features=1.0)
+        model.train(X, y)
+
+
+        # Predict desired runs
+        runs = validator.get_runs(list(set(configs)), 'train+test', 1,
+                                  runhistory=RunHistory(average_cost))
+        try:
+            feature_array_size = len(self.scenario.cs.get_hyperparameters()) + self.scenario.feature_array.shape[1]
+        except AttributeError:
+            feature_array_size = len(self.scenario.cs.get_hyperparameters())
+        X_pred = np.empty((len(runs), feature_array_size))
+        for idx, run in enumerate(runs):
+            if hasattr(self.scenario, "feature_dict") and run.inst != None:
+                X_pred[idx] = np.hstack([convert_configurations_to_array([run.config])[0],
+                                         self.scenario.feature_dict[run.inst]])
+            else:
+                X_pred[idx] = convert_configurations_to_array([run.config])[0]
+        self.logger.debug("Predicting desired %d runs, data has shape %s",
+                          len(runs), str(X_pred.shape))
+
+        y_pred, var = model.predict(X_pred)
+
+        # Reorganize into per-config-metric
+        # We assume, that there is one point per confXinst for all confs and
+        # insts
+        costs_per_config = {}
+        for run, p, v in zip(runs, y_pred, var):
+            if not (run.config in costs_per_config):
+                costs_per_config[run.config] = []
+            costs_per_config[run.config].append((p, v))
+        # Average over instances, simple mean for mean and
+        #   sum(variances)/n^2 for variances
+        for config, costs in costs_per_config.items():
+            mean, var = zip(*costs)
+            mean = sum(mean)/len(mean)
+            var = sum(var)/(len(var)**2)
+            costs_per_config[config] = (mean, var)
+
+        # Plot performances over time
+        costs, error = zip(*[costs_per_config[c] for c in configs])
+
+        # Plot in reverse order!
+        costs = np.array(costs).flatten()
+        error = np.array(error).flatten()
+        self.logger.debug("costs")
+        self.logger.debug(costs)
+
+        uncertainty_upper = costs+error
+        uncertainty_lower = costs-error
 
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        # Plot in reverse order!
         # TODO train/test
-        time, costs, traj_costs = time[::-1], costs[::-1], traj_costs[::-1]
-        ax.plot(time, costs, 'r-', time, label="Actual Costs")
-        ax.plot(traj_costs, 'b--', label="Costs of trajectory")
+        self.logger.debug("Time" +str(time))
+        self.logger.debug("Costs" +str(costs))
+        self.logger.debug("Error" +str(error))
+
+        ax.plot(time, costs, 'r-', label="Estimated performance")
+        ax.legend()
+        ax.fill_between(time, uncertainty_upper, uncertainty_lower)
         ax.set_xscale("log", nonposx='clip')
         # Set y-limits in case that traj_costs are very high and ruin the plot
-        ax.set_ylim(min(min(costs), min(traj_costs)), max(costs)+max(costs)*0.1)
-        ax.legend()
+        ax.set_ylim(0, max(costs)+max(costs)*0.1)
 
         plt.title("Performance over time.")
 
