@@ -6,8 +6,8 @@ sphinx
 sphinx_rtd_theme
 mpld3
 git+https://github.com/automl/fanova@master
--e git+https://github.com/automl/SMAC3.git@6a8d1f137b2c05d10220feb073ac9f4cd2ce25b3#egg=smac
--e git+https://github.com/automl/ParameterImportance.git@dbef4403680c52d4c2f592c64228668b034478bf#egg=pimp
+-e git+https://github.com/automl/SMAC3.git@236f36a5a4eb4a337af803d13f95ed2401b46522#egg=smac
+-e git+https://github.com/automl/ParameterImportance.git@development#egg=pimp
 scipy
 sklearn
 orange3

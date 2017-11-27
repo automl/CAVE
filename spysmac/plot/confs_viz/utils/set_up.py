@@ -11,7 +11,7 @@ from smac.runhistory.runhistory2epm import RunHistory2EPM4LogCost, RunHistory2EP
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.epm.rfr_imputator import RFRImputator
 
-from ConfigSpace.io import pcs
+from ConfigSpace.read_and_write import pcs
 from ConfigSpace.hyperparameters import CategoricalHyperparameter, \
     UniformFloatHyperparameter, UniformIntegerHyperparameter, Constant
 

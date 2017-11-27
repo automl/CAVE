@@ -9,7 +9,7 @@ import copy
 import numpy as np
 from pandas import DataFrame
 
-from smac.configspace import Configuration
+from ConfigSpace import Configuration
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunKey, RunValue, RunHistory
