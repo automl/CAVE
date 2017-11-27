@@ -273,16 +273,33 @@ class Plotter(object):
         return output
 
 
-    def plot_cost_over_time(self, rh, traj, output="performance_over_time.png"):
-        """ Plot performance over time according to SMACs validate-function. """
+    def plot_cost_over_time(self, rh, traj, output="performance_over_time.png",
+                            epm=None):
+        """ Plot performance over time, using samples at timesteps
+            [max_time/2^0, max_time/2^1, max_time/2^3, ..., default]
+            with max_time = wallclock_limit or (if inf) the highest
+            recorded time
+
+            Parameters
+            ----------
+            rh: RunHistory
+                runhistory to use
+            traj: List
+                trajectory to take times/incumbents from
+            output: str
+                path to output-png
+            epm: RandomForestWithInstances
+                emperical performance model (expecting trained on all runs)
+        """
         self.logger.info("Estimating costs over time for best run.")
-        validator = Validator(self.scenario, trajectory=traj, output="")
-        time, configs, traj_costs = [], [], []
+        validator = Validator(self.scenario, traj)
+        time, configs = [], []
         if (np.isfinite(self.scenario.wallclock_limit)):
             max_time = self.scenario.wallclock_limit
         else:
             max_time = traj[-1][mode]
         counter = 2**0
+        # traverse from highest entry to lowest
         for entry in traj[::-1]:
             if (entry["wallclock_time"] <= max_time/counter):
                 time.append(entry["wallclock_time"])
@@ -295,28 +312,31 @@ class Plotter(object):
         # Reverse order to get increasing over time
         configs = configs[::-1]
         time = time[::-1]
+        self.logger.debug("Using %d samples (%d distinct) from trajectory.",
+                          len(time), len(set(configs)))
 
-        # Train random forest and transform training data (from given rh)
-        # Not using validator because we want to plot uncertainties
-        # TODO get epm from validator (needs SMAC update)
-        rh2epm = RunHistory2EPM4Cost(num_params=len(self.scenario.cs.get_hyperparameters()),
-                                     scenario=self.scenario)
-        X, y = rh2epm.transform(rh)
-        self.logger.debug("Training model with data of shape X: %s, y:%s",
-                          str(X.shape), str(y.shape))
+        if not epm:
+            self.logger.debug("No EPM passed! Training new one from runhistory.")
+            # Train random forest and transform training data (from given rh)
+            # Not using validator because we want to plot uncertainties
+            rh2epm = RunHistory2EPM4Cost(num_params=len(self.scenario.cs.get_hyperparameters()),
+                                         scenario=self.scenario)
+            X, y = rh2epm.transform(rh)
+            self.logger.debug("Training model with data of shape X: %s, y:%s",
+                              str(X.shape), str(y.shape))
 
-        types, bounds = get_types(self.scenario.cs, self.scenario.feature_array)
-        model = RandomForestWithInstances(types=types,
-                                          bounds=bounds,
-                                          instance_features=self.scenario.feature_array,
-                                          #seed=self.rng.randint(MAXINT),
-                                          ratio_features=1.0)
-        model.train(X, y)
+            types, bounds = get_types(self.scenario.cs, self.scenario.feature_array)
+            epm = RandomForestWithInstances(types=types,
+                                            bounds=bounds,
+                                            instance_features=self.scenario.feature_array,
+                                            #seed=self.rng.randint(MAXINT),
+                                            ratio_features=1.0)
+            epm.train(X, y)
 
 
         # Predict desired runs
         runs = validator.get_runs(list(set(configs)), 'train+test', 1,
-                                  runhistory=RunHistory(average_cost))
+                                  runhistory=RunHistory(average_cost))[0]
         try:
             feature_array_size = len(self.scenario.cs.get_hyperparameters()) + self.scenario.feature_array.shape[1]
         except AttributeError:
@@ -331,11 +351,10 @@ class Plotter(object):
         self.logger.debug("Predicting desired %d runs, data has shape %s",
                           len(runs), str(X_pred.shape))
 
-        y_pred, var = model.predict(X_pred)
+        y_pred, var = epm.predict(X_pred)
 
         # Reorganize into per-config-metric
-        # We assume, that there is one point per confXinst for all confs and
-        # insts
+        # We assume, that there is exactly one point per confXinst for all confs and insts
         costs_per_config = {}
         for run, p, v in zip(runs, y_pred, var):
             if not (run.config in costs_per_config):
@@ -351,12 +370,8 @@ class Plotter(object):
 
         # Plot performances over time
         costs, error = zip(*[costs_per_config[c] for c in configs])
-
-        # Plot in reverse order!
         costs = np.array(costs).flatten()
         error = np.array(error).flatten()
-        self.logger.debug("costs")
-        self.logger.debug(costs)
 
         uncertainty_upper = costs+error
         uncertainty_lower = costs-error
@@ -364,9 +379,6 @@ class Plotter(object):
         fig = plt.figure()
         ax = fig.add_subplot(111)
         # TODO train/test
-        self.logger.debug("Time" +str(time))
-        self.logger.debug("Costs" +str(costs))
-        self.logger.debug("Error" +str(error))
 
         ax.plot(time, costs, 'r-', label="Estimated performance")
         ax.legend()
