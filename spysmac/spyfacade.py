@@ -121,6 +121,10 @@ class SpySMAC(object):
                           len(runhistory_fns))
         self.original_rh.save_json(os.path.join(self.output, "combined_rh.json"))
 
+        # Validator for a) validating with epm, b) plot over time
+        # Initialize without trajectory
+        self.validator = Validator(self.scenario, None)
+
         # Estimate all missing costs using validation or EPM
         self.complete_data(method=missing_data_method)
         self.best_run = min(self.runs, key=lambda run:
@@ -149,20 +153,18 @@ class SpySMAC(object):
 
             path_for_validated_rhs = os.path.join(self.output, "validated_rhs")
             for run in self.runs:
-                # out = os.path.join(path_for_validated_rhs, "rh_"+run.folder)
-                out = ""
-                validator = Validator(run.scen, run.traj, out)
-
+                self.validator.traj = run.traj
                 if method == "validation":
                     # TODO determine # repetitions
-                    new_rh = validator.validate('def+inc', 'train+test', 1, -1,
+                    new_rh = self.validator.validate('def+inc', 'train+test', 1, -1,
                                                 runhistory=self.original_rh)
                 elif method == "epm":
-                    new_rh = validator.validate_epm('def+inc', 'train+test', 1,
+                    new_rh = self.validator.validate_epm('def+inc', 'train+test', 1,
                                                     runhistory=self.original_rh)
                 else:
                     raise ValueError("Missing data method illegal (%s)",
                                      method)
+                self.validator.traj = None  # Avoid usage-mistakes
                 self.validated_rh.update(new_rh)
 
     def analyze(self,
@@ -271,7 +273,7 @@ class SpySMAC(object):
             self.logger.info("Configuration visualization desired, but no "
                              "instance-features available.")
         if cost_over_time:
-            cost_over_time_path = self.analyzer.plot_cost_over_time(self.best_run.traj)
+            cost_over_time_path = self.analyzer.plot_cost_over_time(self.best_run.traj, self.validator)
             self.website["Configurator's behavior"]["Cost over time"] = {"figure": cost_over_time_path,
                     "tooltip": "The cost of the incumbent estimated over the "
                                "time. The cost is estimated using an EPM that "

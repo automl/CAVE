@@ -274,7 +274,7 @@ class Plotter(object):
 
 
     def plot_cost_over_time(self, rh, traj, output="performance_over_time.png",
-                            epm=None):
+                            validator=None):
         """ Plot performance over time, using samples at timesteps
             [max_time/2^0, max_time/2^1, max_time/2^3, ..., default]
             with max_time = wallclock_limit or (if inf) the highest
@@ -292,7 +292,7 @@ class Plotter(object):
                 emperical performance model (expecting trained on all runs)
         """
         self.logger.info("Estimating costs over time for best run.")
-        validator = Validator(self.scenario, traj)
+        validator.traj = traj  # set trajectory
         time, configs = [], []
         if (np.isfinite(self.scenario.wallclock_limit)):
             max_time = self.scenario.wallclock_limit
@@ -315,7 +315,9 @@ class Plotter(object):
         self.logger.debug("Using %d samples (%d distinct) from trajectory.",
                           len(time), len(set(configs)))
 
-        if not epm:
+        if validator.epm:
+            epm = validator.epm
+        else:
             self.logger.debug("No EPM passed! Training new one from runhistory.")
             # Train random forest and transform training data (from given rh)
             # Not using validator because we want to plot uncertainties

@@ -414,9 +414,10 @@ class Analyzer(object):
                     self.original_rh, incumbents)
         return confviz
 
-    def plot_cost_over_time(self, traj):
+    def plot_cost_over_time(self, traj, validator):
         path = os.path.join(self.output, 'cost_over_time.png')
-        self.plotter.plot_cost_over_time(self.validated_rh, traj, output=path)
+        self.plotter.plot_cost_over_time(self.validated_rh, traj, output=path,
+                                         validator=validator)
         return path
 
     def plot_algorithm_footprint(self):
