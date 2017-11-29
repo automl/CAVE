@@ -375,10 +375,10 @@ class Analyzer(object):
             params = list(self.importance.keys())[:n_param]
         else:
             # TODO what if no parameter importance is done? plot all? random subset?
-            # Currently: plot all
-            self.logger.info("No parameter importance performed. Plotting all "
+            # Currently: random
+            self.logger.info("No parameter importance performed. Plotting random "
                              "parameters in parallel coordinates plot.")
-            params = list(self.default.keys())
+            params = list(self.default.keys())[:n_param]
 
         self.logger.debug("Parallel coordinates plotting params: " + str(params))
         self.plotter.plot_parallel_coordinates(self.original_rh, out_path, params)

@@ -235,41 +235,8 @@ class Plotter(object):
         output: str
             path to plot
         """
-        # TODO: plot only good configurations/configurations with at least n runs
 
-        # Get ALL parameter names and metrics to be passed on
-        parameter_names = impute_inactive_values(rh.get_all_configs()[0]).keys()
-        metrics = ["cost", "runs"]
-
-        full_index = params + metrics  # indices for dataframe
-
-        # Create dataframe with configs + runs/cost
-        data = []
-        for conf in rh.get_all_configs():
-            # Add metrics
-            new_entry = {"cost":rh.get_cost(conf),
-                         "runs":len(rh.get_runs_for_config(conf))}
-            # Complete configuration with imputed unused values
-            conf_dict = impute_inactive_values(conf).get_dictionary()
-            for p in params:
-                # TODO handle log-scales and unused parameters
-                # No strings allowed for plotting -> cast to numerical
-                if isinstance(conf_dict[p], str):
-                    # Catch "on" and "off"
-                    if conf_dict[p] == "on":
-                        new_entry[p] = 1
-                    elif conf_dict[p] == "off":
-                        new_entry[p] = 0
-                    try:
-                        new_entry[p] = int(conf_dict[p])
-                    except ValueError:
-                        new_entry[p] = float(conf_dict[p])
-                else:
-                    new_entry[p] = conf_dict[p]
-            data.append(pd.Series(new_entry))
-        full_data = pd.DataFrame(data)
-
-        plot_parallel_coordinates(full_data, params, output)
+        output = plot_parallel_coordinates(rh, output, params)
         return output
 
 
