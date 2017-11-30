@@ -2,6 +2,7 @@ import os
 import logging
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
@@ -100,19 +101,18 @@ class AlgorithmFootprint(object):
             ax.plot(points[:,0], points[:,1], 'o')
             h1, h2 = hulls1[i], hulls2[i]
             if not h1 == 0:
-                ax.plot(points[h1.vertices,0], points[h1.vertices,1],
-                        'r--', lw=2)
-                ax.plot(points[h1.vertices[0],0], points[h1.vertices[0],1],
-                        'r--')
-                #for simplex in h1.simplices:
-                #    ax.plot(points[simplex, 0], points[simplex, 1], 'r-')
+                for simplex in h1.simplices:
+                    ax.plot(points[simplex, 0], points[simplex, 1], 'r-.')
             if not h2 == 0:
-                ax.plot(points[h2.vertices,0], points[h2.vertices,1],
-                        'b--', lw=2.5)
-                ax.plot(points[h2.vertices[0],0], points[h2.vertices[0],1],
-                        'b--')
-                #for simplex in h2.simplices:
-                #    ax.plot(points[simplex, 0], points[simplex, 1], 'b-')
+                for simplex in h2.simplices:
+                    ax.plot(points[simplex, 0], points[simplex, 1], 'b--')
+            # Add legend
+            red_line = mlines.Line2D([], [], color='red', ls='-.',
+                                              markersize=15, label='default')
+            blue_line = mlines.Line2D([], [], color='blue', ls='--',
+                                              markersize=15, label='incumbent')
+            ax.legend(handles=[blue_line, red_line])
+
             paths += output
             fig.savefig(output)
             plt.close(fig)
