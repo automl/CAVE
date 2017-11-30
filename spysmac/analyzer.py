@@ -308,7 +308,7 @@ class Analyzer(object):
             dictionary mapping parameters to their plots
         """
         importance = self.parameter_importance("fanova", incumbent, self.output,
-                                               num_params, n_pairs=n_pairs)
+                                               num_params, num_pairs=num_pairs)
         parameter_imp = importance.evaluator.evaluated_parameter_importance
         # Set internal parameter importance for further analysis (such as
         # parallel coordinates)
@@ -334,7 +334,8 @@ class Analyzer(object):
         #    self.website["Parameter Importance"]["fANOVA"]["PairwiseMarginals"] = pairwise
         return fanova_table, plots
 
-    def parameter_importance(self, modus, incumbent, output, num_params=4):
+    def parameter_importance(self, modus, incumbent, output, num_params=4,
+            num_pairs=0):
         """Calculate parameter-importance using the PIMP-package.
         Currently ablation, forward-selection and fanova are used.
 
@@ -357,6 +358,8 @@ class Analyzer(object):
                                 parameters_to_evaluate=num_params,
                                 save_folder=save_folder,
                                 seed=12345)
+        #if modus == "fanova":
+        #    importance.evaluator.n_most_imp_pairs = 0
         result = importance.evaluate_scenario(modus)
         with open(os.path.join(save_folder, 'pimp_values_%s.json' % modus), 'w') as out_file:
             json.dump(result, out_file, sort_keys=True, indent=4, separators=(',', ': '))
@@ -375,10 +378,10 @@ class Analyzer(object):
             params = list(self.importance.keys())[:n_param]
         else:
             # TODO what if no parameter importance is done? plot all? random subset?
-            # Currently: plot all
-            self.logger.info("No parameter importance performed. Plotting all "
+            # Currently: random
+            self.logger.info("No parameter importance performed. Plotting random "
                              "parameters in parallel coordinates plot.")
-            params = list(self.default.keys())
+            params = list(self.default.keys())[:n_param]
 
         self.logger.debug("Parallel coordinates plotting params: " + str(params))
         self.plotter.plot_parallel_coordinates(self.original_rh, out_path, params)
