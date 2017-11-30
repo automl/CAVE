@@ -9,7 +9,7 @@ import copy
 import numpy as np
 from pandas import DataFrame
 
-from smac.configspace import Configuration
+from ConfigSpace import Configuration
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunKey, RunValue, RunHistory
@@ -116,9 +116,14 @@ class SpySMAC(object):
             self.original_rh.update_from_json(rh_file, self.scenario.cs)
         self.logger.debug('Combined number of Runhistory data points: %d. '
                           '# Configurations: %d. # Runhistories: %d',
-                          len(runhistory_fns), len(self.original_rh.data),
-                          len(self.original_rh.get_all_configs()))
+                          len(self.original_rh.data),
+                          len(self.original_rh.get_all_configs()),
+                          len(runhistory_fns))
         self.original_rh.save_json(os.path.join(self.output, "combined_rh.json"))
+
+        # Validator for a) validating with epm, b) plot over time
+        # Initialize without trajectory
+        self.validator = Validator(self.scenario, None)
 
         # Estimate all missing costs using validation or EPM
         self.complete_data(method=missing_data_method)
@@ -148,20 +153,18 @@ class SpySMAC(object):
 
             path_for_validated_rhs = os.path.join(self.output, "validated_rhs")
             for run in self.runs:
-                # out = os.path.join(path_for_validated_rhs, "rh_"+run.folder)
-                out = ""
-                validator = Validator(run.scen, run.traj, out)
-
+                self.validator.traj = run.traj
                 if method == "validation":
                     # TODO determine # repetitions
-                    new_rh = validator.validate('def+inc', 'train+test', 1, -1,
+                    new_rh = self.validator.validate('def+inc', 'train+test', 1, -1,
                                                 runhistory=self.original_rh)
                 elif method == "epm":
-                    new_rh = validator.validate_epm('def+inc', 'train+test', 1,
+                    new_rh = self.validator.validate_epm('def+inc', 'train+test', 1,
                                                     runhistory=self.original_rh)
                 else:
                     raise ValueError("Missing data method illegal (%s)",
                                      method)
+                self.validator.traj = None  # Avoid usage-mistakes
                 self.validated_rh.update(new_rh)
 
     def analyze(self,
@@ -192,6 +195,7 @@ class SpySMAC(object):
             whether to apply fanova
         """
         builder = HTMLBuilder(self.output, "SpySMAC")
+
         # Check arguments
         for p in param_importance:
             if p not in ['forward_selection', 'ablation', 'fanova']:
@@ -215,14 +219,17 @@ class SpySMAC(object):
                                 "Parameters that differ from default to "
                                 "incumbent are presented first."}
 
+        ########## PERFORMANCE ANALYSIS
+        self.website["Performance Analysis"] = OrderedDict()
+
         if performance:
             performance_table = self.analyzer.create_performance_table(
                                 self.default, self.incumbent)
-            self.website["Performance"] = {"table": performance_table}
+            self.website["Performance Analysis"]["Performance Table"] = {"table": performance_table}
 
         if cdf:
             cdf_path = self.analyzer.plot_cdf()
-            self.website["Cumulative distribution function (CDF)"] = {
+            self.website["Performance Analysis"]["Cumulative distribution function (CDF)"] = {
                      "figure": cdf_path,
                      "tooltip": "Plot default versus incumbent performance "
                                 "on a cumulative distribution plot. Uses "
@@ -230,7 +237,7 @@ class SpySMAC(object):
 
         if scatter and (self.scenario.train_insts != [[None]]):
             scatter_path = self.analyzer.plot_scatter()
-            self.website["Scatterplot"] = {
+            self.website["Performance Analysis"]["Scatterplot"] = {
                      "figure" : scatter_path,
                      "tooltip": "Plot all evaluated instances on a scatter plot, "
                                 "to directly compare performance of incumbent "
@@ -242,10 +249,19 @@ class SpySMAC(object):
         # Build report before time-consuming analysis
         builder.generate_html(self.website)
 
+        if algo_footprint:
+            algo_footprint_path = self.analyzer.plot_algorithm_footprint()
+
+        # Build report before time-consuming analysis
+        builder.generate_html(self.website)
+
+        ########### Configurator's behavior
+        self.website["Configurator's behavior"] = OrderedDict()
+
         if  confviz and self.scenario.feature_array is not None:
             incumbents = [r.solver.incumbent for r in self.runs]
             confviz_script = self.analyzer.plot_confviz(incumbents)
-            self.website["Configuration Visualization"] = {
+            self.website["Configurator's behavior"]["Configuration Visualization"] = {
                     "table" : confviz_script,
                     "tooltip" : "Using PCA to reduce dimensionality of the "
                                 "search space  and plot the distribution of "
@@ -257,8 +273,8 @@ class SpySMAC(object):
             self.logger.info("Configuration visualization desired, but no "
                              "instance-features available.")
         if cost_over_time:
-            cost_over_time_path = self.analyzer.plot_cost_over_time(self.best_run.traj)
-            self.website["Cost over time"] = {"figure": cost_over_time_path,
+            cost_over_time_path = self.analyzer.plot_cost_over_time(self.best_run.traj, self.validator)
+            self.website["Configurator's behavior"]["Cost over time"] = {"figure": cost_over_time_path,
                     "tooltip": "The cost of the incumbent estimated over the "
                                "time. The cost is estimated using an EPM that "
                                "is based on the actual runs."}
@@ -273,16 +289,13 @@ class SpySMAC(object):
             self.logger.info("Plotting parallel coordinates.")
             n_params = 6
             parallel_path = self.analyzer.plot_parallel_coordinates(n_params)
-            self.website["Parallel Coordinates"] = {
+            self.website["Configurator's behavior"]["Parallel Coordinates"] = {
                          "figure" : parallel_path,
                          "tooltip": "Plot explored range of most important parameters."}
 
         self.feature_analysis(box_violin='box_violin' in feature_analysis,
                               correlation='correlation' in feature_analysis,
                               clustering='clustering' in feature_analysis)
-
-        if algo_footprint:
-            algo_footprint_path = self.analyzer.plot_algorithm_footprint()
 
         builder.generate_html(self.website)
 
