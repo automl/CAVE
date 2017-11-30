@@ -69,12 +69,9 @@ def plot_parallel_coordinates(rh, output, params):
     # Select only parameters we want to plot (specified in index)
     data = data[params]
 
-    def colour(category):
-        """ TODO Returning colour for plotting, possibly dependent on
-        category/cost?
-        """
-        # TODO add meaning to colour
-        return np.random.choice(['#2e8ad8', '#cd3785', '#c64c00', '#889a00'])
+    def alpha(category):
+        # TODO add meaning to value
+        return 1
 
     # Create subplots
     fig, axes = plt.subplots(1, len(params)-1, sharey=False, figsize=(15,5))
@@ -101,10 +98,8 @@ def plot_parallel_coordinates(rh, output, params):
             # Category is supposed to be used for coloring the plot
             #category = dataframe.loc[idx, 'cost'] TODO
             category = 0
-            ax.plot(range(len(params)), data.loc[idx, params], colour(category))
+            ax.plot(range(len(params)), data.loc[idx, params], color='red', alpha=alpha(category))
         ax.set_xlim([i, i+1])
-
-
 
     def set_ticks_for_axis(p, ax, num_ticks=10):
         minimum, maximum, param_range = min_max_diff[params[p]]
