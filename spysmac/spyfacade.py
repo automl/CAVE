@@ -70,7 +70,7 @@ class SpySMAC(object):
         output: string
             output for spysmac to write results (figures + report)
         ta_exec_dir: string
-            execution directory for target algorithm
+            execution directory for target algorithm (to find instance.txt, ..)
         missing_data_method: string
             from [validation, epm], how to estimate missing runs
         """
@@ -125,13 +125,16 @@ class SpySMAC(object):
         # Initialize without trajectory
         self.validator = Validator(self.scenario, None)
 
-        # Estimate all missing costs using validation or EPM
+        # Estimate missing costs for [def, inc1, inc2, ...]
         self.complete_data(method=missing_data_method)
         self.best_run = min(self.runs, key=lambda run:
                 self.validated_rh.get_cost(run.solver.incumbent))
 
         self.default = self.scenario.cs.get_default_configuration()
         self.incumbent = self.best_run.solver.incumbent
+
+        self.logger.debug("Overall best run: %s, with incumbent: %s",
+                          self.best_run.folder, self.incumbent)
 
         # Following variable determines whether a distinction is made
         # between train and test-instances (e.g. in plotting)
@@ -140,7 +143,7 @@ class SpySMAC(object):
 
         self.analyzer = Analyzer(self.original_rh, self.validated_rh,
                                  self.default, self.incumbent, self.train_test,
-                                 self.scenario, self.output)
+                                 self.scenario, self.validator, self.output)
 
         self.website = OrderedDict([])
 

@@ -262,7 +262,7 @@ class AlgorithmFootprint(object):
         # For now: get costs and classify on those
         inst_cost = get_cost_dict_for_config(self.rh, conf)
         med = np.median(list(inst_cost.values()))
-        result = {k:1 if v >= med else 0 for k,v in inst_cost.items()}
+        result = {k:1 if v <= med else 0 for k,v in inst_cost.items()}
         self.logger.debug("Len(labels)=%d, len(insts)=%d",
                           len(result), len(self.inst_names))
         return result

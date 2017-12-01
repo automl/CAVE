@@ -36,7 +36,7 @@ class Plotter(object):
     they can be easily adapted into other projects.
     """
 
-    def __init__(self, scenario, train_test, conf1_runs, conf2_runs):
+    def __init__(self, scenario, train_test, conf1_runs, conf2_runs, output):
         """
         Parameters
         ----------
@@ -47,10 +47,13 @@ class Plotter(object):
         conf1_runs, conf2_runs: list(RunValue)
             lists with smac.runhistory.runhistory.RunValue, from which to read
             cost or time
+        output: str
+            output-directory
         """
         self.logger = logging.getLogger("spysmac.plotter")
         self.scenario = scenario
         self.train_test = train_test
+        self.output = output
 
         # Split data into train and test
         data = {"default" : {"combined" : [], "train" : [], "test" : []},
@@ -205,10 +208,24 @@ class Plotter(object):
         f.savefig(output)
         plt.close(f)
 
-    def visualize_configs(self, scen, rh, inc=None):
+    def visualize_configs(self, scen, rh, inc=None, configs_to_plot=None):
+        """
+        Parameters
+        ----------
+        scen: Scenario
+            scenario
+        rh: RunHistory
+            (unvalidated!) runhistory
+        inc: List[Configuration]
+            incumbents of all runs
+        configs_to_plot: List[Configuration]
+            configurations to be plotted
+        """
+
         sz = SampleViz(scenario=scen,
                        runhistory=rh,
-                       incs=inc)
+                       incs=inc, configs_to_plot=configs_to_plot,
+                       output=self.output)
         return sz.run()
 
     def plot_parallel_coordinates(self, rh, output, params):

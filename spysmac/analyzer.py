@@ -35,14 +35,33 @@ __email__ = "joshua.marben@neptun.uni-freiburg.de"
 
 class Analyzer(object):
     """
-    Analyze SMAC-output data.
-    Compares two configurations (default vs incumbent) over multiple SMAC-runs
-    and outputs PAR10, timeouts, scatterplots, parameter importance etc.
+    This class serves as an interface to all the individual analyzing and
+    plotting components. The plotter object is responsible for the actual
+    plotting of things, but should not be invoked via the facade (which is
+    constructed for cmdline-usage).
     """
 
     def __init__(self, original_rh, validated_rh, default, incumbent,
-                 train_test, scenario, output):
-        """Saves all relevant information that arises during the analysis. """
+                 train_test, scenario, validator, output):
+        """
+        Parameters
+        ----------
+        original_rh: RunHistory
+            runhistory containing all runs that have actually been run
+        validated_rh: RunHistory
+            runhistory containing all runs from original_rh + estimates for
+            default and all incumbents for all instances
+        default, incumbent: Configuration
+            default and overall incumbent
+        train_test: bool
+            whether is distinction is made (in cdf and scatter)
+        scenario: Scenario
+            the scenario object
+        validator: Validator
+            validator object (to estimate using EPM)
+        output: string
+            output-directory
+        """
         self.logger = logging.getLogger("spysmac.analyzer")
 
         self.original_rh = original_rh
@@ -51,15 +70,17 @@ class Analyzer(object):
         self.incumbent = incumbent
         self.train_test = train_test
         self.scenario = scenario
+        self.validator = validator
         self.output = output
 
-        # TODO for ablation and forward selection inject in self.imp
+        # TODO for ablation and forward selection inject in self.imp(?)
         self.importance = None  # Used to store dictionary containing parameter
                                 # importances, so it can be used by analysis
 
         conf1_runs = get_cost_dict_for_config(self.validated_rh, self.default)
         conf2_runs = get_cost_dict_for_config(self.validated_rh, self.incumbent)
-        self.plotter = Plotter(self.scenario, self.train_test, conf1_runs, conf2_runs)
+        self.plotter = Plotter(self.scenario, self.train_test, conf1_runs,
+                conf2_runs, output=self.output)
 
     def get_timeouts(self, config):
         """ Get number of timeouts in config per runs in total (not per
@@ -76,13 +97,14 @@ class Analyzer(object):
                 return (("N","A"),("N","A"))
             train_timeout = len([i for i in timeouts if (timeouts[i] == False
                                   and i in self.scenario.train_insts)])
-            train_no_timeout = len([i for i in timeouts if (timeouts[i] == True
-                                  and i in self.scenario.train_insts)])
+            #train_no_timeout = len([i for i in timeouts if (timeouts[i] == True
+            #                      and i in self.scenario.train_insts)])
             test_timeout = len([i for i in timeouts if (timeouts[i] == False
                                   and i in self.scenario.test_insts)])
-            test_no_timeout = len([i for i in timeouts if (timeouts[i] == True
-                                  and i in self.scenario.test_insts)])
-            return ((train_timeout, train_no_timeout), (test_timeout, test_no_timeout))
+            #test_no_timeout = len([i for i in timeouts if (timeouts[i] == True
+            #                      and i in self.scenario.test_insts)])
+            return ((train_timeout, len(self.scenario.train_insts)),
+                    (test_timeout, len(self.scenario.test_insts)))
         else:
             if not cutoff:
                 return ("N","A")
@@ -320,6 +342,8 @@ class Analyzer(object):
         plots = {}
         for p in [x[0] for x in sorted(parameter_imp.items(),
                                        key=operator.itemgetter(1))]:
+            if p.startswith("["):
+                continue
             plots[p] = os.path.join(self.output, "fanova", p+'.png')
         # Check for pairwise plots (untested and hacky TODO)
         # Right now no way to access paths of the plots -> file issue
@@ -368,17 +392,19 @@ class Analyzer(object):
 
 ####################################### PLOTS #######################################
 
-    def plot_parallel_coordinates(self, n_param=6):
+    def plot_parallel_coordinates(self, n_param=10):
         """ Creates a parallel coordinates plot visualizing the explored
         parameter configuration space. """
         out_path = os.path.join(self.output, "parallel_coordinates.png")
         # If a parameter importance has been performed in this analyzer-object,
         # only plot the n_param most important parameters.
         if self.importance:
+            n_param = max(n_param, len([x for x in self.importance.values()
+                                        if x > 0.05]))
             params = list(self.importance.keys())[:n_param]
         else:
-            # TODO what if no parameter importance is done? plot all? random subset?
-            # Currently: random
+            # TODO what if no parameter importance has been performed?
+            # plot all? random subset? -> atm: random
             self.logger.info("No parameter importance performed. Plotting random "
                              "parameters in parallel coordinates plot.")
             params = list(self.default.keys())[:n_param]
@@ -398,7 +424,7 @@ class Analyzer(object):
         self.plotter.plot_scatter(output=scatter_path)
         return scatter_path
 
-    def plot_confviz(self, incumbents):
+    def plot_confviz(self, incumbents, max_confs=1000):
         """ Plot the visualization of configurations, highlightning the
         incumbents. Using original rh, so the explored configspace can be
         estimated.
@@ -407,14 +433,27 @@ class Analyzer(object):
         ----------
         incumbents: List[Configuration]
             list with incumbents, so they can be marked in plot
+        max_confs: int
+            maximum number of data-points to plot
 
         Returns
         -------
         confviz: str
             script to generate the interactive html
         """
+        # Use #runs to determine the most "important" configs to plot
+        rh = self.original_rh
+        all_configs = rh.get_all_configs()
+        configs_to_plot = sorted(all_configs, key=lambda x:
+                                 len(rh.get_runs_for_config(x)))[:max_confs]
+
+        self.logger.info("Reducing number of configs (from %d) to be visualized"
+                         ", plotting only the %d most often run configs.",
+                         len(all_configs), len(configs_to_plot))
         confviz = self.plotter.visualize_configs(self.scenario,
-                    self.original_rh, incumbents)
+                    self.original_rh, incumbents,
+                    configs_to_plot=configs_to_plot)
+
         return confviz
 
     def plot_cost_over_time(self, traj, validator):
