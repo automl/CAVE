@@ -16,7 +16,7 @@ from spysmac.spyfacade import SpySMAC
 from spysmac.plot.plotter import Plotter
 
 
-class TestFacade(unittest.TestCase):
+class TestAnalyzer(unittest.TestCase):
 
     def setUp(self):
         self.output = "test/test_files/test_output/"
@@ -32,3 +32,7 @@ class TestFacade(unittest.TestCase):
     def test_confviz(self):
         """ testing configuration visualization """
         self.analyzer.plot_confviz(incumbents=[self.analyzer.incumbent])
+
+    def test_fanova(self):
+        """ testing configuration visualization """
+        self.analyzer.fanova(incumbent=self.analyzer.incumbent)

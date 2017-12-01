@@ -318,7 +318,7 @@ class Analyzer(object):
             incumbent configuration
         num_params: int
             how many of the top important parameters should be shown
-        num_pairs: int
+        num_pairs: int  (NOT WORKING)
             for how many parameters pairwise marginals are plotted
             n parameters -> n^2 plots
 
@@ -332,19 +332,41 @@ class Analyzer(object):
         importance = self.parameter_importance("fanova", incumbent, self.output,
                                                num_params, num_pairs=num_pairs)
         parameter_imp = importance.evaluator.evaluated_parameter_importance
+        # Split single and pairwise
+        pairwise_imp = {k:v for k,v in parameter_imp.items() if k.startswith("[")}
+        for k in pairwise_imp.keys():
+            parameter_imp.pop(k)
+
         # Set internal parameter importance for further analysis (such as
-        # parallel coordinates)
+        #   parallel coordinates)
+        self.logger.debug("Fanova importance: %s", str(parameter_imp))
         self.importance = parameter_imp
+
+        # Dicts to lists of tuples, sorted descending after importance and only
+        #   including marginals > 0.05
+        parameter_imp = [(k, v) for k, v in sorted(parameter_imp.items(),
+                         key=operator.itemgetter(1), reverse=True) if v > 0.05]
+        pairwise_imp = [(k, v) for k, v in sorted(pairwise_imp.items(),
+                                key=operator.itemgetter(1), reverse=True) if v > 0.05]
         # Create table
-        fanova_table = self._split_table(parameter_imp)
-        df = DataFrame(data=fanova_table)
-        fanova_table = df.to_html(escape=False, header=False, index=False, justify='left')
-        plots = {}
-        for p in [x[0] for x in sorted(parameter_imp.items(),
-                                       key=operator.itemgetter(1))]:
-            if p.startswith("["):
-                continue
-            plots[p] = os.path.join(self.output, "fanova", p+'.png')
+        table = []
+        if len(parameter_imp) > 0:
+            table.extend([(20*"-"+" Single importance: "+20*"-", 20*"-")])
+            table.extend(parameter_imp)
+        if len(pairwise_imp) > 0:
+            table.extend([(20*"-"+" Pairwise importance: "+20*"-", 20*"-")])
+            # TODO assuming (current) form of "['param1','param2']", but not
+            #       expecting it stays this way (on PIMPs side)
+            table.extend([(' & '.join([tmp.strip('\' ') for tmp in k.strip('[]').split(',')]), v)
+                            for k, v in pairwise_imp])
+
+        keys, fanova_table = [k[0] for k in table], [k[1:] for k in table]
+        df = DataFrame(data=fanova_table, index=keys)
+        fanova_table = df.to_html(escape=False, header=False, index=True, justify='left')
+
+        single_plots = {}
+        for p, v in parameter_imp:
+            single_plots[p] = os.path.join(self.output, "fanova", p+'.png')
         # Check for pairwise plots (untested and hacky TODO)
         # Right now no way to access paths of the plots -> file issue
         #pairwise = OrderedDict([])
@@ -356,7 +378,7 @@ class Analyzer(object):
         #             pairwise[combi] = {"figure": potential_path}
         #if pairwise:
         #    self.website["Parameter Importance"]["fANOVA"]["PairwiseMarginals"] = pairwise
-        return fanova_table, plots
+        return fanova_table, single_plots
 
     def parameter_importance(self, modus, incumbent, output, num_params=4,
             num_pairs=0):
