@@ -36,3 +36,7 @@ class TestAnalyzer(unittest.TestCase):
     def test_fanova(self):
         """ testing configuration visualization """
         self.analyzer.fanova(incumbent=self.analyzer.incumbent)
+
+    def test_feature_forward_selection(self):
+        """ testing feature importance """
+        self.analyzer.feature_importance()

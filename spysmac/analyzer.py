@@ -21,6 +21,7 @@ from pimp.importance.importance import Importance
 
 from spysmac.asapy.feature_analysis import FeatureAnalysis
 
+from spysmac.feature_imp import FeatureForwardSelector
 from spysmac.html.html_builder import HTMLBuilder
 from spysmac.plot.plotter import Plotter
 from spysmac.plot.algorithm_footprint import AlgorithmFootprint
@@ -411,6 +412,12 @@ class Analyzer(object):
             json.dump(result, out_file, sort_keys=True, indent=4, separators=(',', ': '))
         importance.plot_results(name=os.path.join(save_folder, modus), show=False)
         return importance
+
+####################################### FEATURE IMPORTANCE #######################################
+    def feature_importance(self):
+        forward_selector = FeatureForwardSelector(self.scenario,
+                self.original_rh)
+        return forward_selector.run()
 
 ####################################### PLOTS #######################################
 

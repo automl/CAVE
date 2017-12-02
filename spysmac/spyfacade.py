@@ -205,7 +205,7 @@ class SpySMAC(object):
                 raise ValueError("%s not a valid option for parameter "
                                  "importance!", p)
         for f in feature_analysis:
-            if f not in ["box_violin", "correlation", "feat_importance",
+            if f not in ["box_violin", "correlation", "importance",
                          "clustering", "feature_cdf"]:
                 raise ValueError("%s not a valid option for feature analysis!", f)
 
@@ -298,10 +298,10 @@ class SpySMAC(object):
 
         self.feature_analysis(box_violin='box_violin' in feature_analysis,
                               correlation='correlation' in feature_analysis,
-                              clustering='clustering' in feature_analysis)
+                              clustering='clustering' in feature_analysis,
+                              importance='importance' in feature_analysis)
 
         builder.generate_html(self.website)
-
 
     def parameter_importance(self, ablation=False, fanova=False,
                              forward_selection=False):
@@ -358,9 +358,10 @@ class SpySMAC(object):
                         "figure": f_s_chng_path}
 
     def feature_analysis(self, box_violin=False, correlation=False,
-                         clustering=False):
-        if not (box_violin or correlation or clustering):
+                         clustering=False, importance=False):
+        if not (box_violin or correlation or clustering or importance):
             self.logger.debug("No feature analysis.")
+            return
 
         # FEATURE ANALYSIS (ASAPY)
         # TODO make the following line prettier
@@ -416,6 +417,14 @@ class SpySMAC(object):
         #    importance_plot = fa.feature_importance()
         #    self.website["Feature Analysis"]["Feature importance"] = {"tooltip": "Using the approach of SATZilla'11, we train a cost-sensitive random forest for each pair of algorithms and average the feature importance (using gini as splitting criterion) across all forests. We show the median, 25th and 75th percentiles across all random forests of the 15 most important features.",
         #                                                      "figure": importance_plot}
+        imp = self.analyzer.feature_importance()
+        imp = DataFrame(data=list(imp.values()), index=list(imp.keys()),
+                columns=["Error"])
+        imp = imp.to_html()
+        if importance:
+            self.website["Feature Analysis"]["Feature importance"] = {"tooltip":
+                         "Feature importance calculated using forward selection.",
+                                                            "table": imp}
 
         # cluster instances in feature space
         if clustering:
