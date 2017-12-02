@@ -144,14 +144,17 @@ class AlgorithmFootprint(object):
             performances = [self.get_performance(a, i) for a in self.algorithms]
             self.logger.debug(performances)
             best_performance = min(performances)
-            if best_performance is 0:
-                best_performance = np.finfo(float).eps
             for a in self.algorithms:
-                if (float(self.get_performance(a, i))/best_performance) > epsilon:
+                self.logger.debug("%f best_performance/ %f self.get_performance(a, i) %f", best_performance,
+                                    self.get_performance(a, i),
+                                    best_performance/self.get_performance(a, i))
+                if (self.get_performance(a, i) == 0 or
+                    (best_performance/self.get_performance(a, i)) > epsilon):
                     # Algorithm for instance is in threshhold epsilon
                     label = 1
                 else:
                     label = 0
+                self.logger.debug(label)
                 self.algo_labels[a][i] = label
 
     def plot_points_per_cluster(self):
@@ -212,7 +215,7 @@ class AlgorithmFootprint(object):
                 continue
             # Append insts to plot either to good or bad
             point = self.features_2d[self.insts.index(k)]
-            if v == 0:
+            if self.algo_labels[conf][k] == 0:
                 bad.append(point)
             else:
                 good.append(point)

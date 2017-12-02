@@ -3,6 +3,7 @@ import logging
 from collections import OrderedDict
 import typing
 import json
+import time
 import operator
 
 import numpy as np
@@ -308,9 +309,10 @@ class Analyzer(object):
         return table_split
 
 ####################################### PARAMETER IMPORTANCE #######################################
-    def fanova(self, incumbent, num_params=10, num_pairs=0):
+    def fanova(self, incumbent, num_params=10, num_pairs=0,
+               marginal_threshold=0.05):
         """Wrapper for parameter_importance to save the importance-object/
-        extract the results. We want to show the top X (10) most important
+        extract the results. We want to show the top X most important
         parameter-fanova-plots.
 
         Parameters
@@ -322,18 +324,20 @@ class Analyzer(object):
         num_pairs: int  (NOT WORKING)
             for how many parameters pairwise marginals are plotted
             n parameters -> n^2 plots
+        marginal_threshold: float
+            parameter/s must be at least this important to be mentioned
 
         Returns
         -------
         fanova_table: str
             html table with importances for all parameters
         plots: Dict[str: st]
-            dictionary mapping parameters to their plots
+            dictionary mapping single parameters to their plots
         """
         importance = self.parameter_importance("fanova", incumbent, self.output,
                                                num_params, num_pairs=num_pairs)
         parameter_imp = importance.evaluator.evaluated_parameter_importance
-        # Split single and pairwise
+        # Split single and pairwise (pairwise are string: "['p1','p2']")
         pairwise_imp = {k:v for k,v in parameter_imp.items() if k.startswith("[")}
         for k in pairwise_imp.keys():
             parameter_imp.pop(k)
@@ -428,8 +432,8 @@ class Analyzer(object):
         # If a parameter importance has been performed in this analyzer-object,
         # only plot the n_param most important parameters.
         if self.importance:
-            n_param = max(n_param, len([x for x in self.importance.values()
-                                        if x > 0.05]))
+            n_param = min(n_param, max(3, len([x for x in self.importance.values()
+                                               if x > 0.05])))
             params = list(self.importance.keys())[:n_param]
         else:
             # TODO what if no parameter importance has been performed?
@@ -486,9 +490,11 @@ class Analyzer(object):
         return confviz
 
     def plot_cost_over_time(self, traj, validator):
+        start = time.time()
         path = os.path.join(self.output, 'cost_over_time.png')
         self.plotter.plot_cost_over_time(self.validated_rh, traj, output=path,
                                          validator=validator)
+        self.logger.debug("cost over time: %.2f", time.time() - start)
         return path
 
     def plot_algorithm_footprint(self):
@@ -496,12 +502,6 @@ class Analyzer(object):
         footprint = AlgorithmFootprint(self.validated_rh, self.scenario.feature_dict,
                                        self.scenario.cutoff, self.output,
                                        algorithms)
-        plots = []
-        #plots.append(footprint.plot_points(self.incumbent,
-        #        os.path.join(self.output,"inc.png")))
-        #plots.append(footprint.plot_points(self.default,
-        #    os.path.join(self.output, "def.png")))
-        #footprint.get_footprint(self.default, self.incumbent)
         plots = footprint.plot_points_per_cluster()
         return plots
 
