@@ -1,5 +1,6 @@
 # Specific examples
 data/
+data_original/
 results/
 examples/spear_qcp_large/
 examples/spear_qcp_small/example_output_1/validated_rh.json

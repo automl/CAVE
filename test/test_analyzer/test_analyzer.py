@@ -40,3 +40,7 @@ class TestAnalyzer(unittest.TestCase):
     def test_feature_forward_selection(self):
         """ testing feature importance """
         self.analyzer.feature_importance()
+
+    def test_algorithm_footprints(self):
+        """ testing algorithm footprints """
+        self.analyzer.plot_algorithm_footprint()

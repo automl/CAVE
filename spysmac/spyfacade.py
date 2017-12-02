@@ -160,10 +160,10 @@ class SpySMAC(object):
                 if method == "validation":
                     # TODO determine # repetitions
                     new_rh = self.validator.validate('def+inc', 'train+test', 1, -1,
-                                                runhistory=self.original_rh)
+                                                     runhistory=self.original_rh)
                 elif method == "epm":
                     new_rh = self.validator.validate_epm('def+inc', 'train+test', 1,
-                                                    runhistory=self.original_rh)
+                                                         runhistory=self.original_rh)
                 else:
                     raise ValueError("Missing data method illegal (%s)",
                                      method)
@@ -253,7 +253,13 @@ class SpySMAC(object):
         builder.generate_html(self.website)
 
         if algo_footprint:
-            algo_footprint_path = self.analyzer.plot_algorithm_footprint()
+            algo_footprint_plots = self.analyzer.plot_algorithm_footprint()
+            self.website["Performance Analysis"]["Algorithm Footprints"] = OrderedDict()
+            for p in algo_footprint_plots:
+                self.website["Performance Analysis"]["Algorithm Footprints"][str(algo_footprint_plots.index(p))] = {
+                    "figure" : p,
+                    "tooltip" : "Footprints as described in Smith-Miles."}
+
 
         # Build report before time-consuming analysis
         builder.generate_html(self.website)
