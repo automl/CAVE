@@ -3,34 +3,34 @@
         "imp": {
             "-source-": 0,
             "-target-": 0,
-            "sp-learned-clause-sort-heur": 0.0007662582858948924,
-            "sp-orig-clause-sort-heur": 0.39151143724604925,
-            "sp-var-activity-inc": 0.00012801329389635485,
-            "sp-var-dec-heur": 0.6073328783015078
+            "sp-learned-clause-sort-heur": 0.0002332005042714933,
+            "sp-orig-clause-sort-heur": 0.22531071577220285,
+            "sp-var-activity-inc": 0.03438223761687548,
+            "sp-var-dec-heur": 0.7399053505700611
         },
         "order": [
             "-source-",
             "sp-var-dec-heur",
             "sp-orig-clause-sort-heur",
-            "sp-learned-clause-sort-heur",
             "sp-var-activity-inc",
+            "sp-learned-clause-sort-heur",
             "-target-"
         ],
         "perf": {
-            "-source-": 9.29992813739651,
-            "-target-": 0.01651729912698413,
-            "sp-learned-clause-sort-heur": 0.02013250222222223,
-            "sp-orig-clause-sort-heur": 0.027245992698412703,
-            "sp-var-activity-inc": 0.018944102222222228,
-            "sp-var-dec-heur": 3.6618075125348652
+            "-source-": 12.87509578951151,
+            "-target-": 0.01654454285714286,
+            "sp-learned-clause-sort-heur": 0.018711151349206354,
+            "sp-orig-clause-sort-heur": 0.4638155363553679,
+            "sp-var-activity-inc": 0.02170977198412699,
+            "sp-var-dec-heur": 3.360984921532615
         },
         "var": {
-            "-source-": 46.14201332276481,
+            "-source-": 65.47494443500544,
             "-target-": 1e-05,
-            "sp-learned-clause-sort-heur": 2.0435821592116402e-05,
-            "sp-orig-clause-sort-heur": 4.1955079037316704e-05,
-            "sp-var-activity-inc": 1.7799821666190477e-05,
-            "sp-var-dec-heur": 19.359099546343817
+            "sp-learned-clause-sort-heur": 1.5616372587579364e-05,
+            "sp-orig-clause-sort-heur": 1.5563969109926519,
+            "sp-var-activity-inc": 2.4568130015772863e-05,
+            "sp-var-dec-heur": 16.470571094655302
         }
     }
 }

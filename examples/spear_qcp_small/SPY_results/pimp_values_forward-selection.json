@@ -1,15 +1,15 @@
 {
     "forward-selection": {
         "imp": {
-            "sp-clause-decay": 0.32479891596388366,
-            "sp-orig-clause-sort-heur": 0.3200851442509351,
-            "sp-rand-var-dec-freq": 0.3156860486957694,
-            "sp-var-activity-inc": 0.3376278856877665
+            "sp-max-res-runs": 0.3167307591628852,
+            "sp-rand-var-dec-freq": 0.31535990681310944,
+            "sp-var-activity-inc": 0.33318428276598705,
+            "sp-var-dec-heur": 0.31614733669747286
         },
         "order": [
             "sp-var-activity-inc",
-            "sp-clause-decay",
-            "sp-orig-clause-sort-heur",
+            "sp-var-dec-heur",
+            "sp-max-res-runs",
             "sp-rand-var-dec-freq"
         ]
     }
