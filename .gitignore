@@ -1,3 +1,8 @@
+*.sh
+data/
+results/
+vespy/
+
 # Specific examples
 data/
 data_original/
