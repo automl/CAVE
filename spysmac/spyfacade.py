@@ -70,7 +70,7 @@ class SpySMAC(object):
         output: string
             output for spysmac to write results (figures + report)
         ta_exec_dir: string
-            execution directory for target algorithm
+            execution directory for target algorithm (to find instance.txt, ..)
         missing_data_method: string
             from [validation, epm], how to estimate missing runs
         """
@@ -125,13 +125,16 @@ class SpySMAC(object):
         # Initialize without trajectory
         self.validator = Validator(self.scenario, None)
 
-        # Estimate all missing costs using validation or EPM
+        # Estimate missing costs for [def, inc1, inc2, ...]
         self.complete_data(method=missing_data_method)
         self.best_run = min(self.runs, key=lambda run:
                 self.validated_rh.get_cost(run.solver.incumbent))
 
         self.default = self.scenario.cs.get_default_configuration()
         self.incumbent = self.best_run.solver.incumbent
+
+        self.logger.debug("Overall best run: %s, with incumbent: %s",
+                          self.best_run.folder, self.incumbent)
 
         # Following variable determines whether a distinction is made
         # between train and test-instances (e.g. in plotting)
@@ -140,7 +143,7 @@ class SpySMAC(object):
 
         self.analyzer = Analyzer(self.original_rh, self.validated_rh,
                                  self.default, self.incumbent, self.train_test,
-                                 self.scenario, self.output)
+                                 self.scenario, self.validator, self.output)
 
         self.website = OrderedDict([])
 
@@ -157,10 +160,10 @@ class SpySMAC(object):
                 if method == "validation":
                     # TODO determine # repetitions
                     new_rh = self.validator.validate('def+inc', 'train+test', 1, -1,
-                                                runhistory=self.original_rh)
+                                                     runhistory=self.original_rh)
                 elif method == "epm":
                     new_rh = self.validator.validate_epm('def+inc', 'train+test', 1,
-                                                    runhistory=self.original_rh)
+                                                         runhistory=self.original_rh)
                 else:
                     raise ValueError("Missing data method illegal (%s)",
                                      method)
@@ -202,7 +205,7 @@ class SpySMAC(object):
                 raise ValueError("%s not a valid option for parameter "
                                  "importance!", p)
         for f in feature_analysis:
-            if f not in ["box_violin", "correlation", "feat_importance",
+            if f not in ["box_violin", "correlation", "importance",
                          "clustering", "feature_cdf"]:
                 raise ValueError("%s not a valid option for feature analysis!", f)
 
@@ -250,7 +253,13 @@ class SpySMAC(object):
         builder.generate_html(self.website)
 
         if algo_footprint:
-            algo_footprint_path = self.analyzer.plot_algorithm_footprint()
+            algo_footprint_plots = self.analyzer.plot_algorithm_footprint()
+            self.website["Performance Analysis"]["Algorithm Footprints"] = OrderedDict()
+            for p in algo_footprint_plots:
+                self.website["Performance Analysis"]["Algorithm Footprints"][str(algo_footprint_plots.index(p))] = {
+                    "figure" : p,
+                    "tooltip" : "Footprints as described in Smith-Miles."}
+
 
         # Build report before time-consuming analysis
         builder.generate_html(self.website)
@@ -295,10 +304,10 @@ class SpySMAC(object):
 
         self.feature_analysis(box_violin='box_violin' in feature_analysis,
                               correlation='correlation' in feature_analysis,
-                              clustering='clustering' in feature_analysis)
+                              clustering='clustering' in feature_analysis,
+                              importance='importance' in feature_analysis)
 
         builder.generate_html(self.website)
-
 
     def parameter_importance(self, ablation=False, fanova=False,
                              forward_selection=False):
@@ -355,9 +364,10 @@ class SpySMAC(object):
                         "figure": f_s_chng_path}
 
     def feature_analysis(self, box_violin=False, correlation=False,
-                         clustering=False):
-        if not (box_violin or correlation or clustering):
+                         clustering=False, importance=False):
+        if not (box_violin or correlation or clustering or importance):
             self.logger.debug("No feature analysis.")
+            return
 
         # FEATURE ANALYSIS (ASAPY)
         # TODO make the following line prettier
@@ -413,6 +423,14 @@ class SpySMAC(object):
         #    importance_plot = fa.feature_importance()
         #    self.website["Feature Analysis"]["Feature importance"] = {"tooltip": "Using the approach of SATZilla'11, we train a cost-sensitive random forest for each pair of algorithms and average the feature importance (using gini as splitting criterion) across all forests. We show the median, 25th and 75th percentiles across all random forests of the 15 most important features.",
         #                                                      "figure": importance_plot}
+        imp = self.analyzer.feature_importance()
+        imp = DataFrame(data=list(imp.values()), index=list(imp.keys()),
+                columns=["Error"])
+        imp = imp.to_html()
+        if importance:
+            self.website["Feature Analysis"]["Feature importance"] = {"tooltip":
+                         "Feature importance calculated using forward selection.",
+                                                            "table": imp}
 
         # cluster instances in feature space
         if clustering:

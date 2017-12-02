@@ -55,6 +55,7 @@ class SampleViz(object):
     def __init__(self, scenario: Scenario,
                  runhistory: RunHistory,
                  incs: list=None,
+                 configs_to_plot=None,
                  contour_step_size=0.2,
                  output: str=None):
         '''
@@ -68,17 +69,23 @@ class SampleViz(object):
             runhistory
         incs: list
             incumbents
+        configs_to_plot: List[Configuration]
+            only plot those configurations
         contour_step_size: float
             step size of meshgrid to compute contour of fitness landscape
         '''
 
         self.scenario = copy.deepcopy(scenario)  # pca changes feats
         self.runhistory = runhistory
-        self.logger = logging.getLogger("SampleViz")
+        self.logger = logging.getLogger(
+            self.__module__ + '.' + self.__class__.__name__)
         self.incs = incs
+        if configs_to_plot is None:
+            configs_to_plot = runhistory.get_all_configs()
+        self.configs_to_plot = configs_to_plot
 
         self.contour_step_size = contour_step_size
-        if output and not self.output.endswith('.html'):
+        if output and not output.endswith('.html'):
             self.output = os.path.join(output, 'conf_vizs.html')
         else:
             self.output = output
@@ -96,7 +103,7 @@ class SampleViz(object):
         red_dists = self.get_mds(dists)
 
         contour_data = self.get_pred_surface(
-            X_scaled=red_dists, conf_list=conf_list)
+                X_scaled=red_dists, conf_list=conf_list[:])
 
         inc_list = self.incs
 
@@ -294,6 +301,8 @@ class SampleViz(object):
         conf_matrix = []
         conf_list = []
         for conf_id in sorted(map(lambda x: int(x), history.ids_config.keys())):
+            if history.ids_config[conf_id] not in self.configs_to_plot:
+                continue
             conf_matrix.append(history.ids_config[conf_id].get_array())
             conf_list.append(history.ids_config[conf_id])
 
@@ -353,7 +362,8 @@ class SampleViz(object):
             for idx, conf in enumerate(conf_list):
                 if conf in inc_list:
                     inc_indx.append(idx)
-            self.logger.debug("Indexes of Incumbent configurations: %s" %(str(inc_indx)))
+            self.logger.debug("Indexes of %d incumbent configurations: %s",
+                              len(inc_list), str(inc_indx))
             scatter_inc = ax.scatter(X[inc_indx, 0],
                                      X[inc_indx, 1],
                                      color="black", edgecolors="white",

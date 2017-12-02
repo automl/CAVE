@@ -1,30 +1,16 @@
 {
     "forward-selection": {
-        "sp-clause-activity-inc": 0.32877955812331866,
-        "sp-clause-decay": 0.3174159702018639,
-        "sp-clause-del-heur": 0.30992996985219545,
-        "sp-clause-inversion": 0.3144175473126984,
-        "sp-first-restart": 0.31169548416278087,
-        "sp-learned-clause-sort-heur": 0.3235115856156649,
-        "sp-learned-clauses-inc": 0.3148302441411711,
-        "sp-learned-size-factor": 0.3224163649172473,
-        "sp-max-res-lit-inc": 0.30855174593857954,
-        "sp-max-res-runs": 0.31027915806329603,
-        "sp-orig-clause-sort-heur": 0.30796302888979854,
-        "sp-phase-dec-heur": 0.31551056844687936,
-        "sp-rand-phase-dec-freq": 0.3133494651339698,
-        "sp-rand-phase-scaling": 0.3232843015853961,
-        "sp-rand-var-dec-freq": 0.3045487208338389,
-        "sp-rand-var-dec-scaling": 0.3312457641663377,
-        "sp-res-cutoff-cls": 0.3149064743516505,
-        "sp-res-cutoff-lits": 0.3107839607655961,
-        "sp-res-order-heur": 0.3155346169227188,
-        "sp-resolution": 0.31175135206274246,
-        "sp-restart-inc": 0.3102046254251144,
-        "sp-update-dec-queue": 0.3089664453589009,
-        "sp-use-pure-literal-rule": 0.31331922180869604,
-        "sp-var-activity-inc": 0.3099166991732181,
-        "sp-var-dec-heur": 0.3172021351802604,
-        "sp-variable-decay": 0.31644565573918754
+        "imp": {
+            "sp-clause-decay": 0.32479891596388366,
+            "sp-orig-clause-sort-heur": 0.3200851442509351,
+            "sp-rand-var-dec-freq": 0.3156860486957694,
+            "sp-var-activity-inc": 0.3376278856877665
+        },
+        "order": [
+            "sp-var-activity-inc",
+            "sp-clause-decay",
+            "sp-orig-clause-sort-heur",
+            "sp-rand-var-dec-freq"
+        ]
     }
 }

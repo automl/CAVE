@@ -20,6 +20,7 @@ class AlgorithmFootprint(object):
      "Measuring algorithm footprints in instance space"
      (Kate Smith-Miles, Kate Smith-Miles)
      ...
+     TODO
 
      General procedure:
          - label for each algorithm each instance with the same metric
@@ -27,25 +28,207 @@ class AlgorithmFootprint(object):
          - calculate the hulls of the instances
          - compare the hulls to the hull of all instances
     """
-    def __init__(self, rh:RunHistory, inst_feat, cutoff, output, plotter=None):
+    def __init__(self, rh: RunHistory, inst_feat, cutoff, output, algorithms, plotter=None):
         """
         Parameters
         ----------
         inst_feat: dict[feature-vectors]
             instances names mapped to features
+
+        algorithms: Dict[Configuration:str]
+            mapping configs to names (here just: default, incumbent)
         """
         self.logger = logging.getLogger(
             self.__module__ + '.' + self.__class__.__name__)
         self.rh = rh
-        self.inst_names = list(inst_feat.keys())  # This is the order of instances!
+        self.insts = list(inst_feat.keys())  # This is the order of instances!
         self.output = output
 
-        self.features = np.array([inst_feat[k] for k in self.inst_names])
+        self.algorithms = algorithms.keys()
+        self.algo_names = algorithms
+        self.algo_performance = {}  # Maps instance -> performance
+
+        self.features = np.array([inst_feat[k] for k in self.insts])
         self.features_2d = self.reduce_dim(self.features)
         self.clusters, self.cluster_dict = self.get_clusters(self.features_2d)
 
         self.plotter = plotter
         self.cutoff = cutoff
+
+        self.label_instances()
+
+    def reduce_dim(self, feature_array):
+        """ Expects feature-array (not dict!)
+
+        Parameters
+        ----------
+        feature_array: np.array
+            array containing features in order of self.inst_names
+
+        Returns
+        -------
+        feature_array_2d: np.array
+            array with pca'ed features (2-dimensional)
+        """
+        # Perform PCA to reduce features to 2
+        n_feats = feature_array.shape[1]
+        if n_feats > 2:
+            self.logger.debug("Use PCA to reduce features to two dimensions")
+            ss = StandardScaler()
+            feature_array = ss.fit_transform(feature_array)
+            pca = PCA(n_components=2)
+            feature_array = pca.fit_transform(feature_array)
+        return feature_array
+
+    def get_clusters(self, features):
+        """ Mapping instances to clusters, using silhouette-scores to determine
+        number of cluster.
+
+        Parameters
+        ----------
+        features: np.array
+            scaled and pca'ed feature-array (2D)
+
+        Returns
+        -------
+        clusters: np.array
+            in the order of self.insts, clusters of instances
+        cluster_dict: Dict[int: int]
+            maps clusters to indices of instances, i.e. for instances range(10):
+            {0: [1,3,5], 1: [2,7,8], 2: [0,4,6,9]}
+        """
+        # get silhouette scores for k_means with 2 to 12 clusters
+        scores = []
+        for n_clusters in range(2, 12):
+            km = KMeans(n_clusters=n_clusters)
+            y_pred = km.fit_predict(features)
+            score = silhouette_score(features, y_pred)
+            scores.append(score)
+
+        best_score = max(scores)
+        best_run = scores.index(best_score)
+        n_clusters = best_run + 2
+        # cluster!
+        km = KMeans(n_clusters=n_clusters)
+        y_pred = km.fit_predict(features)
+
+        self.logger.debug("%d Clusters: %s", n_clusters, str(y_pred))
+
+        clusters = y_pred
+        cluster_dict = {}
+        for n in range(n_clusters):
+            cluster_dict[n] = []
+        for i, c in enumerate(y_pred):
+            cluster_dict[c].append(self.insts[i])
+        return y_pred, cluster_dict
+
+    def get_performance(self, algorithm, instance):
+        """
+        Return performance according to runhistory (or EPM???)
+        """
+        if not algorithm in self.algo_performance:
+            self.algo_performance[algorithm] = get_cost_dict_for_config(self.rh, algorithm)
+        return self.algo_performance[algorithm][instance]
+
+    def label_instances(self, epsilon=0.95):
+        """
+        Returns dictionary with a label for each instance.
+
+        Returns
+        -------
+        labels: Dict[str:float]
+            maps instance-names (strings) to label (floats)
+        """
+        self.algo_labels = {a:{} for a in self.algorithms}
+        for i in self.insts:
+            performances = [self.get_performance(a, i) for a in self.algorithms]
+            self.logger.debug(performances)
+            best_performance = min(performances)
+            if best_performance is 0:
+                best_performance = np.finfo(float).eps
+            for a in self.algorithms:
+                if (float(self.get_performance(a, i))/best_performance) > epsilon:
+                    # Algorithm for instance is in threshhold epsilon
+                    label = 1
+                else:
+                    label = 0
+                self.algo_labels[a][i] = label
+
+    def plot_points_per_cluster(self):
+        """ Plot good versus bad for passed config per cluster.
+
+        Parameters
+        ----------
+        conf: Configuration
+            configuration for which to plot good vs bad
+        out: str
+            output path
+
+        Returns
+        -------
+        outpaths: List[str]
+            output paths per cluster
+        """
+        outpaths = []
+
+        for a in self.algorithms:
+            # Plot without clustering (for all insts)
+            path = os.path.join(self.output,
+                                '_'.join([self.algo_names[a], 'all']))
+            outpaths.append(self._plot_points(a, path))
+            # Plot per cluster
+            for c in self.cluster_dict.keys():
+                path = os.path.join(self.output,
+                                    '_'.join([self.algo_names[a], str(c)]))
+                outpaths.append(self._plot_points(a, path, self.cluster_dict[c]))
+        return outpaths
+
+    def _plot_points(self, conf, out, insts=[]):
+        """ Plot good versus bad for conf. Mainly for debugging labels!
+
+        Parameters
+        ----------
+        conf: Configuration
+            configuration for which to plot good vs bad
+        out: str
+            output path
+        insts: List[str]
+            instances to be plotted
+
+        Returns
+        -------
+        outpath: str
+            output path
+        """
+        fig, ax = plt.subplots()
+
+        if len(insts) == 0:
+            insts = self.insts
+
+        good, bad = [], []
+        for k, v in self.algo_performance[conf].items():
+            # Only consider passed insts
+            if not k in insts:
+                continue
+            # Append insts to plot either to good or bad
+            point = self.features_2d[self.insts.index(k)]
+            if v == 0:
+                bad.append(point)
+            else:
+                good.append(point)
+        good, bad = np.array(good), np.array(bad)
+
+        if len(good) > 0: ax.scatter(good[:, 0], good[:, 1], color="green")
+        if len(bad) > 0: ax.scatter(bad[:, 0], bad[:, 1], color="red")
+        fig.suptitle(self.algo_names[conf])
+        ax.set_ylabel('Principal Component 1')
+        ax.set_xlabel('Principal Component 2')
+        fig.savefig(out)
+        plt.close(fig)
+
+        return out
+
+#### Below not implemented """
 
     def get_footprint(self, default, incumbent):
         """ Calculate footprint by comparing overall convex hull to hulls of def
@@ -54,6 +237,7 @@ class AlgorithmFootprint(object):
         conf: Configuration
             configuration for which to return hull
         """
+        raise NotImplemented()
         # get labels for both configs
         def_labels = self.label_instances(default)
         def_label_list = [def_labels[i] for i in self.inst_names]
@@ -80,6 +264,43 @@ class AlgorithmFootprint(object):
 
         return def_footprint, inc_footprint
 
+    def get_convex_hulls(self, cluster_dict, insts=None):
+        """ Get convex hulls per cluster. 
+
+        Parameters
+        ----------
+        cluster_dict: Dict[int: str]
+            maps clusters to instances, i.e. for instances range(10):
+            {0: ["1","3","5"], 1: ["2","7","8"], 2: ["0","4","6","9"]}
+        insts: List[str]
+            instances to consider (defined through labeling for each config)
+
+        Returns
+        -------
+        hulls: List[ConvexHull]
+            list with convex hulls for each cluster. clusters in increasing
+            order, i.e. [hull_cluster_0, hull_cluster_1, hull_cluster_2, ...]
+        """
+        raise NotImplemented()
+        self.logger.debug("Calculating convex hulls for algorithm footprint.")
+        if not insts: insts = self.insts
+        hulls = []
+        # For each cluster get convex hull
+        for cluster in range(len(cluster_dict)):
+            indexes_in_cluster = cluster_dict[cluster]
+            instances = [inst for inst in self.insts
+                         if inst in indexes_in_cluster and inst in insts]
+            self.logger.debug("Hull for cluster %d with %d instances", cluster,
+                    len(instances))
+            if len(instances) < 3:
+                hulls.append(0)
+                continue
+            inst_indexes = [self.inst_names.index(i) for i in instances]
+            points = [self.features_2d[i] for i in inst_indexes]
+            hull = spatial.ConvexHull(points, qhull_options="Qt")
+            hulls.append(hull)
+        return hulls
+
     def plot_hulls(self, hulls1, hulls2):
         """ Create a plot for each cluster, plotting hulls1 vs hulls2.
 
@@ -88,6 +309,7 @@ class AlgorithmFootprint(object):
         paths: List[str]
             paths to plots
         """
+        raise NotImplemented()
         paths = []
         for i, h in enumerate(hulls1):
             output = os.path.join(self.output, "algorithm_footprint_hulls_cluster_"+str(i)+".png")
@@ -131,6 +353,7 @@ class AlgorithmFootprint(object):
         area: float
             total area of all hulls
         """
+        raise NotImplemented()
         area = 0.0
         for h in hulls:
             if not h:
@@ -138,171 +361,3 @@ class AlgorithmFootprint(object):
             area += h.area
         return area
 
-    def reduce_dim(self, feature_array):
-        """ Expects feature-array (not dict!)
-
-        Parameters
-        ----------
-        feature_array: np.array
-            array containing features in order of self.inst_names
-
-        Returns
-        -------
-        feature_array_2d: np.array
-            array with pca'ed features (2-dimensional)
-        """
-        # Perform PCA to reduce features to 2
-        n_feats = feature_array.shape[1]
-        if n_feats > 2:
-            self.logger.debug("Use PCA to reduce features to two dimensions")
-            ss = StandardScaler()
-            feature_array = ss.fit_transform(feature_array)
-            pca = PCA(n_components=2)
-            feature_array = pca.fit_transform(feature_array)
-        return feature_array
-
-    def get_clusters(self, features):
-        """ Mapping instances to clusters, using silhouette-scores to determine
-        number of cluster.
-
-        Parameters
-        ----------
-        features: np.array
-            scaled and pca'ed feature-array (2D)
-
-        Returns
-        -------
-        clusters: np.array
-            in the order of self.inst_names, clusters of instances
-        cluster_dict: Dict[int: int]
-            maps clusters to indices of instances, i.e. for instances range(10):
-            {0: [1,3,5], 1: [2,7,8], 2: [0,4,6,9]}
-        """
-        # get silhouette scores for k_means with 2 to 12 clusters
-        scores = []
-        for n_clusters in range(2, 12):
-            km = KMeans(n_clusters=n_clusters)
-            y_pred = km.fit_predict(features)
-            score = silhouette_score(features, y_pred)
-            scores.append(score)
-
-        best_score = max(scores)
-        best_run = scores.index(best_score)
-        n_clusters = best_run + 2
-        # cluster!
-        km = KMeans(n_clusters=n_clusters)
-        y_pred = km.fit_predict(features)
-
-        self.logger.debug("%d Clusters: %s", n_clusters, str(y_pred))
-
-        clusters = y_pred
-        cluster_dict = {}
-        for n in range(n_clusters):
-            cluster_dict[n] = []
-        for i, c in enumerate(y_pred):
-            cluster_dict[c].append(self.inst_names[i])
-        return y_pred, cluster_dict
-
-    def get_convex_hulls(self, cluster_dict, insts=None):
-        """ Get convex hulls per cluster.
-
-        Parameters
-        ----------
-        cluster_dict: Dict[int: str]
-            maps clusters to instances, i.e. for instances range(10):
-            {0: ["1","3","5"], 1: ["2","7","8"], 2: ["0","4","6","9"]}
-        insts: List[str]
-            instances to consider (defined through labeling for each config)
-
-        Returns
-        -------
-        hulls: List[ConvexHull]
-            list with convex hulls for each cluster. clusters in increasing
-            order, i.e. [hull_cluster_0, hull_cluster_1, hull_cluster_2, ...]
-        """
-        self.logger.debug("Calculating convex hulls for algorithm footprint.")
-        if not insts: insts = self.inst_names
-        hulls = []
-        # For each cluster get convex hull
-        for cluster in range(len(cluster_dict)):
-            indexes_in_cluster = cluster_dict[cluster]
-            instances = [inst for inst in self.inst_names
-                         if inst in indexes_in_cluster and inst in insts]
-            self.logger.debug("Hull for cluster %d with %d instances", cluster,
-                    len(instances))
-            if len(instances) < 3:
-                hulls.append(0)
-                continue
-            inst_indexes = [self.inst_names.index(i) for i in instances]
-            points = [self.features_2d[i] for i in inst_indexes]
-            hull = spatial.ConvexHull(points, qhull_options="Qt")
-            hulls.append(hull)
-        return hulls
-
-    def label_instances(self, conf:Configuration):
-        """
-        Returns dictionary with a label for each instance.
-
-        Parameters
-        ----------
-            rh: RunHistory
-                runhistory to take instances and costs from
-            conf: Configuration
-                configuration (=algorithm) for which to label the instances
-
-        Returns
-        -------
-        labels: Dict[str:float]
-            maps instance-names (strings) to label (floats)
-        """
-        cutoff = self.cutoff
-        # Extract all instances
-        insts = [i_s[0] for i_s in self.rh.get_runs_for_config(conf)]
-        # Label all instances
-        # For now: get costs and classify on those
-        inst_cost = get_cost_dict_for_config(self.rh, conf)
-        med = np.median(list(inst_cost.values()))
-        result = {k:1 if v >= med else 0 for k,v in inst_cost.items()}
-        self.logger.debug("Len(labels)=%d, len(insts)=%d",
-                          len(result), len(self.inst_names))
-        return result
-
-        # Now for testing purposes, let's use a binary (solved=1,
-        # unsolved=0)-labeling strategy
-        inst_timeouts = get_timeout(self.rh, conf, self.cutoff)
-        return inst_timeouts
-
-    def plot_points(self, conf, out):
-        """ Plot good versus bad for conf. Mainly for debugging labels!
-
-        Parameters
-        ----------
-        conf: Configuration
-            configuration for which to plot good vs bad
-        out: str
-            output path
-
-        Returns
-        -------
-        outpath: str
-            output path
-        """
-        labels = self.label_instances(conf)
-        fig, ax = plt.subplots()
-
-        good, bad = [], []
-        for k, v in labels.items():
-            point = self.features_2d[self.inst_names.index(k)]
-            if v == 0:
-                bad.append(point)
-            else:
-                good.append(point)
-        good, bad = np.array(good), np.array(bad)
-        ax.scatter(good[:, 0], good[:, 1], color="green")
-        ax.scatter(bad[:, 0], bad[:, 1], color="red")
-        ax.set_ylabel('Principal Component 1')
-        ax.set_xlabel('Principal Component 2')
-        fig.savefig(out)
-        plt.close(fig)
-
-        return out

@@ -1,25 +1,36 @@
 {
     "ablation": {
-        "-source-": 0,
-        "-target-": 0,
-        "sp-clause-activity-inc": 0.0006427750893106524,
-        "sp-clause-decay": 0.0035347336740931927,
-        "sp-clause-del-heur": 0.0006137010042349866,
-        "sp-first-restart": 0.011752067380600067,
-        "sp-learned-clause-sort-heur": 0.033193027037134795,
-        "sp-learned-clauses-inc": 0.005087704065309719,
-        "sp-learned-size-factor": 0.0027918025808910695,
-        "sp-orig-clause-sort-heur": 0.13838797644882866,
-        "sp-phase-dec-heur": 0.00960178180196131,
-        "sp-rand-phase-dec-freq": 0.016205910363686064,
-        "sp-rand-phase-scaling": 0.0023558293874826036,
-        "sp-rand-var-dec-freq": 0.12864437930373632,
-        "sp-rand-var-dec-scaling": 0.0123647404356535,
-        "sp-resolution": 0.0859488256431279,
-        "sp-restart-inc": -0.001882589200591774,
-        "sp-use-pure-literal-rule": -0.0014046081734428492,
-        "sp-var-activity-inc": 0.010313859077175783,
-        "sp-var-dec-heur": 0.5407986553635661,
-        "sp-variable-decay": 0.0010494287172418879
+        "imp": {
+            "-source-": 0,
+            "-target-": 0,
+            "sp-learned-clause-sort-heur": 0.0007662582858948924,
+            "sp-orig-clause-sort-heur": 0.39151143724604925,
+            "sp-var-activity-inc": 0.00012801329389635485,
+            "sp-var-dec-heur": 0.6073328783015078
+        },
+        "order": [
+            "-source-",
+            "sp-var-dec-heur",
+            "sp-orig-clause-sort-heur",
+            "sp-learned-clause-sort-heur",
+            "sp-var-activity-inc",
+            "-target-"
+        ],
+        "perf": {
+            "-source-": 9.29992813739651,
+            "-target-": 0.01651729912698413,
+            "sp-learned-clause-sort-heur": 0.02013250222222223,
+            "sp-orig-clause-sort-heur": 0.027245992698412703,
+            "sp-var-activity-inc": 0.018944102222222228,
+            "sp-var-dec-heur": 3.6618075125348652
+        },
+        "var": {
+            "-source-": 46.14201332276481,
+            "-target-": 1e-05,
+            "sp-learned-clause-sort-heur": 2.0435821592116402e-05,
+            "sp-orig-clause-sort-heur": 4.1955079037316704e-05,
+            "sp-var-activity-inc": 1.7799821666190477e-05,
+            "sp-var-dec-heur": 19.359099546343817
+        }
     }
 }
