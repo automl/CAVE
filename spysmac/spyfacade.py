@@ -256,7 +256,7 @@ class SpySMAC(object):
             algo_footprint_plots = self.analyzer.plot_algorithm_footprint()
             self.website["Performance Analysis"]["Algorithm Footprints"] = OrderedDict()
             for p in algo_footprint_plots:
-                self.website["Performance Analysis"]["Algorithm Footprints"][str(algo_footprint_plots.index(p))] = {
+                self.website["Performance Analysis"]["Algorithm Footprints"][os.path.splitext(os.path.split(p)[1])[0]] = {
                     "figure" : p,
                     "tooltip" : "Footprints as described in Smith-Miles."}
 

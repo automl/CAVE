@@ -39,7 +39,8 @@ if cmd_folder not in sys.path:
     sys.path.append(cmd_folder)
 
 from smac.scenario.scenario import Scenario
-from smac.runhistory.runhistory import RunHistory
+from smac.runhistory.runhistory import RunHistory, DataOrigin
+from smac.optimizer.objective import average_cost
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.configspace import ConfigurationSpace, Configuration
 from smac.utils.util_funcs import get_types
@@ -54,6 +55,7 @@ class SampleViz(object):
 
     def __init__(self, scenario: Scenario,
                  runhistory: RunHistory,
+                 model: RandomForestWithInstances=None,
                  incs: list=None,
                  configs_to_plot=None,
                  contour_step_size=0.2,
@@ -83,6 +85,8 @@ class SampleViz(object):
         if configs_to_plot is None:
             configs_to_plot = runhistory.get_all_configs()
         self.configs_to_plot = configs_to_plot
+
+        self.model = model
 
         self.contour_step_size = contour_step_size
         if output and not output.endswith('.html'):
@@ -144,8 +148,19 @@ class SampleViz(object):
             self.scenario.feature_dict = dict([(inst, feature_array[idx,:]) for idx, inst in enumerate(insts)])
             self.scenario.n_features = 2
 
+        # Create new rh with only wanted configs
+        new_rh = RunHistory(average_cost)
+        for key, value in self.runhistory.data.items():
+            config = self.runhistory.ids_config[key.config_id]
+            if config in self.configs_to_plot:
+                config_id, instance, seed = key
+                cost, time, status, additional_info = value
+                new_rh.add(config, cost, time, status, instance_id=instance,
+                           seed=seed, additional_info=additional_info)
+
         X, y, types = convert_data(scenario=self.scenario,
-                                   runhistory=self.runhistory)
+                                   runhistory=new_rh)
+        self.logger.debug(X)
 
         types = np.array(np.zeros((2+n_feats)), dtype=np.uint)
 
@@ -278,39 +293,37 @@ class SampleViz(object):
             n_components=2, dissimilarity="precomputed", random_state=12345)
         return mds.fit_transform(dists)
 
-    def get_conf_matrix(self, history: RunHistory):
-        '''
-            iterates through runhistory to get a matrix of configurations (in vector representation),
-            a list of configurations and the number of runs per configuration
+    def get_conf_matrix(self, rh: RunHistory):
+        """Iterates through runhistory to get a matrix of configurations (in
+        vector representation), a list of configurations and the number of
+        runs per configuration.
+        Does only consider configs in self.configs_to_plot.
 
-            Parameters
-            ----------
-            history: RunHistory
-                runhistory of SMAC
+        Parameters
+        ----------
+        rh: RunHistory
+            runhistory of SMAC
 
-            Returns
-            -------
-            np.array
-                matrix of configurations in vector representation
-            list
-                list of Configuration objects
-            np.array
-                one-dim numpy array of runs per configuration
-        '''
+        Returns
+        -------
+        np.array
+            matrix of configurations in vector representation
+        list
+            list of Configuration objects
+        np.array
+            one-dim numpy array of runs per configuration
+        """
+        self.logger.debug("Gathering configurations to be plotted...")
 
         conf_matrix = []
         conf_list = []
-        for conf_id in sorted(map(lambda x: int(x), history.ids_config.keys())):
-            if history.ids_config[conf_id] not in self.configs_to_plot:
-                continue
-            conf_matrix.append(history.ids_config[conf_id].get_array())
-            conf_list.append(history.ids_config[conf_id])
+        runs_per_conf = []
+        for c in self.configs_to_plot:
+            conf_matrix.append(c.get_array())
+            conf_list.append(c)
+            runs_per_conf.append(len(rh.get_runs_for_config(c)))
 
-        runs_per_conf = np.zeros((len(conf_list)))
-        for d in history.data.keys():
-            runs_per_conf[d.config_id - 1] += 1
-
-        return np.array(conf_matrix), conf_list, runs_per_conf
+        return np.array(conf_matrix), conf_list, np.array(runs_per_conf)
 
     def plot(self, X, conf_list: list, runs_per_conf, inc_list: list, contour_data=None):
         '''
@@ -384,6 +397,7 @@ class SampleViz(object):
             label = label.replace("dataframe", "config")
             labels.append(label)
 
+        plt.show()
         #self.logger.debug("Save test.png")
         #fig.savefig("test.png")
 

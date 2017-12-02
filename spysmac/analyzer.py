@@ -474,7 +474,7 @@ class Analyzer(object):
         rh = self.original_rh
         all_configs = rh.get_all_configs()
         configs_to_plot = sorted(all_configs, key=lambda x:
-                                 len(rh.get_runs_for_config(x)))[:max_confs]
+                                 len(rh.get_runs_for_config(x)), reverse=True)[:max_confs]
 
         self.logger.info("Reducing number of configs (from %d) to be visualized"
                          ", plotting only the %d most often run configs.",
