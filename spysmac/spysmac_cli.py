@@ -94,5 +94,5 @@ class SpySMACCLI(object):
         spySMAC.analyze(performance=False, cdf=False, scatter=False, confviz=False,
                         param_importance=[],
                         feature_analysis=[],
-                        parallel_coordinates=False, cost_over_time=False,
-                        algo_footprint=False):
+                        parallel_coordinates=True, cost_over_time=False,
+                        algo_footprint=False)
