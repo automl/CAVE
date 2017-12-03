@@ -55,35 +55,37 @@ class FeatureForwardSelector():
         self.logger.debug("Features: %s", names)
 
         columns = parameters + names
-        X_pd_frame = DataFrame(data=X, columns=columns)
-        #self.logger.debug("Dataframe: %s", X_pd_frame)
 
-        used = []
+        used = list(range(0, len(parameters)))
+        feat_ids = {f:i for i, f in enumerate(names, len(used))}
+        ids_feat = {i:f for f, i in feat_ids.items()}
         self.logger.debug("Used: %s", used)
         evaluated_feature_importance = OrderedDict()
 
+        types, bounds = get_types(self.scenario.cs, self.scenario.feature_array)
+
         for _ in range(self.to_evaluate):  # Main Loop
             errors = []
-            for name in names:
-                self.logger.debug('Evaluating %s' % name)
-                used.append(name)
-                self.logger.debug('Used features: %s' % str(used))
+            for f in names:
+                i = feat_ids[f]
+                self.logger.debug('Evaluating %s', f)
+                used.append(i)
+                self.logger.debug('Used features: %s',
+                        str([ids_feat[j] for j in used[len(parameters):]]))
 
                 start = time.time()
-                tmp_X = X_pd_frame[parameters+used]
-                types, bounds = get_types(self.scenario.cs, tmp_X[used].values)
-                self._refit_model(types, bounds, tmp_X.values, y)  # refit the model every round
+                self._refit_model(types[sorted(used)], bounds, X[:, sorted(used)], y)  # refit the model every round
                 # print(self.model.rf_opts.compute_oob_error)
                 # self.model.rf.compute_out_of_bag_error = True
                 errors.append(np.sqrt(
-                    np.mean((self.model.predict(tmp_X.values)[0].flatten() - y) ** 2)))
+                    np.mean((self.model.predict(X[:, sorted(used)])[0].flatten() - y) ** 2)))
                 used.pop()
                 self.logger.debug('Refitted RF (sec %.2f; error: %.4f)' % (time.time() - start, errors[-1]))
 
             best_idx = np.argmin(errors)
             lowest_error = errors[best_idx]
             best_feature = names.pop(best_idx)
-            used.append(best_feature)
+            used.append(feat_ids[best_feature])
 
             self.logger.debug('%s: %.4f' % (best_feature, lowest_error))
             evaluated_feature_importance[best_feature] = lowest_error

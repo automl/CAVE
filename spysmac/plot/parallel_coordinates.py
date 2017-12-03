@@ -1,4 +1,5 @@
 import os
+import math
 
 import numpy as np
 import pandas as pd
@@ -68,7 +69,7 @@ class ParallelCoordinatesPlotter(object):
 
         # Get ALL parameter names and metrics
         parameter_names = impute_inactive_values(self.validated_rh.get_all_configs()[0]).keys()
-        configs = self.validated_rh.get_all_configs()  # Specify, if we only want "good" confs..
+        #configs = self.validated_rh.get_all_configs()
         configspace = configs[0].configuration_space
 
         # Create dataframe with configs
@@ -76,6 +77,9 @@ class ParallelCoordinatesPlotter(object):
         for conf in configs:
             conf_dict = conf.get_dictionary()
             new_entry = {}
+            # Add cost-column
+            new_entry['cost'] = self.validated_rh.get_cost(conf)
+            # Add parameters
             for p in params:
                 # Catch key-errors (implicate unused hyperparameter)
                 value = conf_dict.get(p)
@@ -101,11 +105,15 @@ class ParallelCoordinatesPlotter(object):
             data.append(pd.Series(new_entry))
         data = pd.DataFrame(data)
 
+        # Add 'cost' to params, params serves as index for dataframe
+        params = ['cost'] + params
+
         # Select only parameters we want to plot (specified in index)
         data = data[params]
 
         def get_alpha(conf):
             alpha = self.best_config_performance/self.validated_rh.get_cost(conf)
+            alpha = alpha**(1/float(2))
             return alpha
 
         # Create subplots
@@ -136,7 +144,10 @@ class ParallelCoordinatesPlotter(object):
 
         def set_ticks_for_axis(p, ax, num_ticks=10):
             minimum, maximum, param_range = min_max_diff[params[p]]
-            hyper = configspace.get_hyperparameter(params[p])
+            hyper = p
+            if p > 0:
+                # First column not a parameter, but cost...
+                hyper = configspace.get_hyperparameter(params[p])
             if isinstance(hyper, CategoricalHyperparameter):
                 num_ticks = len(hyper.choices)
                 step = 1

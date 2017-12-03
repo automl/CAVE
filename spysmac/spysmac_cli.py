@@ -89,10 +89,7 @@ class SpySMACCLI(object):
 
         # Analyze
         #spySMAC.analyze(performance=True, cdf=True, scatter=True, confviz=True,
-        #                param_importance=param_imp,
-        #                feature_analysis=feature_analysis)
         spySMAC.analyze(performance=False, cdf=False, scatter=False, confviz=False,
-                        param_importance=[],
-                        feature_analysis=[],
-                        parallel_coordinates=True, cost_over_time=False,
-                        algo_footprint=False)
+                        parallel_coordinates=True, cost_over_time=False, algo_footprint=False,
+                        param_importance=param_imp,
+                        feature_analysis=feature_analysis)
