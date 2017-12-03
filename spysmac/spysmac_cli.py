@@ -61,6 +61,7 @@ class SpySMACCLI(object):
                                    "calculate", choices=["all", "box_violin",
                                    "correlation", "clustering", "importance",
                                    "none"])
+
         args_, misc = parser.parse_known_args()
 
         if args_.verbose_level == "INFO":
@@ -88,8 +89,9 @@ class SpySMACCLI(object):
             feature_analysis = args_.feat_analysis
 
         # Analyze
-        #spySMAC.analyze(performance=True, cdf=True, scatter=True, confviz=True,
-        spySMAC.analyze(performance=False, cdf=False, scatter=False, confviz=False,
-                        parallel_coordinates=True, cost_over_time=False, algo_footprint=False,
+        #spySMAC.analyze(performance=False, cdf=False, scatter=False, confviz=False,
+        spySMAC.analyze(performance=True, cdf=True, scatter=True, confviz=True,
+                        parallel_coordinates=True, cost_over_time=True,
+                        algo_footprint=True,
                         param_importance=param_imp,
                         feature_analysis=feature_analysis)

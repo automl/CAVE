@@ -113,7 +113,7 @@ class ParallelCoordinatesPlotter(object):
 
         def get_alpha(conf):
             alpha = self.best_config_performance/self.validated_rh.get_cost(conf)
-            alpha = alpha**(1/float(2))
+            # alpha = alpha**(1/float(2))
             return alpha
 
         # Create subplots
