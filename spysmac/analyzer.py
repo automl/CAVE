@@ -425,10 +425,9 @@ class Analyzer(object):
 
 ####################################### PLOTS #######################################
 
-    def plot_parallel_coordinates(self, n_param=10):
+    def plot_parallel_coordinates(self, n_param=10, n_configs=1000):
         """ Creates a parallel coordinates plot visualizing the explored
         parameter configuration space. """
-        out_path = os.path.join(self.output, "parallel_coordinates.png")
         # If a parameter importance has been performed in this analyzer-object,
         # only plot the n_param most important parameters.
         if self.importance:
@@ -442,10 +441,12 @@ class Analyzer(object):
                              "parameters in parallel coordinates plot.")
             params = list(self.default.keys())[:n_param]
 
-        self.logger.debug("Parallel coordinates plotting params: " + str(params))
-        self.plotter.plot_parallel_coordinates(self.original_rh, out_path, params)
+        self.logger.debug("Parallel coordinates plotting %s configs with params: %s",
+                          n_configs, str(params))
+        path = self.plotter.plot_parallel_coordinates(self.original_rh, self.output,
+                                                      params, n_configs, self.validator)
 
-        return out_path
+        return path
 
     def plot_cdf(self):
         cdf_path = os.path.join(self.output, 'cdf.png')

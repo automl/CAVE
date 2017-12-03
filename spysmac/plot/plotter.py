@@ -19,7 +19,7 @@ from smac.runhistory.runhistory import RunHistory
 
 from spysmac.plot.scatter import plot_scatter_plot
 from spysmac.plot.confs_viz.viz_sampled_confs import SampleViz
-from spysmac.plot.parallel_coordinates import plot_parallel_coordinates
+from spysmac.plot.parallel_coordinates import ParallelCoordinatesPlotter
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -228,7 +228,7 @@ class Plotter(object):
                        output=self.output)
         return sz.run()
 
-    def plot_parallel_coordinates(self, rh, output, params):
+    def plot_parallel_coordinates(self, rh, output, params, n_configs, validator):
         """ Plot parallel coordinates (visualize higher dimensions), here used
         to visualize pcs. This function prepares the data from a SMAC-related
         format (using runhistories and parameters) to a more general format
@@ -246,14 +246,19 @@ class Plotter(object):
             where to save plot
         params: list[str]
             parameters to be plotted
+        n_configs: int
+            max # configs
+        validator: Validator
+            to calculate alpha values
 
         Returns
         -------
         output: str
             path to plot
         """
-
-        output = plot_parallel_coordinates(rh, output, params)
+        parallel_coordinates_plotter = ParallelCoordinatesPlotter(rh, self.output,
+                                                                validator)
+        output = parallel_coordinates_plotter.plot_n_configs(n_configs, params)
         return output
 
 
