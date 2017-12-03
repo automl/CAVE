@@ -1,5 +1,6 @@
 import os
 import math
+import logging
 
 import numpy as np
 import pandas as pd
@@ -21,6 +22,8 @@ class ParallelCoordinatesPlotter(object):
         output_dir: str
             output-filepath
         """
+        self.logger = logging.getLogger(
+            self.__module__ + "." + self.__class__.__name__)
         self.original_rh = rh
         self.output_dir = output_dir
         self.validator = validator
@@ -41,6 +44,8 @@ class ParallelCoordinatesPlotter(object):
         configs_to_plot = sorted(all_configs, key=lambda x:
                                  len(self.original_rh.get_runs_for_config(x)),
                                  reverse=True)[:num_configs]
+        self.logger.debug(num_configs)
+        self.logger.debug(configs_to_plot)
         self.validated_rh = self.validator.validate_epm(configs_to_plot,
                                                         'train+test', 1,
                                                         runhistory=self.original_rh)

@@ -5,6 +5,7 @@ import typing
 import json
 import time
 import operator
+import copy
 
 import numpy as np
 from pandas import DataFrame
@@ -403,7 +404,7 @@ class Analyzer(object):
         """
         # Evaluate parameter importance
         save_folder = output
-        importance = Importance(scenario=self.scenario,
+        importance = Importance(scenario=copy.deepcopy(self.scenario),
                                 runhistory=self.original_rh,
                                 incumbent=incumbent,
                                 parameters_to_evaluate=num_params,
