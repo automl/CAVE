@@ -351,7 +351,7 @@ class Analyzer(object):
         # Dicts to lists of tuples, sorted descending after importance and only
         #   including marginals > 0.05
         parameter_imp = [(k, v) for k, v in sorted(parameter_imp.items(),
-                         key=operator.itemgetter(1), reverse=True) if v > 0.05]
+                                key=operator.itemgetter(1), reverse=True) if v > 0.05]
         pairwise_imp = [(k, v) for k, v in sorted(pairwise_imp.items(),
                                 key=operator.itemgetter(1), reverse=True) if v > 0.05]
         # Create table
@@ -375,16 +375,14 @@ class Analyzer(object):
             single_plots[p] = os.path.join(self.output, "fanova", p+'.png')
         # Check for pairwise plots
         # Right now no way to access paths of the plots -> file issue
-        #pairwise = OrderedDict([])
-        #for p1 in params.keys():
-        #    for p2 in params.keys():
-        #        combi = str([p1, p2]).replace(os.sep, "_").replace("'","") + ".png"
-        #        potential_path = os.path.join(self.output, 'fanova', combi)
-        #        if os.path.exists(potential_path):
-        #             pairwise[combi] = {"figure": potential_path}
-        #if pairwise:
-        #    self.website["Parameter Importance"]["fANOVA"]["PairwiseMarginals"] = pairwise
-        return fanova_table, single_plots
+        pairwise_plots = {}
+        for p, v in pairwise_imp:
+            p_new = p.replace('\'', '')
+            potential_path = os.path.join(self.output, 'fanova', p_new + '.png')
+            self.logger.debug("Check for %s", potential_path)
+            if os.path.exists(potential_path):
+                pairwise_plots[p] = potential_path
+        return fanova_table, single_plots, pairwise_plots
 
     def parameter_importance(self, modus, incumbent, output, num_params=4,
             num_pairs=0):

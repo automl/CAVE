@@ -340,7 +340,7 @@ class SpySMAC(object):
                 "variance), ablation and forward selection.")])
         if fanova:
             self.logger.info("fANOVA...")
-            table, plots = self.analyzer.fanova(self.incumbent, 10)
+            table, plots, pair_plots = self.analyzer.fanova(self.incumbent, 10)
 
             self.website["Parameter Importance"]["fANOVA"] = OrderedDict([
                 ("tooltip", "fANOVA stands for functional analysis of variance "
@@ -360,7 +360,11 @@ class SpySMAC(object):
             for param, plot in plots.items():
                 self.website["Parameter Importance"]["fANOVA"]["Marginals"][param] = {
                         "figure": plot}
-
+            if pair_plots:
+                self.website["Parameter Importance"]["fANOVA"]["PairwiseMarginals"] = OrderedDict([])
+                for param, plot in pair_plots.items():
+                    self.website["Parameter Importance"]["fANOVA"]["PairwiseMarginals"][param] = {
+                        "figure": plot}
         if ablation:
             self.logger.info("Ablation...")
             self.analyzer.parameter_importance("ablation", self.incumbent,
