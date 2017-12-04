@@ -384,6 +384,19 @@ class Analyzer(object):
                 pairwise_plots[p] = potential_path
         return fanova_table, single_plots, pairwise_plots
 
+    def local_epm_plots(self):
+        plots = OrderedDict([])
+        if self.importance:
+            importance = self.parameter_importance("incneighbor", self.incumbent,
+                                                   self.output, num_params=3)
+            for p, i in self.importance.items():
+                plots[p] = os.path.join(self.output, 'incneighbor', p+'.png')
+
+        else:
+            self.logger.debug("Need to run fanova first!")
+            raise ValueError()
+        return plots
+
     def parameter_importance(self, modus, incumbent, output, num_params=4,
             num_pairs=0):
         """Calculate parameter-importance using the PIMP-package.

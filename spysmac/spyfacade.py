@@ -212,7 +212,7 @@ class SpySMAC(object):
 
         # Check arguments
         for p in param_importance:
-            if p not in ['forward_selection', 'ablation', 'fanova']:
+            if p not in ['forward_selection', 'ablation', 'fanova', 'incneighbor']:
                 raise ValueError("%s not a valid option for parameter "
                                  "importance!", p)
         for f in feature_analysis:
@@ -306,7 +306,8 @@ class SpySMAC(object):
         self.parameter_importance(ablation='ablation' in param_importance,
                                   fanova='fanova' in param_importance,
                                   forward_selection='forward_selection' in
-                                                    param_importance)
+                                                    param_importance,
+                                  incneighbor='incneighbor' in param_importance)
 
         self.build_website()
 
@@ -329,7 +330,7 @@ class SpySMAC(object):
 
 
     def parameter_importance(self, ablation=False, fanova=False,
-                             forward_selection=False):
+                             forward_selection=False, incneighbor=False):
         """Perform the specified parameter importance procedures. """
         # PARAMETER IMPORTANCE
         if (ablation or forward_selection or fanova):
@@ -385,6 +386,16 @@ class SpySMAC(object):
                         "figure": f_s_barplot_path}
             self.website["Parameter Importance"]["Forward Selection (chng)"] = {
                         "figure": f_s_chng_path}
+        if incneighbor:
+            self.logger.info("Local EPM-predictions around incumbent...")
+            plots = self.analyzer.local_epm_plots()
+            self.website["Parameter Importance"]["Local EPM around incumbent"] = OrderedDict([])
+            self.logger.debug(plots)
+            for param, plot in plots.items():
+                self.website["Parameter Importance"]["Local EPM around incumbent"][param] = {
+                    "figure": plot}
+
+
 
     def feature_analysis(self, box_violin=False, correlation=False,
                          clustering=False, importance=False):

@@ -150,9 +150,10 @@ class AlgorithmFootprint(object):
             self.logger.debug(performances)
             best_performance = min(performances)
             for a in self.algorithms:
-                self.logger.debug("%f best_performance/ %f self.get_performance(a, i) %f", best_performance,
-                                    self.get_performance(a, i),
-                                    best_performance/self.get_performance(a, i))
+                self.logger.debug("%s on \'%s\': best/this (%f/%f=%f)",
+                                  self.algo_names[a], i,
+                                  best_performance, self.get_performance(a, i),
+                                  best_performance/self.get_performance(a, i))
                 if (self.get_performance(a, i) == 0 or
                     (best_performance/self.get_performance(a, i)) > epsilon):
                     # Algorithm for instance is in threshhold epsilon

@@ -43,7 +43,8 @@ Optional:
   if necessary execute the `algo`-parameter of the SMAC-scenario (DEFAULT:
   current working directory)
 - --param_importance: calculating parameter importance is expensive, so you can
-  specify which plots you desire: `ablation`, `forward_selection` and/or `fanova`.
+  specify which plots you desire: `ablation`, `forward_selection`, `fanova`
+  and/or 'incneighbor'.
   either provide a combination of those or use `all` or `none`
 - --feat_analysis: analysis features is expensive, so you can specify which
   algorithm to run: `box_violin`, `clustering`, `importance` and/or `feature_cdf`.

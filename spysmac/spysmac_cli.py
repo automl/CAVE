@@ -55,7 +55,8 @@ class SpySMACCLI(object):
         opt_opts.add_argument("--param_importance", default="all", nargs='+',
                               help="what kind of parameter importance to "
                                    "calculate", choices=["all", "ablation",
-                                   "forward_selection", "fanova", "none"])
+                                   "forward_selection", "fanova", "incneighbor",
+                                   "none"])
         opt_opts.add_argument("--feat_analysis", default="all", nargs='+',
                               help="what kind of parameter importance to "
                                    "calculate", choices=["all", "box_violin",
@@ -83,7 +84,8 @@ class SpySMACCLI(object):
                             missing_data_method=args_.validation)
         # Expand configs
         if "all" in args_.param_importance:
-            param_imp = ["ablation", "forward_selection", "fanova"]
+            param_imp = ["ablation", "forward_selection", "fanova",
+                         "incneighbor"]
         elif "none" in args_.param_importance:
             param_imp = []
         else:
