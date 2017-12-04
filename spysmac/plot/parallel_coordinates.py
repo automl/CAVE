@@ -10,6 +10,12 @@ from matplotlib import ticker
 from ConfigSpace.util import impute_inactive_values
 from ConfigSpace.hyperparameters import CategoricalHyperparameter, IntegerHyperparameter
 
+__author__ = "Joshua Marben"
+__copyright__ = "Copyright 2017, ML4AAD"
+__license__ = "3-clause BSD"
+__maintainer__ = "Joshua Marben"
+__email__ = "joshua.marben@neptun.uni-freiburg.de"
+
 class ParallelCoordinatesPlotter(object):
     def __init__(self, rh, output_dir, validator):
         """ Plotting a parallel coordinates plot, visualizing the explored PCS.
@@ -27,6 +33,21 @@ class ParallelCoordinatesPlotter(object):
         self.original_rh = rh
         self.output_dir = output_dir
         self.validator = validator
+
+    def get_alpha(self, conf, n=1):
+        """ Return alpha-value. The further the conf-performance is from best
+        performance, the smaller the alpha-value.
+
+        Parameters
+        ----------
+        conf: Configuration
+            config to compare against
+        n: int
+            the higher n, the more visible are "bad" configs
+        """
+        alpha = self.best_config_performance/self.validated_rh.get_cost(conf)
+        alpha = alpha**(1/float(n))
+        return alpha
 
     def plot_n_configs(self, num_configs, params):
         """
@@ -116,19 +137,11 @@ class ParallelCoordinatesPlotter(object):
         # Select only parameters we want to plot (specified in index)
         data = data[params]
 
-        def get_alpha(conf):
-            # Return alpha-value. The further the conf-performance is from best
-            #   performance, the smaller the alpha-value
-            alpha = self.best_config_performance/self.validated_rh.get_cost(conf)
-            # If we want to make bad configs more visible, choose appropriate n:
-            #alpha = alpha**(1/float(n))
-            return alpha
-
         # Create subplots
         fig, axes = plt.subplots(1, len(params)-1, sharey=False, figsize=(15,5))
 
         # Normalize the data for each parameter, so the displayed ranges are
-        # meaningful.
+        # meaningful. Note that the ticklabels are set to original data.
         min_max_diff = {}
         for p in params:
             # TODO enable full parameter scale
@@ -146,7 +159,7 @@ class ParallelCoordinatesPlotter(object):
         # Plot data
         for i, ax in enumerate(axes):  # Iterate over params
             for idx in data.index:  # Iterate over configs
-                alpha = get_alpha(configs[idx])
+                alpha = self.get_alpha(configs[idx])
                 ax.plot(range(len(params)), data.loc[idx, params], color='red', alpha=alpha)
             ax.set_xlim([i, i+1])
 
@@ -160,8 +173,6 @@ class ParallelCoordinatesPlotter(object):
                 num_ticks = len(hyper.choices)
                 step = 1
                 tick_labels = hyper.choices
-                #while (num_ticks/show_nth_tick > 12):
-                #    show_nth_tick += 1
                 norm_min = data[params[p]].min()
                 norm_range = np.ptp(data[params[p]])
                 norm_step = norm_range / float(num_ticks-1)
@@ -183,7 +194,7 @@ class ParallelCoordinatesPlotter(object):
             ax.yaxis.set_ticks(ticks)
             ax.set_yticklabels(tick_labels)
 
-        # TODO adjust tick-labels to int/float/categorical/unused and maybe even log?
+        # TODO adjust tick-labels to unused and maybe even log?
         for p, ax in enumerate(axes):
             ax.xaxis.set_major_locator(ticker.FixedLocator([p]))
             set_ticks_for_axis(p, ax, num_ticks=6)

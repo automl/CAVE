@@ -14,6 +14,11 @@ from smac.runhistory.runhistory import RunHistory
 
 from spysmac.utils.helpers import get_cost_dict_for_config, get_timeout
 
+__author__ = "Joshua Marben"
+__copyright__ = "Copyright 2017, ML4AAD"
+__license__ = "3-clause BSD"
+__maintainer__ = "Joshua Marben"
+__email__ = "joshua.marben@neptun.uni-freiburg.de"
 
 class AlgorithmFootprint(object):
     """ Class that provides the algorithmic footprints after
