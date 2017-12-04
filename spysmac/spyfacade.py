@@ -145,6 +145,8 @@ class SpySMAC(object):
                                  self.default, self.incumbent, self.train_test,
                                  self.scenario, self.validator, self.output)
 
+        self.builder = HTMLBuilder(self.output, "SpySMAC")
+        # Builder for html-website
         self.website = OrderedDict([])
 
     def complete_data(self, method="epm"):
@@ -197,7 +199,6 @@ class SpySMAC(object):
         fanova: bool
             whether to apply fanova
         """
-        builder = HTMLBuilder(self.output, "SpySMAC")
 
         # Check arguments
         for p in param_importance:
@@ -250,7 +251,7 @@ class SpySMAC(object):
             self.logger.info("Scatter plot desired, but no instances available.")
 
         # Build report before time-consuming analysis
-        builder.generate_html(self.website)
+        self.build_website()
 
         if algo_footprint:
             algo_footprint_plots = self.analyzer.plot_algorithm_footprint()
@@ -261,8 +262,7 @@ class SpySMAC(object):
                     "tooltip" : "Footprints as described in Smith-Miles."}
 
 
-        # Build report before time-consuming analysis
-        builder.generate_html(self.website)
+        self.build_website()
 
         ########### Configurator's behavior
         self.website["Configurator's behavior"] = OrderedDict()
@@ -281,6 +281,9 @@ class SpySMAC(object):
         elif confviz:
             self.logger.info("Configuration visualization desired, but no "
                              "instance-features available.")
+
+        self.build_website()
+
         if cost_over_time:
             cost_over_time_path = self.analyzer.plot_cost_over_time(self.best_run.traj, self.validator)
             self.website["Configurator's behavior"]["Cost over time"] = {"figure": cost_over_time_path,
@@ -288,10 +291,14 @@ class SpySMAC(object):
                                "time. The cost is estimated using an EPM that "
                                "is based on the actual runs."}
 
+        self.build_website()
+
         self.parameter_importance(ablation='ablation' in param_importance,
                                   fanova='fanova' in param_importance,
                                   forward_selection='forward_selection' in
                                                     param_importance)
+
+        self.build_website()
 
         if parallel_coordinates:
             # Should be after parameter importance, if performed.
@@ -302,12 +309,13 @@ class SpySMAC(object):
                          "figure" : parallel_path,
                          "tooltip": "Plot explored range of most important parameters."}
 
+        self.build_website()
+
         self.feature_analysis(box_violin='box_violin' in feature_analysis,
                               correlation='correlation' in feature_analysis,
                               clustering='clustering' in feature_analysis,
                               importance='importance' in feature_analysis)
 
-        builder.generate_html(self.website)
 
     def parameter_importance(self, ablation=False, fanova=False,
                              forward_selection=False):
@@ -423,6 +431,15 @@ class SpySMAC(object):
         #    importance_plot = fa.feature_importance()
         #    self.website["Feature Analysis"]["Feature importance"] = {"tooltip": "Using the approach of SATZilla'11, we train a cost-sensitive random forest for each pair of algorithms and average the feature importance (using gini as splitting criterion) across all forests. We show the median, 25th and 75th percentiles across all random forests of the 15 most important features.",
         #                                                      "figure": importance_plot}
+
+        # cluster instances in feature space
+        if clustering:
+            cluster_plot = fa.cluster_instances()
+            self.website["Feature Analysis"]["Clustering"] = {"tooltip": "Clustering instances in 2d; the color encodes the cluster assigned to each cluster. Similar to ISAC, we use a k-means to cluster the instances in the feature space. As pre-processing, we use standard scaling and a PCA to 2 dimensions. To guess the number of clusters, we use the silhouette score on the range of 2 to 12 in the number of clusters",
+                                                      "figure": cluster_plot}
+
+        self.build_website()
+
         imp = self.analyzer.feature_importance()
         imp = DataFrame(data=list(imp.values()), index=list(imp.keys()),
                 columns=["Error"])
@@ -431,17 +448,11 @@ class SpySMAC(object):
             self.website["Feature Analysis"]["Feature importance"] = {"tooltip":
                          "Feature importance calculated using forward selection.",
                                                             "table": imp}
-
-        # cluster instances in feature space
-        if clustering:
-            cluster_plot = fa.cluster_instances()
-            self.website["Feature Analysis"]["Clustering"] = {"tooltip": "Clustering instances in 2d; the color encodes the cluster assigned to each cluster. Similar to ISAC, we use a k-means to cluster the instances in the feature space. As pre-processing, we use standard scaling and a PCA to 2 dimensions. To guess the number of clusters, we use the silhouette score on the range of 2 to 12 in the number of clusters",
-                                                      "figure": cluster_plot}
-
         ## get cdf plot
         #if "feature_cdf" in feature_analysis:
         #    cdf_plot = fa.get_feature_cost_cdf_plot()
         #    self.website["Feature Analysis"]["CDF plot on feature costs"] = {"tooltip": "Cumulative Distribution function (CDF) plots. At each point x (e.g., running time cutoff), for how many of the instances (in percentage) have we computed the instance features. Faster feature computation steps have a higher curve. Missing values are imputed with the maximal value (or running time cutoff).",
         #                                                             "figure": cdf_plot}
 
-
+    def build_website(self):
+        self.builder.generate_html(self.website)
