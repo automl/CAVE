@@ -11,7 +11,7 @@ from smac.utils.util_funcs import get_types
 
 class FeatureForwardSelector():
 
-    def __init__(self, scenario, runhistory, to_evaluate: int=4):
+    def __init__(self, scenario, runhistory, to_evaluate: int=3):
         """
         Constructor
         :parameter:
