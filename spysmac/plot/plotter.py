@@ -351,6 +351,7 @@ class Plotter(object):
             if not (run.config in costs_per_config):
                 costs_per_config[run.config] = []
             costs_per_config[run.config].append((p, v))
+
         # Average over instances, simple mean for mean and
         #   sum(variances)/n^2 for variances
         for config, costs in costs_per_config.items():
@@ -375,8 +376,7 @@ class Plotter(object):
         ax.legend()
         ax.fill_between(time, uncertainty_upper, uncertainty_lower)
         ax.set_xscale("log", nonposx='clip')
-        # Set y-limits in case that traj_costs are very high and ruin the plot
-        ax.set_ylim(0, max(costs)+max(costs)*0.1)
+        ax.set_ylim(0, max(costs)*1.2)
 
         plt.title("Performance over time.")
 

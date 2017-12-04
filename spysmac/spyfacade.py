@@ -60,7 +60,11 @@ class SpySMAC(object):
         report-page easily. During initialization, the analysis-infrastructure
         is built and the data is validated, meaning the overall best
         incumbent is found and default+incumbent are evaluated for all
-        instances, by default using an EPM.
+        instances for all runs, by default using an EPM.
+        The class holds two runhistories:
+            self.original_rh -> only contains runs from the actual data
+            self.validated_rh -> contains original runs and epm-predictions for
+                                 all incumbents
         The analyze()-method performs an analysis and outputs a report.html.
 
         Arguments
@@ -182,22 +186,28 @@ class SpySMAC(object):
         """Analyze the available data and build HTML-webpage as dict.
         Save webpage in 'self.output/SpySMAC/report.html'.
         Analyzing is performed with the analyzer-instance that is initialized in
-        the __init__, same with plotting and plotter-instance..
+        the __init__
 
         Parameters
         ----------
-        par10: bool
+        performance: bool
             whether to calculate par10-values
         cdf: bool
             whether to plot cdf
         scatter: bool
             whether to plot scatter
-        forward_selection: bool
-            whether to apply forward selection
-        ablation: bool
-            whether to apply ablation
-        fanova: bool
-            whether to apply fanova
+        confviz: bool
+            whether to perform configuration visualization
+        param_importance: List[str]
+            containing methods for parameter importance
+        feature_analysis: List[str]
+            containing methods for feature analysis
+        parallel_coordinates: bool
+            whether to plot parallel coordinates
+        cost_over_time: bool
+            whether to plot cost over time
+        algo_footprint: bool
+            whether to plot algorithm footprints
         """
 
         # Check arguments

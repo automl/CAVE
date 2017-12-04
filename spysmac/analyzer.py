@@ -75,7 +75,6 @@ class Analyzer(object):
         self.validator = validator
         self.output = output
 
-        # TODO for ablation and forward selection inject in self.imp(?)
         self.importance = None  # Used to store dictionary containing parameter
                                 # importances, so it can be used by analysis
 
@@ -91,7 +90,13 @@ class Analyzer(object):
         Parameters
         ----------
         config: Configuration
-            configuration from which to calculate the timeouts"""
+            configuration from which to calculate the timeouts
+
+        Returns
+        -------
+        timeouts: tuple(int, int)
+            tuple (timeouts, total runs)
+        """
         cutoff = self.scenario.cutoff
         timeouts = get_timeout(self.validated_rh, config, cutoff)
         if self.train_test:
@@ -99,12 +104,8 @@ class Analyzer(object):
                 return (("N","A"),("N","A"))
             train_timeout = len([i for i in timeouts if (timeouts[i] == False
                                   and i in self.scenario.train_insts)])
-            #train_no_timeout = len([i for i in timeouts if (timeouts[i] == True
-            #                      and i in self.scenario.train_insts)])
             test_timeout = len([i for i in timeouts if (timeouts[i] == False
                                   and i in self.scenario.test_insts)])
-            #test_no_timeout = len([i for i in timeouts if (timeouts[i] == True
-            #                      and i in self.scenario.test_insts)])
             return ((train_timeout, len(self.scenario.train_insts)),
                     (test_timeout, len(self.scenario.test_insts)))
         else:
@@ -372,7 +373,7 @@ class Analyzer(object):
         single_plots = {}
         for p, v in parameter_imp:
             single_plots[p] = os.path.join(self.output, "fanova", p+'.png')
-        # Check for pairwise plots (untested and hacky TODO)
+        # Check for pairwise plots
         # Right now no way to access paths of the plots -> file issue
         #pairwise = OrderedDict([])
         #for p1 in params.keys():
