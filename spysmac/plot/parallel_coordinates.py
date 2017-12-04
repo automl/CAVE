@@ -117,8 +117,11 @@ class ParallelCoordinatesPlotter(object):
         data = data[params]
 
         def get_alpha(conf):
+            # Return alpha-value. The further the conf-performance is from best
+            #   performance, the smaller the alpha-value
             alpha = self.best_config_performance/self.validated_rh.get_cost(conf)
-            # alpha = alpha**(1/float(2))
+            # If we want to make bad configs more visible, choose appropriate n:
+            #alpha = alpha**(1/float(n))
             return alpha
 
         # Create subplots
