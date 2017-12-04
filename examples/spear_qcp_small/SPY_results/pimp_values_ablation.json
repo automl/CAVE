@@ -3,34 +3,34 @@
         "imp": {
             "-source-": 0,
             "-target-": 0,
-            "sp-learned-clause-sort-heur": 0.06752443481680323,
-            "sp-orig-clause-sort-heur": 0.306006631772565,
-            "sp-var-activity-inc": 0.0001901707983589545,
-            "sp-var-dec-heur": 0.6260046347215558
+            "sp-learned-clause-sort-heur": 0.0003745657817428239,
+            "sp-orig-clause-sort-heur": 0.3456821835590363,
+            "sp-rand-var-dec-freq": 0.0003564421697126173,
+            "sp-var-dec-heur": 0.653316193368128
         },
         "order": [
             "-source-",
             "sp-var-dec-heur",
             "sp-orig-clause-sort-heur",
+            "sp-rand-var-dec-freq",
             "sp-learned-clause-sort-heur",
-            "sp-var-activity-inc",
             "-target-"
         ],
         "perf": {
-            "-source-": 9.797768615343061,
-            "-target-": 0.0165062330952381,
-            "sp-learned-clause-sort-heur": 0.021047660396825405,
-            "sp-orig-clause-sort-heur": 0.681521874552968,
-            "sp-var-activity-inc": 0.019187549920634928,
-            "sp-var-dec-heur": 3.674653030628319
+            "-source-": 12.450593250053618,
+            "-target-": 0.016490920714285717,
+            "sp-learned-clause-sort-heur": 0.01985577682539683,
+            "sp-orig-clause-sort-heur": 0.028945204497354503,
+            "sp-rand-var-dec-freq": 0.024513166084656084,
+            "sp-var-dec-heur": 4.327192848299874
         },
         "var": {
-            "-source-": 47.969827022808815,
+            "-source-": 57.90367592165873,
             "-target-": 1e-05,
-            "sp-learned-clause-sort-heur": 1.2957936160228647e-05,
-            "sp-orig-clause-sort-heur": 3.688080846128334,
-            "sp-var-activity-inc": 1e-05,
-            "sp-var-dec-heur": 19.106867137406404
+            "sp-learned-clause-sort-heur": 2.564641080263794e-05,
+            "sp-orig-clause-sort-heur": 4.767753469686529e-05,
+            "sp-rand-var-dec-freq": 2.9427979740844878e-05,
+            "sp-var-dec-heur": 22.805446886800585
         }
     }
 }
