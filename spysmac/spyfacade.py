@@ -27,7 +27,7 @@ from spysmac.smacrun import SMACrun
 from spysmac.analyzer import Analyzer
 from spysmac.utils.helpers import get_cost_dict_for_config
 
-from spysmac.asapy.feature_analysis import FeatureAnalysis
+from spysmac.feature_analysis.feature_analysis import FeatureAnalysis
 from spysmac.plot.algorithm_footprint import AlgorithmFootprint
 
 __author__ = "Joshua Marben"
@@ -315,6 +315,7 @@ class SpySMAC(object):
                               correlation='correlation' in feature_analysis,
                               clustering='clustering' in feature_analysis,
                               importance='importance' in feature_analysis)
+        self.build_website()
 
 
     def parameter_importance(self, ablation=False, fanova=False,
@@ -379,7 +380,7 @@ class SpySMAC(object):
 
         # FEATURE ANALYSIS (ASAPY)
         # TODO make the following line prettier
-        # TODO save feature-names in smac
+        # TODO feat-names from scenario?
         in_reader = InputReader()
         feat_fn = self.scenario.feature_fn
         with changedir(self.ta_exec_dir):
@@ -407,30 +408,11 @@ class SpySMAC(object):
                 self.website["Feature Analysis"]["Violin and box plots"][
                     key] = {"figure": plot_tuple[1]}
 
-
-        # TODO: status_bar without scenario?
-        #if "status_bar" in feature_analysis:
-        #    status_plot = fa.get_bar_status_plot()
-        #    self.website["Feature Analysis"]["Status Bar Plot"] = OrderedDict({
-        #        "tooltip": "Stacked bar plots for runstatus of each feature groupe",
-        #        "figure": status_plot})
-
         # correlation plot
         if correlation:
             correlation_plot = fa.correlation_plot()
             self.website["Feature Analysis"]["Correlation plot"] = {"tooltip": "Correlation based on Pearson product-moment correlation coefficients between all features and clustered with Wards hierarchical clustering approach. Darker fields corresponds to a larger correlation between the features.",
                                                             "figure": correlation_plot}
-        # TODO
-        #  File "/home/shuki/SpySMAC/spysmac/asapy/feature_analysis.py", line 197, in feature_importance
-        #    pc.fit(scenario=self.scenario, config=config)
-        #  File "/home/shuki/virtual-environments/spysmac/lib/python3.5/site-packages/autofolio/selector/pairwise_classification.py", line 66, in fit
-        #    self.algorithms = scenario.algorithms
-        #AttributeError: 'Scenario' object has no attribute 'algorithms'
-        # feature importance
-        #if "feat_importance" in feature_analysis:
-        #    importance_plot = fa.feature_importance()
-        #    self.website["Feature Analysis"]["Feature importance"] = {"tooltip": "Using the approach of SATZilla'11, we train a cost-sensitive random forest for each pair of algorithms and average the feature importance (using gini as splitting criterion) across all forests. We show the median, 25th and 75th percentiles across all random forests of the 15 most important features.",
-        #                                                      "figure": importance_plot}
 
         # cluster instances in feature space
         if clustering:
@@ -448,11 +430,6 @@ class SpySMAC(object):
             self.website["Feature Analysis"]["Feature importance"] = {"tooltip":
                          "Feature importance calculated using forward selection.",
                                                             "table": imp}
-        ## get cdf plot
-        #if "feature_cdf" in feature_analysis:
-        #    cdf_plot = fa.get_feature_cost_cdf_plot()
-        #    self.website["Feature Analysis"]["CDF plot on feature costs"] = {"tooltip": "Cumulative Distribution function (CDF) plots. At each point x (e.g., running time cutoff), for how many of the instances (in percentage) have we computed the instance features. Faster feature computation steps have a higher curve. Missing values are imputed with the maximal value (or running time cutoff).",
-        #                                                             "figure": cdf_plot}
 
     def build_website(self):
         self.builder.generate_html(self.website)

@@ -65,8 +65,7 @@ class ParallelCoordinatesPlotter(object):
         configs_to_plot = sorted(all_configs, key=lambda x:
                                  len(self.original_rh.get_runs_for_config(x)),
                                  reverse=True)[:num_configs]
-        self.logger.debug(num_configs)
-        self.logger.debug(configs_to_plot)
+        self.logger.debug("Plotting %d configs.", num_configs)
         self.validated_rh = self.validator.validate_epm(configs_to_plot,
                                                         'train+test', 1,
                                                         runhistory=self.original_rh)

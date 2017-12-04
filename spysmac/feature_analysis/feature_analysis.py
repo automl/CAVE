@@ -20,12 +20,6 @@ import matplotlib.pyplot as plt
 
 from plottingscripts.plotting.scatter import plot_scatter_plot
 
-from aslib_scenario.aslib_scenario import ASlibScenario
-from autofolio.selector.pairwise_classification import PairwiseClassifier
-from autofolio.selector.classifiers.random_forest import RandomForest
-
-from spysmac.asapy.utils.util_funcs import get_cdf_x_y
-
 __author__ = "Marius Lindauer"
 __copyright__ = "Copyright 2016, ML4AAD"
 __license__ = "MIT"
@@ -39,15 +33,19 @@ class FeatureAnalysis(object):
                  scenario,
                  feat_names):
         '''
-        Constructor
+        From: https://github.com/mlindauer/asapy
+
+
         Arguments
         ---------
-        output_dn:str
+        output_dn: str
             output directory name
+        scenario: Scenario
+            scenario for features
         '''
         self.logger = logging.getLogger("Feature Analysis")
         self.scenario = scenario
-        self.feat_names = feat_names
+        self.feat_names = scenario.feature_names
         self.feature_data = {}
         for name in feat_names:
             insts = self.scenario.train_insts
@@ -175,56 +173,6 @@ class FeatureAnalysis(object):
 
         return out_plot
 
-    def feature_importance(self):
-        '''
-            train pairwise random forests and average the feature importance from all trees
-        '''
-        matplotlib.pyplot.close()
-        self.logger.info("Plotting feature importance........")
-        self.feature_data = self.feature_data.fillna(
-            self.feature_data.mean())
-
-        pc = PairwiseClassifier(classifier_class=RandomForest)
-        config = {}
-        config["rf:n_estimators"] = 100
-        config["rf:max_features"] = "auto"
-        config["rf:criterion"] = "gini"
-        config["rf:max_depth"] = None
-        config["rf:min_samples_split"] = 2
-        config["rf:min_samples_leaf"] = 1
-        config["rf:bootstrap"] = True
-        pc.fit(scenario=self.scenario, config=config)
-
-        importances = [
-            rf.model.feature_importances_ for rf in pc.classifiers if np.isnan(rf.model.feature_importances_).sum() == 0]
-        median_importance = np.median(importances, axis=0)
-        q25 = np.percentile(importances, 0.25, axis=0)
-        q75 = np.percentile(importances, 0.75, axis=0)
-
-        feature_names = np.array(self.feature_data.columns)
-
-        # sort features by average importance and look only at the first 15
-        # features
-        N_FEAT = min(feature_names.shape[0], 15)
-        indices = np.argsort(median_importance)[::-1]
-        median_importance = median_importance[indices][:N_FEAT]
-        q25 = q25[indices][:N_FEAT]
-        q75 = q75[indices][:N_FEAT]
-        feature_names = feature_names[indices[:N_FEAT]]
-
-        plt.figure()
-        # only the first 10 most important features
-        plt.bar(range(N_FEAT), median_importance,
-                color="r", yerr=[q25, q75], align="center")
-
-        plt.xlim([-1, N_FEAT])
-        plt.xticks(range(N_FEAT), feature_names, rotation=40, ha='right')
-        plt.tight_layout()
-        out_fn = os.path.join(self.output_dn, "feature_importance.png")
-        plt.savefig(out_fn, format="png")
-
-        return out_fn
-
     def cluster_instances(self):
         '''
             use pca to reduce feature dimensions to 2 and cluster instances using k-means afterwards
@@ -268,96 +216,4 @@ class FeatureAnalysis(object):
         out_fn = os.path.join(self.output_dn, "feature_clusters.png")
         plt.savefig(out_fn, format="png")
 
-        return out_fn
-
-    def get_bar_status_plot(self):
-        '''
-            get status distribution as stacked bar plot
-        '''
-        matplotlib.pyplot.close()
-        self.logger.info("Plotting bar plots........")
-        runstatus_data = self.scenario.feature_runstatus_data
-
-        width = 0.5
-        stati = ["ok", "timeout", "memout",
-                 "presolved", "crash", "other", "unknown"]
-
-        count_stats = np.array(
-            [runstatus_data[runstatus_data == status].count().values for status in stati])
-        count_stats = count_stats / (len(self.scenario.train_insts)+len(self.scenario.test_insts))
-
-        colormap = plt.cm.gist_ncar
-        cc = [colormap(i) for i in np.linspace(0, 0.9, len(stati))]
-
-        bottom = np.zeros((len(runstatus_data.columns)))
-        ind = np.arange(len(runstatus_data.columns)) + 0.5
-        plots = []
-        for id, status in enumerate(stati):
-            plots.append(
-                plt.bar(ind, count_stats[id, :], width, color=cc[id], bottom=bottom))
-            bottom += count_stats[id, :]
-
-        plt.ylabel('Frequency of runstatus')
-        plt.xticks(
-            ind + width / 2., list(runstatus_data.columns), rotation=45, ha="right")
-        lgd = plt.legend(list(map(lambda x: x[0], plots)), stati, bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
-                         ncol=3, mode="expand", borderaxespad=0.)
-
-        plt.tight_layout()
-        out_fn = os.path.join(self.output_dn, "status_bar_plot.png")
-        plt.savefig(out_fn, bbox_extra_artists=(lgd,), bbox_inches='tight')
-
-        return out_fn
-
-    def get_feature_cost_cdf_plot(self):
-        '''
-            get cdf for feature costs
-        '''
-
-        matplotlib.pyplot.close()
-        self.logger.info("Plotting feature cost cdfs plots........")
-
-        if self.scenario.feature_cost_data is None:
-            raise("Feature cost not provided")
-
-        from cycler import cycler
-
-        gs = matplotlib.gridspec.GridSpec(1, 1)
-
-        fig = plt.figure()
-        ax1 = plt.subplot(gs[0:1, :])
-
-        colormap = plt.cm.gist_ncar
-        fig.gca().set_prop_cycle(cycler('color', [
-            colormap(i) for i in np.linspace(0, 0.9, len(self.scenario.algorithms))]))
-
-        if self.scenario.features_cutoff_time:
-            max_val = self.scenario.features_cutoff_time
-        else:
-            max_val = self.scenario.feature_cost_data.max().max()
-
-        self.scenario.feature_cost_data[
-            self.scenario.feature_cost_data == 0] = max_val
-
-        min_val = max(0.0005, self.scenario.feature_cost_data.min().min())
-
-        for step in self.scenario.feature_steps:
-            x, y = get_cdf_x_y(self.scenario.feature_cost_data[step], max_val)
-            ax1.step(x, y, label=step)
-
-        ax1.grid(
-            True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
-        ax1.set_xlabel("Cost")
-        ax1.set_ylabel("P(x<X)")
-        ax1.set_xlim([min_val, max_val])
-        ax1.set_xscale('log')
-
-        #ax1.legend(loc='lower right')
-        ax1.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-
-        out_fn = os.path.join(self.output_dn, "cdf_plot.png")
-
-        plt.savefig(out_fn, facecolor='w', edgecolor='w',
-                    orientation='portrait', papertype=None, format=None,
-                    transparent=False, pad_inches=0.02, bbox_inches='tight')
         return out_fn

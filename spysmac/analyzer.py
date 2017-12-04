@@ -21,9 +21,8 @@ from smac.utils.validate import Validator
 
 from pimp.importance.importance import Importance
 
-from spysmac.asapy.feature_analysis import FeatureAnalysis
-
-from spysmac.feature_imp import FeatureForwardSelector
+from spysmac.feature_analysis.feature_analysis import FeatureAnalysis
+from spysmac.feature_analysis.feature_imp import FeatureForwardSelector
 from spysmac.html.html_builder import HTMLBuilder
 from spysmac.plot.plotter import Plotter
 from spysmac.plot.algorithm_footprint import AlgorithmFootprint
