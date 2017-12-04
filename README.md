@@ -48,6 +48,9 @@ Optional:
 - --feat_analysis: analysis features is expensive, so you can specify which
   algorithm to run: `box_violin`, `clustering`, `importance` and/or `feature_cdf`.
   either provide a combination of those or use `all` or `none`
+- --cost_over_time: 'true' or 'false', toggles the cost-over-time plot
+- --parallel_coordinates: 'true' or 'false', toggles the parallel-coordinates plot
+- --confviz: 'true' or 'false', toggles the congi visualization
 
 For further information on how to use SpySMAC, see:
 `python scripts/spy.py -h`

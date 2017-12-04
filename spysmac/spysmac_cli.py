@@ -61,6 +61,15 @@ class SpySMACCLI(object):
                                    "calculate", choices=["all", "box_violin",
                                    "correlation", "clustering", "importance",
                                    "none"])
+        opt_opts.add_argument("--cost_over_time", default="true",
+                              choices=["true", "false"],
+                              help="whether to plot cost over time.")
+        opt_opts.add_argument("--confviz", default="true",
+                              choices=["true", "false"],
+                              help="whether to visualize configs.")
+        opt_opts.add_argument("--parallel_coordinates", default="true",
+                              choices=["true", "false"],
+                              help="whether to plot parallel coordinates.")
 
         args_, misc = parser.parse_known_args()
 
@@ -90,8 +99,10 @@ class SpySMACCLI(object):
 
         # Analyze
         #spySMAC.analyze(performance=False, cdf=False, scatter=False, confviz=False,
-        spySMAC.analyze(performance=True, cdf=True, scatter=True, confviz=True,
-                        parallel_coordinates=True, cost_over_time=True,
+        spySMAC.analyze(performance=True, cdf=True, scatter=True,
+                        confviz=args_.confviz == "true",
+                        parallel_coordinates=args_.parallel_coordinates == "true",
+                        cost_over_time=args_.cost_over_time == "true",
                         algo_footprint=True,
                         param_importance=param_imp,
                         feature_analysis=feature_analysis)
