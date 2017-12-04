@@ -15,11 +15,13 @@ SpySMAC is an analyzing tool that builds on SMAC3 (https://github.com/automl/SMA
 Please refer to LICENSE (https://github.com/automl/SpySMAC/blob/master/LICENSE)
 
 # OVERVIEW 
-SpySMAC is an analyzing tool. It is written in Python 3.4 and uses SMAC3. SpySMAC generates performance-values (e.g. PAR10), scatter- and cdf-plots to compare the default and the optimized incumbent and providing further inside into the optimization process by quantifying the parameter importance.
+SpySMAC is an analyzing tool. It is written in Python 3.6 and uses SMAC3. SpySMAC generates performance-values (e.g. PAR10), scatter- and cdf-plots to compare the default and the optimized incumbent and providing further inside into the optimization process by quantifying the parameter importance.
 
 # REQUIREMENTS
-- Python 3.4
+- Python 3.5
 - SMAC3 and all its dependencies
+- ParameterImportance and all its dependencies
+- everything specified in requirements.txt
 
 # INSTALLATION
 Clone the repository and install requirements into your virtual environment.
@@ -29,23 +31,22 @@ pip install -r requirements.txt
 ```
 
 # USAGE
-To run SpySMAC, change into a directory from which the target algorithm can be executed. This is necessary to impute any data via SMACs validation.
 You can analyze multiple folders (using the same scenario) with one execution, simply provide the paths to all the SMAC3-results in `--folders`.
 
 Commandline arguments:
 - --folders: path(s) to folder(s) containing the SMAC3-output
 
 Optional:
-- --validation: how to validate missing runs on config/inst-pairs
 - --output: where to save the SpySMAC-output
 - --ta_exec_dir: target algorithm execution directory, this should be a path to
-  the directory from which SMAC was run initially. used to find instances and
-  execute the `algo`-parameter of the SMAC-scenario
+  the directory from which SMAC was run initially. used to find instance-files and
+  if necessary execute the `algo`-parameter of the SMAC-scenario (DEFAULT:
+  current working directory)
 - --param_importance: calculating parameter importance is expensive, so you can
   specify which plots you desire: `ablation`, `forward_selection` and/or `fanova`.
   either provide a combination of those or use `all` or `none`
 - --feat_analysis: analysis features is expensive, so you can specify which
-  algorithm to run: `box_violin`, `clustering` and/or `feature_cdf`.
+  algorithm to run: `box_violin`, `clustering`, `importance` and/or `feature_cdf`.
   either provide a combination of those or use `all` or `none`
 
 For further information on how to use SpySMAC, see:
@@ -54,8 +55,7 @@ For further information on how to use SpySMAC, see:
 # EXAMPLE
 You can run the spear-qcp example like this:
 ```
-cd examples/spear_qcp_small
-python ../../scripts/spy.py --folders example_output_* --output SPY_results
+python scripts/spy.py --folders examples/spear_qcp_small/example_output_* --verbose DEBUG --ta_exec examples/spear_qcp_small/ --out results_saved_here/
 ```
-This will analyze the results located in `example_output_1`, `example_output_2` and `example_output_3`.
-The report is located in `SPY_results/report.html`.
+This will analyze the results located in `examples/spear_qcp_small` in the dirs `example_output_1`, `example_output_2` and `example_output_3`.
+The report is located in `results_saved_here/report.html`.
