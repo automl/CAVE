@@ -16,10 +16,10 @@ from spysmac.spyfacade import SpySMAC
 from spysmac.plot.plotter import Plotter
 
 
-class TestFacade(unittest.TestCase):
+class TestAnalyzer(unittest.TestCase):
 
     def setUp(self):
-        self.output = "test/test_files/facade_output"
+        self.output = "test/test_files/test_output/"
         shutil.rmtree(self.output, ignore_errors=True)
         self.spysmac = SpySMAC(["examples/spear_qcp_small/example_output_1",
                                 "examples/spear_qcp_small/example_output_2",
@@ -27,17 +27,20 @@ class TestFacade(unittest.TestCase):
                                output=self.output,
                                missing_data_method="epm",
                                ta_exec_dir="examples/spear_qcp_small")
+        self.analyzer = self.spysmac.analyzer
 
-    def test_par10(self):
-        self.spysmac.analyze(performance=True, cdf=False, scatter=False,
-                             param_importance=[], feature_analysis=[])
-        #self.assertEqual(len(self.spysmac.website["Performance"]["table"]), 831)
+    def test_confviz(self):
+        """ testing configuration visualization """
+        self.analyzer.plot_confviz(incumbents=[self.analyzer.incumbent])
 
-    def test_plot(self):
-        self.spysmac.analyze(performance=False, cdf=True, scatter=True,
-                             param_importance=[], feature_analysis=[])
+    def test_fanova(self):
+        """ testing configuration visualization """
+        self.analyzer.fanova(incumbent=self.analyzer.incumbent)
 
-    def test_nonexisting_folder(self):
-        self.assertRaises(ValueError, SpySMAC, ["examples/spear_qcp_small/nonsense"],
-                          self.output)
+    def test_feature_forward_selection(self):
+        """ testing feature importance """
+        self.analyzer.feature_importance()
 
+    def test_algorithm_footprints(self):
+        """ testing algorithm footprints """
+        self.analyzer.plot_algorithm_footprint()

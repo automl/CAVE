@@ -11,7 +11,7 @@ from smac.runhistory.runhistory2epm import RunHistory2EPM4LogCost, RunHistory2EP
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.epm.rfr_imputator import RFRImputator
 
-from ConfigSpace.io import pcs
+from ConfigSpace.read_and_write import pcs
 from ConfigSpace.hyperparameters import CategoricalHyperparameter, \
     UniformFloatHyperparameter, UniformIntegerHyperparameter, Constant
 
@@ -19,14 +19,14 @@ from ConfigSpace.hyperparameters import CategoricalHyperparameter, \
 def convert_data(scenario:Scenario, runhistory:RunHistory):
     '''
         converts data from runhistory into EPM format
-        
+
         Parameters
         ----------
         scenario: Scenario
-            smac.scenario.scenario.Scenario Object 
+            smac.scenario.scenario.Scenario Object
         runhistory: RunHistory
             smac.runhistory.runhistory.RunHistory Object with all necessary data
-            
+
         Returns
         -------
         np.array
@@ -36,7 +36,7 @@ def convert_data(scenario:Scenario, runhistory:RunHistory):
         np.array
             types of X cols -- necessary to train our RF implementation
     '''
-    
+
     types = np.zeros(len(scenario.cs.get_hyperparameters()),
                          dtype=np.uint)
 
@@ -51,8 +51,7 @@ def convert_data(scenario:Scenario, runhistory:RunHistory):
 
     types = np.array(types, dtype=np.uint)
 
-    model = RandomForestWithInstances(types,
-                                           scenario.feature_array)
+    model = RandomForestWithInstances(types, scenario.feature_array)
 
     params = scenario.cs.get_hyperparameters()
     num_params = len(params)
@@ -91,5 +90,5 @@ def convert_data(scenario:Scenario, runhistory:RunHistory):
                                      impute_censored_data=False,
                                      impute_state=None)
     X, Y = rh2EPM.transform(runhistory)
-    
+
     return X, Y, types

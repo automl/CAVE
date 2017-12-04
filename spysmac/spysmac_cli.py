@@ -59,7 +59,9 @@ class SpySMACCLI(object):
         opt_opts.add_argument("--feat_analysis", default="all", nargs='+',
                               help="what kind of parameter importance to "
                                    "calculate", choices=["all", "box_violin",
-                                   "correlation", "clustering", "none"])
+                                   "correlation", "clustering", "importance",
+                                   "none"])
+
         args_, misc = parser.parse_known_args()
 
         if args_.verbose_level == "INFO":
@@ -79,7 +81,7 @@ class SpySMACCLI(object):
             param_imp = args_.param_importance
 
         if "all" in args_.feat_analysis:
-            feature_analysis=["box_violin", "correlation", "feat_importance",
+            feature_analysis=["box_violin", "correlation", "importance",
                               "clustering", "feature_cdf"]
         elif "none" in args_.feat_analysis:
             feature_analysis=[]
@@ -87,8 +89,9 @@ class SpySMACCLI(object):
             feature_analysis = args_.feat_analysis
 
         # Analyze
+        #spySMAC.analyze(performance=False, cdf=False, scatter=False, confviz=False,
         spySMAC.analyze(performance=True, cdf=True, scatter=True, confviz=True,
+                        parallel_coordinates=True, cost_over_time=True,
+                        algo_footprint=True,
                         param_importance=param_imp,
                         feature_analysis=feature_analysis)
-        #spySMAC.analyze(performance=False, cdf=False, scatter=False, confviz=False,
-        #                param_importance=[], feature_analysis=[])

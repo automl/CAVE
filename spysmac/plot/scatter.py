@@ -118,14 +118,15 @@ def plot_scatter_plot(x_data, y_data, labels, title="", debug=False,
         auto_max_val = max([x_max, y_max])
 
     # Set up figure
-    fig = plt.figure(1, dpi=dpi)
     if len(x_data) > 1:
+        fig = plt.figure(1, dpi=dpi, figsize=(10,5))
         ax1 = fig.add_subplot(1,2,1, adjustable='box', aspect=1)
         ax2 = fig.add_subplot(1,2,2, adjustable='box', aspect=1)
-        ax1.set_title("Training - SpySMAC Scatter")
-        ax2.set_title("Test - SpySMAC Scatter")
+        ax1.set_title("Training - Scatter")
+        ax2.set_title("Test - Scatter")
         axes = [ax1, ax2]
     else:
+        fig = plt.figure(1, dpi=dpi, figsize=(10,10))
         ax1 = fig.add_subplot(1,1,1, adjustable='box', aspect=1)
         axes = [ax1]
 
