@@ -421,11 +421,10 @@ class Analyzer(object):
                                 parameters_to_evaluate=num_params,
                                 save_folder=save_folder,
                                 seed=12345)
+        self.logger.debug("Imp modus: %s", modus)
         #if modus == "fanova":
         #    importance.evaluator.n_most_imp_pairs = 0
-        result = importance.evaluate_scenario(modus)
-        with open(os.path.join(save_folder, 'pimp_values_%s.json' % modus), 'w') as out_file:
-            json.dump(result, out_file, sort_keys=True, indent=4, separators=(',', ': '))
+        result = importance.evaluate_scenario([modus])
         importance.plot_results(name=os.path.join(save_folder, modus), show=False)
         return importance
 
