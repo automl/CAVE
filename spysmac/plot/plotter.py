@@ -282,10 +282,6 @@ class Plotter(object):
         self.logger.info("Estimating costs over time for best run.")
         validator.traj = traj  # set trajectory
         time, configs = [], []
-        if (np.isfinite(self.scenario.wallclock_limit)):
-            max_time = self.scenario.wallclock_limit
-        else:
-            max_time = traj[-1][mode]
 
         for entry in traj:
             time.append(entry["wallclock_time"])
@@ -325,7 +321,7 @@ class Plotter(object):
         #     backup_features_epm = epm.instance_features
         #     epm.instance_features = np.array(feat_array)
         #=======================================================================
-            
+
         # predict performance for all configurations in trajectory
         config_array = convert_configurations_to_array(configs)
         mean, var = epm.predict_marginalized_over_instances(config_array)
@@ -335,12 +331,12 @@ class Plotter(object):
         # if self.scenario.feature_dict:
         #     epm.instance_features = backup_features_epm
         #=======================================================================
-        
+
         mean = mean[:,0]
         var = var[:,0]
         uncertainty_upper = mean+np.sqrt(var)
         uncertainty_lower = mean-np.sqrt(var)
-        
+
         # plot
         fig = plt.figure()
         ax = fig.add_subplot(111)
@@ -349,7 +345,7 @@ class Plotter(object):
         ax.legend()
         ax.fill_between(time, uncertainty_upper, uncertainty_lower,alpha=0.8)
         ax.set_xscale("log", nonposx='clip')
-        
+
         ax.set_ylim(min(mean)*0.8, max(mean)*1.2)
         # start after 1% of the configuration budget
         ax.set_xlim(min(time)+(max(time) - min(time))*0.01, max(time))
