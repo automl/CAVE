@@ -186,13 +186,13 @@ class AlgorithmFootprint(object):
                                 self.algo_names[a]+'.png')
             #                    '_'.join([self.algo_names[a], 'all.png']))
             outpaths.append(self._plot_points(a, path))
-        return outpaths
 
             # Plot per cluster
             for c in self.cluster_dict.keys():
                 path = os.path.join(self.output,
                                     '_'.join([self.algo_names[a], str(c)+'.png']))
-                outpaths.append(self._plot_points(a, path, self.cluster_dict[c]))
+                path = self._plot_points(a, path, self.cluster_dict[c])
+                #outpaths.append(path)
         return outpaths
 
     def _plot_points(self, conf, out, insts=[]):
