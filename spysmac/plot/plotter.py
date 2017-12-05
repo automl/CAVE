@@ -264,8 +264,7 @@ class Plotter(object):
 
     def plot_cost_over_time(self, rh, traj, output="performance_over_time.png",
                             validator=None):
-        """ Plot performance over time, using samples at timesteps
-            [max_time/2^0, max_time/2^1, max_time/2^3, ..., default]
+        """ Plot performance over time, using all trajectory entries
             with max_time = wallclock_limit or (if inf) the highest
             recorded time
 
@@ -287,20 +286,11 @@ class Plotter(object):
             max_time = self.scenario.wallclock_limit
         else:
             max_time = traj[-1][mode]
-        counter = 2**0
-        # traverse from highest entry to lowest
-        for entry in traj[::-1]:
-            if (entry["wallclock_time"] <= max_time/counter):
-                time.append(entry["wallclock_time"])
-                configs.append(entry["incumbent"])
-                counter *= 2
-        if not traj[0]["incumbent"] in configs:
-            configs.append(traj[0]["incumbent"])
-            time.append(traj[0]["wallclock_time"])  # add first
 
-        # Reverse order to get increasing over time
-        configs = configs[::-1]
-        time = time[::-1]
+        for entry in traj:
+            time.append(entry["wallclock_time"])
+            configs.append(entry["incumbent"])
+
         self.logger.debug("Using %d samples (%d distinct) from trajectory.",
                           len(time), len(set(configs)))
 
@@ -324,61 +314,46 @@ class Plotter(object):
                                             ratio_features=1.0)
             epm.train(X, y)
 
+        ## not necessary right now since the EPM only knows the features
+        ## of the training instances
+        # use only training instances
+        #=======================================================================
+        # if self.scenario.feature_dict:
+        #     feat_array = []
+        #     for inst in self.scenario.train_insts:
+        #         feat_array.append(self.scenario.feature_dict[inst])
+        #     backup_features_epm = epm.instance_features
+        #     epm.instance_features = np.array(feat_array)
+        #=======================================================================
+            
+        # predict performance for all configurations in trajectory
+        config_array = convert_configurations_to_array(configs)
+        mean, var = epm.predict_marginalized_over_instances(config_array)
 
-        # Predict desired runs
-        runs = validator.get_runs(list(set(configs)), 'train+test', 1,
-                                  runhistory=RunHistory(average_cost))[0]
-        try:
-            feature_array_size = len(self.scenario.cs.get_hyperparameters()) + self.scenario.feature_array.shape[1]
-        except AttributeError:
-            feature_array_size = len(self.scenario.cs.get_hyperparameters())
-        X_pred = np.empty((len(runs), feature_array_size))
-        for idx, run in enumerate(runs):
-            if hasattr(self.scenario, "feature_dict") and run.inst != None:
-                X_pred[idx] = np.hstack([convert_configurations_to_array([run.config])[0],
-                                         self.scenario.feature_dict[run.inst]])
-            else:
-                X_pred[idx] = convert_configurations_to_array([run.config])[0]
-        self.logger.debug("Predicting desired %d runs, data has shape %s",
-                          len(runs), str(X_pred.shape))
-
-        y_pred, var = epm.predict(X_pred)
-
-        # Reorganize into per-config-metric
-        # We assume, that there is exactly one point per confXinst for all confs and insts
-        costs_per_config = {}
-        for run, p, v in zip(runs, y_pred, var):
-            if not (run.config in costs_per_config):
-                costs_per_config[run.config] = []
-            costs_per_config[run.config].append((p, v))
-
-        # Average over instances, simple mean for mean and
-        #   sum(variances)/n^2 for variances
-        for config, costs in costs_per_config.items():
-            mean, var = zip(*costs)
-            mean = sum(mean)/len(mean)
-            var = sum(var)/(len(var)**2)
-            costs_per_config[config] = (mean, var)
-
-        # Plot performances over time
-        costs, error = zip(*[costs_per_config[c] for c in configs])
-        costs = np.array(costs).flatten()
-        error = np.array(error).flatten()
-
-        uncertainty_upper = costs+error
-        uncertainty_lower = costs-error
-
+        #=======================================================================
+        # # restore feature array in epm
+        # if self.scenario.feature_dict:
+        #     epm.instance_features = backup_features_epm
+        #=======================================================================
+        
+        mean = mean[:,0]
+        var = var[:,0]
+        uncertainty_upper = mean+np.sqrt(var)
+        uncertainty_lower = mean-np.sqrt(var)
+        
+        # plot
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        # TODO train/test
 
-        ax.plot(time, costs, 'r-', label="Estimated performance")
+        ax.plot(time, mean, 'r-', label="Estimated performance")
         ax.legend()
-        ax.fill_between(time, uncertainty_upper, uncertainty_lower)
+        ax.fill_between(time, uncertainty_upper, uncertainty_lower,alpha=0.8)
         ax.set_xscale("log", nonposx='clip')
-        ax.set_ylim(0, max(costs)*1.2)
+        
+        ax.set_ylim(min(mean)*0.8, max(mean)*1.2)
+        # start after 1% of the configuration budget
+        ax.set_xlim(min(time)+(max(time) - min(time))*0.01, max(time))
 
-        plt.title("Performance over time.")
-
+        plt.tight_layout()
         fig.savefig(output)
         plt.close(fig)
