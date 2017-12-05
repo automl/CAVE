@@ -177,8 +177,6 @@ class Plotter(object):
                          verticalalignment="top", rotation=30)
                 ax2.axvline(x=timeout, linestyle='--')
 
-            ax1.set_title('Training - CDF')
-            ax2.set_title('Test - CDF')
         else:
             f = plt.figure(1, dpi=100, figsize=(10,10))
             ax1 = f.add_subplot(1,1,1)
@@ -377,8 +375,6 @@ class Plotter(object):
         ax.fill_between(time, uncertainty_upper, uncertainty_lower)
         ax.set_xscale("log", nonposx='clip')
         ax.set_ylim(0, max(costs)*1.2)
-
-        plt.title("Performance over time.")
 
         fig.savefig(output)
         plt.close(fig)

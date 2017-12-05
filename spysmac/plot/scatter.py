@@ -122,8 +122,6 @@ def plot_scatter_plot(x_data, y_data, labels, title="", debug=False,
         fig = plt.figure(1, dpi=dpi, figsize=(10,5))
         ax1 = fig.add_subplot(1,2,1, adjustable='box', aspect=1)
         ax2 = fig.add_subplot(1,2,2, adjustable='box', aspect=1)
-        ax1.set_title("Training - Scatter")
-        ax2.set_title("Test - Scatter")
         axes = [ax1, ax2]
     else:
         fig = plt.figure(1, dpi=dpi, figsize=(10,10))
