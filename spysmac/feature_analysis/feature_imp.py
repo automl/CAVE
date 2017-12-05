@@ -3,11 +3,11 @@ import logging
 from collections import OrderedDict
 
 import numpy as np
-from pandas import DataFrame
 
 from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.utils.util_funcs import get_types
+from smac.tae.execute_ta_run import StatusType
 
 class FeatureForwardSelector():
 
@@ -43,8 +43,15 @@ class FeatureForwardSelector():
         #parameters = self.scenario.cs.get_hyperparameters().keys()
         parameters = [p.name for p in self.scenario.cs.get_hyperparameters()]
         self.logger.debug("Parameters: %s", parameters)
-        rh2epm = RunHistory2EPM4Cost(num_params=len(parameters),
-                                     scenario=self.scenario)
+        
+
+        rh2epm = RunHistory2EPM4Cost(scenario=self.scenario, num_params=len(parameters ),
+                                             success_states=[
+                                                 StatusType.SUCCESS,
+                                                 StatusType.CAPPED, 
+                                                 StatusType.CRASHED],
+                                             impute_censored_data=False, impute_state=None)
+        
         X, y = rh2epm.transform(self.rh)
 
         self.logger.debug("Shape of X: %s, of y: %s, #parameters: %s, #feats: %s",
@@ -64,6 +71,8 @@ class FeatureForwardSelector():
 
         types, bounds = get_types(self.scenario.cs, self.scenario.feature_array)
 
+        last_error = np.inf
+        
         for _ in range(self.to_evaluate):  # Main Loop
             errors = []
             for f in names:
@@ -75,20 +84,23 @@ class FeatureForwardSelector():
 
                 start = time.time()
                 self._refit_model(types[sorted(used)], bounds, X[:, sorted(used)], y)  # refit the model every round
-                # print(self.model.rf_opts.compute_oob_error)
-                # self.model.rf.compute_out_of_bag_error = True
-                errors.append(np.sqrt(
-                    np.mean((self.model.predict(X[:, sorted(used)])[0].flatten() - y) ** 2)))
+                errors.append(self.model.rf.out_of_bag_error())
                 used.pop()
                 self.logger.debug('Refitted RF (sec %.2f; error: %.4f)' % (time.time() - start, errors[-1]))
 
             best_idx = np.argmin(errors)
             lowest_error = errors[best_idx]
+            
+            if lowest_error > last_error:
+                break
+            
+            last_error = lowest_error
             best_feature = names.pop(best_idx)
             used.append(feat_ids[best_feature])
 
             self.logger.debug('%s: %.4f' % (best_feature, lowest_error))
             evaluated_feature_importance[best_feature] = lowest_error
+            
         return evaluated_feature_importance
 
     def _refit_model(self, types, bounds, X, y):
