@@ -28,6 +28,8 @@ class FeatureForwardSelector():
         self.rh = runhistory
         self.to_evaluate = to_evaluate
 
+        self.MAX_SAMPLES = 100000
+
         self.model = None
 
     def run(self):
@@ -53,6 +55,12 @@ class FeatureForwardSelector():
                                              impute_censored_data=False, impute_state=None)
         
         X, y = rh2epm.transform(self.rh)
+        
+        # reduce sample size to speedup computation
+        if X.shape[0] > self.MAX_SAMPLES:
+            idx = np.random.choice(X.shape[0], size=self.MAX_SAMPLES, replace=False)
+            X = X[idx, :]
+            y = y[idx]
 
         self.logger.debug("Shape of X: %s, of y: %s, #parameters: %s, #feats: %s",
                           X.shape, y.shape,
