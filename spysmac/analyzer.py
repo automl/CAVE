@@ -511,9 +511,9 @@ class Analyzer(object):
 
     def plot_algorithm_footprint(self):
         algorithms = {self.default: "default", self.incumbent: "incumbent"}
-        footprint = AlgorithmFootprint(self.validated_rh, self.scenario.feature_dict,
-                                       self.scenario.cutoff, self.output,
-                                       algorithms)
+        footprint = AlgorithmFootprint(self.validated_rh,
+                                       self.scenario.feature_dict, algorithms,
+                                       self.scenario.cutoff, self.output)
         plots = footprint.plot_points_per_cluster()
         return plots
 

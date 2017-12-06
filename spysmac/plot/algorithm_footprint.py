@@ -30,34 +30,37 @@ class AlgorithmFootprint(object):
      General procedure:
          - label for each algorithm each instance with the same metric
          - map the instances onto a plane using pca
-         - calculate the hulls of the instances
-         - compare the hulls to the hull of all instances
     """
-    def __init__(self, rh: RunHistory, inst_feat, cutoff, output, algorithms, plotter=None):
+    def __init__(self, rh: RunHistory, inst_feat, algorithms, cutoff=np.inf,
+                 output_dir=""):
         """
         Parameters
         ----------
-        inst_feat: dict[feature-vectors]
+        rh: RunHistory
+            runhistory to take performance from
+        inst_feat: dict[str->np.array]
             instances names mapped to features
-
-        algorithms: Dict[Configuration:str]
+        algorithms: Dict[Configuration->str]
             mapping configs to names (here just: default, incumbent)
+        cutoff: int
+            cutoff (if available)
+        output_dir: str
+            output directory
         """
         self.logger = logging.getLogger(
             self.__module__ + '.' + self.__class__.__name__)
         self.rh = rh
         self.insts = list(inst_feat.keys())  # This is the order of instances!
-        self.output = output
+        self.output_dir = output_dir
 
-        self.algorithms = algorithms.keys()
-        self.algo_names = algorithms
+        self.algorithms = algorithms.keys()  # Configs
+        self.algo_names = algorithms  # Maps config -> name
         self.algo_performance = {}  # Maps instance -> performance
 
         self.features = np.array([inst_feat[k] for k in self.insts])
         self.features_2d = self.reduce_dim(self.features)
         self.clusters, self.cluster_dict = self.get_clusters(self.features_2d)
 
-        self.plotter = plotter
         self.cutoff = cutoff
 
         self.label_instances()
@@ -85,13 +88,13 @@ class AlgorithmFootprint(object):
             feature_array = pca.fit_transform(feature_array)
         return feature_array
 
-    def get_clusters(self, features):
+    def get_clusters(self, features_2d):
         """ Mapping instances to clusters, using silhouette-scores to determine
         number of cluster.
 
         Parameters
         ----------
-        features: np.array
+        features_2d: np.array
             scaled and pca'ed feature-array (2D)
 
         Returns
@@ -103,29 +106,30 @@ class AlgorithmFootprint(object):
             {0: [1,3,5], 1: [2,7,8], 2: [0,4,6,9]}
         """
         # get silhouette scores for k_means with 2 to 12 clusters
-        scores = []
-        for n_clusters in range(2, 12):
+        # use number of clusters with highest silhouette score
+        best_score, best_n_clusters = -1, -1
+        min_clusters, max_clusters = 2, 12
+        clusters = None
+        for n_clusters in range(min_clusters, max_clusters):
             km = KMeans(n_clusters=n_clusters)
-            y_pred = km.fit_predict(features)
-            score = silhouette_score(features, y_pred)
-            scores.append(score)
+            y_pred = km.fit_predict(features_2d)
+            score = silhouette_score(features_2d, y_pred)
+            if score > best_score:
+                best_n_clusters = n_clusters
+                best_score = score
+                clusters = y_pred
 
-        best_score = max(scores)
-        best_run = scores.index(best_score)
-        n_clusters = best_run + 2
-        # cluster!
-        km = KMeans(n_clusters=n_clusters)
-        y_pred = km.fit_predict(features)
+        self.logger.debug("%d clusters detected using silhouette scores",
+                          best_n_clusters)
 
-        self.logger.debug("%d Clusters: %s", n_clusters, str(y_pred))
-
-        clusters = y_pred
-        cluster_dict = {}
-        for n in range(n_clusters):
-            cluster_dict[n] = []
-        for i, c in enumerate(y_pred):
+        cluster_dict = {n:[] for n in range(best_n_clusters)}
+        for i, c in enumerate(clusters):
             cluster_dict[c].append(self.insts[i])
-        return y_pred, cluster_dict
+
+        self.logger.debug("Distribution over clusters: %s", str(cluster_dict))
+
+        raise Exception()
+        return clusters, cluster_dict
 
     def get_performance(self, algorithm, instance):
         """
@@ -182,12 +186,12 @@ class AlgorithmFootprint(object):
 
         for a in self.algorithms:
             # Plot without clustering (for all insts)
-            path = os.path.join(self.output,
+            path = os.path.join(self.output_dir,
                                 '_'.join([self.algo_names[a], 'all.png']))
             outpaths.append(self._plot_points(a, path))
             # Plot per cluster
             for c in self.cluster_dict.keys():
-                path = os.path.join(self.output,
+                path = os.path.join(self.output_dir,
                                     '_'.join([self.algo_names[a], str(c)+'.png']))
                 outpaths.append(self._plot_points(a, path, self.cluster_dict[c]))
         return outpaths
