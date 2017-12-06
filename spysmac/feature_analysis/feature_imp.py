@@ -101,6 +101,7 @@ class FeatureForwardSelector():
             self.logger.debug('%s: %.4f' % (best_feature, lowest_error))
             evaluated_feature_importance[best_feature] = lowest_error
             
+        self.logger.debug(evaluated_feature_importance)
         return evaluated_feature_importance
 
     def _refit_model(self, types, bounds, X, y):
@@ -116,7 +117,9 @@ class FeatureForwardSelector():
         y:ndarray
             corresponding y vector
         """
-        self.model = RandomForestWithInstances(types, bounds, do_bootstrapping=True)
+        # take at most 80% of the data per split to ensure enough data for oob error
+        self.model = RandomForestWithInstances(types=types, bounds=bounds, do_bootstrapping=True,
+                                               n_points_per_tree=int(X.shape[1]*0.8))
         self.model.rf_opts.compute_oob_error = True
         self.model.train(X, y)
 
