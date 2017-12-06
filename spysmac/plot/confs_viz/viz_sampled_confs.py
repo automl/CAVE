@@ -363,7 +363,7 @@ class SampleViz(object):
 
         self.logger.debug("Plot Scatter")
         scatter = ax.scatter(
-            X[:, 0], X[:, 1], sizes=runs_per_conf + 10, color="white", edgecolors="black")
+            X[:, 0], X[:, 1], sizes=np.log(runs_per_conf) + 10, color="white", edgecolors="black")
 
         ax.set_xlim(X[:, 0].min() - 0.5, X[:, 0].max() + 0.5)
         ax.set_ylim(X[:, 1].min() - 0.5, X[:, 1].max() + 0.5)
