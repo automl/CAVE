@@ -177,8 +177,6 @@ class Plotter(object):
                          verticalalignment="top", rotation=30)
                 ax2.axvline(x=timeout, linestyle='--')
 
-            ax1.set_title('Training - CDF')
-            ax2.set_title('Test - CDF')
         else:
             f = plt.figure(1, dpi=100, figsize=(10,10))
             ax1 = f.add_subplot(1,1,1)

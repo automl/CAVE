@@ -256,7 +256,7 @@ class SpySMAC(object):
                      "tooltip": "Plot all evaluated instances on a scatter plot, "
                                 "to directly compare performance of incumbent "
                                 "and default for each instance. Uses validated "
-                                "data!"}
+                                "data! (Left: training data; Right: test data)"}
         elif scatter:
             self.logger.info("Scatter plot desired, but no instances available.")
 

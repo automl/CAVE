@@ -183,13 +183,16 @@ class AlgorithmFootprint(object):
         for a in self.algorithms:
             # Plot without clustering (for all insts)
             path = os.path.join(self.output,
-                                '_'.join([self.algo_names[a], 'all.png']))
+                                self.algo_names[a]+'.png')
+            #                    '_'.join([self.algo_names[a], 'all.png']))
             outpaths.append(self._plot_points(a, path))
+
             # Plot per cluster
             for c in self.cluster_dict.keys():
                 path = os.path.join(self.output,
                                     '_'.join([self.algo_names[a], str(c)+'.png']))
-                outpaths.append(self._plot_points(a, path, self.cluster_dict[c]))
+                path = self._plot_points(a, path, self.cluster_dict[c])
+                #outpaths.append(path)
         return outpaths
 
     def _plot_points(self, conf, out, insts=[]):
@@ -229,7 +232,6 @@ class AlgorithmFootprint(object):
 
         if len(bad) > 0: ax.scatter(bad[:, 0], bad[:, 1], color="red", s=3)
         if len(good) > 0: ax.scatter(good[:, 0], good[:, 1], color="green", s=3)
-        fig.suptitle(self.algo_names[conf])
         ax.set_ylabel('Principal Component 1')
         ax.set_xlabel('Principal Component 2')
         fig.savefig(out)
