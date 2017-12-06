@@ -91,7 +91,7 @@ class FeatureForwardSelector():
             best_idx = np.argmin(errors)
             lowest_error = errors[best_idx]
             
-            if lowest_error > last_error:
+            if lowest_error >= last_error:
                 break
             
             last_error = lowest_error
