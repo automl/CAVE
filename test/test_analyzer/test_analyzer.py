@@ -43,4 +43,7 @@ class TestAnalyzer(unittest.TestCase):
 
     def test_algorithm_footprints(self):
         """ testing algorithm footprints """
+        print(self.analyzer.plot_algorithm_footprint({self.analyzer.incumbent:"incumbent"}, 50000, 0.95))
+        print(self.analyzer.plot_algorithm_footprint({self.analyzer.default:"default"}, 50000, 0.95))
+        raise Exception()
         self.analyzer.plot_algorithm_footprint()

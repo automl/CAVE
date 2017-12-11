@@ -70,3 +70,6 @@ class SMACrun(SMAC):
                 #restore_incumbent=incumbent)
         # TODO use restore, delete next line
         self.solver.incumbent = incumbent
+
+    def get_incumbent(self):
+        return self.solver.incumbent
