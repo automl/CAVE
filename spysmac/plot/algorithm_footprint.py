@@ -85,8 +85,9 @@ class AlgorithmFootprint(object):
         (algorithm 1 in Smith-Miles 2014) """
         good = [i for i in self.insts if self.algo_labels[a][i] == 1]
         if len(good) < 3:
-            return
-        bad = [i for i in self.insts if not i in good]
+            return 0
+        good_pos = [self.features_2d[self.insts.index(i)] for i in good]
+        count_exceptions = 0
 
         def get_2NN(pos, insts):
             """ compare all insts to pos. """
@@ -112,22 +113,21 @@ class AlgorithmFootprint(object):
             # Select random good instance TODO also from in_regions?!?!
             rand_good = self.rng.choice(good)
             rand_pos = self.features_2d[self.insts.index(rand_good)]
+            #if not tuple(rand_pos) in not_in_region:
+            #    continue
             # Find two closest neighbors not in region
             one, two = get_2NN(rand_pos, not_in_region)
             triangle = np.array((rand_pos, one, two))
-            #self.logger.debug(triangle)
             centroid = np.sum(triangle, axis=0)/len(triangle)
-            regions[tuple(centroid)] = (one, two, rand_pos)
+            regions[tuple(centroid)] = np.array((one, two, rand_pos))
             for p in triangle:
                 try: not_in_region.remove(tuple(p))
                 except KeyError: pass
-            #self.logger.debug("Not in region: %d", len(not_in_region))
 
         stop = False
         while not stop:
             stop = True
             for cent in regions.keys():
-                #self.logger.debug(regions)
                 reg = regions[cent]
                 cent_array = np.array(cent)
                 nearest_cent = get_2NN(cent_array, [np.array(r) for r in
@@ -135,27 +135,38 @@ class AlgorithmFootprint(object):
                 nearest_reg = regions[tuple(nearest_cent)]
                 # Check purity and density
                 new_reg = np.vstack((reg, nearest_reg))
-                combined_hull = spatial.ConvexHull(new_reg)
+                try:
+                    combined_hull = spatial.ConvexHull(new_reg)
+                except spatial.qhull.QhullError:
+                    count_exceptions += 1
+                    continue
                 density = len(new_reg)/combined_hull.area
-                purity = (len([i for i in reg if i in good]) + len([i for i
-                           in nearest_reg if i in good])) / len(new_reg)
+                self.logger.debug(reg)
+                purity = (len([i for i in list(reg) if i in list(good_pos)]) +
+                          len([i for i in nearest_reg if i in good_pos])) / float(len(new_reg))
+                self.logger.debug("Purity: %f, density: %f", purity, density)
                 if density > density_threshold and purity > purity_threshold:
                     regions.pop(tuple(cent))
                     regions.pop(tuple(nearest_cent))
                     new_centroid = tuple(np.sum(new_reg, axis=0)/len(new_reg))
-                    regions[centroid] = new_reg
+                    regions[new_centroid] = new_reg
                     stop = False
                     break
 
         # We now have final regions -> return sum of individual convex hulls
         area = 0
-        self.logger.debug(regions)
         self.logger.debug(len(regions))
         for r in regions.values():
-            self.logger.debug(r)
-            hull = spatial.ConvexHull(r)
-            area += hull.area
-        self.logger.debug("Area for %s is %f", self.algo_names[a], area)
+            #self.logger.debug(r)
+            try:
+                hull = spatial.ConvexHull(r)
+                area += hull.area
+            except spatial.qhull.QhullError:
+                count_exceptions += 1
+                pass
+        self.logger.debug("Area for %s is %f (%d Qhull-exceptions, %d/%d good insts",
+                          self.algo_names[a], area, count_exceptions, len(good),
+                          len(self.insts))
         return area
 
     def label_instances(self, epsilon=0.95):

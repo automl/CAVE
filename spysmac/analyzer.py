@@ -516,8 +516,9 @@ class Analyzer(object):
         footprint = AlgorithmFootprint(self.validated_rh,
                                        self.scenario.feature_dict, algorithms,
                                        self.scenario.cutoff, algo_fp_output_dir)
-        for a in algorithms:
-            self.logger.debug(footprint.footprint(a, 200, 0.95))
+        for i in range(100):
+            for a in algorithms:
+                self.logger.debug(footprint.footprint(a, 200, 0.95))
         return []
         plots = footprint.plot_points_per_cluster()
         return plots
