@@ -66,6 +66,7 @@ class Analyzer(object):
         """
         self.logger = logging.getLogger("spysmac.analyzer")
 
+        # Important objects for analysis
         self.original_rh = original_rh
         self.validated_rh = validated_rh
         self.default = default
@@ -506,7 +507,7 @@ class Analyzer(object):
         path = os.path.join(self.output, 'cost_over_time.png')
         self.plotter.plot_cost_over_time(self.validated_rh, traj, output=path,
                                          validator=validator)
-        self.logger.debug("cost over time: %.2f", time.time() - start)
+        self.logger.debug("cost over time took %.2f seconds", time.time() - start)
         return path
 
     def plot_algorithm_footprint(self):

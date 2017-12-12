@@ -4,7 +4,9 @@ import logging
 
 import numpy as np
 import pandas as pd
+import matplotlib as mpl
 import matplotlib.pyplot as plt
+plt.style.use('spysmac/plot/mpl_style')
 from matplotlib import ticker
 
 from ConfigSpace.util import impute_inactive_values
@@ -106,7 +108,8 @@ class Plotter(object):
 
         fig = plot_scatter_plot(conf1, conf2,
                                 labels, metric=metric,
-                                user_fontsize=12, max_val=timeout,
+                                user_fontsize=mpl.rcParams['font.size'],
+                                max_val=timeout,
                                 jitter_timeout=True)
         fig.savefig(output)
         plt.close(fig)
