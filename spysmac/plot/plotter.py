@@ -209,23 +209,23 @@ class Plotter(object):
         f.savefig(output)
         plt.close(f)
 
-    def visualize_configs(self, scen, rh, inc=None, configs_to_plot=None):
+    def visualize_configs(self, scen, runhistories, incumbents=None, max_confs_plot=1000):
         """
         Parameters
         ----------
         scen: Scenario
             scenario
-        rh: RunHistory
-            (unvalidated!) runhistory
+        rhs: List[RunHistory]
+            (unvalidated!) runhistories
         inc: List[Configuration]
             incumbents of all runs
-        configs_to_plot: List[Configuration]
-            configurations to be plotted
+        max_confs_plot: int
+            # configurations to be plotted
         """
 
         sz = SampleViz(scenario=scen,
-                       runhistory=rh,
-                       incs=inc, configs_to_plot=configs_to_plot,
+                       runhistories=runhistories,
+                       incs=incumbents, max_plot=max_confs_plot,
                        output=self.output)
         return sz.run()
 

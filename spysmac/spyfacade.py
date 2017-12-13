@@ -279,7 +279,8 @@ class SpySMAC(object):
 
         if  confviz and self.scenario.feature_array is not None:
             incumbents = [r.solver.incumbent for r in self.runs]
-            confviz_script = self.analyzer.plot_confviz(incumbents)
+            runhistories = [r.runhistory for r in self.runs]
+            confviz_script = self.analyzer.plot_confviz(incumbents, runhistories)
             self.website["Configurator's behavior"]["Configuration Visualization"] = {
                     "table" : confviz_script,
                     "tooltip" : "Using PCA to reduce dimensionality of the "

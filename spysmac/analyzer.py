@@ -473,7 +473,7 @@ class Analyzer(object):
         self.plotter.plot_scatter(output=scatter_path)
         return scatter_path
 
-    def plot_confviz(self, incumbents, max_confs=1000):
+    def plot_confviz(self, incumbents, runhistories, max_confs=1000):
         """ Plot the visualization of configurations, highlightning the
         incumbents. Using original rh, so the explored configspace can be
         estimated.
@@ -482,6 +482,8 @@ class Analyzer(object):
         ----------
         incumbents: List[Configuration]
             list with incumbents, so they can be marked in plot
+        runhistories: List[RunHistory]
+            list of runhistories, so they can be marked in plot
         max_confs: int
             maximum number of data-points to plot
 
@@ -490,18 +492,9 @@ class Analyzer(object):
         confviz: str
             script to generate the interactive html
         """
-        # Use #runs to determine the most "important" configs to plot
-        rh = self.original_rh
-        all_configs = rh.get_all_configs()
-        configs_to_plot = sorted(all_configs, key=lambda x:
-                                 len(rh.get_runs_for_config(x)), reverse=True)[:max_confs]
-
-        self.logger.info("Reducing number of configs (from %d) to be visualized"
-                         ", plotting only the %d most often run configs.",
-                         len(all_configs), len(configs_to_plot))
         confviz = self.plotter.visualize_configs(self.scenario,
-                    self.original_rh, incumbents,
-                    configs_to_plot=configs_to_plot)
+                    runhistories=runhistories, incumbents=incumbents,
+                    max_confs_plot=max_confs)
 
         return confviz
 
