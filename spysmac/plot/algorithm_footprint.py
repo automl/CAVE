@@ -3,6 +3,7 @@ import logging
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
+plt.style.use('spysmac/plot/mpl_style')
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
@@ -346,6 +347,7 @@ class AlgorithmFootprint(object):
                                               markersize=15, label='incumbent')
             ax.legend(handles=[blue_line, red_line])
 
+            plt.tight_layout()
             paths += output
             fig.savefig(output)
             plt.close(fig)

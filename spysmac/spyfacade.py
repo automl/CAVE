@@ -447,14 +447,21 @@ class SpySMAC(object):
 
         self.build_website()
 
-        imp = self.analyzer.feature_importance()
-        imp = DataFrame(data=list(imp.values()), index=list(imp.keys()),
-                columns=["Error"])
-        imp = imp.to_html()
+        # feature importance using forward selection
         if importance:
-            self.website["Feature Analysis"]["Feature importance"] = {"tooltip":
+            self.website["Feature Analysis"]["Feature importance"] = OrderedDict()
+            imp, plots = self.analyzer.feature_importance()
+            imp = DataFrame(data=list(imp.values()), index=list(imp.keys()),
+                    columns=["Error"])
+            imp = imp.to_html()  # this is a table with the values in html
+            self.website["Feature Analysis"]["Feature importance"]["Table"] = {"tooltip":
                          "Feature importance calculated using forward selection.",
                                                             "table": imp}
+            for p in plots:
+                name = os.path.splitext(os.path.basename(p))[0]
+                self.website["Feature Analysis"]["Feature importance"][name] = {"tooltip":
+                         "Feature importance calculated using forward selection.",
+                         "figure": p}
 
     def build_website(self):
         self.builder.generate_html(self.website)

@@ -433,7 +433,10 @@ class Analyzer(object):
     def feature_importance(self):
         forward_selector = FeatureForwardSelector(self.scenario,
                 self.original_rh)
-        return forward_selector.run()
+        imp = forward_selector.run()
+        plots = forward_selector.plot_result(os.path.join(self.output,
+            'feature_plots/importance'))
+        return (imp, plots)
 
 ####################################### PLOTS #######################################
 
