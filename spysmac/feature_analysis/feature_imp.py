@@ -131,7 +131,7 @@ class FeatureForwardSelector():
         self.model.rf_opts.compute_oob_error = True
         self.model.train(X, y)
 
-    def _plot_result(self, output_fn, bar=True, show=True):
+    def _plot_result(self, output_fn, bar=True):
         """
             plot oob score as bar charts
             Parameters
@@ -158,7 +158,7 @@ class FeatureForwardSelector():
         else:
             ax.set_xticks(ind)
             ax.set_xlim(0, max_to_plot - 1)
-        ax.set_xticklabels(features, rotation=30, ha='right', size='10',
+        ax.set_xticklabels(features, rotation=30, ha='right', size='16',
                            family='monospace')
         ax.xaxis.grid(True)
         ax.yaxis.grid(True)
