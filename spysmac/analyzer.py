@@ -44,7 +44,7 @@ class Analyzer(object):
     """
 
     def __init__(self, original_rh, validated_rh, default, incumbent,
-                 train_test, scenario, validator, output):
+                 train_test, scenario, validator, output, max_pimp_samples, fanova_pairwise=True):
         """
         Parameters
         ----------
@@ -83,6 +83,8 @@ class Analyzer(object):
         conf2_runs = get_cost_dict_for_config(self.validated_rh, self.incumbent)
         self.plotter = Plotter(self.scenario, self.train_test, conf1_runs,
                 conf2_runs, output=self.output)
+        self.max_pimp_samples = max_pimp_samples
+        self.fanova_pairwise = fanova_pairwise
 
     def get_timeouts(self, config):
         """ Get number of timeouts in config per runs in total (not per
@@ -421,7 +423,9 @@ class Analyzer(object):
                                 incumbent=incumbent,
                                 parameters_to_evaluate=num_params,
                                 save_folder=save_folder,
-                                seed=12345)
+                                seed=12345,
+                                max_sample_size=self.max_pimp_samples,
+                                fANOVA_pairwise=self.fanova_pairwise)
         self.logger.debug("Imp modus: %s", modus)
         #if modus == "fanova":
         #    importance.evaluator.n_most_imp_pairs = 0
