@@ -2,8 +2,8 @@ import os
 import logging
 import numpy as np
 import matplotlib.pyplot as plt
+plt.style.use(os.path.join(os.path.dirname(__file__), 'mpl_style'))
 import matplotlib.lines as mlines
-plt.style.use('spysmac/plot/mpl_style')
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
