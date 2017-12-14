@@ -6,6 +6,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import ticker
+import matplotlib.colors as colors
+import matplotlib.cm as cmx
 
 from ConfigSpace.util import impute_inactive_values
 from ConfigSpace.hyperparameters import CategoricalHyperparameter, IntegerHyperparameter
