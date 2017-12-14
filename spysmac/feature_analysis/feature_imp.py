@@ -165,7 +165,7 @@ class FeatureForwardSelector():
 
         plt.tight_layout()
 
-        out_dir = os.path.basename(output_fn)
+        out_dir = os.path.dirname(output_fn)
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
         fig.savefig(output_fn)
