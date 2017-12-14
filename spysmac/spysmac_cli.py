@@ -49,7 +49,7 @@ class SpySMACCLI(object):
                                    "config/inst-pairs.")
         opt_opts.add_argument("--output", default="SpySMAC_output",
                               help="path to folder in which to save the HTML-report.")
-        opt_opts.add_argument("--ta_exec_dir", default='.',
+        opt_opts.add_argument("--ta_exec_dir", default=None,
                               help="path to the execution-directory of the "
                                    "SMAC run.")
         opt_opts.add_argument("--param_importance", default="all", nargs='+',
