@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-plt.style.use('spysmac/plot/mpl_style')
+plt.style.use(os.path.join(os.path.dirname(__file__), 'mpl_style'))
 from matplotlib import ticker
 
 from ConfigSpace.util import impute_inactive_values
