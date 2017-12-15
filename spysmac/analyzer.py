@@ -66,6 +66,7 @@ class Analyzer(object):
         """
         self.logger = logging.getLogger("spysmac.analyzer")
 
+        # Important objects for analysis
         self.original_rh = original_rh
         self.validated_rh = validated_rh
         self.default = default
@@ -432,7 +433,10 @@ class Analyzer(object):
     def feature_importance(self):
         forward_selector = FeatureForwardSelector(self.scenario,
                 self.original_rh)
-        return forward_selector.run()
+        imp = forward_selector.run()
+        plots = forward_selector.plot_result(os.path.join(self.output,
+            'feature_plots/importance'))
+        return (imp, plots)
 
 ####################################### PLOTS #######################################
 
@@ -506,7 +510,7 @@ class Analyzer(object):
         path = os.path.join(self.output, 'cost_over_time.png')
         self.plotter.plot_cost_over_time(self.validated_rh, traj, output=path,
                                          validator=validator)
-        self.logger.debug("cost over time: %.2f", time.time() - start)
+        self.logger.debug("cost over time took %.2f seconds", time.time() - start)
         return path
 
     def plot_algorithm_footprint(self, algorithms=None, density=200, purity=0.95):
@@ -518,7 +522,7 @@ class Analyzer(object):
                                        self.scenario.cutoff, algo_fp_output_dir)
         for i in range(100):
             for a in algorithms:
-                self.logger.debug(footprint.footprint(a, 200, 0.95))
+                footprint.footprint(a, 20, 0.95)
         return []
         plots = footprint.plot_points_per_cluster()
         return plots

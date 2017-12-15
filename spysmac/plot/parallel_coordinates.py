@@ -45,8 +45,14 @@ class ParallelCoordinatesPlotter(object):
         n: int
             the higher n, the more visible are "bad" configs
         """
-        alpha = self.best_config_performance/self.validated_rh.get_cost(conf)
-        alpha = alpha**(1/float(n))
+        
+        x = self.validated_rh.get_cost(conf)
+        min_ = self.best_config_performance
+        # add 10% to have visbility of the worst config
+        max_ = self.worst_config_performance * 1.1
+        #TODO: if we have runtime scenario
+        # we should consider log performance
+        alpha = 1 - ((x - min_) / (max_ - min_))
         return alpha
 
     def plot_n_configs(self, num_configs, params):
@@ -70,6 +76,8 @@ class ParallelCoordinatesPlotter(object):
                                                         'train+test', 1,
                                                         runhistory=self.original_rh)
         self.best_config_performance = min([self.validated_rh.get_cost(c) for c
+                                            in configs_to_plot])
+        self.worst_config_performance = max([self.validated_rh.get_cost(c) for c
                                             in configs_to_plot])
         return self._plot(configs_to_plot, params)
 

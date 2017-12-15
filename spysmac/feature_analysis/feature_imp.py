@@ -1,8 +1,10 @@
+import os
 import time
 import logging
 from collections import OrderedDict
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
 from smac.epm.rf_with_instances import RandomForestWithInstances
@@ -10,6 +12,7 @@ from smac.utils.util_funcs import get_types
 from smac.tae.execute_ta_run import StatusType
 
 class FeatureForwardSelector():
+    """ Inspired by forward selection of ParameterImportance-package. """
 
     def __init__(self, scenario, runhistory, to_evaluate: int=3):
         """
@@ -106,6 +109,7 @@ class FeatureForwardSelector():
             evaluated_feature_importance[best_feature] = lowest_error
 
         self.logger.debug(evaluated_feature_importance)
+        self.evaluated_feature_importance = evaluated_feature_importance
         return evaluated_feature_importance
 
     def _refit_model(self, types, bounds, X, y):
@@ -127,3 +131,52 @@ class FeatureForwardSelector():
         self.model.rf_opts.compute_oob_error = True
         self.model.train(X, y)
 
+    def _plot_result(self, output_fn, bar=True, show=True):
+        """
+            plot oob score as bar charts
+            Parameters
+            ----------
+            name
+                file name to save plot
+        """
+
+        fig, ax = plt.subplots()
+        features = list(self.evaluated_feature_importance.keys())
+        errors = list(self.evaluated_feature_importance.values())
+        max_to_plot = min(len(errors), 5)
+
+        ind = np.arange(len(errors))
+        if bar:
+            ax.bar(ind, errors, color=(0.25, 0.25, 0.45))
+        else:
+            ax.plot(ind, errors, lw=4, color=(0.125, 0.125, 0.125))
+
+        ax.set_ylabel('error', size='24', family='sans-serif')
+        if bar:
+            ax.set_xticks(ind)
+            ax.set_xlim(-.5, max_to_plot - 0.5)
+        else:
+            ax.set_xticks(ind)
+            ax.set_xlim(0, max_to_plot - 1)
+        ax.set_xticklabels(features, rotation=30, ha='right', size='10',
+                           family='monospace')
+        ax.xaxis.grid(True)
+        ax.yaxis.grid(True)
+
+        plt.tight_layout()
+
+        out_dir = os.path.basename(output_fn)
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
+        fig.savefig(output_fn)
+        return output_fn
+
+    def plot_result(self, output_fn=None):
+        plot_paths = []
+        plot_paths.append(
+                    self._plot_result(output_fn + '-barplot.png', True))
+        plot_paths.append(
+                    self._plot_result(output_fn + '-chng.png', False))
+        plt.close('all')
+        self.logger.info('Saved plot as %s-[barplot|chng].png' % output_fn)
+        return plot_paths
