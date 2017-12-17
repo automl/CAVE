@@ -411,16 +411,21 @@ class SpySMAC(object):
         # TODO feat-names from scenario?
         in_reader = InputReader()
         feat_fn = self.scenario.feature_fn
-        with changedir(self.ta_exec_dir if self.ta_exec_dir else '.'):
-            if not feat_fn or not os.path.exists(feat_fn):
-                self.logger.warning("Feature Analysis needs valid feature "
-                                    "file! Either {} is not a valid "
-                                    "filename or features are not saved in "
-                                    "the scenario.")
-                self.logger.error("Skipping Feature Analysis.")
-                return
-            else:
-                feat_names = in_reader.read_instance_features_file(self.scenario.feature_fn)[0]
+
+        if not self.scenario.feature_names:
+            with changedir(self.ta_exec_dir if self.ta_exec_dir else '.'):
+                if not feat_fn or not os.path.exists(feat_fn):
+                    self.logger.warning("Feature Analysis needs valid feature "
+                                        "file! Either {} is not a valid "
+                                        "filename or features are not saved in "
+                                        "the scenario.")
+                    self.logger.error("Skipping Feature Analysis.")
+                    return
+                else:
+                    feat_names = in_reader.read_instance_features_file(self.scenario.feature_fn)[0]
+        else:
+            feat_names = self.scenario.feature_names
+
         fa = FeatureAnalysis(output_dn=self.output,
                              scenario=self.scenario,
                              feat_names=feat_names)
