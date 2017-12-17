@@ -55,7 +55,8 @@ class SpySMAC(object):
     """
 
     def __init__(self, folders: typing.List[str], output: str,
-                 ta_exec_dir: Union[str, None]=None, missing_data_method: str='epm'):
+                 ta_exec_dir: Union[str, None]=None, missing_data_method: str='epm',
+                 max_pimp_samples: int=-1, fanova_pairwise=True):
         """
         Initialize SpySMAC facade to handle analyzing, plotting and building the
         report-page easily. During initialization, the analysis-infrastructure
@@ -148,7 +149,8 @@ class SpySMAC(object):
 
         self.analyzer = Analyzer(self.original_rh, self.validated_rh,
                                  self.default, self.incumbent, self.train_test,
-                                 self.scenario, self.validator, self.output)
+                                 self.scenario, self.validator, self.output,
+                                 max_pimp_samples, fanova_pairwise)
 
         self.builder = HTMLBuilder(self.output, "SpySMAC")
         # Builder for html-website
@@ -409,6 +411,7 @@ class SpySMAC(object):
         # TODO feat-names from scenario?
         in_reader = InputReader()
         feat_fn = self.scenario.feature_fn
+
         if not self.scenario.feature_names:
             with changedir(self.ta_exec_dir if self.ta_exec_dir else '.'):
                 if not feat_fn or not os.path.exists(feat_fn):
@@ -422,6 +425,7 @@ class SpySMAC(object):
                     feat_names = in_reader.read_instance_features_file(self.scenario.feature_fn)[0]
         else:
             feat_names = self.scenario.feature_names
+
         fa = FeatureAnalysis(output_dn=self.output,
                              scenario=self.scenario,
                              feat_names=feat_names)
