@@ -380,7 +380,7 @@ class SampleViz(object):
             v = np.linspace(min_z, max_z, 15, endpoint=True)
             contour = ax.contourf(contour_data[0], contour_data[1], contour_data[2],
                                   min(100, np.unique(contour_data[2]).shape[0]))
-            plt.colorbar(contour, ticks=v)  #, pad=0.15)
+            plt.colorbar(contour, ticks=v[::-1])  #, pad=0.15)
 
         # Plot individual runs as scatter
         self.logger.debug("Plot Scatter")
