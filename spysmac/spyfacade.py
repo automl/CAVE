@@ -336,7 +336,7 @@ class SpySMAC(object):
                              forward_selection=False, incneighbor=False):
         """Perform the specified parameter importance procedures. """
         # PARAMETER IMPORTANCE
-        if (ablation or forward_selection or fanova):
+        if (ablation or forward_selection or fanova or incneighbor):
             self.website["Parameter Importance"] = OrderedDict([("tooltip",
                 "Parameter Importance explains the individual importance of the "
                 "parameters for the overall performance. Different techniques "
@@ -344,21 +344,20 @@ class SpySMAC(object):
                 "variance), ablation and forward selection.")])
         if fanova:
             self.logger.info("fANOVA...")
-            table, plots, pair_plots = self.analyzer.fanova(self.incumbent, 10)
+            table, plots, pair_plots = self.analyzer.fanova(self.incumbent)
 
             self.website["Parameter Importance"]["fANOVA"] = OrderedDict([
                 ("tooltip", "fANOVA stands for functional analysis of variance "
-                            "and predicts a parameters marginal performance, "
-                            "by analyzing the predicted local neighbourhood of "
-                            "this parameters optimized value, considering "
-                            "correlations to other parameters and isolating "
-                            "this parameters importance by predicting "
+                            "and predicts a parameters marginal performance. "
+                            "The predicted local neighbourhood of "
+                            "a parameters optimized value and "
+                            "correlations to other parameters are considered. "
+                            "This parameters importance is isolated by predicting "
                             "performance changes that depend on other "
                             "parameters.")])
 
             self.website["Parameter Importance"]["fANOVA"]["Importance"] = {
                          "table": table}
-
             # Insert plots (the received plots is a dict, mapping param -> path)
             self.website["Parameter Importance"]["fANOVA"]["Marginals"] = OrderedDict([])
             for param, plot in plots.items():
@@ -369,6 +368,7 @@ class SpySMAC(object):
                 for param, plot in pair_plots.items():
                     self.website["Parameter Importance"]["fANOVA"]["PairwiseMarginals"][param] = {
                         "figure": plot}
+
         if ablation:
             self.logger.info("Ablation...")
             self.analyzer.parameter_importance("ablation", self.incumbent,
@@ -379,6 +379,7 @@ class SpySMAC(object):
                         "figure": ablationpercentage_path}
             self.website["Parameter Importance"]["Ablation (performance)"] = {
                         "figure": ablationperformance_path}
+
         if forward_selection:
             self.logger.info("Forward Selection...")
             self.analyzer.parameter_importance("forward-selection", self.incumbent,
@@ -389,11 +390,11 @@ class SpySMAC(object):
                         "figure": f_s_barplot_path}
             self.website["Parameter Importance"]["Forward Selection (chng)"] = {
                         "figure": f_s_chng_path}
+
         if incneighbor:
             self.logger.info("Local EPM-predictions around incumbent...")
             plots = self.analyzer.local_epm_plots()
             self.website["Parameter Importance"]["Local EPM around incumbent"] = OrderedDict([])
-            self.logger.debug(plots)
             for param, plot in plots.items():
                 self.website["Parameter Importance"]["Local EPM around incumbent"][param] = {
                     "figure": plot}
