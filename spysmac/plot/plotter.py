@@ -226,7 +226,7 @@ class Plotter(object):
         sz = SampleViz(scenario=scen,
                        runhistories=runhistories,
                        incs=incumbents, max_plot=max_confs_plot,
-                       output=self.output)
+                       output_dir=self.output)
         return sz.run()
 
     def plot_parallel_coordinates(self, rh, output, params, n_configs, validator):

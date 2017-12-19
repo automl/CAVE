@@ -56,10 +56,9 @@ class SampleViz(object):
     def __init__(self, scenario: Scenario,
                  runhistories: typing.List[RunHistory],
                  incs: list=None,
-                 model: RandomForestWithInstances=None,
                  max_plot=None,
                  contour_step_size=0.2,
-                 output: str=None):
+                 output_dir: str=None):
         '''
         Constructor
 
@@ -68,29 +67,30 @@ class SampleViz(object):
         scenario: Scenario
             scenario
         runhistories: List[RunHistory]
-            runhistory
+            runhistories from configurator runs - first one assumed to be best
         incs: list
             incumbents (same length as runhistories!)
         max_plot: int
             maximum number of configs to plot
         contour_step_size: float
             step size of meshgrid to compute contour of fitness landscape
+        output_dir: str
+            output directory
         '''
+        self.logger = logging.getLogger(
+            self.__module__ + '.' + self.__class__.__name__)
 
         self.scenario = copy.deepcopy(scenario)  # pca changes feats
         self.runhistories = runhistories
-        self.logger = logging.getLogger(
-            self.__module__ + '.' + self.__class__.__name__)
         self.incs = incs
         self.max_plot = max_plot
-
-        self.model = model
+        self.max_rhs_to_plot = 1  # Maximum number of runhistories 2 b plotted
 
         self.contour_step_size = contour_step_size
-        if output and not output.endswith('.html'):
-            self.output = os.path.join(output, 'conf_vizs.html')
+        if output_dir:
+            self.output_dir = os.path.join(output_dir, 'conf_vizs.html')
         else:
-            self.output = output
+            self.output_dir = None
 
     def run(self):
         '''
@@ -380,13 +380,14 @@ class SampleViz(object):
             v = np.linspace(min_z, max_z, 15, endpoint=True)
             contour = ax.contourf(contour_data[0], contour_data[1], contour_data[2],
                                   min(100, np.unique(contour_data[2]).shape[0]))
-            plt.colorbar(contour, ticks=v, pad=0.15)
+            plt.colorbar(contour, ticks=v)  #, pad=0.15)
 
         # Plot individual runs as scatter
         self.logger.debug("Plot Scatter")
         if not runs_labels:
             runs_labels = range(len(runs_runs_conf))
-        for runs_per_conf, label in zip(runs_runs_conf, runs_labels):
+        for runs_per_conf, label in list(zip(runs_runs_conf,
+                runs_labels))[:self.max_rhs_to_plot]:
             scatter = ax.scatter(
                X[:, 0], X[:, 1], sizes=np.log(runs_per_conf) + 10,
                color="white", edgecolors="black", label=label)
@@ -394,20 +395,20 @@ class SampleViz(object):
         ax.set_xlim(X[:, 0].min() - 0.5, X[:, 0].max() + 0.5)
         ax.set_ylim(X[:, 1].min() - 0.5, X[:, 1].max() + 0.5)
 
-        #inc_indx = []
-        #scatter_inc = None
-        #if inc_list:
-        #    self.logger.debug("Plot Incumbents")
-        #    [idx for idx, conf in enumerate(conf_list) if ]
-        #    for idx, conf in enumerate(conf_list):
-        #        if conf in inc_list:
-        #            inc_indx.append(idx)
-        #    self.logger.debug("Indexes of %d incumbent configurations: %s",
-        #                      len(inc_list), str(inc_indx))
-        #    scatter_inc = ax.scatter(X[inc_indx, 0],
-        #                             X[inc_indx, 1],
-        #                             color="black", edgecolors="white",
-        #                             sizes=runs_per_conf[inc_indx] + 10)
+        inc_indx = []
+        scatter_inc = None
+        if inc_list:
+            inc_list = inc_list[:self.max_rhs_to_plot]
+            self.logger.debug("Plot Incumbents")
+            for idx, conf in enumerate(conf_list):
+                if conf in inc_list:
+                    inc_indx.append(idx)
+            self.logger.debug("Indexes of %d incumbent configurations: %s",
+                              len(inc_list), str(inc_indx))
+            scatter_inc = ax.scatter(X[inc_indx, 0],
+                                     X[inc_indx, 1],
+                                     color="black", edgecolors="white",
+                                     sizes=np.log(runs_per_conf[inc_indx]) + 10)
 
         labels = []
         for idx, c in enumerate(conf_list):
@@ -424,34 +425,36 @@ class SampleViz(object):
             label = label.replace("dataframe", "config")
             labels.append(label)
 
-        plt.show()
         #self.logger.debug("Save test.png")
         #fig.savefig("test.png")
 
-        # Show only desired run
-        handles, labels = ax.get_legend_handles_labels() # return lines and labels
-        interactive_legend = mpld3.plugins.InteractiveLegendPlugin(zip(handles,
-                                                                 ax.collections),
-                                                             labels,
-                                                             alpha_unsel=0,
-                                                             alpha_over=1,
-                                                             start_visible=True)
-        mpld3.plugins.connect(fig, interactive_legend)
+        # WORK IN PROGRESS
+        # # Show only desired run
+        # handles, labels = ax.get_legend_handles_labels() # return lines and labels
+        # self.logger.debug("Handles: %s", handles)
+        # self.logger.debug("Labels: %s", labels)
+        # interactive_legend = mpld3.plugins.InteractiveLegendPlugin(zip(handles,
+        #                                                          ax.collections),
+        #                                                      labels,
+        #                                                      alpha_unsel=0,
+        #                                                      alpha_over=1,
+        #                                                      start_visible=True)
+        # mpld3.plugins.connect(fig, interactive_legend)
 
-        #tooltip = mpld3.plugins.PointHTMLTooltip(scatter, labels,
-        #                                         voffset=10, hoffset=10)#, css=self.css)
+        tooltip = mpld3.plugins.PointHTMLTooltip(scatter, labels,
+                                                 voffset=10, hoffset=10)#, css=self.css)
 
-        #mpld3.plugins.connect(fig, tooltip)
+        mpld3.plugins.connect(fig, tooltip)
 
-        #if scatter_inc:
-        #    tooltip = mpld3.plugins.PointHTMLTooltip(scatter_inc, np.array(labels)[inc_indx].tolist(),
-        #                                             voffset=10, hoffset=10)#, css=self.css)
+        if scatter_inc:
+            tooltip = mpld3.plugins.PointHTMLTooltip(scatter_inc, np.array(labels)[inc_indx].tolist(),
+                                                     voffset=10, hoffset=10)#, css=self.css)
 
-        #mpld3.plugins.connect(fig, tooltip)
+        mpld3.plugins.connect(fig, tooltip)
 
-        if self.output:
-            self.logger.debug("Save to %s", self.output)
-            with open(self.output, "w") as fp:
+        if self.output_dir:
+            self.logger.debug("Save to %s", self.output_dir)
+            with open(self.output_dir, "w") as fp:
                 mpld3.save_html(fig, fp)
 
         html = mpld3.fig_to_html(fig)
