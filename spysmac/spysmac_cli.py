@@ -49,7 +49,7 @@ class SpySMACCLI(object):
                                    "config/inst-pairs.")
         opt_opts.add_argument("--output", default="SpySMAC_output",
                               help="path to folder in which to save the HTML-report.")
-        opt_opts.add_argument("--ta_exec_dir", default='.',
+        opt_opts.add_argument("--ta_exec_dir", default=None,
                               help="path to the execution-directory of the "
                                    "SMAC run.")
         opt_opts.add_argument("--param_importance", default="all", nargs='+',
@@ -57,6 +57,10 @@ class SpySMACCLI(object):
                                    "calculate", choices=["all", "ablation",
                                    "forward_selection", "fanova", "incneighbor",
                                    "none"])
+        opt_opts.add_argument("--max_pimp_samples", default=-1, type=int,
+                              help="How many datapoints to use with PIMP")
+        opt_opts.add_argument("--pimp_no_fanova_pairs", action="store_false",
+                              dest="fanova_pairwise")
         opt_opts.add_argument("--feat_analysis", default="all", nargs='+',
                               help="what kind of parameter importance to "
                                    "calculate", choices=["all", "box_violin",
@@ -81,7 +85,9 @@ class SpySMACCLI(object):
 
         # SMAC results
         spySMAC = SpySMAC(args_.folders, args_.output, args_.ta_exec_dir,
-                            missing_data_method=args_.validation)
+                          missing_data_method=args_.validation,
+                          max_pimp_samples=args_.max_pimp_samples,
+                          fanova_pairwise=args_.fanova_pairwise)
         # Expand configs
         if "all" in args_.param_importance:
             param_imp = ["ablation", "forward_selection", "fanova",

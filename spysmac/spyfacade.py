@@ -1,5 +1,6 @@
 import os
 import logging
+from typing import Union
 from collections import OrderedDict
 from contextlib import contextmanager
 import typing
@@ -54,7 +55,8 @@ class SpySMAC(object):
     """
 
     def __init__(self, folders: typing.List[str], output: str,
-                 ta_exec_dir: str='.', missing_data_method: str='epm'):
+                 ta_exec_dir: Union[str, None]=None, missing_data_method: str='epm',
+                 max_pimp_samples: int=-1, fanova_pairwise=True):
         """
         Initialize SpySMAC facade to handle analyzing, plotting and building the
         report-page easily. During initialization, the analysis-infrastructure
@@ -127,7 +129,7 @@ class SpySMAC(object):
 
         # Validator for a) validating with epm, b) plot over time
         # Initialize without trajectory
-        self.validator = Validator(self.scenario, None)
+        self.validator = Validator(self.scenario, None, None)
 
         # Estimate missing costs for [def, inc1, inc2, ...]
         self.complete_data(method=missing_data_method)
@@ -147,7 +149,8 @@ class SpySMAC(object):
 
         self.analyzer = Analyzer(self.original_rh, self.validated_rh,
                                  self.default, self.incumbent, self.train_test,
-                                 self.scenario, self.validator, self.output)
+                                 self.scenario, self.validator, self.output,
+                                 max_pimp_samples, fanova_pairwise)
 
         self.builder = HTMLBuilder(self.output, "SpySMAC")
         # Builder for html-website
@@ -157,7 +160,7 @@ class SpySMAC(object):
         """Complete missing data of runs to be analyzed. Either using validation
         or EPM.
         """
-        with changedir(self.ta_exec_dir):
+        with changedir(self.ta_exec_dir if self.ta_exec_dir else '.'):
             self.logger.info("Completing data using %s.", method)
 
             path_for_validated_rhs = os.path.join(self.output, "validated_rhs")
@@ -408,16 +411,21 @@ class SpySMAC(object):
         # TODO feat-names from scenario?
         in_reader = InputReader()
         feat_fn = self.scenario.feature_fn
-        with changedir(self.ta_exec_dir):
-            if not feat_fn or not os.path.exists(feat_fn):
-                self.logger.warning("Feature Analysis needs valid feature "
-                                    "file! Either {} is not a valid "
-                                    "filename or features are not saved in "
-                                    "the scenario.")
-                self.logger.error("Skipping Feature Analysis.")
-                return
-            else:
-                feat_names = in_reader.read_instance_features_file(self.scenario.feature_fn)[0]
+
+        if not self.scenario.feature_names:
+            with changedir(self.ta_exec_dir if self.ta_exec_dir else '.'):
+                if not feat_fn or not os.path.exists(feat_fn):
+                    self.logger.warning("Feature Analysis needs valid feature "
+                                        "file! Either {} is not a valid "
+                                        "filename or features are not saved in "
+                                        "the scenario.")
+                    self.logger.error("Skipping Feature Analysis.")
+                    return
+                else:
+                    feat_names = in_reader.read_instance_features_file(self.scenario.feature_fn)[0]
+        else:
+            feat_names = self.scenario.feature_names
+
         fa = FeatureAnalysis(output_dn=self.output,
                              scenario=self.scenario,
                              feat_names=feat_names)

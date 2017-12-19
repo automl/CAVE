@@ -1,8 +1,10 @@
+import os
 import itertools
 
 from matplotlib.pyplot import tight_layout, figure
 from matplotlib.pyplot import subplot, savefig, show, setp
 import matplotlib.pyplot as plt
+plt.style.use(os.path.join(os.path.dirname(__file__), 'mpl_style'))
 
 import numpy as np
 

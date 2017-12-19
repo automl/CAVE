@@ -1,6 +1,8 @@
 import os
 import logging
+import shutil
 from contextlib import contextmanager
+from typing import Union
 
 from smac.facade.smac_facade import SMAC
 from smac.optimizer.objective import average_cost
@@ -24,7 +26,7 @@ class SMACrun(SMAC):
     SMACrun keeps all information on a specific SMAC run. Extends the standard
     SMAC-facade.
     """
-    def __init__(self, folder: str, ta_exec_dir: str="."):
+    def __init__(self, folder: str, ta_exec_dir: Union[str, None]=None):
         """Initialize scenario, runhistory and incumbent from folder, execute
         init-method of SMAC facade (so you could simply use SMAC-instances instead)
 
@@ -38,11 +40,18 @@ class SMACrun(SMAC):
             in the scenario-object. since instance- and PCS-files are necessary,
             specify the path to the execution-dir of SMAC here
         """
+        run_1_existed = os.path.exists('run_1')
         self.logger = logging.getLogger("spysmac.SMACrun.{}".format(folder))
         in_reader = InputReader()
 
         self.folder = folder
         self.logger.debug("Loading from %s", folder)
+
+        split_folder = os.path.split(folder)
+        if split_folder[0] and ta_exec_dir is None:
+            ta_exec_dir = split_folder[0]
+        elif ta_exec_dir is None:
+            ta_exec_dir = '.'
 
         self.scen_fn = os.path.join(folder, 'scenario.txt')
         self.rh_fn = os.path.join(folder, 'runhistory.json')
@@ -70,3 +79,5 @@ class SMACrun(SMAC):
                 #restore_incumbent=incumbent)
         # TODO use restore, delete next line
         self.solver.incumbent = incumbent
+        if (not run_1_existed) and os.path.exists('run_1'):
+            shutil.rmtree('run_1')
