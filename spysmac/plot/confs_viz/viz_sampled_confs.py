@@ -13,6 +13,7 @@ import inspect
 import logging
 import json
 import copy
+import typing
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import numpy as np
@@ -24,8 +25,7 @@ from sklearn.manifold.mds import MDS
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-import matplotlib
-matplotlib.use('Agg')
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.animation import FuncAnimation
@@ -54,12 +54,11 @@ from spysmac.plot.confs_viz.utils.set_up import convert_data
 class SampleViz(object):
 
     def __init__(self, scenario: Scenario,
-                 runhistory: RunHistory,
-                 model: RandomForestWithInstances=None,
+                 runhistories: typing.List[RunHistory],
                  incs: list=None,
-                 configs_to_plot=None,
+                 max_plot=None,
                  contour_step_size=0.2,
-                 output: str=None):
+                 output_dir: str=None):
         '''
         Constructor
 
@@ -67,40 +66,38 @@ class SampleViz(object):
         ----------
         scenario: Scenario
             scenario
-        runhistory: RunHistory
-            runhistory
+        runhistories: List[RunHistory]
+            runhistories from configurator runs - first one assumed to be best
         incs: list
-            incumbents
-        configs_to_plot: List[Configuration]
-            only plot those configurations
+            incumbents (same length as runhistories!)
+        max_plot: int
+            maximum number of configs to plot
         contour_step_size: float
             step size of meshgrid to compute contour of fitness landscape
+        output_dir: str
+            output directory
         '''
-
-        self.scenario = copy.deepcopy(scenario)  # pca changes feats
-        self.runhistory = runhistory
         self.logger = logging.getLogger(
             self.__module__ + '.' + self.__class__.__name__)
-        self.incs = incs
-        if configs_to_plot is None:
-            configs_to_plot = runhistory.get_all_configs()
-        self.configs_to_plot = configs_to_plot
 
-        self.model = model
+        self.scenario = copy.deepcopy(scenario)  # pca changes feats
+        self.runhistories = runhistories
+        self.incs = incs
+        self.max_plot = max_plot
+        self.max_rhs_to_plot = 1  # Maximum number of runhistories 2 b plotted
 
         self.contour_step_size = contour_step_size
-        if output and not output.endswith('.html'):
-            self.output = os.path.join(output, 'conf_vizs.html')
+        if output_dir:
+            self.output_dir = os.path.join(output_dir, 'conf_vizs.html')
         else:
-            self.output = output
+            self.output_dir = None
 
     def run(self):
         '''
             main method
         '''
 
-        conf_matrix, conf_list, runs_per_conf = self.get_conf_matrix(
-            self.runhistory)
+        conf_matrix, conf_list, runs_per_conf = self.get_conf_matrix()
         self.logger.info("Number of Configurations: %d" %
                          (conf_matrix.shape[0]))
         dists = self.get_distance(conf_matrix, self.scenario.cs)
@@ -150,13 +147,14 @@ class SampleViz(object):
 
         # Create new rh with only wanted configs
         new_rh = RunHistory(average_cost)
-        for key, value in self.runhistory.data.items():
-            config = self.runhistory.ids_config[key.config_id]
-            if config in self.configs_to_plot:
-                config_id, instance, seed = key
-                cost, time, status, additional_info = value
-                new_rh.add(config, cost, time, status, instance_id=instance,
-                           seed=seed, additional_info=additional_info)
+        for rh in self.runhistories:
+            for key, value in rh.data.items():
+                config = rh.ids_config[key.config_id]
+                if config in self.configs_to_plot:
+                    config_id, instance, seed = key
+                    cost, time, status, additional_info = value
+                    new_rh.add(config, cost, time, status, instance_id=instance,
+                               seed=seed, additional_info=additional_info)
 
         X, y, types = convert_data(scenario=self.scenario,
                                    runhistory=new_rh)
@@ -293,7 +291,7 @@ class SampleViz(object):
             n_components=2, dissimilarity="precomputed", random_state=12345)
         return mds.fit_transform(dists)
 
-    def get_conf_matrix(self, rh: RunHistory):
+    def get_conf_matrix(self):
         """Iterates through runhistory to get a matrix of configurations (in
         vector representation), a list of configurations and the number of
         runs per configuration.
@@ -317,15 +315,36 @@ class SampleViz(object):
 
         conf_matrix = []
         conf_list = []
-        runs_per_conf = []
-        for c in self.configs_to_plot:
-            conf_matrix.append(c.get_array())
-            conf_list.append(c)
-            runs_per_conf.append(len(rh.get_runs_for_config(c)))
+        runs_runs_conf = []
 
-        return np.array(conf_matrix), conf_list, np.array(runs_per_conf)
+        for rh in self.runhistories:
+            for c in rh.get_all_configs():
+                if not c in conf_list:
+                    conf_matrix.append(c.get_array())
+                    conf_list.append(c)
 
-    def plot(self, X, conf_list: list, runs_per_conf, inc_list: list, contour_data=None):
+        # Get total runs per config
+        for rh in self.runhistories:
+            runs_per_conf = np.zeros(len(conf_list), dtype=int)
+            for c in rh.get_all_configs():
+                runs_per_conf[conf_list.index(c)] = len(rh.get_runs_for_config(c))
+            runs_runs_conf.append(np.array(runs_per_conf))
+
+        # Now decide what configurations to plot depending on max_plots and #runs
+        ## Use #runs to determine the most "important" configs to plot
+        #self.logger.info("Reducing number of configs (from %d) to be visualized"
+        #                 ", plotting only the %d most often run configs.",
+        #                 len(all_configs), len(configs_to_plot))
+        runs_per_conf = np.zeros(len(conf_list), dtype=int)
+        for r in runs_runs_conf:
+            runs_per_conf += r
+        assert(len(runs_per_conf) == len(conf_list))
+        self.configs_to_plot = conf_list
+
+        return np.array(conf_matrix), conf_list, runs_runs_conf
+
+    def plot(self, X, conf_list: list, runs_runs_conf, inc_list: list,
+             runs_labels=None, contour_data=None):
         '''
             plots sampled configuration in 2d-space;
             saves results in self.output, if set
@@ -336,8 +355,10 @@ class SampleViz(object):
                 np.array with 2-d coordinates for each configuration
             conf_list: list
                 list of configurations in the same order as X
-            runs_perf_conf: np.array
-                number of runs per configuratoin
+            runs_runs_conf: list[np.array]
+                list of runs to be analyzed, each a np.array with runs per
+                config. if 2 runs are analyzed with 3 configs, this might look
+                like: [np.array([0,2,1]), np.array([2,7,1])]
             inc_list: list
                 list of incumbents (Configuration)
             contour_data: list
@@ -359,11 +380,17 @@ class SampleViz(object):
             v = np.linspace(min_z, max_z, 15, endpoint=True)
             contour = ax.contourf(contour_data[0], contour_data[1], contour_data[2],
                                   min(100, np.unique(contour_data[2]).shape[0]))
-            plt.colorbar(contour,ticks=v)
+            plt.colorbar(contour, ticks=v)  #, pad=0.15)
 
+        # Plot individual runs as scatter
         self.logger.debug("Plot Scatter")
-        scatter = ax.scatter(
-            X[:, 0], X[:, 1], sizes=np.log(runs_per_conf) + 10, color="white", edgecolors="black")
+        if not runs_labels:
+            runs_labels = range(len(runs_runs_conf))
+        for runs_per_conf, label in list(zip(runs_runs_conf,
+                runs_labels))[:self.max_rhs_to_plot]:
+            scatter = ax.scatter(
+               X[:, 0], X[:, 1], sizes=np.log(runs_per_conf) + 10,
+               color="white", edgecolors="black", label=label)
 
         ax.set_xlim(X[:, 0].min() - 0.5, X[:, 0].max() + 0.5)
         ax.set_ylim(X[:, 1].min() - 0.5, X[:, 1].max() + 0.5)
@@ -371,6 +398,7 @@ class SampleViz(object):
         inc_indx = []
         scatter_inc = None
         if inc_list:
+            inc_list = inc_list[:self.max_rhs_to_plot]
             self.logger.debug("Plot Incumbents")
             for idx, conf in enumerate(conf_list):
                 if conf in inc_list:
@@ -380,7 +408,7 @@ class SampleViz(object):
             scatter_inc = ax.scatter(X[inc_indx, 0],
                                      X[inc_indx, 1],
                                      color="black", edgecolors="white",
-                                     sizes=runs_per_conf[inc_indx] + 10)
+                                     sizes=np.log(runs_per_conf[inc_indx]) + 10)
 
         labels = []
         for idx, c in enumerate(conf_list):
@@ -388,8 +416,8 @@ class SampleViz(object):
             names = []
             for p in c:
                 if c[p]:
-                    values.append(c[p])
                     names.append(str(p))
+                    values.append(c[p])
 
             label = pd.DataFrame(
                 data=values, index=names, columns=["Conf %d" % (idx +
@@ -397,9 +425,21 @@ class SampleViz(object):
             label = label.replace("dataframe", "config")
             labels.append(label)
 
-        plt.show()
         #self.logger.debug("Save test.png")
         #fig.savefig("test.png")
+
+        # WORK IN PROGRESS
+        # # Show only desired run
+        # handles, labels = ax.get_legend_handles_labels() # return lines and labels
+        # self.logger.debug("Handles: %s", handles)
+        # self.logger.debug("Labels: %s", labels)
+        # interactive_legend = mpld3.plugins.InteractiveLegendPlugin(zip(handles,
+        #                                                          ax.collections),
+        #                                                      labels,
+        #                                                      alpha_unsel=0,
+        #                                                      alpha_over=1,
+        #                                                      start_visible=True)
+        # mpld3.plugins.connect(fig, interactive_legend)
 
         tooltip = mpld3.plugins.PointHTMLTooltip(scatter, labels,
                                                  voffset=10, hoffset=10)#, css=self.css)
@@ -412,9 +452,9 @@ class SampleViz(object):
 
         mpld3.plugins.connect(fig, tooltip)
 
-        if self.output:
-            self.logger.debug("Save to %s", self.output)
-            with open(self.output, "w") as fp:
+        if self.output_dir:
+            self.logger.debug("Save to %s", self.output_dir)
+            with open(self.output_dir, "w") as fp:
                 mpld3.save_html(fig, fp)
 
         html = mpld3.fig_to_html(fig)
