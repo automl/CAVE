@@ -13,6 +13,4 @@ configspace==0.4.2
 scipy
 sklearn
 orange3
-git+https://github.com/mlindauer/AutoFolio
-git+https://github.com/mlindauer/ASlibScenario
 git+https://bitbucket.org/aadfreiburg/plotting_scripts.git
