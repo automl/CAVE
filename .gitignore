@@ -2,6 +2,7 @@
 data/
 results/
 vespy/
+_run_number.txt
 
 # Specific examples
 data/
