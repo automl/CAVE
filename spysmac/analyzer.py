@@ -74,6 +74,7 @@ class Analyzer(object):
         self.train_test = train_test
         self.scenario = scenario
         self.validator = validator
+        self.pimp = None  # PIMP object for reuse
         self.output = output
 
         self.importance = None  # Used to store dictionary containing parameter
@@ -338,9 +339,9 @@ class Analyzer(object):
         plots: Dict[str: st]
             dictionary mapping single parameters to their plots
         """
-        importance = self.parameter_importance("fanova", incumbent, self.output,
-                                               num_params, num_pairs=num_pairs)
-        parameter_imp = importance.evaluator.evaluated_parameter_importance
+        self.parameter_importance("fanova", incumbent, self.output,
+                                  num_params, num_pairs=num_pairs)
+        parameter_imp = self.pimp.evaluator.evaluated_parameter_importance
         # Split single and pairwise (pairwise are string: "['p1','p2']")
         pairwise_imp = {k:v for k,v in parameter_imp.items() if k.startswith("[")}
         for k in pairwise_imp.keys():
@@ -390,13 +391,14 @@ class Analyzer(object):
     def local_epm_plots(self):
         plots = OrderedDict([])
         if self.importance:
-            importance = self.parameter_importance("incneighbor", self.incumbent,
+            self.parameter_importance("incneighbor", self.incumbent,
                                                    self.output, num_params=3)
-            for p, i in self.importance.items():
-                plots[p] = os.path.join(self.output, 'incneighbor', p+'.png')
+            for p, i in [(k, v) for k, v in sorted(self.importance.items(),
+                                key=operator.itemgetter(1), reverse=True) if v > 0.05]:
+                plots[p] = os.path.join(self.output, 'incneighbor', p + '.png')
 
         else:
-            self.logger.debug("Need to run fanova first!")
+            self.logger.warning("Need to run fANOVA before incneighbor!")
             raise ValueError()
         return plots
 
@@ -418,20 +420,19 @@ class Analyzer(object):
         """
         # Evaluate parameter importance
         save_folder = output
-        importance = Importance(scenario=copy.deepcopy(self.scenario),
-                                runhistory=self.original_rh,
-                                incumbent=incumbent,
-                                parameters_to_evaluate=num_params,
-                                save_folder=save_folder,
-                                seed=12345,
-                                max_sample_size=self.max_pimp_samples,
-                                fANOVA_pairwise=self.fanova_pairwise)
+        if not self.pimp:
+            self.pimp = Importance(scenario=copy.deepcopy(self.scenario),
+                                   runhistory=self.original_rh,
+                                   incumbent=incumbent,
+                                   parameters_to_evaluate=num_params,
+                                   save_folder=save_folder,
+                                   seed=12345,
+                                   max_sample_size=self.max_pimp_samples,
+                                   fANOVA_pairwise=self.fanova_pairwise)
         self.logger.debug("Imp modus: %s", modus)
-        #if modus == "fanova":
-        #    importance.evaluator.n_most_imp_pairs = 0
-        result = importance.evaluate_scenario([modus])
-        importance.plot_results(name=os.path.join(save_folder, modus), show=False)
-        return importance
+        result = self.pimp.evaluate_scenario([modus])
+        self.pimp.plot_results(name=os.path.join(save_folder, modus), show=False)
+        return self.pimp
 
 ####################################### FEATURE IMPORTANCE #######################################
     def feature_importance(self):
