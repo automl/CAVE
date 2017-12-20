@@ -6,8 +6,8 @@ matplotlib==2.0.2
 sphinx
 sphinx_rtd_theme
 mpld3
+smac>=0.8.0
 git+https://github.com/automl/fanova@master
--e git+https://github.com/automl/SMAC3.git@d783add6d11103772274492e9ed6e6f2c2c3a412#egg=smac
 -e git+https://github.com/automl/ParameterImportance.git@development#egg=pimp
 configspace==0.4.2
 scipy
