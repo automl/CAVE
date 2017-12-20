@@ -1,5 +1,3 @@
-# This file is copied from SMAC3 and then modified
-
 machine:
   environment:
     PATH: /home/ubuntu/miniconda/bin:$PATH
@@ -9,7 +7,7 @@ machine:
     USERNAME: "automl"
 
     # The repository where the documentation will be hosted
-    DOC_REPO: "SpySMAC"
+    DOC_REPO: "CAVE"
 
     # The base URL for the Github page where the documentation will be hosted
     DOC_URL: ""
