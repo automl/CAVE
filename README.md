@@ -2,11 +2,11 @@ This package is not officially released yet and subject to heavy changes. Backwa
 
 Status for master branch:
 
-[![Build Status](https://travis-ci.org/automl/SpySMAC.svg?branch=master)](https://travis-ci.org/automl/SpySMAC)
+[![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=master)](https://travis-ci.org/automl/CAVE)
 
 Status for development branch
 
-[![Build Status](https://travis-ci.org/automl/SpySMAC.svg?branch=development)](https://travis-ci.org/automl/SpySMAC)
+[![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=development)](https://travis-ci.org/automl/CAVE)
 
 # CAVE 
 CAVE is an analyzing tool that builds on SMAC3 (https://github.com/automl/SMAC3)
