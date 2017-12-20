@@ -12,7 +12,6 @@ examples/spear_qcp_large/
 examples/spear_qcp_small/example_output_1/validated_rh.json
 examples/spear_qcp_small/example_output_2/validated_rh.json
 examples/spear_qcp_small/example_output_3/validated_rh.json
-examples/spear_qcp_small/SpySMAC_output/
 
 # Old versions
 *.old
@@ -117,4 +116,3 @@ ENV/
 /site
 
 # mypy
-.mypy_cache/
