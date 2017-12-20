@@ -49,6 +49,6 @@ install:
 
 # command to run tests, e.g. python setup.py test
 script:
-  - nosetests -sv --with-coverage --cover-package=spysmac
+  - nosetests -sv --with-coverage --cover-package=cave
 after_success:
   - codecov
