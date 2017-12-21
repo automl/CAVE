@@ -101,7 +101,8 @@ class ParallelCoordinatesPlotter(object):
         # Get n most run configs
         if num_configs == -1:
             num_configs = len(all_configs)
-        self.logger.debug("Plotting %d configs.", num_configs)
+        self.logger.debug("Plotting %d configs.", min(num_configs,
+                                                      len(all_configs)))
         self.validated_rh = self.validator.validate_epm(all_configs,
                                                         'train+test', 1,
                                                         runhistory=self.original_rh)
@@ -215,7 +216,8 @@ class ParallelCoordinatesPlotter(object):
                 cval = scale.to_rgba(self.validated_rh.get_cost(configs[idx]))
                 cval = (cval[2], cval[0], cval[1])
                 alpha = 1. #  self.get_alpha(configs[idx])
-                ax.plot(range(len(params)), data.loc[idx, params], color=cval, alpha=alpha)
+                ax.plot(range(len(params)), data.loc[idx, params], color=cval,
+                        alpha=alpha, linewidth=0.4)
             ax.set_xlim([i, i + 1])
 
         def set_ticks_for_axis(p, ax, num_ticks=10):
@@ -264,8 +266,6 @@ class ParallelCoordinatesPlotter(object):
 
         # Remove spaces between subplots
         plt.subplots_adjust(wspace=0)
-
-        plt.title("Explored parameter ranges in parallel coordinates.")
 
         fig.savefig(filename)
         plt.close(fig)
