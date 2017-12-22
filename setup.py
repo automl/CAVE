@@ -24,6 +24,8 @@ setuptools.setup(
     keywords="machine learning algorithm configuration hyperparameter "
              "optimization tuning analyzing",
     url="",
+    entry_points={'console_scripts': ['explore-cave=cave.cave_cli:entry_point',
+                                      'cave=cave.cave_cli:entry_point']},
     packages=setuptools.find_packages(exclude=['test', 'source']),
     classifiers=[
         "Development Status :: 3 - Alpha",

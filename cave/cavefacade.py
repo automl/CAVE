@@ -290,7 +290,7 @@ class CAVE(object):
                         x: x[0])))
             self.logger.debug("Costs for confvis: %s", costs)
 
-            confviz_script = self.analyzer.plot_confviz(incumbents, runhistories)
+            confviz_script = self.analyzer.plot_confviz(incumbents[0], runhistories)
             self.website["Configurator's behavior"]["Configuration Visualization"] = {
                     "table" : confviz_script,
                     "tooltip" : "Using PCA to reduce dimensionality of the "
