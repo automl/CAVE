@@ -58,6 +58,36 @@ class ParallelCoordinatesPlotter(object):
         alpha = 1 - np.log((x - min_) + 1) / (1 + np.log((max_ - min_) + 1))  # logarithmic alpha
         return alpha
 
+    def _get_log_spaced_ids(self, all_configs, num_configs):
+        """
+        Method that produces integer indices in the logspace.
+        Useful to visualize all of the best and the worst
+        :param all_configs:
+        :param num_configs:
+        :return:
+        """
+        # Calculate the constant between values in log-space
+        ratio = np.e**(np.log(len(all_configs)) / (num_configs - 1))
+        ids, i, gaps = [0], 0, []
+        while len(ids) < num_configs:  # Sample until the wanted number of values is reached
+            n = ratio ** i  # draw the next value on the logscale
+            n_int = int(n)
+            if n_int - ids[-1] < 1:  # if that value is too close to another drawn value i.e. rounded to the same int
+                n_int = n_int + int((i - 1) * ratio)  # jump a few steps forward
+            if gaps and n_int >= len(all_configs):  # if we overshot we have to go back to one gap and fill it with
+                # values that have not been taken yet
+                n_int = gaps.pop(0) + 1
+            if abs(n_int - ids[-1]) > 1:
+                gaps.append(n_int)
+            i += 1
+            if n_int != ids[-1]:  # Only necessary for the first few indices
+                ids.append(n_int)
+        # filter all values that are out of scope (happens sometimes)
+        ids = list(filter(lambda x: x < len(all_configs), set(ids)))
+        if len(all_configs) - 1 not in ids:  # in case the worst one is not plotted add it.
+            ids[-1] = len(all_configs) - 1
+        return ids
+
     def plot_n_configs(self, num_configs, params):
         """
         Parameters
@@ -71,17 +101,22 @@ class ParallelCoordinatesPlotter(object):
         # Get n most run configs
         if num_configs == -1:
             num_configs = len(all_configs)
-        configs_to_plot = sorted(all_configs, key=lambda x:
-        len(self.original_rh.get_runs_for_config(x)),
-                                 reverse=True)[:num_configs]
-        self.logger.debug("Plotting %d configs.", num_configs)
-        self.validated_rh = self.validator.validate_epm(configs_to_plot,
+        self.logger.debug("Plotting %d configs.", min(num_configs,
+                                                      len(all_configs)))
+        self.validated_rh = self.validator.validate_epm(all_configs,
                                                         'train+test', 1,
                                                         runhistory=self.original_rh)
+        configs_to_plot = sorted(all_configs, key=lambda x: self.validated_rh.get_cost(x))
+        # What about scenarios where quality is the value to optimize? shouldn't min and max be switched then?
         self.best_config_performance = min([self.validated_rh.get_cost(c) for c
-                                            in configs_to_plot])
+                                            in all_configs])
         self.worst_config_performance = max([self.validated_rh.get_cost(c) for c
-                                             in configs_to_plot])
+                                             in all_configs])
+        if num_configs < len(configs_to_plot):  # Only sample on the logscale if not all configs are plotted.
+            ids = self._get_log_spaced_ids(configs_to_plot, num_configs)
+        else:
+            ids = range(len(all_configs))
+        configs_to_plot = np.array(configs_to_plot)[ids]
         return self._plot(configs_to_plot, params)
 
     def _plot(self, configs, params):
@@ -167,25 +202,22 @@ class ParallelCoordinatesPlotter(object):
 
         # setup colormap
         cm = plt.get_cmap('winter')
-        normedC = colors.Normalize(vmin=0, vmax=len(data.index))
+        if self.worst_config_performance < self.best_config_performance:
+            normedC = colors.Normalize(vmin=self.worst_config_performance,
+                                       vmax=self.best_config_performance)
+        else:
+            normedC = colors.Normalize(vmax=self.worst_config_performance,
+                                       vmin=self.best_config_performance)
         scale = cmx.ScalarMappable(norm=normedC, cmap=cm)
-
-        # get sort_id to correctly choose color
-        conf_cost = []
-        plt_confs = {}
-        for conf in configs:
-            conf_cost.append((conf, self.validated_rh.get_cost(conf)))
-        sort_idx = list(map(lambda x: x[0], sorted(enumerate(conf_cost), key=lambda y: y[1][1])))
-        for c_id, conf in enumerate(conf_cost):
-            plt_confs[conf[0]] = sort_idx[c_id]
 
         # Plot data
         for i, ax in enumerate(axes):  # Iterate over params
             for idx in data.index:  # Iterate over configs
-                cval = scale.to_rgba(plt_confs[configs[idx]])
+                cval = scale.to_rgba(self.validated_rh.get_cost(configs[idx]))
                 cval = (cval[2], cval[0], cval[1])
-                alpha = self.get_alpha(configs[idx])
-                ax.plot(range(len(params)), data.loc[idx, params], color=cval, alpha=alpha)
+                alpha = 1. #  self.get_alpha(configs[idx])
+                ax.plot(range(len(params)), data.loc[idx, params], color=cval,
+                        alpha=alpha, linewidth=0.4)
             ax.set_xlim([i, i + 1])
 
         def set_ticks_for_axis(p, ax, num_ticks=10):
@@ -234,8 +266,6 @@ class ParallelCoordinatesPlotter(object):
 
         # Remove spaces between subplots
         plt.subplots_adjust(wspace=0)
-
-        plt.title("Explored parameter ranges in parallel coordinates.")
 
         fig.savefig(filename)
         plt.close(fig)
