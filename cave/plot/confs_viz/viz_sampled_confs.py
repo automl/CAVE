@@ -388,7 +388,7 @@ class SampleViz(object):
         for runs_per_conf, label in list(zip(runs_runs_conf,
                 runs_labels))[:self.max_rhs_to_plot]:
             scatter = ax.scatter(
-               X[:, 0], X[:, 1], sizes=np.log(runs_per_conf) + 10,
+               X[:, 0], X[:, 1], sizes=np.log(runs_per_conf + 1) + 10,
                color="white", edgecolors="black", label=label)
 
         ax.set_xlim(X[:, 0].min() - 0.5, X[:, 0].max() + 0.5)
@@ -407,7 +407,7 @@ class SampleViz(object):
             scatter_inc = ax.scatter(X[inc_indx, 0],
                                      X[inc_indx, 1],
                                      color="black", edgecolors="white",
-                                     sizes=np.log(runs_per_conf[inc_indx]) + 10)
+                                     sizes=np.log(runs_per_conf[inc_indx] + 1) + 10)
 
         labels = []
         for idx, c in enumerate(conf_list):
