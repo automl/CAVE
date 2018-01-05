@@ -397,7 +397,10 @@ class SampleViz(object):
         inc_indx = []
         scatter_inc = None
         if inc_list:
-            inc_list = inc_list[:self.max_rhs_to_plot]
+            if isinstance(inc_list, list):
+                inc_list = inc_list[:self.max_rhs_to_plot]
+            else:
+                inc_list = [inc_list]
             self.logger.debug("Plot Incumbents")
             for idx, conf in enumerate(conf_list):
                 if conf in inc_list:

@@ -114,3 +114,7 @@ class CaveCLI(object):
                      algo_footprint=True,
                      param_importance=param_imp,
                      feature_analysis=feature_analysis)
+
+def entry_point():
+    cave = CaveCLI()
+    cave.main_cli()
