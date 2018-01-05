@@ -280,7 +280,7 @@ class Plotter(object):
             epm: RandomForestWithInstances
                 emperical performance model (expecting trained on all runs)
         """
-        self.logger.info("Estimating costs over time for best run.")
+        self.logger.debug("Estimating costs over time for best run.")
         validator.traj = traj  # set trajectory
         time, configs = [], []
 

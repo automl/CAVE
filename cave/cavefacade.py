@@ -85,10 +85,11 @@ class CAVE(object):
 
         # Create output if necessary
         self.output = output
-        self.logger.info("Writing to %s", self.output)
+        self.logger.info("Saving results to %s", self.output)
         if not os.path.exists(output):
             self.logger.debug("Output-dir %s does not exist, creating", self.output)
             os.makedirs(output)
+            os.makedirs(os.path.join(output, "debug"))
 
         # Global runhistory combines all actual runs of individual SMAC-runs
         # We save the combined (unvalidated) runhistory to disk, so we can use it later on.
@@ -288,7 +289,6 @@ class CAVE(object):
             costs, incumbents, runhistories = (list(t) for t in
                     zip(*sorted(zip(costs, incumbents, runhistories), key=lambda
                         x: x[0])))
-            self.logger.debug("Costs for confvis: %s", costs)
 
             confviz_script = self.analyzer.plot_confviz(incumbents, runhistories)
             self.website["Configurator's behavior"]["Configuration Visualization"] = {
@@ -324,7 +324,6 @@ class CAVE(object):
 
         if parallel_coordinates:
             # Should be after parameter importance, if performed.
-            self.logger.info("Plotting parallel coordinates.")
             n_params = 6
             parallel_path = self.analyzer.plot_parallel_coordinates(n_params)
             self.website["Configurator's behavior"]["Parallel Coordinates"] = {
@@ -337,6 +336,10 @@ class CAVE(object):
                               correlation='correlation' in feature_analysis,
                               clustering='clustering' in feature_analysis,
                               importance='importance' in feature_analysis)
+
+        self.logger.info("CAVE finished. Report is located in %s",
+                         os.path.join(self.output, 'report.html'))
+
         self.build_website()
 
 
@@ -351,7 +354,6 @@ class CAVE(object):
                 "are implemented: fANOVA (functional analysis of "
                 "variance), ablation and forward selection.")])
         if fanova:
-            self.logger.info("fANOVA...")
             table, plots, pair_plots = self.analyzer.fanova(self.incumbent)
 
             self.website["Parameter Importance"]["fANOVA"] = OrderedDict([

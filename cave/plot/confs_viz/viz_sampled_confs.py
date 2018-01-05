@@ -98,7 +98,7 @@ class SampleViz(object):
         '''
 
         conf_matrix, conf_list, runs_per_conf = self.get_conf_matrix()
-        self.logger.info("Number of Configurations: %d" %
+        self.logger.debug("Number of Configurations: %d" %
                          (conf_matrix.shape[0]))
         dists = self.get_distance(conf_matrix, self.scenario.cs)
         red_dists = self.get_mds(dists)
@@ -158,7 +158,6 @@ class SampleViz(object):
 
         X, y, types = convert_data(scenario=self.scenario,
                                    runhistory=new_rh)
-        self.logger.debug(X)
 
         types = np.array(np.zeros((2+n_feats)), dtype=np.uint)
 

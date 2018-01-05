@@ -72,7 +72,7 @@ class FeatureAnalysis(object):
             -------
             list of tuples of feature name and feature plot file name
         '''
-        self.logger.info("Plotting box and violin plots........")
+        self.logger.debug("Plotting box and violin plots........")
 
         files_ = []
 
@@ -106,7 +106,7 @@ class FeatureAnalysis(object):
             file name of saved plot
         '''
         matplotlib.pyplot.close()
-        self.logger.info("Plotting correlation plots........")
+        self.logger.debug("Plotting correlation plots........")
 
         feature_data = self.feature_data
         features = list(self.feature_data.columns)
@@ -178,7 +178,7 @@ class FeatureAnalysis(object):
             use pca to reduce feature dimensions to 2 and cluster instances using k-means afterwards
         '''
         matplotlib.pyplot.close()
-        self.logger.info("Plotting clusters........")
+        self.logger.debug("Plotting clusters........")
         # impute missing data; probably already done, but to be on the safe
         # side
         self.feature_data = self.feature_data.fillna(

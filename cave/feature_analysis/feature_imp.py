@@ -178,5 +178,5 @@ class FeatureForwardSelector():
         plot_paths.append(
                     self._plot_result(output_fn + '-chng.png', False))
         plt.close('all')
-        self.logger.info('Saved plot as %s-[barplot|chng].png' % output_fn)
+        self.logger.debug('Saved plot as %s-[barplot|chng].png' % output_fn)
         return plot_paths

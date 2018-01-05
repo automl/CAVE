@@ -78,10 +78,14 @@ class CaveCLI(object):
 
         args_, misc = parser.parse_known_args()
 
+        logger = logging.getLogger()
         if args_.verbose_level == "INFO":
             logging.basicConfig(level=logging.INFO)
         else:
             logging.basicConfig(level=logging.DEBUG)
+        handler = logging.FileHandler(os.path.join(args_.output, "debug.log"), "w")
+        handler.setLevel(logging.DEBUG)
+        logger.addHandler(handler)
 
         # SMAC results
         cave = CAVE(args_.folders, args_.output, args_.ta_exec_dir,
