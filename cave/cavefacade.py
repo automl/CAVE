@@ -90,6 +90,11 @@ class CAVE(object):
             self.logger.debug("Output-dir %s does not exist, creating", self.output)
             os.makedirs(output)
             os.makedirs(os.path.join(output, "debug"))
+        # Log to file
+        logger = logging.getLogger()
+        handler = logging.FileHandler(os.path.join(self.output, "debug.log"), "w")
+        handler.setLevel(logging.DEBUG)
+        logger.addHandler(handler)
 
         # Global runhistory combines all actual runs of individual SMAC-runs
         # We save the combined (unvalidated) runhistory to disk, so we can use it later on.
