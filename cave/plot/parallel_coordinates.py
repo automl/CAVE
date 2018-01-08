@@ -270,6 +270,7 @@ class ParallelCoordinatesPlotter(object):
                          range(num_ticks + 1)]
             ax.yaxis.set_ticks(ticks)
             ax.set_yticklabels(tick_labels)
+            ax.set_ylim([-0.05, 1.05])
 
         # TODO adjust tick-labels to unused and maybe even log?
         for p, ax in enumerate(axes):
