@@ -1,6 +1,7 @@
 import os
 import math
 import logging
+import random
 
 import numpy as np
 import pandas as pd
@@ -112,6 +113,10 @@ class ParallelCoordinatesPlotter(object):
                                             in all_configs])
         self.worst_config_performance = max([self.validated_rh.get_cost(c) for c
                                              in all_configs])
+        ids = list(sorted(random.sample(range(len(configs_to_plot)), num_configs)))
+        ids[0] = 0
+        ids[-1] = len(configs_to_plot) - 1
+        self._plot(np.array(configs_to_plot)[ids], params, fn=os.path.join(self.output_dir,"parallel_coordinates_uniform_" + str(len(ids)) + '.png'))
         if num_configs < len(configs_to_plot):  # Only sample on the logscale if not all configs are plotted.
             ids = self._get_log_spaced_ids(configs_to_plot, num_configs)
         else:
@@ -119,7 +124,7 @@ class ParallelCoordinatesPlotter(object):
         configs_to_plot = np.array(configs_to_plot)[ids]
         return self._plot(configs_to_plot, params)
 
-    def _plot(self, configs, params):
+    def _plot(self, configs, params, fn=None):
         """
         Parameters
         ----------
@@ -131,8 +136,12 @@ class ParallelCoordinatesPlotter(object):
         -------
         output: str
         """
-        filename = os.path.join(self.output_dir,
-                                "parallel_coordinates_" + str(len(configs)) + '.png')
+        if fn is None:
+            filename = os.path.join(self.output_dir,
+                                    "parallel_coordinates_" + str(len(configs)) + '.png')
+        else:
+            filename = fn
+
         if len(params) < 3:
             self.logger.info("Only two parameters, skipping parallel coordinates.")
             return
@@ -215,6 +224,8 @@ class ParallelCoordinatesPlotter(object):
             for idx in data.index:  # Iterate over configs
                 cval = scale.to_rgba(self.validated_rh.get_cost(configs[idx]))
                 cval = (cval[2], cval[0], cval[1])
+                if configs[idx] == self.best_config_performance:
+                    cval=(0., 0., 0.)
                 alpha = 1. #  self.get_alpha(configs[idx])
                 ax.plot(range(len(params)), data.loc[idx, params], color=cval,
                         alpha=alpha, linewidth=3, zorder=int(cval[2]*255))
