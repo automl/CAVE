@@ -113,18 +113,26 @@ class ParallelCoordinatesPlotter(object):
                                             in all_configs])
         self.worst_config_performance = max([self.validated_rh.get_cost(c) for c
                                              in all_configs])
-        ids = list(sorted(random.sample(range(len(configs_to_plot)), num_configs)))
-        ids[0] = 0
-        ids[-1] = len(configs_to_plot) - 1
-        self._plot(np.array(configs_to_plot)[ids], params, fn=os.path.join(self.output_dir,"parallel_coordinates_uniform_" + str(len(ids)) + '.png'))
+        if num_configs < len(configs_to_plot):
+            ids = list(sorted(random.sample(range(len(configs_to_plot)), num_configs)))
+            ids[0] = 0
+            ids[-1] = len(configs_to_plot) - 1
+        else:
+            ids = list(range(len(configs_to_plot)))
+        self._plot(np.array(configs_to_plot)[ids], params, log_c=False,
+                   fn=os.path.join(self.output_dir, "parallel_coordinates_uniform_" + str(len(ids)) + '.png'))
+        self._plot(np.array(configs_to_plot)[ids], params, log_c=True,
+                   fn=os.path.join(self.output_dir, "parallel_coordinates_uniform_logged_c" + str(len(ids)) + '.png'))
         if num_configs < len(configs_to_plot):  # Only sample on the logscale if not all configs are plotted.
             ids = self._get_log_spaced_ids(configs_to_plot, num_configs)
         else:
             ids = range(len(all_configs))
         configs_to_plot = np.array(configs_to_plot)[ids]
+        self._plot(configs_to_plot, params, log_c=False,
+                   fn=os.path.join(self.output_dir, "parallel_coordinates_unlogged_c" + str(len(ids)) + '.png'))
         return self._plot(configs_to_plot, params)
 
-    def _plot(self, configs, params, fn=None):
+    def _plot(self, configs, params, fn=None, log_c=True):
         """
         Parameters
         ----------
@@ -211,12 +219,13 @@ class ParallelCoordinatesPlotter(object):
 
         # setup colormap
         cm = plt.get_cmap('winter')
+        scaler = colors.LogNorm if log_c else colors.Normalize
         if self.worst_config_performance < self.best_config_performance:
-            normedC = colors.Normalize(vmin=self.worst_config_performance,
-                                       vmax=self.best_config_performance)
+            normedC = scaler(vmin=self.worst_config_performance,
+                             vmax=self.best_config_performance)
         else:
-            normedC = colors.Normalize(vmax=self.worst_config_performance,
-                                       vmin=self.best_config_performance)
+            normedC = scaler(vmax=self.worst_config_performance,
+                             vmin=self.best_config_performance)
         scale = cmx.ScalarMappable(norm=normedC, cmap=cm)
 
         # Plot data
