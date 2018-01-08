@@ -92,7 +92,7 @@ class ParallelCoordinatesPlotter(object):
     def _fun(self, a, logy):
         return np.log10(a) if logy else a
 
-    def plot_n_configs(self, num_configs, params, logy=True):
+    def plot_n_configs(self, num_configs, params):
         """
         Parameters
         ----------
@@ -111,27 +111,34 @@ class ParallelCoordinatesPlotter(object):
                                                         'train+test', 1,
                                                         runhistory=self.original_rh)
 
-        configs_to_plot = sorted(all_configs, key=lambda x: self._fun(self.validated_rh.get_cost(x), logy))
-        # What about scenarios where quality is the value to optimize? shouldn't min and max be switched then?
-        self.best_config_performance = self._fun(min([self.validated_rh.get_cost(c) for c
-                                            in all_configs]), logy)
-        self.worst_config_performance = self._fun(max([self.validated_rh.get_cost(c) for c
-                                             in all_configs]), logy)
-        if num_configs < len(configs_to_plot):
-            ids = list(sorted(random.sample(range(len(configs_to_plot)), num_configs)))
-            ids[0] = 0
-            ids[-1] = len(configs_to_plot) - 1
-        else:
-            ids = list(range(len(configs_to_plot)))
-        self._plot(np.array(configs_to_plot)[ids], params,
-                   fn=os.path.join(self.output_dir, "parallel_coordinates_uniform_" + str(len(ids)) + '.png'),
-                   logy=logy)
-        if num_configs < len(configs_to_plot):  # Only sample on the logscale if not all configs are plotted.
-            ids = self._get_log_spaced_ids(configs_to_plot, num_configs)
-        else:
-            ids = range(len(all_configs))
-        configs_to_plot = np.array(configs_to_plot)[ids]
-        return self._plot(configs_to_plot, params, logy=logy)
+        for logy in [False, True]:
+            configs_to_plot = sorted(all_configs, key=lambda x: self._fun(self.validated_rh.get_cost(x), logy))
+            # What about scenarios where quality is the value to optimize? shouldn't min and max be switched then?
+            self.best_config_performance = self._fun(min([self.validated_rh.get_cost(c) for c
+                                                in all_configs]), logy)
+            self.worst_config_performance = self._fun(max([self.validated_rh.get_cost(c) for c
+                                                 in all_configs]), logy)
+            if num_configs < len(configs_to_plot):
+                ids = list(sorted(random.sample(range(len(configs_to_plot)), num_configs)))
+                ids[0] = 0
+                ids[-1] = len(configs_to_plot) - 1
+            else:
+                ids = list(range(len(configs_to_plot)))
+            self._plot(np.array(configs_to_plot)[ids], params,
+                       fn=os.path.join(self.output_dir, "parallel_coordinates_uniform_{:s}".format(
+                           'log_cost' if logy else ''
+                       ) + str(len(ids)) + '.png'),
+                       logy=logy)
+            if num_configs < len(configs_to_plot):  # Only sample on the logscale if not all configs are plotted.
+                ids = self._get_log_spaced_ids(configs_to_plot, num_configs)
+            else:
+                ids = range(len(all_configs))
+            configs_to_plot = np.array(configs_to_plot)[ids]
+            res = self._plot(configs_to_plot, params,
+                             fn = os.path.join(self.output_dir, "parallel_coordinates_{:s}".format(
+                                 'log_cost' if logy else ''
+                             ) + str(len(ids)) + '.png'), logy=logy)
+        return res
 
     def _plot(self, configs, params, fn=None, log_c=False, logy=False):
         """
