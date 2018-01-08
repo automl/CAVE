@@ -158,7 +158,7 @@ class FeatureForwardSelector():
         else:
             ax.set_xticks(ind)
             ax.set_xlim(0, max_to_plot - 1)
-        ax.set_xticklabels(features, rotation=30, ha='right', size='16',
+        ax.set_xticklabels(features, rotation=30, ha='right', size='10',
                            family='monospace')
         ax.xaxis.grid(True)
         ax.yaxis.grid(True)

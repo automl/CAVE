@@ -45,7 +45,7 @@ class HTMLBuilder(object):
 <!DOCTYPE html>
 <html>
 <head>
-<title>SpySMAC</title>
+<title>CAVE</title>
 <link href="css/accordion.css" rel="stylesheet" />
 <link href="css/table.css" rel="stylesheet" />
 <link href="css/lightbox.min.css" rel="stylesheet" />
