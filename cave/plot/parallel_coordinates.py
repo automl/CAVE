@@ -89,7 +89,10 @@ class ParallelCoordinatesPlotter(object):
             ids[-1] = len(all_configs) - 1
         return ids
 
-    def plot_n_configs(self, num_configs, params):
+    def _fun(self, a, logy):
+        return np.log10(a) if logy else a
+
+    def plot_n_configs(self, num_configs, params, logy=True):
         """
         Parameters
         ----------
@@ -107,32 +110,30 @@ class ParallelCoordinatesPlotter(object):
         self.validated_rh = self.validator.validate_epm(all_configs,
                                                         'train+test', 1,
                                                         runhistory=self.original_rh)
-        configs_to_plot = sorted(all_configs, key=lambda x: self.validated_rh.get_cost(x))
+
+        configs_to_plot = sorted(all_configs, key=lambda x: self._fun(self.validated_rh.get_cost(x), logy))
         # What about scenarios where quality is the value to optimize? shouldn't min and max be switched then?
-        self.best_config_performance = min([self.validated_rh.get_cost(c) for c
-                                            in all_configs])
-        self.worst_config_performance = max([self.validated_rh.get_cost(c) for c
-                                             in all_configs])
+        self.best_config_performance = self._fun(min([self.validated_rh.get_cost(c) for c
+                                            in all_configs]), logy)
+        self.worst_config_performance = self._fun(max([self.validated_rh.get_cost(c) for c
+                                             in all_configs]), logy)
         if num_configs < len(configs_to_plot):
             ids = list(sorted(random.sample(range(len(configs_to_plot)), num_configs)))
             ids[0] = 0
             ids[-1] = len(configs_to_plot) - 1
         else:
             ids = list(range(len(configs_to_plot)))
-        self._plot(np.array(configs_to_plot)[ids], params, log_c=False,
-                   fn=os.path.join(self.output_dir, "parallel_coordinates_uniform_" + str(len(ids)) + '.png'))
-        self._plot(np.array(configs_to_plot)[ids], params, log_c=True,
-                   fn=os.path.join(self.output_dir, "parallel_coordinates_uniform_logged_c" + str(len(ids)) + '.png'))
+        self._plot(np.array(configs_to_plot)[ids], params,
+                   fn=os.path.join(self.output_dir, "parallel_coordinates_uniform_" + str(len(ids)) + '.png'),
+                   logy=logy)
         if num_configs < len(configs_to_plot):  # Only sample on the logscale if not all configs are plotted.
             ids = self._get_log_spaced_ids(configs_to_plot, num_configs)
         else:
             ids = range(len(all_configs))
         configs_to_plot = np.array(configs_to_plot)[ids]
-        self._plot(configs_to_plot, params, log_c=False,
-                   fn=os.path.join(self.output_dir, "parallel_coordinates_unlogged_c" + str(len(ids)) + '.png'))
-        return self._plot(configs_to_plot, params)
+        return self._plot(configs_to_plot, params, logy=logy)
 
-    def _plot(self, configs, params, fn=None, log_c=True):
+    def _plot(self, configs, params, fn=None, log_c=False, logy=False):
         """
         Parameters
         ----------
@@ -165,7 +166,7 @@ class ParallelCoordinatesPlotter(object):
             conf_dict = conf.get_dictionary()
             new_entry = {}
             # Add cost-column
-            new_entry['cost'] = self.validated_rh.get_cost(conf)
+            new_entry['log-cost' if logy else 'cost'] = self._fun(self.validated_rh.get_cost(conf), logy)
             # Add parameters
             for p in params:
                 # Catch key-errors (implicate unused hyperparameter)
@@ -193,7 +194,7 @@ class ParallelCoordinatesPlotter(object):
         data = pd.DataFrame(data)
 
         # Add 'cost' to params, params serves as index for dataframe
-        params = ['cost'] + params
+        params = ['log-cost' if logy else 'cost'] + params
 
         # Select only parameters we want to plot (specified in index)
         data = data[params]
@@ -231,7 +232,7 @@ class ParallelCoordinatesPlotter(object):
         # Plot data
         for i, ax in enumerate(axes):  # Iterate over params
             for idx in data.index:  # Iterate over configs
-                cval = scale.to_rgba(self.validated_rh.get_cost(configs[idx]))
+                cval = scale.to_rgba(self._fun(self.validated_rh.get_cost(configs[idx]), logy))
                 cval = (cval[2], cval[0], cval[1])
                 if configs[idx] == self.best_config_performance:
                     cval=(0., 0., 0.)
