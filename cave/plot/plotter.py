@@ -170,8 +170,8 @@ class Plotter(object):
             ax2.legend()
             ax2.grid(True)
             ax2.set_xscale('log')
-            ax2.set_ylabel('Probability of being solved')
-            ax2.set_xlabel('Time')
+            ax2.set_ylabel('probability of being solved')
+            ax2.set_xlabel('time')
             # Plot 'timeout'
             if timeout:
                 ax2.text(timeout,
@@ -195,8 +195,8 @@ class Plotter(object):
         ax1.legend()
         ax1.grid(True)
         ax1.set_xscale('log')
-        ax1.set_ylabel('Probability of being solved')
-        ax1.set_xlabel('Time')
+        ax1.set_ylabel('probability of being solved')
+        ax1.set_xlabel('time')
         # Plot 'timeout'
         if timeout:
             ax1.text(timeout,
@@ -342,9 +342,12 @@ class Plotter(object):
         fig = plt.figure()
         ax = fig.add_subplot(111)
 
-        ax.plot(time, mean, 'r-', label="Estimated performance")
+        ax.set_ylabel('performance')
+        ax.set_xlabel('time [sec]')
+        ax.plot(time, mean, 'r-', label="estimated performance")
+        ax.fill_between(time, uncertainty_upper, uncertainty_lower, alpha=0.8,
+                label="standard deviation")
         ax.legend()
-        ax.fill_between(time, uncertainty_upper, uncertainty_lower,alpha=0.8)
         ax.set_xscale("log", nonposx='clip')
 
         ax.set_ylim(min(mean)*0.8, max(mean)*1.2)

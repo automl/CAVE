@@ -88,7 +88,7 @@ class SampleViz(object):
 
         self.contour_step_size = contour_step_size
         if output_dir:
-            self.output_dir = os.path.join(output_dir, 'conf_vizs.html')
+            self.output_dir = output_dir
         else:
             self.output_dir = None
 
@@ -427,8 +427,10 @@ class SampleViz(object):
             label = label.replace("dataframe", "config")
             labels.append(label)
 
-        #self.logger.debug("Save test.png")
-        #fig.savefig("test.png")
+        if self.output_dir:
+            path = os.path.join(self.output_dir, 'conf_viz.png')
+            self.logger.debug("Save %s", path)
+            fig.savefig(path)
 
         # WORK IN PROGRESS
         # # Show only desired run
@@ -455,8 +457,9 @@ class SampleViz(object):
         mpld3.plugins.connect(fig, tooltip)
 
         if self.output_dir:
-            self.logger.debug("Save to %s", self.output_dir)
-            with open(self.output_dir, "w") as fp:
+            path = os.path.join(self.output_dir, 'conf_vizs.html')
+            self.logger.debug("Save to %s", path)
+            with open(path, "w") as fp:
                 mpld3.save_html(fig, fp)
 
         html = mpld3.fig_to_html(fig)
