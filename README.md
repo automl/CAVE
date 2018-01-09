@@ -2,20 +2,20 @@ This package is not officially released yet and subject to heavy changes. Backwa
 
 Status for master branch:
 
-[![Build Status](https://travis-ci.org/automl/SpySMAC.svg?branch=master)](https://travis-ci.org/automl/SpySMAC)
+[![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=master)](https://travis-ci.org/automl/CAVE)
 
 Status for development branch
 
-[![Build Status](https://travis-ci.org/automl/SpySMAC.svg?branch=development)](https://travis-ci.org/automl/SpySMAC)
+[![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=development)](https://travis-ci.org/automl/CAVE)
 
-# SpySMAC 
-SpySMAC is an analyzing tool that builds on SMAC3 (https://github.com/automl/SMAC3)
+# CAVE 
+CAVE is an analyzing tool that builds on SMAC3 (https://github.com/automl/SMAC3)
 
 # LICENSE 
-Please refer to LICENSE (https://github.com/automl/SpySMAC/blob/master/LICENSE)
+Please refer to LICENSE (https://github.com/automl/CAVE/blob/master/LICENSE)
 
 # OVERVIEW 
-SpySMAC is an analyzing tool. It is written in Python 3.6 and uses SMAC3. SpySMAC generates performance-values (e.g. PAR10), scatter- and cdf-plots to compare the default and the optimized incumbent and providing further inside into the optimization process by quantifying the parameter importance.
+CAVE is an analyzing tool. It is written in Python 3.6 and uses SMAC3. CAVE generates performance-values (e.g. PAR10), scatter- and cdf-plots to compare the default and the optimized incumbent and providing further inside into the optimization process by quantifying the parameter importance.
 
 # REQUIREMENTS
 - Python 3.5
@@ -26,7 +26,7 @@ SpySMAC is an analyzing tool. It is written in Python 3.6 and uses SMAC3. SpySMA
 # INSTALLATION
 Clone the repository and install requirements into your virtual environment.
 ```
-git clone https://github.com/automl/SpySMAC.git && cd SpySMAC
+git clone https://github.com/automl/CAVE.git && cd CAVE
 pip install -r requirements.txt
 ```
 
@@ -37,7 +37,7 @@ Commandline arguments:
 - --folders: path(s) to folder(s) containing the SMAC3-output
 
 Optional:
-- --output: where to save the SpySMAC-output
+- --output: where to save the CAVE-output
 - --ta_exec_dir: target algorithm execution directory, this should be a path to
   the directory from which SMAC was run initially. used to find instance-files and
   if necessary execute the `algo`-parameter of the SMAC-scenario (DEFAULT:
@@ -53,13 +53,13 @@ Optional:
 - --parallel_coordinates: 'true' or 'false', toggles the parallel-coordinates plot
 - --confviz: 'true' or 'false', toggles the congi visualization
 
-For further information on how to use SpySMAC, see:
-`python scripts/spy.py -h`
+For further information on how to use CAVE, see:
+`python scripts/cave.py -h`
 
 # EXAMPLE
 You can run the spear-qcp example like this:
 ```
-python scripts/spy.py --folders examples/spear_qcp_small/example_output_* --verbose DEBUG --ta_exec examples/spear_qcp_small/ --out results_saved_here/
+python scripts/cave.py --folders examples/spear_qcp_small/example_output_* --verbose DEBUG --ta_exec examples/spear_qcp_small/ --out results_saved_here/
 ```
 This will analyze the results located in `examples/spear_qcp_small` in the dirs `example_output_1`, `example_output_2` and `example_output_3`.
 The report is located in `results_saved_here/report.html`.
