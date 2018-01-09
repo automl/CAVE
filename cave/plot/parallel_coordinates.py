@@ -242,8 +242,6 @@ class ParallelCoordinatesPlotter(object):
             for idx in data.index:  # Iterate over configs
                 cval = scale.to_rgba(self._fun(self.validated_rh.get_cost(configs[idx]), logy))
                 cval = (cval[2], cval[0], cval[1])
-                if configs[idx] == self.best_config_performance:
-                    cval = (0., 0., 0.)
                 alpha = 0.6
                 zorder = idx - 5 if idx > len(data) // 2 else len(data) - idx  # -5 to have the best on top of the worst
                 path_effects = [path_efx.Normal()]
