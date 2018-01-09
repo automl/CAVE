@@ -263,7 +263,6 @@ class AlgorithmFootprint(object):
         plt.tight_layout()
         fig.savefig(out)
         plt.close(fig)
-        print('#'*120)
         return out
 
 #### Below not implemented """
