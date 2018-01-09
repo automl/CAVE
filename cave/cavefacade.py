@@ -89,10 +89,11 @@ class CAVE(object):
         if not os.path.exists(output):
             self.logger.debug("Output-dir %s does not exist, creating", self.output)
             os.makedirs(output)
-            os.makedirs(os.path.join(output, "debug"))
+        if not os.path.exists(os.path.join(self.output, "debug")):
+            os.makedirs(os.path.join(self.output, "debug"))
         # Log to file
         logger = logging.getLogger()
-        handler = logging.FileHandler(os.path.join(self.output, "debug.log"), "w")
+        handler = logging.FileHandler(os.path.join(self.output, "debug/debug.log"), "w")
         handler.setLevel(logging.DEBUG)
         logger.addHandler(handler)
 

@@ -188,7 +188,7 @@ class AlgorithmFootprint(object):
 
             # Plot per cluster
             for c in self.cluster_dict.keys():
-                path = os.path.join(self.output,
+                path = os.path.join(self.output, 'debug',
                                     '_'.join([self.algo_names[a], str(c)+'.png']))
                 path = self._plot_points(a, path, self.cluster_dict[c])
                 #outpaths.append(path)
@@ -228,11 +228,16 @@ class AlgorithmFootprint(object):
             else:
                 good.append(point)
         good, bad = np.array(good), np.array(bad)
+        self.logger.debug("for config %s good: %d, bad: %d",
+                          self.algo_names[conf], len(good), len(bad))
 
-        if len(bad) > 0: ax.scatter(bad[:, 0], bad[:, 1], color="red", s=3)
-        if len(good) > 0: ax.scatter(good[:, 0], good[:, 1], color="green", s=3)
+        if len(bad) > 0: ax.scatter(bad[:, 0], bad[:, 1], color="red", s=20,
+                alpha=0.7)
+        if len(good) > 0: ax.scatter(good[:, 0], good[:, 1], color="green", s=20,
+                alpha=0.7)
         ax.set_ylabel('principal component 1')
         ax.set_xlabel('principal component 2')
+        plt.tight_layout()
         fig.savefig(out)
         plt.close(fig)
 

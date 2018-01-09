@@ -347,13 +347,13 @@ class Plotter(object):
         ax.plot(time, mean, 'r-', label="estimated performance")
         ax.fill_between(time, uncertainty_upper, uncertainty_lower, alpha=0.8,
                 label="standard deviation")
-        ax.legend()
         ax.set_xscale("log", nonposx='clip')
 
         ax.set_ylim(min(mean)*0.8, max(mean)*1.2)
         # start after 1% of the configuration budget
         ax.set_xlim(min(time)+(max(time) - min(time))*0.01, max(time))
 
+        ax.legend()
         plt.tight_layout()
         fig.savefig(output)
         plt.close(fig)

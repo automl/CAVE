@@ -1,5 +1,6 @@
 import os
 import itertools
+import logging
 
 from matplotlib.pyplot import tight_layout, figure
 from matplotlib.pyplot import subplot, savefig, show, setp
@@ -165,6 +166,11 @@ def plot_scatter_plot(x_data, y_data, labels, title="", debug=False,
     def scatter(x_data_, y_data_, ax):
         """ Encapsulated to support subplots if train and test are
         differentiated. """
+        logger = logging.getLogger("cave.scatter")
+        logger.debug("Incumbent better: %d, default better: %d",
+                          len([x for x in x_data_ > y_data_ if x]),
+                          len([x for x in x_data_ < y_data_ if x]))
+
         grey_idx = list()
         timeout_x = list()
         timeout_y = list()
