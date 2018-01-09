@@ -76,6 +76,7 @@ class Analyzer(object):
         self.scenario = scenario
         self.validator = validator
         self.pimp = None  # PIMP object for reuse
+        self.evaluators = []
         self.output = output
 
         self.importance = None  # Used to store dictionary containing parameter
@@ -434,6 +435,7 @@ class Analyzer(object):
                                    fANOVA_pairwise=self.fanova_pairwise,
                                    preprocess=False)
         result = self.pimp.evaluate_scenario([modus], save_folder)
+        self.evaluators.append(self.pimp.evaluator)
         return self.pimp
 
 ####################################### FEATURE IMPORTANCE #######################################
