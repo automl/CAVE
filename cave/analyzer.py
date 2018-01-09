@@ -530,9 +530,10 @@ class Analyzer(object):
                                        self.scenario.feature_dict, algorithms,
                                        self.scenario.cutoff, self.output)
         # Calculate footprints
-        for i in range(100):
-            for a in algorithms:
-                footprint.footprint(a, 20, 0.95)
+        #for i in range(100):
+        #    for a in algorithms:
+        #        footprint.footprint(a, 20, 0.95)
+
         # Plot footprints
         plots = footprint.plot_points_per_cluster()
         return plots
