@@ -10,6 +10,7 @@ plt.style.use(os.path.join(os.path.dirname(__file__), 'mpl_style'))
 from matplotlib import ticker
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
+import matplotlib.patheffects as path_efx
 
 from ConfigSpace.util import impute_inactive_values
 from ConfigSpace.hyperparameters import CategoricalHyperparameter, IntegerHyperparameter
@@ -242,10 +243,15 @@ class ParallelCoordinatesPlotter(object):
                 cval = scale.to_rgba(self._fun(self.validated_rh.get_cost(configs[idx]), logy))
                 cval = (cval[2], cval[0], cval[1])
                 if configs[idx] == self.best_config_performance:
-                    cval=(0., 0., 0.)
-                alpha = 1. #  self.get_alpha(configs[idx])
+                    cval = (0., 0., 0.)
+                alpha = 0.6
+                zorder = idx - 5 if idx > len(data) // 2 else len(data) - idx  # -5 to have the best on top of the worst
+                path_effects = [path_efx.Normal()]
+                if idx in [0, 1, 2, 3, 4, len(data) - 1, len(data) - 2, len(data) - 3, len(data) - 4, len(data) - 5]:
+                    alpha = 1
+                    path_effects = [path_efx.withStroke(linewidth=5, foreground='k')]
                 ax.plot(range(len(params)), data.loc[idx, params], color=cval,
-                        alpha=alpha, linewidth=3, zorder=int(cval[2]*255))
+                        alpha=alpha, linewidth=3, zorder=zorder, path_effects=path_effects)
             ax.set_xlim([i, i + 1])
 
         def set_ticks_for_axis(p, ax, num_ticks=10):
