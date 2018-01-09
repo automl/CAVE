@@ -255,7 +255,7 @@ class AlgorithmFootprint(object):
             zorder = 1
             alpha = 1
             if len_longest < idx:  # if we plot points from the shorter list, increase zorder and use small alpha
-                alpha = 0.25
+                alpha = 0.375
                 zorder=9999
             plt.scatter(coords[0], coords[1], color=(r, g, b), s=15, zorder=zorder, alpha=alpha)
         ax.set_ylabel('principal component 1')
