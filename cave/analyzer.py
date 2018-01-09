@@ -431,9 +431,9 @@ class Analyzer(object):
                                    save_folder=save_folder,
                                    seed=12345,
                                    max_sample_size=self.max_pimp_samples,
-                                   fANOVA_pairwise=self.fanova_pairwise)
-        result = self.pimp.evaluate_scenario([modus])
-        self.pimp.plot_results(name=os.path.join(save_folder, modus), show=False)
+                                   fANOVA_pairwise=self.fanova_pairwise,
+                                   preprocess=False)
+        result = self.pimp.evaluate_scenario([modus], save_folder)
         return self.pimp
 
 ####################################### FEATURE IMPORTANCE #######################################

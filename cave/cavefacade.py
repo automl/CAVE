@@ -365,7 +365,9 @@ class CAVE(object):
                 "parameters for the overall performance. Different techniques "
                 "are implemented: fANOVA (functional analysis of "
                 "variance), ablation and forward selection.")])
+        sum_ = 0
         if fanova:
+            sum_ += 1
             table, plots, pair_plots = self.analyzer.fanova(self.incumbent)
 
             self.website["Parameter Importance"]["fANOVA"] = OrderedDict([
@@ -392,6 +394,7 @@ class CAVE(object):
                         "figure": plot}
 
         if ablation:
+            sum_ += 1
             self.logger.info("Ablation...")
             self.analyzer.parameter_importance("ablation", self.incumbent,
                                                self.output)
@@ -403,6 +406,7 @@ class CAVE(object):
                         "figure": ablationperformance_path}
 
         if forward_selection:
+            sum_ += 1
             self.logger.info("Forward Selection...")
             self.analyzer.parameter_importance("forward-selection", self.incumbent,
                                                self.output)
@@ -414,6 +418,7 @@ class CAVE(object):
                         "figure": f_s_chng_path}
 
         if incneighbor:
+            sum_ += 1
             self.logger.info("Local EPM-predictions around incumbent...")
             plots = self.analyzer.local_epm_plots()
             self.website["Parameter Importance"]["Local EPM around incumbent"] = OrderedDict([])
@@ -421,6 +426,10 @@ class CAVE(object):
                 self.website["Parameter Importance"]["Local EPM around incumbent"][param] = {
                     "figure": plot}
 
+        if sum_:
+            of = os.path.join(self.output, 'pimp.tex')
+            self.logger.info('Creating pimp latex table at %s' % of)
+            self.analyzer.pimp.table_for_comparison(self.analyzer.evaluators, of, style='latex')
 
 
     def feature_analysis(self, box_violin=False, correlation=False,
