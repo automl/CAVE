@@ -9,6 +9,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from scipy import spatial
+import pandas as pd
 
 from smac.configspace import Configuration
 from smac.runhistory.runhistory import RunHistory
@@ -187,11 +188,11 @@ class AlgorithmFootprint(object):
             outpaths.append(self._plot_points(a, path))
 
             # Plot per cluster
-            for c in self.cluster_dict.keys():
-                path = os.path.join(self.output,
-                                    '_'.join([self.algo_names[a], str(c)+'.png']))
-                path = self._plot_points(a, path, self.cluster_dict[c])
-                #outpaths.append(path)
+            # for c in self.cluster_dict.keys():
+            #     path = os.path.join(self.output,
+            #                         '_'.join([self.algo_names[a], str(c)+'.png']))
+            #     path = self._plot_points(a, path, self.cluster_dict[c])
+            #     #outpaths.append(path)
         return outpaths
 
     def _plot_points(self, conf, out, insts=[]):
@@ -225,17 +226,44 @@ class AlgorithmFootprint(object):
             point = self.features_2d[self.insts.index(k)]
             if self.algo_labels[conf][k] == 0:
                 bad.append(point)
-            else:
+            elif self.algo_labels[conf][k] == 1:
                 good.append(point)
-        good, bad = np.array(good), np.array(bad)
+        # As we don't have such a high resolution when plotting, i.e. we don't see differences between 0.001 and 0.00001
+        # all points that lie close by might overlap completely. To easily spot these, squash everything down to one
+        # decimal
+        good, bad = np.around(np.array(good), decimals=1), np.around(np.array(bad), decimals=1)
 
-        if len(bad) > 0: ax.scatter(bad[:, 0], bad[:, 1], color="red", s=3)
-        if len(good) > 0: ax.scatter(good[:, 0], good[:, 1], color="green", s=3)
+        # working with dataframes to get easy counts to use for plotting
+        good = pd.DataFrame(good)
+        bad = pd.DataFrame(bad)
+        if len(good) < len(bad):  # decide which to plot first. (short list unlikely to shadow many points in long list)
+            all = pd.concat([bad, good])
+        else:
+            all = pd.concat([good, bad])
+        len_longest = min(len(good), len(bad))
+        counts = all.groupby(all.columns.tolist(), as_index=False).size()  # count the occurance of values
+        if len(good) > 0: counts_g = good.groupby(good.columns.tolist(), as_index=False).size().unstack()  # in good
+        if len(bad) > 0: counts_b = bad.groupby(bad.columns.tolist(), as_index=False).size().unstack()  # and bad
+        for idx, coords in enumerate(all.values):  # individually plot the points
+            r, g, b = 0, 0, 0
+            if len(bad) > 0 and coords[0] in counts_b.index and coords[1] in counts_b.columns:  # determine red part
+                # red part is the number of points on the same coordinate belonging to the bad group
+                # divided by the number of all points on the same coordinate
+                r = counts_b[coords[1]][coords[0]] / counts[coords[0]][coords[1]]
+            if len(good) > 0 and coords[0] in counts_g.index and coords[1] in counts_g.columns: # similar for green
+                g = counts_g[coords[1]][coords[0]] / counts[coords[0]][coords[1]]
+            zorder = 1
+            alpha = 1
+            if len_longest < idx:  # if we plot points from the shorter list, increase zorder and use small alpha
+                alpha = 0.25
+                zorder=9999
+            plt.scatter(coords[0], coords[1], color=(r, g, b), s=15, zorder=zorder, alpha=alpha)
         ax.set_ylabel('principal component 1')
         ax.set_xlabel('principal component 2')
+        plt.tight_layout()
         fig.savefig(out)
         plt.close(fig)
-
+        print('#'*120)
         return out
 
 #### Below not implemented """
