@@ -454,7 +454,7 @@ class Analyzer(object):
 
 ####################################### PLOTS #######################################
 
-    def plot_parallel_coordinates(self, n_param=10, n_configs=1000):
+    def plot_parallel_coordinates(self, n_param=10, n_configs=500):
         """ Creates a parallel coordinates plot visualizing the explored
         parameter configuration space. """
         self.logger.info("... plotting parallel coordinates")
