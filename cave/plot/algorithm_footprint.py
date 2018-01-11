@@ -265,7 +265,7 @@ class AlgorithmFootprint(object):
         algo_fp_debug = os.path.join(self.output_dir, 'debug', 'algo_fp')
         if not os.path.exists(algo_fp_debug):
             os.makedirs(algo_fp_debug)
-        for e in np.hstack([np.arange(0.0, 1.0, 0.05), np.arange(0.96, 1.0, 0.005)]):
+        for e in np.hstack([np.arange(0.0, 1.0, .95), np.arange(0.96, 1.0, 0.02)]):
             self.label_instances(e)
             for a in self.algorithms:
                 # Plot without clustering (for all insts)
