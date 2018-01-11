@@ -321,6 +321,9 @@ class SampleViz(object):
                 if not c in conf_list:
                     conf_matrix.append(c.get_array())
                     conf_list.append(c)
+        for inc in self.incs:
+            if inc not in conf_list:
+                conf_list.append(inc)
 
         # Get total runs per config
         for rh in self.runhistories:
@@ -388,7 +391,7 @@ class SampleViz(object):
         for runs_per_conf, label in list(zip(runs_runs_conf,
                 runs_labels))[:self.max_rhs_to_plot]:
             scatter = ax.scatter(
-               X[:, 0], X[:, 1], sizes=np.log(runs_per_conf + 1) + 10,
+               X[:, 0], X[:, 1], sizes=2*np.log2(runs_per_conf + 1) + 10,
                color="white", edgecolors="black", label=label)
 
         ax.set_xlim(X[:, 0].min() - 0.5, X[:, 0].max() + 0.5)
@@ -398,7 +401,7 @@ class SampleViz(object):
         scatter_inc = None
         if inc_list:
             if isinstance(inc_list, list):
-                inc_list = inc_list[:self.max_rhs_to_plot]
+                inc_list = inc_list
             else:
                 inc_list = [inc_list]
             self.logger.debug("Plot Incumbents")
@@ -410,7 +413,7 @@ class SampleViz(object):
             scatter_inc = ax.scatter(X[inc_indx, 0],
                                      X[inc_indx, 1],
                                      color="black", edgecolors="white",
-                                     sizes=np.log(runs_per_conf[inc_indx] + 1) + 10)
+                                     sizes=2*np.log2(runs_per_conf[inc_indx] + 1) + 10)
 
         labels = []
         for idx, c in enumerate(conf_list):
