@@ -450,36 +450,9 @@ class CAVE(object):
                 else:
                     feat_names = in_reader.read_instance_features_file(self.scenario.feature_fn)[0]
         else:
-            feat_names = self.scenario.feature_names
+            feat_names = copy.deepcopy(self.scenario.feature_names)
 
-        fa = FeatureAnalysis(output_dn=self.output,
-                             scenario=self.scenario,
-                             feat_names=feat_names)
         self.website["Feature Analysis"] = OrderedDict([])
-
-        # box and violin plots
-        if box_violin:
-            name_plots = fa.get_box_violin_plots()
-            self.website["Feature Analysis"]["Violin and box plots"] = OrderedDict({
-                "tooltip": "Violin and Box plots to show the distribution of each instance feature. We removed NaN from the data."})
-            for plot_tuple in name_plots:
-                key = "%s" % (plot_tuple[0])
-                self.website["Feature Analysis"]["Violin and box plots"][
-                    key] = {"figure": plot_tuple[1]}
-
-        # correlation plot
-        if correlation:
-            correlation_plot = fa.correlation_plot()
-            self.website["Feature Analysis"]["Correlation plot"] = {"tooltip": "Correlation based on Pearson product-moment correlation coefficients between all features and clustered with Wards hierarchical clustering approach. Darker fields corresponds to a larger correlation between the features.",
-                                                            "figure": correlation_plot}
-
-        # cluster instances in feature space
-        if clustering:
-            cluster_plot = fa.cluster_instances()
-            self.website["Feature Analysis"]["Clustering"] = {"tooltip": "Clustering instances in 2d; the color encodes the cluster assigned to each cluster. Similar to ISAC, we use a k-means to cluster the instances in the feature space. As pre-processing, we use standard scaling and a PCA to 2 dimensions. To guess the number of clusters, we use the silhouette score on the range of 2 to 12 in the number of clusters",
-                                                      "figure": cluster_plot}
-
-        self.build_website()
 
         # feature importance using forward selection
         if importance:
@@ -496,6 +469,31 @@ class CAVE(object):
                 self.website["Feature Analysis"]["Feature importance"][name] = {"tooltip":
                          "Feature importance calculated using forward selection.",
                          "figure": p}
+
+        # box and violin plots
+        if box_violin:
+            name_plots = self.analyzer.feature_analysis('box_violin', feat_names)
+            self.website["Feature Analysis"]["Violin and box plots"] = OrderedDict({
+                "tooltip": "Violin and Box plots to show the distribution of each instance feature. We removed NaN from the data."})
+            for plot_tuple in name_plots:
+                key = "%s" % (plot_tuple[0])
+                self.website["Feature Analysis"]["Violin and box plots"][
+                    key] = {"figure": plot_tuple[1]}
+
+        # correlation plot
+        if correlation:
+            correlation_plot = self.analyzer.feature_analysis('correlation', feat_names)
+            if correlation_plot:
+                self.website["Feature Analysis"]["Correlation plot"] = {"tooltip": "Correlation based on Pearson product-moment correlation coefficients between all features and clustered with Wards hierarchical clustering approach. Darker fields corresponds to a larger correlation between the features.",
+                                                            "figure": correlation_plot}
+
+        # cluster instances in feature space
+        if clustering:
+            cluster_plot = self.analyzer.feature_analysis('clustering', feat_names)
+            self.website["Feature Analysis"]["Clustering"] = {"tooltip": "Clustering instances in 2d; the color encodes the cluster assigned to each cluster. Similar to ISAC, we use a k-means to cluster the instances in the feature space. As pre-processing, we use standard scaling and a PCA to 2 dimensions. To guess the number of clusters, we use the silhouette score on the range of 2 to 12 in the number of clusters",
+                                                      "figure": cluster_plot}
+
+        self.build_website()
 
     def build_website(self):
         self.builder.generate_html(self.website)
