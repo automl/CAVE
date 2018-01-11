@@ -57,9 +57,10 @@ class FeatureAnalysis(object):
         self.feature_data = {}
         for name in feat_names:
             insts = self.scenario.train_insts
+            insts.extend(self.scenario.test_insts)
             self.feature_data[name] = {}
             for i in insts:
-                self.feature_data[name][i] = self.scenario.feature_dict[i][feat_names.index(name)]
+                self.feature_data[name][i] = copy.deepcopy(self.scenario.feature_dict[i][feat_names.index(name)])
         self.feature_data = DataFrame(self.feature_data)
 
         self.output_dn = os.path.join(output_dn, "feature_plots")
@@ -198,11 +199,11 @@ class FeatureAnalysis(object):
         self.logger.debug("Plotting clusters........")
         # impute missing data; probably already done, but to be on the safe
         # side
-        self.feature_data = self.feature_data.fillna(
+        feature_data = self.feature_data.fillna(
             self.feature_data.mean())
 
         # feature data
-        features = self.feature_data.values
+        features = feature_data.values
 
         # scale features
         ss = StandardScaler()
@@ -217,6 +218,7 @@ class FeatureAnalysis(object):
         for n_clusters in range(2, 12):
             km = KMeans(n_clusters=n_clusters)
             y_pred = km.fit_predict(features)
+            self.logger.debug(features)
             score = silhouette_score(features, y_pred)
             scores.append(score)
 

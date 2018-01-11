@@ -27,7 +27,7 @@ class FeatureForwardSelector():
         self.logger = logging.getLogger(
             self.__module__ + '.' + self.__class__.__name__)
 
-        self.scenario = scenario
+        self.scenario = copy.deepcopy(scenario)
         self.cs = scenario.cs
         self.rh = runhistory
         self.to_evaluate = to_evaluate
