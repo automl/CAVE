@@ -56,6 +56,7 @@ class Plotter(object):
         self.scenario = scenario
         self.train_test = train_test
         self.output = output
+        self.vizrh = None
 
         # Split data into train and test
         data = {"default" : {"combined" : [], "train" : [], "test" : []},
@@ -227,7 +228,9 @@ class Plotter(object):
                        runhistories=runhistories,
                        incs=incumbents, max_plot=max_confs_plot,
                        output_dir=self.output)
-        return sz.run()
+        r = sz.run()
+        self.vizrh = sz.relevant_rh
+        return r
 
     def plot_parallel_coordinates(self, rh, output, params, n_configs, validator):
         """ Plot parallel coordinates (visualize higher dimensions), here used
@@ -258,7 +261,7 @@ class Plotter(object):
             path to plot
         """
         parallel_coordinates_plotter = ParallelCoordinatesPlotter(rh, self.output,
-                                                                validator)
+                                                                  validator)
         output = parallel_coordinates_plotter.plot_n_configs(n_configs, params)
         return output
 

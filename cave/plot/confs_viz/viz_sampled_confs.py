@@ -87,6 +87,7 @@ class SampleViz(object):
         self.max_rhs_to_plot = 1  # Maximum number of runhistories 2 b plotted
 
         self.contour_step_size = contour_step_size
+        self.relevant_rh = None
         if output_dir:
             self.output_dir = output_dir
         else:
@@ -155,6 +156,7 @@ class SampleViz(object):
                     cost, time, status, additional_info = value
                     new_rh.add(config, cost, time, status, instance_id=instance,
                                seed=seed, additional_info=additional_info)
+        self.relevant_rh = new_rh
 
         X, y, types = convert_data(scenario=self.scenario,
                                    runhistory=new_rh)
