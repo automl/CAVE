@@ -2,6 +2,7 @@ import os
 import time
 import logging
 from collections import OrderedDict
+import copy
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -26,7 +27,7 @@ class FeatureForwardSelector():
         self.logger = logging.getLogger(
             self.__module__ + '.' + self.__class__.__name__)
 
-        self.scenario = scenario
+        self.scenario = copy.deepcopy(scenario)
         self.cs = scenario.cs
         self.rh = runhistory
         self.to_evaluate = to_evaluate
@@ -67,7 +68,7 @@ class FeatureForwardSelector():
                           X.shape, y.shape,
                           len(parameters),
                           len(self.scenario.feature_names))
-        names = self.scenario.feature_names
+        names = copy.deepcopy(self.scenario.feature_names)
         self.logger.debug("Features: %s", names)
 
         used = list(range(0, len(parameters)))
