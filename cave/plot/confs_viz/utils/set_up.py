@@ -77,7 +77,7 @@ def convert_data(scenario:Scenario, runhistory:RunHistory):
                                             StatusType.SUCCESS, ],
                                         impute_censored_data=True,
                                         impute_state=[
-                                            StatusType.CAPPED, ],
+                                            StatusType.TIMEOUT, ],
                                         imputor=imputor)
     else:
         rh2EPM = RunHistory2EPM4Cost(scenario=scenario,
