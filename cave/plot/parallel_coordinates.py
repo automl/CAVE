@@ -116,15 +116,17 @@ class ParallelCoordinatesPlotter(object):
             configs_to_plot = sorted(all_configs, key=lambda x: self._fun(self.validated_rh.get_cost(x), logy))
             # What about scenarios where quality is the value to optimize? shouldn't min and max be switched then?
             self.best_config_performance = self._fun(min([self.validated_rh.get_cost(c) for c
-                                                in all_configs]), logy)
+                                                          in all_configs]), logy)
             self.worst_config_performance = self._fun(max([self.validated_rh.get_cost(c) for c
-                                                 in all_configs]), logy)
+                                                           in all_configs]), logy)
             if num_configs < len(configs_to_plot):
                 ids = list(sorted(random.sample(range(len(configs_to_plot)), num_configs)))
                 ids[0] = 0
                 ids[-1] = len(configs_to_plot) - 1
             else:
                 ids = list(range(len(configs_to_plot)))
+            ids[0:5] = list(range(0, 5))
+            ids[-5:] = list(range(len(configs_to_plot) - 6, len(configs_to_plot) - 1))
             self._plot(np.array(configs_to_plot)[ids], params,
                        fn=os.path.join(self.output_dir, "parallel_coordinates_uniform_{:s}".format(
                            'log_cost' if logy else ''
@@ -133,7 +135,9 @@ class ParallelCoordinatesPlotter(object):
             if num_configs < len(configs_to_plot):  # Only sample on the logscale if not all configs are plotted.
                 ids = self._get_log_spaced_ids(configs_to_plot, num_configs)
             else:
-                ids = range(len(all_configs))
+                ids = list(range(len(all_configs)))
+            ids[0:5] = list(range(0, 5))
+            ids[-5:] = list(range(len(configs_to_plot) - 6, len(configs_to_plot) - 1))
             configs_to_plot = np.array(configs_to_plot)[ids]
             res = self._plot(configs_to_plot, params,
                              fn = os.path.join(self.output_dir, "parallel_coordinates_{:s}".format(
@@ -239,11 +243,11 @@ class ParallelCoordinatesPlotter(object):
 
         # Plot data
         for i, ax in enumerate(axes):  # Iterate over params
-            for idx in data.index:  # Iterate over configs
+            for idx in data.index[::-1]:  # Iterate over configs
                 cval = scale.to_rgba(self._fun(self.validated_rh.get_cost(configs[idx]), logy))
                 cval = (cval[2], cval[0], cval[1])
-                alpha = 0.6
                 zorder = idx - 5 if idx > len(data) // 2 else len(data) - idx  # -5 to have the best on top of the worst
+                alpha = (zorder / len(data)) - 0.25
                 path_effects = [path_efx.Normal()]
                 if idx in [0, 1, 2, 3, 4, len(data) - 1, len(data) - 2, len(data) - 3, len(data) - 4, len(data) - 5]:
                     alpha = 1
