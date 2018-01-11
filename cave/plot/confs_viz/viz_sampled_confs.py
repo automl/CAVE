@@ -326,10 +326,17 @@ class SampleViz(object):
                 conf_list.append(inc)
 
         # Get total runs per config
+        self.min_runs_per_conf = np.inf
+        self.max_runs_per_conf = -np.inf
         for rh in self.runhistories:
             runs_per_conf = np.zeros(len(conf_list), dtype=int)
             for c in rh.get_all_configs():
-                runs_per_conf[conf_list.index(c)] = len(rh.get_runs_for_config(c))
+                r_p_c = len(rh.get_runs_for_config(c))
+                if r_p_c < self.min_runs_per_conf:
+                    self.min_runs_per_conf = r_p_c
+                elif r_p_c > self.max_runs_per_conf:
+                    self.max_runs_per_conf = r_p_c
+                runs_per_conf[conf_list.index(c)] = r_p_c
             runs_runs_conf.append(np.array(runs_per_conf))
 
         # Now decide what configurations to plot depending on max_plots and #runs
@@ -344,6 +351,9 @@ class SampleViz(object):
         self.configs_to_plot = conf_list
 
         return np.array(conf_matrix), conf_list, runs_runs_conf
+
+    def _get_size(self, r_p_c):
+        return 10 + ((r_p_c - self.min_runs_per_conf) / (self.max_runs_per_conf - self.min_runs_per_conf)) * 40
 
     def plot(self, X, conf_list: list, runs_runs_conf, inc_list: list,
              runs_labels=None, contour_data=None):
@@ -391,7 +401,7 @@ class SampleViz(object):
         for runs_per_conf, label in list(zip(runs_runs_conf,
                 runs_labels))[:self.max_rhs_to_plot]:
             scatter = ax.scatter(
-               X[:, 0], X[:, 1], sizes=2*np.log2(runs_per_conf + 1) + 10,
+               X[:, 0], X[:, 1], sizes=self._get_size(runs_per_conf),
                color="white", edgecolors="black", label=label)
 
         ax.set_xlim(X[:, 0].min() - 0.5, X[:, 0].max() + 0.5)
@@ -413,7 +423,7 @@ class SampleViz(object):
             scatter_inc = ax.scatter(X[inc_indx, 0],
                                      X[inc_indx, 1],
                                      color="black", edgecolors="white",
-                                     sizes=2*np.log2(runs_per_conf[inc_indx] + 1) + 10)
+                                     sizes=self._get_size(runs_per_conf[inc_indx]))
 
         labels = []
         for idx, c in enumerate(conf_list):
