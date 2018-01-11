@@ -567,7 +567,8 @@ class Analyzer(object):
             return self.feat_analysis.get_box_violin_plots()
 
         if mode == 'correlation':
-            return self.feat_analysis.correlation_plot()
+            self.feat_analysis.correlation_plot()
+            return self.feat_analysis.correlation_plot(imp=False)
 
         if mode == 'clustering':
             return self.feat_analysis.cluster_instances()

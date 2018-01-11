@@ -106,7 +106,7 @@ class FeatureAnalysis(object):
 
         return files_
 
-    def correlation_plot(self):
+    def correlation_plot(self, imp=True):
         """
         generate correlation plot using spearman correlation coefficient and ward clustering
 
@@ -120,7 +120,7 @@ class FeatureAnalysis(object):
 
         features = self.feat_names
         # Check for important features
-        if self.feat_imp:
+        if self.feat_imp and imp:
             imp_features = [f for f in features if f in self.feat_imp]
             if len(imp_features) < 2:
                 self.logger.info("Less than two important features -> no correlation plot!")
@@ -176,6 +176,15 @@ class FeatureAnalysis(object):
 
         ax.set_xticklabels(sorted_features, minor=False)
         ax.set_yticklabels(sorted_features, minor=False)
+        at = 0
+        if self.feat_imp and not imp:
+            for tx, ty in zip(ax.xaxis.get_ticklabels(), ax.yaxis.get_ticklabels()):
+                color_ = (0., 0., 0.)
+                if sorted_features[at] in self.feat_imp:
+                    color_ = (1., 0., 0.)
+                tx.set_color(color_)
+                ty.set_color(color_)
+                at += 1
         labels = ax.get_xticklabels()
         plt.setp(labels, rotation=45, fontsize=2, ha="left")
         labels = ax.get_yticklabels()
@@ -185,8 +194,12 @@ class FeatureAnalysis(object):
 
         plt.tight_layout()
 
-        out_plot = os.path.join(
-            self.output_dn, "correlation_plot_features.png")
+        if self.feat_imp and imp:
+            out_plot = os.path.join(
+                self.output_dn, "correlation_plot_features_imp.png")
+        else:
+            out_plot = os.path.join(
+                self.output_dn, "correlation_plot_features.png")
         plt.savefig(out_plot, format="png", dpi=400)
 
         return out_plot
