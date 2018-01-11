@@ -274,7 +274,13 @@ class CAVE(object):
         self.build_website()
 
         if algo_footprint:
-            algo_footprint_plots = self.analyzer.plot_algorithm_footprint()
+            algorithms = {self.default: "default", self.incumbent: "incumbent"}
+            # Add all available incumbents to test portfolio strategy
+            #for r in self.runs:
+            #    if not r.get_incumbent() in algorithms:
+            #        algorithms[r.get_incumbent()] = str(self.runs.index(r))
+
+            algo_footprint_plots = self.analyzer.plot_algorithm_footprint(algorithms)
             self.website["Performance Analysis"]["Algorithm Footprints"] = OrderedDict()
             for p in algo_footprint_plots:
                 self.website["Performance Analysis"]["Algorithm Footprints"][os.path.splitext(os.path.split(p)[1])[0]] = {

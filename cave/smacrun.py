@@ -79,5 +79,9 @@ class SMACrun(SMAC):
                 #restore_incumbent=incumbent)
         # TODO use restore, delete next line
         self.solver.incumbent = incumbent
+
         if (not run_1_existed) and os.path.exists('run_1'):
             shutil.rmtree('run_1')
+
+    def get_incumbent(self):
+        return self.solver.incumbent

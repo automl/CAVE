@@ -527,17 +527,21 @@ class Analyzer(object):
         return path
 
     @timing
-    def plot_algorithm_footprint(self):
-        start = time.time()
-        algorithms = {self.default: "default", self.incumbent: "incumbent"}
+    def plot_algorithm_footprint(self, algorithms=None, density=200, purity=0.95):
+        if not algorithms:
+            algorithms = {self.default: "default", self.incumbent: "incumbent"}
         self.logger.info("... algorithm footprints:")
         self.logger.info("    for: {}".format(algorithms.values()))
         footprint = AlgorithmFootprint(self.validated_rh,
-                                       self.scenario.feature_dict,
-                                       self.scenario.cutoff, self.output,
-                                       algorithms)
+                                       self.scenario.feature_dict, algorithms,
+                                       self.scenario.cutoff, self.output)
+        # Calculate footprints
+        #for i in range(100):
+        #    for a in algorithms:
+        #        footprint.footprint(a, 20, 0.95)
+
+        # Plot footprints
         plots = footprint.plot_points_per_cluster()
-        self.logger.debug("cost over time took %.2f seconds", time.time() - start)
         return plots
 
 ####################################### FEATURE ANALYSIS #######################################
