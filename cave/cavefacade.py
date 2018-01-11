@@ -296,11 +296,13 @@ class CAVE(object):
         if confviz and self.scenario.feature_array is not None:
             # Sort runhistories and incs wrt cost
             incumbents = [r.solver.incumbent for r in self.runs]
+            trajectories = [r.traj for r in self.runs]
             runhistories = [r.runhistory for r in self.runs]
             costs = [self.validated_rh.get_cost(i) for i in incumbents]
-            costs, incumbents, runhistories = (list(t) for t in
-                    zip(*sorted(zip(costs, incumbents, runhistories), key=lambda
+            costs, incumbents, runhistories, trajectories = (list(t) for t in
+                    zip(*sorted(zip(costs, incumbents, runhistories, trajectories), key=lambda
                         x: x[0])))
+            incumbents = list(map(lambda x: x['incumbent'], trajectories[0]))
 
             confviz_script = self.analyzer.plot_confviz(incumbents, runhistories)
             self.website["Configurator's behavior"]["Configuration Visualization"] = {

@@ -473,7 +473,8 @@ class Analyzer(object):
 
         self.logger.info("    plotting %s parameters for (max) %s configurations",
                          len(params), n_configs)
-        path = self.plotter.plot_parallel_coordinates(self.original_rh, self.output,
+        rh = self.original_rh if self.plotter.vizrh is None else self.plotter.vizrh
+        path = self.plotter.plot_parallel_coordinates(rh, self.output,
                                                       params, n_configs, self.validator)
 
         return path
