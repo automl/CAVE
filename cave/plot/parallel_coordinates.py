@@ -286,7 +286,6 @@ class ParallelCoordinatesPlotter(object):
                          range(num_ticks + 1)]
             ax.yaxis.set_ticks(ticks)
             ax.set_yticklabels(tick_labels)
-            ax.set_ylim([-0.05, 1.05])
 
         # TODO adjust tick-labels to unused and maybe even log?
         for p, ax in enumerate(axes):
@@ -300,10 +299,12 @@ class ParallelCoordinatesPlotter(object):
         ax.xaxis.set_major_locator(ticker.FixedLocator([len(params) - 2, len(params) - 1]))
         set_ticks_for_axis(dim, ax, num_ticks=6)
         ax.set_xticklabels([params[-2], params[-1]], rotation=5)
+        ax.set_ylim(axes[-1].get_ylim())
 
         # Remove spaces between subplots
         plt.subplots_adjust(wspace=0)
-
+        plt.tight_layout()
+        plt.subplots_adjust(wspace=0)
         fig.savefig(filename)
         plt.close(fig)
 

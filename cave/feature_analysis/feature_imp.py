@@ -81,7 +81,7 @@ class FeatureForwardSelector():
 
         last_error = np.inf
 
-        for _ in range(self.to_evaluate):  # Main Loop
+        for _round in range(self.to_evaluate):  # Main Loop
             errors = []
             for f in names:
                 i = feat_ids[f]
@@ -101,13 +101,15 @@ class FeatureForwardSelector():
                 self._refit_model(types[sorted(used)], bounds, X[:, sorted(used)], y)  # refit the model every round
                 errors.append(self.model.rf.out_of_bag_error())
                 self.logger.debug('Refitted RF (sec %.2f; error: %.4f)' % (time.time() - start, errors[-1]))
+                if _round == 0:
+                    evaluated_feature_importance['None'] = errors[-1]
             best_idx = np.argmin(errors)
             lowest_error = errors[best_idx]
 
             if best_idx == len(errors) - 1:
                 self.logger.info('Best thing to do is add nothing')
                 best_feature = 'None'
-                evaluated_feature_importance[best_feature] = lowest_error
+                # evaluated_feature_importance[best_feature] = lowest_error
                 break
             elif lowest_error >= last_error:
                 break

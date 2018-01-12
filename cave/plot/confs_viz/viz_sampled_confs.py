@@ -426,7 +426,6 @@ class SampleViz(object):
                                      X[inc_indx, 1],
                                      color="black", edgecolors="white",
                                      sizes=self._get_size(runs_per_conf[inc_indx]))
-
         labels = []
         for idx, c in enumerate(conf_list):
             values = []
@@ -442,6 +441,9 @@ class SampleViz(object):
             label = label.replace("dataframe", "config")
             labels.append(label)
 
+        plt.xlabel('MDS-X')
+        plt.ylabel('MDS-Y')
+        plt.tight_layout()
         if self.output_dir:
             path = os.path.join(self.output_dir, 'conf_viz.png')
             self.logger.debug("Save %s", path)
