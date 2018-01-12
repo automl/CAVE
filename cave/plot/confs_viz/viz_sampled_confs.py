@@ -425,7 +425,7 @@ class SampleViz(object):
                               len(inc_list), str(inc_indx))
             scatter_inc = ax.scatter(X[inc_indx, 0],
                                      X[inc_indx, 1],
-                                     color="black", edgecolors="white",
+                                     color="r", edgecolors="k",
                                      sizes=self._get_size(runs_per_conf[inc_indx]), zorder=99)
         labels = []
         for idx, c in enumerate(conf_list):
