@@ -305,7 +305,7 @@ class CAVE(object):
             incumbents = list(map(lambda x: x['incumbent'], trajectories[0]))
 
             confviz_script = self.analyzer.plot_confviz(incumbents, runhistories)
-            self.website["Configurator's behavior"]["Configuration Visualization"] = {
+            self.website["Configurator's behavior"]["Configurator Footprint"] = {
                     "table" : confviz_script,
                     "tooltip" : "Using PCA to reduce dimensionality of the "
                                 "search space  and plot the distribution of "
