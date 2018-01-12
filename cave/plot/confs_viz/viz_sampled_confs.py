@@ -392,9 +392,10 @@ class SampleViz(object):
             min_z = np.min(np.unique(contour_data[2]))
             max_z = np.max(np.unique(contour_data[2]))
             v = np.linspace(min_z, max_z, 15, endpoint=True)
+            print(contour_data[2])
             contour = ax.contourf(contour_data[0], contour_data[1], contour_data[2],
-                                  min(100, np.unique(contour_data[2]).shape[0]))
-            plt.colorbar(contour, ticks=v[::-1])  #, pad=0.15)
+                                  min(100, np.unique(contour_data[2]).shape[0]), zorder=1)
+            plt.colorbar(contour, ticks=v)  #, pad=0.15)
 
         # Plot individual runs as scatter
         self.logger.debug("Plot Scatter")
@@ -404,7 +405,7 @@ class SampleViz(object):
                 runs_labels))[:self.max_rhs_to_plot]:
             scatter = ax.scatter(
                X[:, 0], X[:, 1], sizes=self._get_size(runs_per_conf),
-               color="white", edgecolors="black", label=label)
+               color="white", edgecolors="black", label=label, zorder=50)
 
         ax.set_xlim(X[:, 0].min() - 0.5, X[:, 0].max() + 0.5)
         ax.set_ylim(X[:, 1].min() - 0.5, X[:, 1].max() + 0.5)
@@ -425,7 +426,7 @@ class SampleViz(object):
             scatter_inc = ax.scatter(X[inc_indx, 0],
                                      X[inc_indx, 1],
                                      color="black", edgecolors="white",
-                                     sizes=self._get_size(runs_per_conf[inc_indx]))
+                                     sizes=self._get_size(runs_per_conf[inc_indx]), zorder=99)
         labels = []
         for idx, c in enumerate(conf_list):
             values = []
