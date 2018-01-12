@@ -178,7 +178,7 @@ class ParallelCoordinatesPlotter(object):
             conf_dict = conf.get_dictionary()
             new_entry = {}
             # Add cost-column
-            new_entry['log-cost' if logy else 'cost'] = self._fun(self.validated_rh.get_cost(conf), logy)
+            new_entry['log-runtime' if logy else 'runtime'] = self._fun(self.validated_rh.get_cost(conf), logy)
             # Add parameters
             for p in params:
                 # Catch key-errors (implicate unused hyperparameter)
@@ -206,7 +206,7 @@ class ParallelCoordinatesPlotter(object):
         data = pd.DataFrame(data)
 
         # Add 'cost' to params, params serves as index for dataframe
-        params = ['log-cost' if logy else 'cost'] + params
+        params = ['log-runtime' if logy else 'runtime'] + params
 
         # Select only parameters we want to plot (specified in index)
         data = data[params]
