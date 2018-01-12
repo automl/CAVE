@@ -273,7 +273,7 @@ class CAVE(object):
         # Build report before time-consuming analysis
         self.build_website()
 
-        if algo_footprint:
+        if algo_footprint and self.scenario.feature_dict:
             algorithms = {self.default: "default", self.incumbent: "incumbent"}
             # Add all available incumbents to test portfolio strategy
             #for r in self.runs:
