@@ -293,7 +293,9 @@ class CAVE(object):
         ########### Configurator's behavior
         self.website["Configurator's behavior"] = OrderedDict()
 
-        if confviz and self.scenario.feature_array is not None:
+        if confviz:
+            if self.scenario.feature_array is None:
+                self.scenario.feature_array = np.array([[]])
             # Sort runhistories and incs wrt cost
             incumbents = [r.solver.incumbent for r in self.runs]
             trajectories = [r.traj for r in self.runs]
