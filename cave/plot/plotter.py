@@ -261,7 +261,7 @@ class Plotter(object):
             path to plot
         """
         parallel_coordinates_plotter = ParallelCoordinatesPlotter(rh, self.output,
-                                                                  validator)
+                                                                  validator, self.scenario.cs)
         output = parallel_coordinates_plotter.plot_n_configs(n_configs, params)
         return output
 

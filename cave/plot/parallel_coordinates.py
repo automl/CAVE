@@ -13,7 +13,7 @@ import matplotlib.cm as cmx
 import matplotlib.patheffects as path_efx
 
 from ConfigSpace.util import impute_inactive_values
-from ConfigSpace.hyperparameters import CategoricalHyperparameter, IntegerHyperparameter
+from ConfigSpace.hyperparameters import CategoricalHyperparameter, IntegerHyperparameter, FloatHyperparameter
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -22,7 +22,7 @@ __maintainer__ = "Joshua Marben"
 __email__ = "joshua.marben@neptun.uni-freiburg.de"
 
 class ParallelCoordinatesPlotter(object):
-    def __init__(self, rh, output_dir, validator):
+    def __init__(self, rh, output_dir, validator, cs):
         """ Plotting a parallel coordinates plot, visualizing the explored PCS.
         Inspired by: http://benalexkeen.com/parallel-coordinates-in-matplotlib/
 
@@ -38,6 +38,7 @@ class ParallelCoordinatesPlotter(object):
         self.original_rh = rh
         self.output_dir = output_dir
         self.validator = validator
+        self.cs = cs  # type ConfigSpace.configuration_space.ConfigurationSpace
 
     def get_alpha(self, conf, n=1):
         """ Return alpha-value. The further the conf-performance is from best
@@ -187,21 +188,15 @@ class ParallelCoordinatesPlotter(object):
                     # Value is None, parameter unused # TODO
                     new_entry[p] = 0
                     continue
-                # No strings allowed for plotting -> cast to numerical
-                if isinstance(value, str):
-                    # Catch "on" and "off"
-                    if value == "on":
-                        new_entry[p] = 1
-                    elif value == "off":
-                        new_entry[p] = 0
-                    else:
-                        # Try to cast to int/float
-                        try:
-                            new_entry[p] = int(value)
-                        except ValueError:
-                            new_entry[p] = float(value)
+                param = self.cs.get_hyperparameter(p)
+                if isinstance(param, IntegerHyperparameter):
+                    new_entry[p] = int(value)
+                elif isinstance(param, FloatHyperparameter):
+                    new_entry[p] = float(value)
+                elif isinstance(param, CategoricalHyperparameter):
+                    new_entry[p] = param.choices.index(value)
                 else:
-                    new_entry[p] = value
+                    raise RuntimeError('No rule for parametertype %s' % str(type(param)))
             data.append(pd.Series(new_entry))
         data = pd.DataFrame(data)
 
