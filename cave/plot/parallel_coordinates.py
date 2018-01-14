@@ -22,7 +22,7 @@ __maintainer__ = "Joshua Marben"
 __email__ = "joshua.marben@neptun.uni-freiburg.de"
 
 class ParallelCoordinatesPlotter(object):
-    def __init__(self, rh, output_dir, validator, cs):
+    def __init__(self, rh, output_dir, validator, cs, runtime=True):
         """ Plotting a parallel coordinates plot, visualizing the explored PCS.
         Inspired by: http://benalexkeen.com/parallel-coordinates-in-matplotlib/
 
@@ -39,6 +39,7 @@ class ParallelCoordinatesPlotter(object):
         self.output_dir = output_dir
         self.validator = validator
         self.cs = cs  # type ConfigSpace.configuration_space.ConfigurationSpace
+        self.runtime = runtime
 
     def get_alpha(self, conf, n=1):
         """ Return alpha-value. The further the conf-performance is from best
@@ -174,12 +175,17 @@ class ParallelCoordinatesPlotter(object):
         configspace = configs[0].configuration_space
 
         # Create dataframe with configs
+        cost_str = ''
+        if self.runtime:
+            cost_str = 'log-runtime' if logy else 'runtime'
+        else:
+            cost_str = 'log-quality' if logy else 'quality'
         data = []
         for conf in configs:
             conf_dict = conf.get_dictionary()
             new_entry = {}
             # Add cost-column
-            new_entry['log-runtime' if logy else 'runtime'] = self._fun(self.validated_rh.get_cost(conf), logy)
+            new_entry[cost_str] = self._fun(self.validated_rh.get_cost(conf), logy)
             # Add parameters
             for p in params:
                 # Catch key-errors (implicate unused hyperparameter)
@@ -201,7 +207,7 @@ class ParallelCoordinatesPlotter(object):
         data = pd.DataFrame(data)
 
         # Add 'cost' to params, params serves as index for dataframe
-        params = ['log-runtime' if logy else 'runtime'] + params
+        params = [cost_str] + params
 
         # Select only parameters we want to plot (specified in index)
         data = data[params]

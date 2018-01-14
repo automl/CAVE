@@ -351,10 +351,13 @@ class CAVE(object):
 
         self.build_website()
 
-        self.feature_analysis(box_violin='box_violin' in feature_analysis,
-                              correlation='correlation' in feature_analysis,
-                              clustering='clustering' in feature_analysis,
-                              importance='importance' in feature_analysis)
+        if self.scenario.feature_dict:
+            self.feature_analysis(box_violin='box_violin' in feature_analysis,
+                                  correlation='correlation' in feature_analysis,
+                                  clustering='clustering' in feature_analysis,
+                                  importance='importance' in feature_analysis)
+        else:
+            self.logger.info('No feature analysis possible')
 
         self.logger.info("CAVE finished. Report is located in %s",
                          os.path.join(self.output, 'report.html'))
