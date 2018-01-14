@@ -3,6 +3,7 @@ import logging
 import shutil
 from contextlib import contextmanager
 from typing import Union
+import glob
 
 from smac.facade.smac_facade import SMAC
 from smac.optimizer.objective import average_cost
@@ -52,6 +53,13 @@ class SMACrun(SMAC):
             ta_exec_dir = split_folder[0]
         elif ta_exec_dir is None:
             ta_exec_dir = '.'
+        else:
+            ta_exec_dir = glob.glob(ta_exec_dir, recursive=True)
+            candidates = []
+            for f in ta_exec_dir:
+                if f in split_folder[0] or split_folder[0] in f:
+                    candidates.append(f)
+            ta_exec_dir = list(sorted(candidates, key=lambda x: len(x), reverse=True))[0]
 
         self.scen_fn = os.path.join(folder, 'scenario.txt')
         self.rh_fn = os.path.join(folder, 'runhistory.json')

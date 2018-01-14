@@ -5,6 +5,7 @@ from collections import OrderedDict
 from contextlib import contextmanager
 import typing
 import json
+import glob
 import copy
 
 import numpy as np
@@ -82,6 +83,8 @@ class CAVE(object):
         """
         self.logger = logging.getLogger("cave.cavefacade")
         self.ta_exec_dir = ta_exec_dir
+        if self.ta_exec_dir and '*' in self.ta_exec_dir:  # multiple possibilities for exec dir
+            self.ta_exec_dir = list(sorted(glob.glob(self.ta_exec_dir, recursive=True)))[0]
 
         # Create output if necessary
         self.output = output
