@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 plt.style.use(os.path.join(os.path.dirname(__file__), 'mpl_style'))
 import matplotlib.lines as mlines
+from mpl_toolkits.mplot3d import Axes3D
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
@@ -55,7 +56,8 @@ class AlgorithmFootprint(object):
         self.algo_performance = {}  # Maps instance -> performance
 
         self.features = np.array([inst_feat[k] for k in self.insts])
-        self.features_2d = self.reduce_dim(self.features)
+        self.features_2d = self.reduce_dim(self.features, 2)
+        self.features_3d = self.reduce_dim(self.features, 3)
         self.clusters, self.cluster_dict = self.get_clusters(self.features_2d)
 
         self.plotter = plotter
@@ -63,26 +65,30 @@ class AlgorithmFootprint(object):
 
         self.label_instances()
 
-    def reduce_dim(self, feature_array):
+    def reduce_dim(self, feature_array, n=2):
         """ Expects feature-array (not dict!)
 
         Parameters
         ----------
         feature_array: np.array
             array containing features in order of self.inst_names
+        n: int
+            target dimension for pca, 2 or 3
 
         Returns
         -------
-        feature_array_2d: np.array
-            array with pca'ed features (2-dimensional)
+        feature_array_nd: np.array
+            array with pca'ed features (n-dimensional)
         """
-        # Perform PCA to reduce features to 2
+        if n not in [2, 3]:
+            raise ValueError("Only 2 and 3 supported as target dimension!")
+        # Perform PCA to reduce features to n
         n_feats = feature_array.shape[1]
-        if n_feats > 2:
-            self.logger.debug("Use PCA to reduce features to two dimensions")
+        if n_feats > n:
+            self.logger.debug("Use PCA to reduce features to %d dimensions", n)
             ss = StandardScaler()
             feature_array = ss.fit_transform(feature_array)
-            pca = PCA(n_components=2)
+            pca = PCA(n_components=n)
             feature_array = pca.fit_transform(feature_array)
         return feature_array
 
@@ -182,27 +188,26 @@ class AlgorithmFootprint(object):
         for a in self.algorithms:
             # Plot without clustering (for all insts)
             path = os.path.join(self.output,
-                                self.algo_names[a]+'.png')
-            #                    '_'.join([self.algo_names[a], 'all.png']))
-            outpaths.append(self._plot_points(a, path))
+                                self.algo_names[a])
+            outpaths.extend(self._plot_points(a, path))
 
             # Plot per cluster
             for c in self.cluster_dict.keys():
                 path = os.path.join(self.output, 'debug',
-                                    '_'.join([self.algo_names[a], str(c)+'.png']))
+                                    '_'.join([self.algo_names[a], str(c)]))
                 path = self._plot_points(a, path, self.cluster_dict[c])
-                #outpaths.append(path)
+                #outpaths.extend(path)
         return outpaths
 
-    def _plot_points(self, conf, out, insts=[]):
+    def _plot_points(self, conf, out_fn_base, insts=[]):
         """ Plot good versus bad for conf. Mainly for debugging labels!
 
         Parameters
         ----------
         conf: Configuration
             configuration for which to plot good vs bad
-        out: str
-            output path
+        out_fn_base: str
+            filename for plot to be saved to, '2d.png' or '3d.png' will be appended
         insts: List[str]
             instances to be plotted
 
@@ -211,26 +216,38 @@ class AlgorithmFootprint(object):
         outpath: str
             output path
         """
-        fig, ax = plt.subplots()
-
         if len(insts) == 0:
             insts = self.insts
 
-        good, bad = [], []
+        good_idx, bad_idx = [], []
         for k, v in self.algo_performance[conf].items():
             # Only consider passed insts
             if not k in insts:
                 continue
-            # Append insts to plot either to good or bad
-            point = self.features_2d[self.insts.index(k)]
+            # Append inst-idx either to good or to bad
             if self.algo_labels[conf][k] == 0:
-                bad.append(point)
+                bad_idx.append(self.insts.index(k))
             else:
-                good.append(point)
-        good, bad = np.array(good), np.array(bad)
+                good_idx.append(self.insts.index(k))
+        good_idx, bad_idx = np.array(good_idx), np.array(bad_idx)
         self.logger.debug("for config %s good: %d, bad: %d",
-                          self.algo_names[conf], len(good), len(bad))
+                          self.algo_names[conf], len(good_idx), len(bad_idx))
 
+        plots = []
+        good_2d = np.array([self.features_2d[idx] for idx in good_idx])
+        bad_2d = np.array([self.features_2d[idx] for idx in bad_idx])
+        plots.append(self._plot2d(good_2d, bad_2d, out_fn_base+'2d.png'))
+
+        good_3d = np.array([self.features_3d[idx] for idx in good_idx])
+        bad_3d = np.array([self.features_3d[idx] for idx in bad_idx])
+        plots.append(self._plot3d(good_3d, bad_3d, out_fn_base+'3d.png'))
+        #self._plot3d(good_3d, bad_3d, out_fn_base+'3d.png'))
+        return plots
+
+
+    def _plot2d(self, good, bad, out_fn):
+        # Plot 2d
+        fig, ax = plt.subplots()
         if len(bad) > 0: ax.scatter(bad[:, 0], bad[:, 1], color="red", s=20,
                 alpha=0.7)
         if len(good) > 0: ax.scatter(good[:, 0], good[:, 1], color="green", s=20,
@@ -238,10 +255,23 @@ class AlgorithmFootprint(object):
         ax.set_ylabel('principal component 1')
         ax.set_xlabel('principal component 2')
         plt.tight_layout()
-        fig.savefig(out)
+        fig.savefig(out_fn)
         plt.close(fig)
+        return out_fn
 
-        return out
+    def _plot3d(self, good, bad, out_fn):
+        # Plot 3d
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        if len(good) > 0: ax.scatter(xs=good[:, 0], ys=good[:, 1], zs=good[:, 2], color="green")
+        if len(bad) > 0: ax.scatter(xs=bad[:, 0], ys=bad[:, 1], zs=bad[:, 2], color="red")
+        ax.set_ylabel('principal component 1', fontsize=12)
+        ax.set_xlabel('principal component 2', fontsize=12)
+        ax.set_zlabel('principal component 3', fontsize=12)
+        plt.tight_layout()
+        fig.savefig(out_fn)
+        plt.close(fig)
+        return out_fn
 
 #### Below not implemented """
 
