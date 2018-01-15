@@ -162,7 +162,7 @@ class CAVE(object):
                                  self.scenario, self.validator, self.output,
                                  max_pimp_samples, fanova_pairwise)
 
-        self.builder = HTMLBuilder(self.output, "SpySMAC")
+        self.builder = HTMLBuilder(self.output, "CAVE")
         # Builder for html-website
         self.website = OrderedDict([])
 
