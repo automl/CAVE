@@ -87,6 +87,7 @@ class SampleViz(object):
         self.max_rhs_to_plot = 1  # Maximum number of runhistories 2 b plotted
 
         self.contour_step_size = contour_step_size
+        self.relevant_rh = None
         if output_dir:
             self.output_dir = output_dir
         else:
@@ -155,6 +156,7 @@ class SampleViz(object):
                     cost, time, status, additional_info = value
                     new_rh.add(config, cost, time, status, instance_id=instance,
                                seed=seed, additional_info=additional_info)
+        self.relevant_rh = new_rh
 
         X, y, types = convert_data(scenario=self.scenario,
                                    runhistory=new_rh)
@@ -321,12 +323,22 @@ class SampleViz(object):
                 if not c in conf_list:
                     conf_matrix.append(c.get_array())
                     conf_list.append(c)
+        for inc in self.incs:
+            if inc not in conf_list:
+                conf_list.append(inc)
 
         # Get total runs per config
+        self.min_runs_per_conf = np.inf
+        self.max_runs_per_conf = -np.inf
         for rh in self.runhistories:
             runs_per_conf = np.zeros(len(conf_list), dtype=int)
             for c in rh.get_all_configs():
-                runs_per_conf[conf_list.index(c)] = len(rh.get_runs_for_config(c))
+                r_p_c = len(rh.get_runs_for_config(c))
+                if r_p_c < self.min_runs_per_conf:
+                    self.min_runs_per_conf = r_p_c
+                elif r_p_c > self.max_runs_per_conf:
+                    self.max_runs_per_conf = r_p_c
+                runs_per_conf[conf_list.index(c)] = r_p_c
             runs_runs_conf.append(np.array(runs_per_conf))
 
         # Now decide what configurations to plot depending on max_plots and #runs
@@ -341,6 +353,9 @@ class SampleViz(object):
         self.configs_to_plot = conf_list
 
         return np.array(conf_matrix), conf_list, runs_runs_conf
+
+    def _get_size(self, r_p_c):
+        return 10 + ((r_p_c - self.min_runs_per_conf) / (self.max_runs_per_conf - self.min_runs_per_conf)) * 40
 
     def plot(self, X, conf_list: list, runs_runs_conf, inc_list: list,
              runs_labels=None, contour_data=None):
@@ -377,9 +392,10 @@ class SampleViz(object):
             min_z = np.min(np.unique(contour_data[2]))
             max_z = np.max(np.unique(contour_data[2]))
             v = np.linspace(min_z, max_z, 15, endpoint=True)
+            print(contour_data[2])
             contour = ax.contourf(contour_data[0], contour_data[1], contour_data[2],
-                                  min(100, np.unique(contour_data[2]).shape[0]))
-            plt.colorbar(contour, ticks=v[::-1])  #, pad=0.15)
+                                  min(100, np.unique(contour_data[2]).shape[0]), zorder=1)
+            plt.colorbar(contour, ticks=v)  #, pad=0.15)
 
         # Plot individual runs as scatter
         self.logger.debug("Plot Scatter")
@@ -388,8 +404,8 @@ class SampleViz(object):
         for runs_per_conf, label in list(zip(runs_runs_conf,
                 runs_labels))[:self.max_rhs_to_plot]:
             scatter = ax.scatter(
-               X[:, 0], X[:, 1], sizes=np.log(runs_per_conf + 1) + 10,
-               color="white", edgecolors="black", label=label)
+               X[:, 0], X[:, 1], sizes=self._get_size(runs_per_conf),
+               color="white", edgecolors="black", label=label, zorder=50)
 
         ax.set_xlim(X[:, 0].min() - 0.5, X[:, 0].max() + 0.5)
         ax.set_ylim(X[:, 1].min() - 0.5, X[:, 1].max() + 0.5)
@@ -398,7 +414,7 @@ class SampleViz(object):
         scatter_inc = None
         if inc_list:
             if isinstance(inc_list, list):
-                inc_list = inc_list[:self.max_rhs_to_plot]
+                inc_list = inc_list
             else:
                 inc_list = [inc_list]
             self.logger.debug("Plot Incumbents")
@@ -409,9 +425,8 @@ class SampleViz(object):
                               len(inc_list), str(inc_indx))
             scatter_inc = ax.scatter(X[inc_indx, 0],
                                      X[inc_indx, 1],
-                                     color="black", edgecolors="white",
-                                     sizes=np.log(runs_per_conf[inc_indx] + 1) + 10)
-
+                                     color="r", edgecolors="k",
+                                     sizes=self._get_size(runs_per_conf[inc_indx]), zorder=99)
         labels = []
         for idx, c in enumerate(conf_list):
             values = []
@@ -427,6 +442,9 @@ class SampleViz(object):
             label = label.replace("dataframe", "config")
             labels.append(label)
 
+        plt.xlabel('MDS-X')
+        plt.ylabel('MDS-Y')
+        plt.tight_layout()
         if self.output_dir:
             path = os.path.join(self.output_dir, 'conf_viz.png')
             self.logger.debug("Save %s", path)

@@ -5,6 +5,7 @@ from collections import OrderedDict
 from contextlib import contextmanager
 import typing
 import json
+import glob
 import copy
 
 import numpy as np
@@ -82,6 +83,8 @@ class CAVE(object):
         """
         self.logger = logging.getLogger("cave.cavefacade")
         self.ta_exec_dir = ta_exec_dir
+        if self.ta_exec_dir and '*' in self.ta_exec_dir:  # multiple possibilities for exec dir
+            self.ta_exec_dir = list(sorted(glob.glob(self.ta_exec_dir, recursive=True)))[0]
 
         # Create output if necessary
         self.output = output
@@ -273,8 +276,14 @@ class CAVE(object):
         # Build report before time-consuming analysis
         self.build_website()
 
-        if algo_footprint:
-            algo_footprint_plots = self.analyzer.plot_algorithm_footprint()
+        if algo_footprint and self.scenario.feature_dict:
+            algorithms = {self.default: "default", self.incumbent: "incumbent"}
+            # Add all available incumbents to test portfolio strategy
+            #for r in self.runs:
+            #    if not r.get_incumbent() in algorithms:
+            #        algorithms[r.get_incumbent()] = str(self.runs.index(r))
+
+            algo_footprint_plots = self.analyzer.plot_algorithm_footprint(algorithms)
             self.website["Performance Analysis"]["Algorithm Footprints"] = OrderedDict()
             for p in algo_footprint_plots:
                 self.website["Performance Analysis"]["Algorithm Footprints"][os.path.splitext(os.path.split(p)[1])[0]] = {
@@ -287,17 +296,21 @@ class CAVE(object):
         ########### Configurator's behavior
         self.website["Configurator's behavior"] = OrderedDict()
 
-        if confviz and self.scenario.feature_array is not None:
+        if confviz:
+            if self.scenario.feature_array is None:
+                self.scenario.feature_array = np.array([[]])
             # Sort runhistories and incs wrt cost
             incumbents = [r.solver.incumbent for r in self.runs]
+            trajectories = [r.traj for r in self.runs]
             runhistories = [r.runhistory for r in self.runs]
             costs = [self.validated_rh.get_cost(i) for i in incumbents]
-            costs, incumbents, runhistories = (list(t) for t in
-                    zip(*sorted(zip(costs, incumbents, runhistories), key=lambda
+            costs, incumbents, runhistories, trajectories = (list(t) for t in
+                    zip(*sorted(zip(costs, incumbents, runhistories, trajectories), key=lambda
                         x: x[0])))
+            incumbents = list(map(lambda x: x['incumbent'], trajectories[0]))
 
             confviz_script = self.analyzer.plot_confviz(incumbents, runhistories)
-            self.website["Configurator's behavior"]["Configuration Visualization"] = {
+            self.website["Configurator's behavior"]["Configurator Footprint"] = {
                     "table" : confviz_script,
                     "tooltip" : "Using PCA to reduce dimensionality of the "
                                 "search space  and plot the distribution of "
@@ -338,10 +351,13 @@ class CAVE(object):
 
         self.build_website()
 
-        self.feature_analysis(box_violin='box_violin' in feature_analysis,
-                              correlation='correlation' in feature_analysis,
-                              clustering='clustering' in feature_analysis,
-                              importance='importance' in feature_analysis)
+        if self.scenario.feature_dict:
+            self.feature_analysis(box_violin='box_violin' in feature_analysis,
+                                  correlation='correlation' in feature_analysis,
+                                  clustering='clustering' in feature_analysis,
+                                  importance='importance' in feature_analysis)
+        else:
+            self.logger.info('No feature analysis possible')
 
         self.logger.info("CAVE finished. Report is located in %s",
                          os.path.join(self.output, 'report.html'))
@@ -450,36 +466,9 @@ class CAVE(object):
                 else:
                     feat_names = in_reader.read_instance_features_file(self.scenario.feature_fn)[0]
         else:
-            feat_names = self.scenario.feature_names
+            feat_names = copy.deepcopy(self.scenario.feature_names)
 
-        fa = FeatureAnalysis(output_dn=self.output,
-                             scenario=self.scenario,
-                             feat_names=feat_names)
         self.website["Feature Analysis"] = OrderedDict([])
-
-        # box and violin plots
-        if box_violin:
-            name_plots = fa.get_box_violin_plots()
-            self.website["Feature Analysis"]["Violin and box plots"] = OrderedDict({
-                "tooltip": "Violin and Box plots to show the distribution of each instance feature. We removed NaN from the data."})
-            for plot_tuple in name_plots:
-                key = "%s" % (plot_tuple[0])
-                self.website["Feature Analysis"]["Violin and box plots"][
-                    key] = {"figure": plot_tuple[1]}
-
-        # correlation plot
-        if correlation:
-            correlation_plot = fa.correlation_plot()
-            self.website["Feature Analysis"]["Correlation plot"] = {"tooltip": "Correlation based on Pearson product-moment correlation coefficients between all features and clustered with Wards hierarchical clustering approach. Darker fields corresponds to a larger correlation between the features.",
-                                                            "figure": correlation_plot}
-
-        # cluster instances in feature space
-        if clustering:
-            cluster_plot = fa.cluster_instances()
-            self.website["Feature Analysis"]["Clustering"] = {"tooltip": "Clustering instances in 2d; the color encodes the cluster assigned to each cluster. Similar to ISAC, we use a k-means to cluster the instances in the feature space. As pre-processing, we use standard scaling and a PCA to 2 dimensions. To guess the number of clusters, we use the silhouette score on the range of 2 to 12 in the number of clusters",
-                                                      "figure": cluster_plot}
-
-        self.build_website()
 
         # feature importance using forward selection
         if importance:
@@ -496,6 +485,31 @@ class CAVE(object):
                 self.website["Feature Analysis"]["Feature importance"][name] = {"tooltip":
                          "Feature importance calculated using forward selection.",
                          "figure": p}
+
+        # box and violin plots
+        if box_violin:
+            name_plots = self.analyzer.feature_analysis('box_violin', feat_names)
+            self.website["Feature Analysis"]["Violin and box plots"] = OrderedDict({
+                "tooltip": "Violin and Box plots to show the distribution of each instance feature. We removed NaN from the data."})
+            for plot_tuple in name_plots:
+                key = "%s" % (plot_tuple[0])
+                self.website["Feature Analysis"]["Violin and box plots"][
+                    key] = {"figure": plot_tuple[1]}
+
+        # correlation plot
+        if correlation:
+            correlation_plot = self.analyzer.feature_analysis('correlation', feat_names)
+            if correlation_plot:
+                self.website["Feature Analysis"]["Correlation plot"] = {"tooltip": "Correlation based on Pearson product-moment correlation coefficients between all features and clustered with Wards hierarchical clustering approach. Darker fields corresponds to a larger correlation between the features.",
+                                                            "figure": correlation_plot}
+
+        # cluster instances in feature space
+        if clustering:
+            cluster_plot = self.analyzer.feature_analysis('clustering', feat_names)
+            self.website["Feature Analysis"]["Clustering"] = {"tooltip": "Clustering instances in 2d; the color encodes the cluster assigned to each cluster. Similar to ISAC, we use a k-means to cluster the instances in the feature space. As pre-processing, we use standard scaling and a PCA to 2 dimensions. To guess the number of clusters, we use the silhouette score on the range of 2 to 12 in the number of clusters",
+                                                      "figure": cluster_plot}
+
+        self.build_website()
 
     def build_website(self):
         self.builder.generate_html(self.website)

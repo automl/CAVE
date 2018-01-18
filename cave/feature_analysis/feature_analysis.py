@@ -1,5 +1,6 @@
 import logging
 import os
+import copy
 
 import numpy as np
 from numpy import corrcoef
@@ -31,7 +32,8 @@ class FeatureAnalysis(object):
     def __init__(self,
                  output_dn: str,
                  scenario,
-                 feat_names):
+                 feat_names,
+                 feat_importance=None):
         '''
         From: https://github.com/mlindauer/asapy
 
@@ -42,17 +44,23 @@ class FeatureAnalysis(object):
             output directory name
         scenario: Scenario
             scenario for features
+        feat_names: list[str]
+            names of features as list
+        feat_importance: dict[str] -> float
+            maps names to importance
         '''
         self.logger = logging.getLogger("Feature Analysis")
         self.scenario = scenario
         self.feat_names = scenario.feature_names
+        self.logger.debug(self.feat_names)
+        self.feat_imp = feat_importance
         self.feature_data = {}
         for name in feat_names:
             insts = self.scenario.train_insts
             insts.extend(self.scenario.test_insts)
             self.feature_data[name] = {}
             for i in insts:
-                self.feature_data[name][i] = self.scenario.feature_dict[i][feat_names.index(name)]
+                self.feature_data[name][i] = copy.deepcopy(self.scenario.feature_dict[i][feat_names.index(name)])
         self.feature_data = DataFrame(self.feature_data)
 
         self.output_dn = os.path.join(output_dn, "feature_plots")
@@ -98,22 +106,32 @@ class FeatureAnalysis(object):
 
         return files_
 
-    def correlation_plot(self):
-        '''
-            generate correlation plot using spearman correlation coefficient and ward clustering
-            Returns
-            -------
-            file name of saved plot
-        '''
+    def correlation_plot(self, imp=True):
+        """
+        generate correlation plot using spearman correlation coefficient and ward clustering
+
+        Returns
+        -------
+        path: str
+            filename of saved plot
+        """
         matplotlib.pyplot.close()
         self.logger.debug("Plotting correlation plots........")
 
-        feature_data = self.feature_data
-        features = list(self.feature_data.columns)
+        features = self.feat_names
+        # Check for important features
+        if self.feat_imp and imp:
+            imp_features = [f for f in features if f in self.feat_imp]
+            if len(imp_features) < 2:
+                self.logger.info("Less than two important features -> no correlation plot!")
+                return False
+        else:
+            imp_features = features
+        feature_data = copy.deepcopy(self.feature_data[imp_features])
         feature_data = feature_data.fillna(feature_data.mean())
         feature_data = feature_data.values
 
-        n_features = len(features)
+        n_features = len(imp_features)
 
         data = np.zeros((n_features, n_features)) + 1  # similarity
         for i in range(n_features):
@@ -126,7 +144,7 @@ class FeatureAnalysis(object):
 
         link = linkage(data * -1, 'ward')  # input is distance -> * -1
 
-        sorted_features = [[a] for a in features]
+        sorted_features = [[a] for a in imp_features]
         for l in link:
             new_cluster = sorted_features[int(l[0])][:]
             new_cluster.extend(sorted_features[int(l[1])][:])
@@ -136,7 +154,7 @@ class FeatureAnalysis(object):
 
         # resort data
         indx_list = []
-        for f in features:
+        for f in imp_features:
             indx_list.append(sorted_features.index(f))
         indx_list = np.argsort(indx_list)
         data = data[indx_list, :]
@@ -158,6 +176,15 @@ class FeatureAnalysis(object):
 
         ax.set_xticklabels(sorted_features, minor=False)
         ax.set_yticklabels(sorted_features, minor=False)
+        at = 0
+        if self.feat_imp and not imp:
+            for tx, ty in zip(ax.xaxis.get_ticklabels(), ax.yaxis.get_ticklabels()):
+                color_ = (0., 0., 0.)
+                if sorted_features[at] in self.feat_imp:
+                    color_ = (1., 0., 0.)
+                tx.set_color(color_)
+                ty.set_color(color_)
+                at += 1
         labels = ax.get_xticklabels()
         plt.setp(labels, rotation=45, fontsize=2, ha="left")
         labels = ax.get_yticklabels()
@@ -167,8 +194,12 @@ class FeatureAnalysis(object):
 
         plt.tight_layout()
 
-        out_plot = os.path.join(
-            self.output_dn, "correlation_plot_features.png")
+        if self.feat_imp and imp:
+            out_plot = os.path.join(
+                self.output_dn, "correlation_plot_features_imp.png")
+        else:
+            out_plot = os.path.join(
+                self.output_dn, "correlation_plot_features.png")
         plt.savefig(out_plot, format="png", dpi=400)
 
         return out_plot
@@ -181,11 +212,11 @@ class FeatureAnalysis(object):
         self.logger.debug("Plotting clusters........")
         # impute missing data; probably already done, but to be on the safe
         # side
-        self.feature_data = self.feature_data.fillna(
+        feature_data = self.feature_data.fillna(
             self.feature_data.mean())
 
         # feature data
-        features = self.feature_data.values
+        features = feature_data.values
 
         # scale features
         ss = StandardScaler()
@@ -200,6 +231,7 @@ class FeatureAnalysis(object):
         for n_clusters in range(2, 12):
             km = KMeans(n_clusters=n_clusters)
             y_pred = km.fit_predict(features)
+            self.logger.debug(features)
             score = silhouette_score(features, y_pred)
             scores.append(score)
 

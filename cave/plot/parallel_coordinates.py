@@ -13,7 +13,7 @@ import matplotlib.cm as cmx
 import matplotlib.patheffects as path_efx
 
 from ConfigSpace.util import impute_inactive_values
-from ConfigSpace.hyperparameters import CategoricalHyperparameter, IntegerHyperparameter
+from ConfigSpace.hyperparameters import CategoricalHyperparameter, IntegerHyperparameter, FloatHyperparameter
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -22,7 +22,7 @@ __maintainer__ = "Joshua Marben"
 __email__ = "joshua.marben@neptun.uni-freiburg.de"
 
 class ParallelCoordinatesPlotter(object):
-    def __init__(self, rh, output_dir, validator):
+    def __init__(self, rh, output_dir, validator, cs, runtime=True):
         """ Plotting a parallel coordinates plot, visualizing the explored PCS.
         Inspired by: http://benalexkeen.com/parallel-coordinates-in-matplotlib/
 
@@ -38,6 +38,8 @@ class ParallelCoordinatesPlotter(object):
         self.original_rh = rh
         self.output_dir = output_dir
         self.validator = validator
+        self.cs = cs  # type ConfigSpace.configuration_space.ConfigurationSpace
+        self.runtime = runtime
 
     def get_alpha(self, conf, n=1):
         """ Return alpha-value. The further the conf-performance is from best
@@ -116,15 +118,17 @@ class ParallelCoordinatesPlotter(object):
             configs_to_plot = sorted(all_configs, key=lambda x: self._fun(self.validated_rh.get_cost(x), logy))
             # What about scenarios where quality is the value to optimize? shouldn't min and max be switched then?
             self.best_config_performance = self._fun(min([self.validated_rh.get_cost(c) for c
-                                                in all_configs]), logy)
+                                                          in all_configs]), logy)
             self.worst_config_performance = self._fun(max([self.validated_rh.get_cost(c) for c
-                                                 in all_configs]), logy)
+                                                           in all_configs]), logy)
             if num_configs < len(configs_to_plot):
                 ids = list(sorted(random.sample(range(len(configs_to_plot)), num_configs)))
                 ids[0] = 0
                 ids[-1] = len(configs_to_plot) - 1
             else:
                 ids = list(range(len(configs_to_plot)))
+            ids[0:5] = list(range(0, 5))
+            ids[-5:] = list(range(len(configs_to_plot) - 6, len(configs_to_plot) - 1))
             self._plot(np.array(configs_to_plot)[ids], params,
                        fn=os.path.join(self.output_dir, "parallel_coordinates_uniform_{:s}".format(
                            'log_cost' if logy else ''
@@ -133,7 +137,9 @@ class ParallelCoordinatesPlotter(object):
             if num_configs < len(configs_to_plot):  # Only sample on the logscale if not all configs are plotted.
                 ids = self._get_log_spaced_ids(configs_to_plot, num_configs)
             else:
-                ids = range(len(all_configs))
+                ids = list(range(len(all_configs)))
+            ids[0:5] = list(range(0, 5))
+            ids[-5:] = list(range(len(configs_to_plot) - 6, len(configs_to_plot) - 1))
             configs_to_plot = np.array(configs_to_plot)[ids]
             res = self._plot(configs_to_plot, params,
                              fn = os.path.join(self.output_dir, "parallel_coordinates_{:s}".format(
@@ -169,12 +175,17 @@ class ParallelCoordinatesPlotter(object):
         configspace = configs[0].configuration_space
 
         # Create dataframe with configs
+        cost_str = ''
+        if self.runtime:
+            cost_str = 'log-runtime' if logy else 'runtime'
+        else:
+            cost_str = 'log-quality' if logy else 'quality'
         data = []
         for conf in configs:
             conf_dict = conf.get_dictionary()
             new_entry = {}
             # Add cost-column
-            new_entry['log-cost' if logy else 'cost'] = self._fun(self.validated_rh.get_cost(conf), logy)
+            new_entry[cost_str] = self._fun(self.validated_rh.get_cost(conf), logy)
             # Add parameters
             for p in params:
                 # Catch key-errors (implicate unused hyperparameter)
@@ -183,26 +194,20 @@ class ParallelCoordinatesPlotter(object):
                     # Value is None, parameter unused # TODO
                     new_entry[p] = 0
                     continue
-                # No strings allowed for plotting -> cast to numerical
-                if isinstance(value, str):
-                    # Catch "on" and "off"
-                    if value == "on":
-                        new_entry[p] = 1
-                    elif value == "off":
-                        new_entry[p] = 0
-                    else:
-                        # Try to cast to int/float
-                        try:
-                            new_entry[p] = int(value)
-                        except ValueError:
-                            new_entry[p] = float(value)
+                param = self.cs.get_hyperparameter(p)
+                if isinstance(param, IntegerHyperparameter):
+                    new_entry[p] = int(value)
+                elif isinstance(param, FloatHyperparameter):
+                    new_entry[p] = float(value)
+                elif isinstance(param, CategoricalHyperparameter):
+                    new_entry[p] = param.choices.index(value)
                 else:
-                    new_entry[p] = value
+                    raise RuntimeError('No rule for parametertype %s' % str(type(param)))
             data.append(pd.Series(new_entry))
         data = pd.DataFrame(data)
 
         # Add 'cost' to params, params serves as index for dataframe
-        params = ['log-cost' if logy else 'cost'] + params
+        params = [cost_str] + params
 
         # Select only parameters we want to plot (specified in index)
         data = data[params]
@@ -239,11 +244,11 @@ class ParallelCoordinatesPlotter(object):
 
         # Plot data
         for i, ax in enumerate(axes):  # Iterate over params
-            for idx in data.index:  # Iterate over configs
+            for idx in data.index[::-1]:  # Iterate over configs
                 cval = scale.to_rgba(self._fun(self.validated_rh.get_cost(configs[idx]), logy))
                 cval = (cval[2], cval[0], cval[1])
-                alpha = 0.6
                 zorder = idx - 5 if idx > len(data) // 2 else len(data) - idx  # -5 to have the best on top of the worst
+                alpha = (zorder / len(data)) - 0.25
                 path_effects = [path_efx.Normal()]
                 if idx in [0, 1, 2, 3, 4, len(data) - 1, len(data) - 2, len(data) - 3, len(data) - 4, len(data) - 5]:
                     alpha = 1
@@ -282,7 +287,6 @@ class ParallelCoordinatesPlotter(object):
                          range(num_ticks + 1)]
             ax.yaxis.set_ticks(ticks)
             ax.set_yticklabels(tick_labels)
-            ax.set_ylim([-0.05, 1.05])
 
         # TODO adjust tick-labels to unused and maybe even log?
         for p, ax in enumerate(axes):
@@ -296,10 +300,12 @@ class ParallelCoordinatesPlotter(object):
         ax.xaxis.set_major_locator(ticker.FixedLocator([len(params) - 2, len(params) - 1]))
         set_ticks_for_axis(dim, ax, num_ticks=6)
         ax.set_xticklabels([params[-2], params[-1]], rotation=5)
+        ax.set_ylim(axes[-1].get_ylim())
 
         # Remove spaces between subplots
         plt.subplots_adjust(wspace=0)
-
+        plt.tight_layout()
+        plt.subplots_adjust(wspace=0)
         fig.savefig(filename)
         plt.close(fig)
 
