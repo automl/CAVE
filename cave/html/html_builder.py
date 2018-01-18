@@ -150,7 +150,18 @@ for (i = 0; i < acc.length; i++) {
                 html_str = self.add_layer(html_str, k, v)
             elif k == "figure":
                 html_str +="<div align=\"center\">\n"
-                html_str +="<a href=\"{0}\" data-lightbox=\"{0}\" data-title=\"{0}\"><img src=\"{0}\" alt=\"Plot\" width=\"600px\"></a>\n".format(v[len(self.output_dn):].lstrip("/"))
+                if isinstance(v, str):
+                    html_str +="<a href=\"{0}\" data-lightbox=\"{0}\" data-title=\"{0}\"><img src=\"{0}\" alt=\"Plot\" width=\"600px\"></a>\n".format(v[len(self.output_dn):].lstrip("/"))
+                else:
+                    # List with multiple figures size relative, put next to each other
+                    width = (100 - len(v)) / len(v)
+                    for fig in v:
+                        html_str += "<a href=\"{0}\" data-lightbox=\"{1}\" data-title=\"{0}\"><img src=\"{0}\" alt=\"Plot\" style=\"float: left; width: {2}%; margin-right: 1%; margin-bottom: 0.5em;\"></a>\n".format(
+                                fig[len(self.output_dn):].lstrip("/"),
+                                str(v),
+                                int(width))
+
+                    html_str += "<p style=\"clear: both;\">"
                 html_str +="</div>\n"
             elif k == "table":
                 html_str += "<div align=\"center\">\n{}\n</div>\n".format(v)
