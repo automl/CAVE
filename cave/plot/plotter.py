@@ -56,6 +56,7 @@ class Plotter(object):
         self.scenario = scenario
         self.train_test = train_test
         self.output = output
+        self.vizrh = None
 
         # Split data into train and test
         data = {"default" : {"combined" : [], "train" : [], "test" : []},
@@ -170,8 +171,8 @@ class Plotter(object):
             ax2.legend()
             ax2.grid(True)
             ax2.set_xscale('log')
-            ax2.set_ylabel('Probability of being solved')
-            ax2.set_xlabel('Time')
+            ax2.set_ylabel('probability of being solved')
+            ax2.set_xlabel('time')
             # Plot 'timeout'
             if timeout:
                 ax2.text(timeout,
@@ -195,8 +196,8 @@ class Plotter(object):
         ax1.legend()
         ax1.grid(True)
         ax1.set_xscale('log')
-        ax1.set_ylabel('Probability of being solved')
-        ax1.set_xlabel('Time')
+        ax1.set_ylabel('probability of being solved')
+        ax1.set_xlabel('time')
         # Plot 'timeout'
         if timeout:
             ax1.text(timeout,
@@ -227,7 +228,9 @@ class Plotter(object):
                        runhistories=runhistories,
                        incs=incumbents, max_plot=max_confs_plot,
                        output_dir=self.output)
-        return sz.run()
+        r = sz.run()
+        self.vizrh = sz.relevant_rh
+        return r
 
     def plot_parallel_coordinates(self, rh, output, params, n_configs, validator):
         """ Plot parallel coordinates (visualize higher dimensions), here used
@@ -258,7 +261,8 @@ class Plotter(object):
             path to plot
         """
         parallel_coordinates_plotter = ParallelCoordinatesPlotter(rh, self.output,
-                                                                validator)
+                                                                  validator, self.scenario.cs,
+                                                                  runtime=self.scenario.run_obj == 'runtime')
         output = parallel_coordinates_plotter.plot_n_configs(n_configs, params)
         return output
 
@@ -280,7 +284,7 @@ class Plotter(object):
             epm: RandomForestWithInstances
                 emperical performance model (expecting trained on all runs)
         """
-        self.logger.info("Estimating costs over time for best run.")
+        self.logger.debug("Estimating costs over time for best run.")
         validator.traj = traj  # set trajectory
         time, configs = [], []
 
@@ -291,7 +295,7 @@ class Plotter(object):
         self.logger.debug("Using %d samples (%d distinct) from trajectory.",
                           len(time), len(set(configs)))
 
-        if validator.epm:
+        if validator.epm:  # not log as validator epm is trained on cost, not log cost
             epm = validator.epm
         else:
             self.logger.debug("No EPM passed! Training new one from runhistory.")
@@ -333,24 +337,32 @@ class Plotter(object):
         #     epm.instance_features = backup_features_epm
         #=======================================================================
 
-        mean = mean[:,0]
-        var = var[:,0]
+        mean = mean[:, 0]
+        var = var[:, 0]
         uncertainty_upper = mean+np.sqrt(var)
         uncertainty_lower = mean-np.sqrt(var)
+        if self.scenario.run_obj == 'runtime':  # We have to clip at 0 as we want to put y on the logscale
+            uncertainty_lower[uncertainty_lower < 0] = 0
+            uncertainty_upper[uncertainty_upper < 0] = 0
 
         # plot
         fig = plt.figure()
         ax = fig.add_subplot(111)
 
-        ax.plot(time, mean, 'r-', label="Estimated performance")
-        ax.legend()
-        ax.fill_between(time, uncertainty_upper, uncertainty_lower,alpha=0.8)
+        ax.set_ylabel('performance')
+        ax.set_xlabel('time [sec]')
+        ax.plot(time, mean, 'r-', label="estimated performance")
+        ax.fill_between(time, uncertainty_upper, uncertainty_lower, alpha=0.8,
+                label="standard deviation")
         ax.set_xscale("log", nonposx='clip')
+        if self.scenario.run_obj == 'runtime':
+            ax.set_yscale('log')
 
-        ax.set_ylim(min(mean)*0.8, max(mean)*1.2)
+        # ax.set_ylim(min(mean)*0.8, max(mean)*1.2)
         # start after 1% of the configuration budget
         ax.set_xlim(min(time)+(max(time) - min(time))*0.01, max(time))
 
+        ax.legend()
         plt.tight_layout()
         fig.savefig(output)
         plt.close(fig)

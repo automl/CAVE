@@ -28,6 +28,7 @@ from cave.plot.plotter import Plotter
 from cave.plot.algorithm_footprint import AlgorithmFootprint
 from cave.smacrun import SMACrun
 from cave.utils.helpers import get_cost_dict_for_config, get_timeout
+from cave.utils.timing import timing
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -75,10 +76,13 @@ class Analyzer(object):
         self.scenario = scenario
         self.validator = validator
         self.pimp = None  # PIMP object for reuse
+        self.feat_analysis = None  # feat_analysis object for reuse
+        self.evaluators = []
         self.output = output
 
         self.importance = None  # Used to store dictionary containing parameter
                                 # importances, so it can be used by analysis
+        self.feat_importance = None  # Used to store dictionary w feat_imp
 
         conf1_runs = get_cost_dict_for_config(self.validated_rh, self.default)
         conf2_runs = get_cost_dict_for_config(self.validated_rh, self.incumbent)
@@ -194,6 +198,7 @@ class Analyzer(object):
         """Create table, compare default against incumbent on train-,
         test- and combined instances. Listing PAR10, PAR1 and timeouts.
         Distinguishes between train and test, if available."""
+        self.logger.info("... create performance table")
         def_timeout, inc_timeout = self.get_timeouts(default), self.get_timeouts(incumbent)
         def_par10, inc_par10 = self.get_parX(default, 10), self.get_parX(incumbent, 10)
         def_par1, inc_par1 = self.get_parX(default, 1), self.get_parX(incumbent, 1)
@@ -418,6 +423,7 @@ class Analyzer(object):
         importance: pimp.Importance
             importance object with evaluated data
         """
+        self.logger.info("... parameter importance {}".format(modus))
         # Evaluate parameter importance
         save_folder = output
         if not self.pimp:
@@ -428,26 +434,30 @@ class Analyzer(object):
                                    save_folder=save_folder,
                                    seed=12345,
                                    max_sample_size=self.max_pimp_samples,
-                                   fANOVA_pairwise=self.fanova_pairwise)
-        self.logger.debug("Imp modus: %s", modus)
-        result = self.pimp.evaluate_scenario([modus])
-        self.pimp.plot_results(name=os.path.join(save_folder, modus), show=False)
+                                   fANOVA_pairwise=self.fanova_pairwise,
+                                   preprocess=False)
+        result = self.pimp.evaluate_scenario([modus], save_folder)
+        self.evaluators.append(self.pimp.evaluator)
         return self.pimp
 
 ####################################### FEATURE IMPORTANCE #######################################
     def feature_importance(self):
+        self.logger.info("... plotting feature importance")
         forward_selector = FeatureForwardSelector(self.scenario,
                 self.original_rh)
         imp = forward_selector.run()
+        self.logger.debug("FEAT IMP %s", imp)
+        self.feat_importance = imp
         plots = forward_selector.plot_result(os.path.join(self.output,
             'feature_plots/importance'))
         return (imp, plots)
 
 ####################################### PLOTS #######################################
 
-    def plot_parallel_coordinates(self, n_param=10, n_configs=1000):
+    def plot_parallel_coordinates(self, n_param=10, n_configs=500):
         """ Creates a parallel coordinates plot visualizing the explored
         parameter configuration space. """
+        self.logger.info("... plotting parallel coordinates")
         # If a parameter importance has been performed in this analyzer-object,
         # only plot the n_param most important parameters.
         if self.importance:
@@ -461,23 +471,27 @@ class Analyzer(object):
                              "parameters in parallel coordinates plot.")
             params = list(self.default.keys())[:n_param]
 
-        self.logger.debug("Parallel coordinates plotting %s configs with params: %s",
-                          n_configs, str(params))
-        path = self.plotter.plot_parallel_coordinates(self.original_rh, self.output,
+        self.logger.info("    plotting %s parameters for (max) %s configurations",
+                         len(params), n_configs)
+        rh = self.original_rh if self.plotter.vizrh is None else self.plotter.vizrh
+        path = self.plotter.plot_parallel_coordinates(rh, self.output,
                                                       params, n_configs, self.validator)
 
         return path
 
     def plot_cdf(self):
+        self.logger.info("... plotting eCDF")
         cdf_path = os.path.join(self.output, 'cdf.png')
         self.plotter.plot_cdf_compare(output=cdf_path)
         return cdf_path
 
     def plot_scatter(self):
+        self.logger.info("... plotting scatter")
         scatter_path = os.path.join(self.output, 'scatter.png')
         self.plotter.plot_scatter(output=scatter_path)
         return scatter_path
 
+    @timing
     def plot_confviz(self, incumbents, runhistories, max_confs=1000):
         """ Plot the visualization of configurations, highlightning the
         incumbents. Using original rh, so the explored configspace can be
@@ -497,71 +511,69 @@ class Analyzer(object):
         confviz: str
             script to generate the interactive html
         """
+        self.logger.info("... visualizing explored configspace")
         confviz = self.plotter.visualize_configs(self.scenario,
                     runhistories=runhistories, incumbents=incumbents,
                     max_confs_plot=max_confs)
 
         return confviz
 
+    @timing
     def plot_cost_over_time(self, traj, validator):
-        start = time.time()
         path = os.path.join(self.output, 'cost_over_time.png')
+        self.logger.info("... cost over time:")
+        self.logger.info("    plotting!")
         self.plotter.plot_cost_over_time(self.validated_rh, traj, output=path,
                                          validator=validator)
-        self.logger.debug("cost over time took %.2f seconds", time.time() - start)
         return path
 
-    def plot_algorithm_footprint(self):
-        algorithms = {self.default: "default", self.incumbent: "incumbent"}
-        footprint = AlgorithmFootprint(self.validated_rh, self.scenario.feature_dict,
-                                       self.scenario.cutoff, self.output,
-                                       algorithms)
+    @timing
+    def plot_algorithm_footprint(self, algorithms=None, density=200, purity=0.95):
+        if not algorithms:
+            algorithms = {self.default: "default", self.incumbent: "incumbent"}
+        self.logger.info("... algorithm footprints:")
+        self.logger.info("    for: {}".format(algorithms.values()))
+        footprint = AlgorithmFootprint(self.validated_rh,
+                                       self.scenario.feature_dict, algorithms,
+                                       self.scenario.cutoff, self.output)
+        # Calculate footprints
+        #for i in range(100):
+        #    for a in algorithms:
+        #        footprint.footprint(a, 20, 0.95)
+
+        # Plot footprints
         plots = footprint.plot_points_per_cluster()
         return plots
 
 ####################################### FEATURE ANALYSIS #######################################
 
     def feature_analysis(self,
-            status_bar=True,
-            box_violin=True):
+                         mode,
+                         feat_names,
+                         ):
         """Use asapys feature analysis.
 
         Parameters
         ----------
+        mode: str
+            from [box_violin, correlation, clustering]
+
         Returns
-        ----------
+        -------
+        Corresponding plot paths
         """
-        fa = FeatureAnalysis(output_dn=self.output_dn,
-                             scenario=self.scenario)
+        self.logger.info("... feature analysis: %s", mode)
+        self.feat_analysis = FeatureAnalysis(output_dn=self.output,
+                                 scenario=self.scenario,
+                                 feat_names=feat_names,
+                                 feat_importance=self.feat_importance)
 
-        paths = []
+        if mode == 'box_violin':
+            return self.feat_analysis.get_box_violin_plots()
 
-        #if status_bar:
-        #    status_plot = fa.get_bar_status_plot()
-        #    data["Feature Analysis"]["Status Bar Plot"] = {"tooltip": "Stacked bar plots for runstatus of each feature groupe",
-        #                                                   "figure": status_plot}
+        if mode == 'correlation':
+            self.feat_analysis.correlation_plot()
+            return self.feat_analysis.correlation_plot(imp=False)
 
-        ## correlation plot
-        #if config["Feature Analysis"].get("Correlation plot"):
-        #    correlation_plot = fa.correlation_plot()
-        #    data["Feature Analysis"]["Correlation plot"] = {"tooltip": "Correlation based on Pearson product-moment correlation coefficients between all features and clustered with Wards hierarchical clustering approach. Darker fields corresponds to a larger correlation between the features.",
-        #                                                    "figure": correlation_plot}
-
-        ## feature importance
-        #if config["Feature Analysis"].get("Feature importance"):
-        #    importance_plot = fa.feature_importance()
-        #    data["Feature Analysis"]["Feature importance"] = {"tooltip": "Using the approach of SATZilla'11, we train a cost-sensitive random forest for each pair of algorithms and average the feature importance (using gini as splitting criterion) across all forests. We show the median, 25th and 75th percentiles across all random forests of the 15 most important features.",
-        #                                                      "figure": importance_plot}
-
-        ## cluster instances in feature space
-        #if config["Feature Analysis"].get("Clustering"):
-        #    cluster_plot = fa.cluster_instances()
-        #    data["Feature Analysis"]["Clustering"] = {"tooltip": "Clustering instances in 2d; the color encodes the cluster assigned to each cluster. Similar to ISAC, we use a k-means to cluster the instances in the feature space. As pre-processing, we use standard scaling and a PCA to 2 dimensions. To guess the number of clusters, we use the silhouette score on the range of 2 to 12 in the number of clusters",
-        #                                              "figure": cluster_plot}
-
-        ## get cdf plot
-        #if self.scenario.feature_cost_data is not None and config["Feature Analysis"].get("CDF plot on feature costs"):
-        #    cdf_plot = fa.get_feature_cost_cdf_plot()
-        #    data["Feature Analysis"]["CDF plot on feature costs"] = {"tooltip": "Cumulative Distribution function (CDF) plots. At each point x (e.g., running time cutoff), for how many of the instances (in percentage) have we computed the instance features. Faster feature computation steps have a higher curve. Missing values are imputed with the maximal value (or running time cutoff).",
-        #                                                             "figure": cdf_plot}
-
+        if mode == 'clustering':
+            return self.feat_analysis.cluster_instances()

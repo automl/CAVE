@@ -57,16 +57,12 @@ def convert_data(scenario:Scenario, runhistory:RunHistory):
     num_params = len(params)
 
     if scenario.run_obj == "runtime":
-        if scenario.run_obj == "runtime":
-            # if we log the performance data,
-            # the RFRImputator will already get
-            # log transform data from the runhistory
-            cutoff = np.log10(scenario.cutoff)
-            threshold = np.log10(scenario.cutoff *
-                                 scenario.par_factor)
-        else:
-            cutoff = scenario.cutoff
-            threshold = scenario.cutoff * scenario.par_factor
+        # if we log the performance data,
+        # the RFRImputator will already get
+        # log transform data from the runhistory
+        cutoff = np.log10(scenario.cutoff)
+        threshold = np.log10(scenario.cutoff *
+                             scenario.par_factor)
 
         imputor = RFRImputator(rng=np.random.RandomState(42),
                                cutoff=cutoff,
