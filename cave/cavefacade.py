@@ -114,7 +114,6 @@ class CAVE(object):
                 self.logger.debug("Collecting data from %s.", folder)
                 self.runs.append(SMACrun(folder, ta_exec_dir))
             except Exception as err:
-                raise err
                 self.logger.warning("Folder %s could not be loaded, failed "
                                     "with error message: %s", folder, err)
                 continue

@@ -487,9 +487,8 @@ class Analyzer(object):
 
     def plot_scatter(self):
         self.logger.info("... plotting scatter")
-        scatter_path = os.path.join(self.output, 'scatter.png')
-        self.plotter.plot_scatter(output=scatter_path)
-        return scatter_path
+        scatter_path = os.path.join(self.output, 'scatter')
+        return self.plotter.plot_scatter(output_fn_base=scatter_path)
 
     @timing
     def plot_confviz(self, incumbents, runhistories, max_confs=1000):

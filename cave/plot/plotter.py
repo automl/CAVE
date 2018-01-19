@@ -81,7 +81,7 @@ class Plotter(object):
                 data[c][s] = np.array(data[c][s])
         self.data = data
 
-    def plot_scatter(self, output='scatter.png'):
+    def plot_scatter(self, output_fn_base='scatter'):
         """
         Creates a scatterplot of the two configurations on the given set of
         instances.
@@ -89,31 +89,33 @@ class Plotter(object):
 
         Parameters:
         -----------
-        output: string
-            path to save plot in
+        output_fn_base: string
+            base-path to save plot to
         """
-        self.logger.debug("Plot scatter to %s", output)
+        self.logger.debug("Plot scatter to %s[train|test].png", output_fn_base)
 
         metric = self.scenario.run_obj
         timeout = self.scenario.cutoff
         labels = ["default cost", "incumbent cost"]
 
-        if self.train_test:
-            conf1 = (self.data["default"]["train"],
-                    self.data["default"]["test"])
-            conf2 = (self.data["incumbent"]["train"],
-                    self.data["incumbent"]["test"])
-        else:
-            conf1 = (self.data["default"]["combined"],)
-            conf2 = (self.data["incumbent"]["combined"],)
+        conf1 = (self.data["default"]["train"], self.data["default"]["test"])
+        conf2 = (self.data["incumbent"]["train"], self.data["incumbent"]["test"])
 
-        fig = plot_scatter_plot(conf1, conf2,
-                                labels, metric=metric,
-                                user_fontsize=mpl.rcParams['font.size'],
-                                max_val=timeout,
-                                jitter_timeout=True)
-        fig.savefig(output)
-        plt.close(fig)
+        min_val = min(min([min(x) for x in conf1]), min([min(y) for y in conf2]))
+
+        paths = [output_fn_base+'train.png',
+                 output_fn_base+'test.png']
+
+        for idx in [0, 1]:
+            fig = plot_scatter_plot((conf1[idx],), (conf2[idx],),
+                                    labels, metric=metric,
+                                    user_fontsize=mpl.rcParams['font.size'],
+                                    min_val=min_val,
+                                    max_val=timeout,
+                                    jitter_timeout=True)
+            fig.savefig(paths[idx])
+            plt.close(fig)
+        return paths
 
     def plot_cdf_compare(self, output="CDF_compare.png"):
         """
