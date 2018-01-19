@@ -59,7 +59,8 @@ For further information on how to use CAVE, see:
 # EXAMPLE
 You can run the spear-qcp example like this:
 ```
-python scripts/cave.py --folders examples/spear_qcp_small/example_output_* --verbose DEBUG --ta_exec examples/spear_qcp_small/ --out results_saved_here/
+python scripts/cave.py --folders examples/spear_qcp_small/example_output/* --verbose DEBUG --ta_exec examples/spear_qcp_small/ --out results_saved_here/
 ```
 This will analyze the results located in `examples/spear_qcp_small` in the dirs `example_output_1`, `example_output_2` and `example_output_3`.
-The report is located in `results_saved_here/report.html`.
+The report is located in `results_saved_here/report.html`. `--ta_exec`
+corresponds to the from which the optimizer was originally executed.
