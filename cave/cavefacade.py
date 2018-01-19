@@ -59,7 +59,7 @@ class CAVE(object):
                  ta_exec_dir: Union[str, None]=None, missing_data_method: str='epm',
                  max_pimp_samples: int=-1, fanova_pairwise=True):
         """
-        Initialize SpySMAC facade to handle analyzing, plotting and building the
+        Initialize CAVE facade to handle analyzing, plotting and building the
         report-page easily. During initialization, the analysis-infrastructure
         is built and the data is validated, meaning the overall best
         incumbent is found and default+incumbent are evaluated for all
@@ -162,7 +162,7 @@ class CAVE(object):
                                  self.scenario, self.validator, self.output,
                                  max_pimp_samples, fanova_pairwise)
 
-        self.builder = HTMLBuilder(self.output, "SpySMAC")
+        self.builder = HTMLBuilder(self.output, "CAVE")
         # Builder for html-website
         self.website = OrderedDict([])
 
@@ -197,7 +197,7 @@ class CAVE(object):
                 parallel_coordinates=True, cost_over_time=True,
                 algo_footprint=True):
         """Analyze the available data and build HTML-webpage as dict.
-        Save webpage in 'self.output/SpySMAC/report.html'.
+        Save webpage in 'self.output/CAVE/report.html'.
         Analyzing is performed with the analyzer-instance that is initialized in
         the __init__
 

@@ -243,6 +243,9 @@ class FeatureAnalysis(object):
 
         plt.figure()
         plt.scatter(features[:, 0], features[:, 1], c=y_pred)
+        ax = plt.gca()
+        ax.set_ylabel('principal component 1')
+        ax.set_xlabel('principal component 2')
 
         plt.tight_layout()
         out_fn = os.path.join(self.output_dn, "feature_clusters.png")

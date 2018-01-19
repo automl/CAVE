@@ -1,3 +1,3 @@
 Basic Usage
 -----------
-SpySMAC is great!
+CAVE is great!
