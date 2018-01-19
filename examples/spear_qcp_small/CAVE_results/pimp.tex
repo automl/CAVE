@@ -1,0 +1,35 @@
+\begin{table}
+\begin{tabular}{r|r|r|r|r}
+\toprule
+                            &      fANOVA       &     Ablation      & Forward Selection &    IncNeighbor   \\
+\hline
+sp-var-dec-heur             & $         50.740$ & $         13.865$ & $          0.128$ & $         78.379$\\
+sp-learned-clause-sort-heur & $          8.796$ & $         46.519$ &                 - & $         15.380$\\
+sp-orig-clause-sort-heur    & $          5.846$ & $          4.217$ &                 - & $          1.096$\\
+sp-rand-var-dec-scaling     & $          0.598$ &                 - & $          0.120$ &                 -\\
+sp-res-order-heur           & $          0.232$ &                 - &                 - &                 -\\
+sp-rand-phase-dec-freq      & $          0.171$ &                 - &                 - &                 -\\
+sp-learned-clauses-inc      & $          0.140$ & $          6.554$ &                 - & $          0.112$\\
+sp-var-activity-inc         & $          0.120$ & $          0.303$ & $          0.116$ &                 -\\
+sp-restart-inc              & $          0.100$ &                 - & $          0.110$ & $          0.027$\\
+sp-max-res-runs             & $          0.077$ &                 - & $          0.118$ &                 -\\
+sp-resolution               &                 - & $         15.673$ & $          0.118$ & $          1.493$\\
+sp-rand-var-dec-freq        &                 - & $          7.010$ &                 - & $          2.940$\\
+sp-phase-dec-heur           &                 - & $          1.459$ &                 - & $          0.111$\\
+sp-variable-decay           &                 - & $          6.043$ & $          0.114$ & $          0.390$\\
+sp-first-restart            &                 - & $          0.690$ &                 - &                 -\\
+sp-use-pure-literal-rule    &                 - &                 - & $          0.117$ &                 -\\
+sp-clause-activity-inc      &                 - &                 - & $          0.116$ & $          0.053$\\
+sp-learned-size-factor      &                 - &                 - & $          0.117$ &                 -\\
+\bottomrule
+\end{tabular}
+\caption{Parameter Importance values, obtained using the PIMP package. Ablation values are percentages of improvement a single parameter change obtained between the default and an incumbent configuration.
+fANOVA values are percentages that show how much variance across the whole ConfigSpace can be explained by that parameter.
+Forward Selection values are RMSE values obtained using only a subset of parameters for prediction.
+fANOVA and Forward Selection try to estimate the importances across the whole parameter space, while ablation tries to estimate them between two given configurations.
+Only the top 10 parameters of each method are listed.
+                    "-" represent that this parameter was not evaluated
+                     using the given method but with another.
+                    }
+\label{tab:pimp}
+\end{table}

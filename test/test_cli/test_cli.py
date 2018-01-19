@@ -99,4 +99,4 @@ class TestCLI(unittest.TestCase):
                 # Wrong ta_exec -> scenario cannot be loaded
                 testargs.extend(["--ta_exec", "examples/spear_qcp_small/"])
                 with mock.patch.object(sys, 'argv', testargs):
-                    self.assertRaises(FileNotFoundError, self.cavecli.main_cli)
+                    self.assertRaises(ValueError, self.cavecli.main_cli)
