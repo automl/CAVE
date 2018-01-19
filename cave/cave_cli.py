@@ -5,6 +5,7 @@ import logging
 import os
 import sys
 import shutil
+import glob
 
 import matplotlib
 matplotlib.use('agg')
@@ -84,7 +85,13 @@ class CaveCLI(object):
             logging.basicConfig(level=logging.DEBUG)
 
         # SMAC results
-        cave = CAVE(args_.folders, args_.output, args_.ta_exec_dir,
+        folders = []
+        for f in args_.folders:
+            if '*' in f:
+                folders.extend(list(glob.glob(f, recursive=True)))
+            else:
+                folders.append(f)
+        cave = CAVE(folders, args_.output, args_.ta_exec_dir,
                     missing_data_method=args_.validation,
                     max_pimp_samples=args_.max_pimp_samples,
                     fanova_pairwise=args_.fanova_pairwise)
