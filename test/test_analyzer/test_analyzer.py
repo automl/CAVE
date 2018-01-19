@@ -21,9 +21,9 @@ class TestAnalyzer(unittest.TestCase):
     def setUp(self):
         self.output = "test/test_files/test_output/"
         shutil.rmtree(self.output, ignore_errors=True)
-        self.cave = CAVE(["examples/spear_qcp_small/example_output_1",
-                          "examples/spear_qcp_small/example_output_2",
-                          "examples/spear_qcp_small/example_output_3"],
+        self.cave = CAVE(["examples/spear_qcp_small/example_output/run_1",
+                          "examples/spear_qcp_small/example_output/run_2",
+                          "examples/spear_qcp_small/example_output/run_3"],
                          output=self.output,
                          missing_data_method="epm",
                          ta_exec_dir="examples/spear_qcp_small")
