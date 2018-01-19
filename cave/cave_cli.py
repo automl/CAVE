@@ -26,7 +26,7 @@ __email__ = "joshua.marben@neptun.uni-freiburg.de"
 
 class CaveCLI(object):
     """
-    SpySMAC command line interface.
+    CAVE command line interface.
     """
 
     def main_cli(self):
@@ -48,7 +48,7 @@ class CaveCLI(object):
                               choices=["validation", "epm"],
                               help="how to complete missing runs for "
                                    "config/inst-pairs.")
-        opt_opts.add_argument("--output", default="SpySMAC_output",
+        opt_opts.add_argument("--output", default="CAVE_output",
                               help="path to folder in which to save the HTML-report.")
         opt_opts.add_argument("--ta_exec_dir", default=None,
                               help="path to the execution-directory of the "

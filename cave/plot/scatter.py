@@ -106,6 +106,10 @@ def plot_scatter_plot(x_data, y_data, labels, title="", debug=False,
     y_min = min([min(y) for y in y_data])
     x_max = max([max(x) for x in x_data])
     y_max = max([max(y) for y in y_data])
+    x_min = min([x_min, y_min])
+    y_min = x_min
+    x_max = max([x_max, y_max])
+    y_max = x_max
     if min_val is not None:
         auto_min_val = min([x_min, y_min, min_val])
     else:
