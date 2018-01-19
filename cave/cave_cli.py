@@ -53,6 +53,7 @@ class CaveCLI(object):
         opt_opts.add_argument("--ta_exec_dir", default=None,
                               help="path to the execution-directory of the "
                                    "SMAC run.")
+
         opt_opts.add_argument("--param_importance", default="all", nargs='+',
                               help="what kind of parameter importance to "
                                    "calculate", choices=["all", "ablation",
@@ -76,6 +77,9 @@ class CaveCLI(object):
         opt_opts.add_argument("--parallel_coordinates", default="true",
                               choices=["true", "false"],
                               help="whether to plot parallel coordinates.")
+        opt_opts.add_argument("--algorithm_footprints", default="true",
+                              choices=["true", "false"],
+                              help="whether to plot algorithm footprints.")
 
         args_, misc = parser.parse_known_args()
 
@@ -118,7 +122,7 @@ class CaveCLI(object):
                      confviz=args_.confviz == "true",
                      parallel_coordinates=args_.parallel_coordinates == "true",
                      cost_over_time=args_.cost_over_time == "true",
-                     algo_footprint=True,
+                     algo_footprint=args_.algorithm_footprints == "true",
                      param_importance=param_imp,
                      feature_analysis=feature_analysis)
 
