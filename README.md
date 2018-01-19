@@ -30,6 +30,12 @@ git clone https://github.com/automl/CAVE.git && cd CAVE
 pip install -r requirements.txt
 ```
 
+If you use **Anaconda** as your Python environment, you have to install two other packages **before** you can install CAVE:
+
+```
+conda install gxx_linux-64 gcc_linux-64 swig
+```
+
 # USAGE
 You can analyze multiple folders (using the same scenario) with one execution, simply provide the paths to all the SMAC3-results in `--folders`.
 
