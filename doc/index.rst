@@ -1,8 +1,8 @@
-.. SpySMAC documentation master file
+.. CAVE documentation master file
 
-SpySMAC documentation!
+CAVE documentation!
 =================================
-SpySMAC! Woohoo!
+CAVE! Woohoo!
 
 
 Contents:
