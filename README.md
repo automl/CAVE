@@ -14,7 +14,7 @@ The current version works out-of-the-box with [SMAC3](https://github.com/automl/
 Please refer to [LICENSE](https://github.com/automl/CAVE/blob/master/LICENSE)
 
 # OVERVIEW 
-CAVE is an analyzing tool.
+CAVE is an analysis tool.
 It is written in Python 3.5 and uses [SMAC3](https://github.com/automl/SMAC3), [pimp](https://github.com/automl/ParameterImportance) and [ConfigSpace](https://github.com/automl/ConfigSpace).
 CAVE generates performance-values (e.g. PAR10), scatter- and cdf-plots to compare the default and the optimized incumbent and provides further inside into the optimization process by quantifying the parameter- and feature-importance.
 
