@@ -1,4 +1,4 @@
-button.accordion {
+.accordion {
     background-color: rgb(103, 84, 18);
     color: #fff;
     cursor: pointer;
@@ -16,12 +16,12 @@ button.accordion {
 	background-color: #999;
 }
 
-button.accordion.active, button.accordion:hover {
+.accordion.active, .accordion:hover {
     background-color: rgb(171, 139, 31);
 	background: #666;
 }
 
-button.accordion:before {
+.accordion:before {
     content: '\02795';
     font-size: 13px;
     color: #777;
@@ -30,7 +30,7 @@ button.accordion:before {
     padding-right: 5px;
 }
 
-button.accordion.active:before {
+.accordion.active:before {
     content: "\2796";
 }
 
@@ -46,6 +46,7 @@ div.panel {
 div.panel.show {
     opacity: 1;
     max-height: 50000px;
+    overflow: visible;
 }
 
 
