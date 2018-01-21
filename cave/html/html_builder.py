@@ -13,6 +13,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
+from cave.utils.tooltips import get_tooltip
 
 __author__ = "Marius Lindauer"
 __copyright__ = "Copyright 2016, ML4AAD"
@@ -140,11 +141,15 @@ for (i = 0; i < acc.length; i++) {
         '''
         add a further layer of top data_dict keys
         '''
-        tooltip = ""
         if data_dict.get("tooltip"):
             tooltip = "<div class=\"help-tip\"><p>{}</p></div>".format(data_dict.get("tooltip"))
-        html_str += "<div class=\"accordion\">{0} {1}</div>\n".format(layer_name,tooltip)
+        elif get_tooltip(layer_name):  # if no tooltip is parsed, try to look it up
+            tooltip = "<div class=\"help-tip\"><p>{}</p></div>".format(get_tooltip(layer_name))
+        else:
+            tooltip = ""
+        html_str += "<div class=\"accordion\">{0} {1}</div>\n".format(layer_name, tooltip)
         html_str += "<div class=\"panel\">\n"
+
         for k, v in data_dict.items():
             if isinstance(v, dict):
                 html_str = self.add_layer(html_str, k, v)
