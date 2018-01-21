@@ -375,10 +375,9 @@ class CAVE(object):
                                                self.output)
             ablationpercentage_path = os.path.join(self.output, "ablationpercentage.png")
             ablationperformance_path = os.path.join(self.output, "ablationperformance.png")
-            self.website["Parameter Importance"]["Ablation (percentage)"] = {
-                        "figure": ablationpercentage_path}
-            self.website["Parameter Importance"]["Ablation (performance)"] = {
-                        "figure": ablationperformance_path}
+            self.website["Parameter Importance"]["Ablation"] = {
+                        "figure": [ablationpercentage_path,
+                                   ablationperformance_path]}
 
         if forward_selection:
             sum_ += 1
@@ -387,10 +386,8 @@ class CAVE(object):
                                                self.output)
             f_s_barplot_path = os.path.join(self.output, "forward-selection-barplot.png")
             f_s_chng_path = os.path.join(self.output, "forward-selection-chng.png")
-            self.website["Parameter Importance"]["Forward Selection (barplot)"] = {
-                        "figure": f_s_barplot_path}
-            self.website["Parameter Importance"]["Forward Selection (chng)"] = {
-                        "figure": f_s_chng_path}
+            self.website["Parameter Importance"]["Forward Selection"] = {
+                        "figure": [f_s_barplot_path, f_s_chng_path]}
 
         if incneighbor:
             sum_ += 1

@@ -117,7 +117,7 @@ class Plotter(object):
             plt.close(fig)
         return paths
 
-    def plot_cdf_compare(self, output="CDF_compare.png"):
+    def plot_cdf_compare(self, output_fn_base="CDF_compare.png"):
         """
         Plot the cumulated distribution functions for given configurations,
         plots will share y-axis and if desired x-axis.
@@ -125,10 +125,10 @@ class Plotter(object):
 
         Parameters
         ----------
-        output: string
+        output: List[str]
             filename, default: CDF_compare.png
         """
-        self.logger.debug("Plot CDF to %s", output)
+        self.logger.debug("Plot CDF to %s_[train|test].png", output_fn_base)
 
         timeout = self.scenario.cutoff
 
@@ -150,67 +150,35 @@ class Plotter(object):
                                data[config_name].items()}
                 for config_name in data}
 
-        # Until here the code is usable for an arbitrary number of
-        # configurations. Below, it is specified for plotting default vs
-        # incumbent only.
+        output_fn = [output_fn_base + "_" + inst_set + '.png' for inst_set in
+                                    ['train', 'test']]
 
-        if self.train_test:
-            f = plt.figure(1, dpi=100, figsize=(10,5))
-            ax1 = f.add_subplot(1,2,1)
-            ax2 = f.add_subplot(1,2,2)
-            ax1.step(data['default']['train'][0],
-                     data['default']['train'][1], color='red',
-                     linestyle='-', label='default train')
-            ax1.step(data['incumbent']['train'][0],
-                     data['incumbent']['train'][1], color='blue',
-                     linestyle='-', label='incumbent train')
-            ax2.step(data['default']['test'][0],
-                     data['default']['test'][1], color='red',
-                     linestyle='-', label='default test')
-            ax2.step(data['incumbent']['test'][0],
-                     data['incumbent']['test'][1], color='blue',
-                     linestyle='-', label='incumbent test')
-            ax2.legend()
-            ax2.grid(True)
-            ax2.set_xscale('log')
-            ax2.set_ylabel('probability of being solved')
-            ax2.set_xlabel('time')
-            # Plot 'timeout'
-            if timeout:
-                ax2.text(timeout,
-                         ax2.get_ylim()[0] - 0.1 * np.abs(ax2.get_ylim()[0]),
-                         "timeout ", horizontalalignment='center',
-                         verticalalignment="top", rotation=30)
-                ax2.axvline(x=timeout, linestyle='--')
-
-        else:
+        for inst_set, out in zip(['train', 'test'], output_fn):
             f = plt.figure(1, dpi=100, figsize=(10,10))
             ax1 = f.add_subplot(1,1,1)
-            ax1.step(data['default']['combined'][0],
-                     data['default']['combined'][1], color='red',
-                     label='default all instances')
-            ax1.step(data['incumbent']['combined'][0],
-                     data['incumbent']['combined'][1], color='blue',
-                     label='incumbent all instances')
-            ax1.set_title('PAR10 - CDF')
+            ax1.step(data['default'][inst_set][0],
+                     data['default'][inst_set][1], color='red',
+                     linestyle='-', label='default train')
+            ax1.step(data['incumbent'][inst_set][0],
+                     data['incumbent'][inst_set][1], color='blue',
+                     linestyle='-', label='incumbent train')
+            ax1.legend()
+            ax1.grid(True)
+            ax1.set_xscale('log')
+            ax1.set_ylabel('probability of being solved')
+            ax1.set_xlabel('time')
+            # Plot 'timeout'
+            if timeout:
+                ax1.text(timeout,
+                         ax1.get_ylim()[0] - 0.1 * np.abs(ax1.get_ylim()[0]),
+                         "timeout ", horizontalalignment='center',
+                         verticalalignment="top", rotation=30)
+                ax1.axvline(x=timeout, linestyle='--')
 
-        # Always set props for ax1
-        ax1.legend()
-        ax1.grid(True)
-        ax1.set_xscale('log')
-        ax1.set_ylabel('probability of being solved')
-        ax1.set_xlabel('time')
-        # Plot 'timeout'
-        if timeout:
-            ax1.text(timeout,
-                     ax1.get_ylim()[0] - 0.1 * np.abs(ax1.get_ylim()[0]),
-                     "timeout ", horizontalalignment='center',
-                     verticalalignment="top", rotation=30)
-            ax1.axvline(x=timeout, linestyle='--')
-
-        f.tight_layout()
-        f.savefig(output)
-        plt.close(f)
+            f.tight_layout()
+            f.savefig(out)
+            plt.close(f)
+        return output_fn
 
     def visualize_configs(self, scen, runhistories, incumbents=None, max_confs_plot=1000):
         """
