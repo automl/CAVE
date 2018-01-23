@@ -7,15 +7,17 @@ def get_tooltip(header):
                               "Parameters that differ from default to "
                               "incumbent are presented first.",
 
-        "Performance Analysis": "Contains different ways of analyzing"
-                                "the final incumbent and the performance of the algorithm’s default parameter"
+        "Performance Analysis": "Contains different ways of analyzing "
+                                "the final incumbent and the performance of "
+                                "the algorithm's default parameter "
                                 "configuration.",
 
         "Performance Table": "The most common way to compare "
-                             "performances of algorithms on the same set of instances. "
-                             "Entries in the table "
+                             "performances of algorithms on the same set "
+                             "of instances. Entries in the table "
                              "depend on the cost metric of the "
-                             "configurator run. For scenarios optimizing running time, this includes average runtime, "
+                             "configurator run. For scenarios optimizing "
+                             "running time, this includes average runtime, "
                              "penalized average runtime as well as number of "
                              "timeouts.",
 
@@ -36,34 +38,40 @@ def get_tooltip(header):
             "Depicts cost distributions over the set of instances. "
             "Since these are empirical distributions, "
             "the plots show step functions. These plots provide insights into "
-            "how well configurations perform up to a certain threshold. For runtime scenarios this "
-            "shows the probability of solving all instances from the set in a given timeframe. On the "
+            "how well configurations perform up to a certain threshold. For "
+            "runtime scenarios this shows the probability of solving all "
+            "instances from the set in a given timeframe. On the "
             "left side the training-data is scattered, on the "
             "right side the test-data is scattered.",
 
-        "Algorithm Footprints": "The instance features are projected into a two"
-                                "dimensional space using principal component "
-                                "analysis (PCA) and the footprint of each "
-                                "algorithm is plotted, i.e., on which "
+        "Algorithm Footprints": "The instance features are projected into a "
+                                "two dimensional space using principal "
+                                "component analysis (PCA) and the footprint "
+                                "of each algorithm is plotted, i.e., on which "
                                 "instances the default or the optimized "
                                 "configuration performs well. In contrast "
-                                "to the other analysis methods in this section, "
-                                "these plots allow insights into "
+                                "to the other analysis methods in this "
+                                "section, these plots allow insights into "
                                 "which of the two configurations performs "
                                 "well on specific types or clusters of "
                                 "instances. Inspired by Smith-Miles.",
 
-        "Configurator's behavior": "Analysis of the trajectory and the runhistory returned by a configurator "
-                                   "to gain insights into how the configurator tried to "
-                                   "find a well-performing configuration.",
+        "Configurator's behavior": "Analysis of the trajectory and the "
+                                   "runhistory returned by a configurator "
+                                   "to gain insights into how the configurator "
+                                   "tried to find a well-performing "
+                                   "configuration.",
 
-        "Configurator Footprint": "Analysis of the iteratively sampled configurations during the optimization"
+        "Configurator Footprint": "Analysis of the iteratively sampled "
+                                  "configurations during the optimization "
                                   "procedure. "
-                                  "Multi-dimensional scaling (MDS) is used to reduce dimensionality of the "
+                                  "Multi-dimensional scaling (MDS) is used "
+                                  "to reduce dimensionality of the "
                                   "search space and plot the distribution of "
-                                  "evaluated configurations. The larger the dot, "
-                                  "the more often the configuration was "
-                                  "evaluated on instances from the set. The colours correspond to the predicted "
+                                  "evaluated configurations. The larger the "
+                                  "dot, the more often the configuration was "
+                                  "evaluated on instances from the set. "
+                                  "The colours correspond to the predicted "
                                   "performance in that part of the search "
                                   "space.",
 
@@ -74,9 +82,9 @@ def get_tooltip(header):
                           "generated by the configurator)"
                           "If the curve flattens out early, it indicates that "
                           "too much time was spent for the configurator run; "
-                          "whereas a curve that is still improving at the end of "
-                          "the budget indicates that one should increase the "
-                          "configuration budget.",
+                          "whereas a curve that is still improving at the "
+                          "end of the budget indicates that one should "
+                          "increase the configuration budget.",
 
         "Parallel Coordinates": "Previously used by Golovin et al. "
                                 "to study the frequency of chosen parameter "
@@ -89,7 +97,8 @@ def get_tooltip(header):
                                 "hundreds of parameters, "
                                 "the (at most) 10 most important parameters "
                                 "based on a fANOVA parameter "
-                                "importance analysis are plotted. To emphasize better "
+                                "importance analysis are plotted. "
+                                "To emphasize better "
                                 "configurations, the performance is encoded "
                                 "in the color of each line, "
                                 "ranging from blue to red. These plots provide "
@@ -97,8 +106,9 @@ def get_tooltip(header):
                                 "focused on specific parameter values and "
                                 "how these correlate to their costs.",
 
-        "Parameter Importance": "Parameter Importance analysis to determine which of the parameters "
-                                "most influence the analysed algorithms performance.",
+        "Parameter Importance": "Parameter Importance analysis to determine "
+                                "which of the parameters most influence the "
+                                "analysed algorithms performance.",
 
         "fANOVA": "fANOVA (functional analysis of variance) "
                   "computes the "
@@ -107,7 +117,8 @@ def get_tooltip(header):
                   "all other parameters, for each parameter (or for pairs "
                   "of parameters). Parameters with high importance scores "
                   "will have a large impact on the performance. "
-                  "To this end, a random forest is trained as an empirical performance model on the "
+                  "To this end, a random forest is trained as "
+                  "an empirical performance model on the "
                   "available empirical data from the available runhistories.",
 
         "Forward Selection": "Forward Selection is a generic method to "
@@ -115,7 +126,8 @@ def get_tooltip(header):
                              "same prediction error as with the "
                              "full parameter set. "
                              "Each parameter is scored by how much the "
-                             "out-of-bag-error of an empirical performance model based on a random "
+                             "out-of-bag-error of an empirical "
+                             "performance model based on a random "
                              "forest is decreased.",
 
         "Ablation": "Ablation Analysis is a method to determine parameter"
@@ -128,14 +140,15 @@ def get_tooltip(header):
 
         "Local Parameter Importance (LPI)":
             "Using an empirical performance model, performance changes of a "
-            "configuration along each parameter are calculated. To quantify the "
-            "importance of a parameter value, the variance of "
+            "configuration along each parameter are calculated. To quantify "
+            "the importance of a parameter value, the variance of "
             "all cost values by changing that parameter are predicted and then "
-            "the fraction of all variances is computed. This analysis is inspired "
-            "by the human behaviour to look for improvements in the "
+            "the fraction of all variances is computed. This analysis is "
+            "inspired by the human behaviour to look for improvements in the "
             "neighborhood of individual parameters of a configuration.",
 
-        "Feature Analysis": "Analysis of the instance features to gain insights into the instace set that "
+        "Feature Analysis": "Analysis of the instance features to gain "
+                            "insights into the instance set that "
                             "was used during the optimization.",
 
         "Violin and Box Plots": "Box and Violin Plots show the distribution "
@@ -151,10 +164,12 @@ def get_tooltip(header):
                                 "instance set is heterogeneous which could "
                                 "cause problems in combination "
                                 "with racing strategies configurators "
-                                "typically use. NaN values are removed from the data.",
+                                "typically use. NaN values "
+                                "are removed from the data.",
 
         "Feature Importance": "Reduction of the out-of-the-bag root "
-                              "mean squared error of the random forest empirical performance model "
+                              "mean squared error of the random "
+                              "forest empirical performance model "
                               "by applying forward selection on the set of "
                               "instance features. Using this method, we can "
                               "identify a set of instance features that "
@@ -164,20 +179,23 @@ def get_tooltip(header):
 
         "Correlation": "Correlation of features based on the Pearson "
                        "product-moment correlation. Since instance "
-                       "features are used to train an empirical performance model in model-based "
+                       "features are used to train an empirical "
+                       "performance model in model-based "
                        "configurators, it can "
                        "be important to remove correlated features in a "
                        "pre-processing step "
                        "depending on the machine-learning algorithm. "
                        "Darker fields "
-                       "corresponds to a larger correlation between the features.",
+                       "corresponds to a larger correlation "
+                       "between the features.",
 
         "Clustering": "Clustering instances in 2d; the color encodes the "
                       "cluster assigned to each cluster. Similar to ISAC, we "
                       "use a k-means to cluster the instances in the feature "
                       "space. As pre-processing, we use standard scaling and "
-                      "a PCA to 2 dimensions. To guess the number of clusters, "
-                      "we use the silhouette score on the range of 2 to 12 in the number of clusters",
+                      "a PCA to 2 dimensions. To guess the number of "
+                      "clusters, we use the silhouette score on the "
+                      "range of 2 to 12 in the number of clusters",
     }
 
     if header in tooltips:
