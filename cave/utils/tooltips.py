@@ -8,9 +8,10 @@ def get_tooltip(header):
                                "Parameters that differ from default to "
                                "incumbent are presented first.",
 
-        "Performance Analysis" : "Plot default versus incumbent performance "
-                                 "on a cumulative distribution plot. Uses "
-                                 "validated data!",
+        "Performance Analysis" : "Comparing the performance of default and "
+                                 "incumbent configuration, using a table, "
+                                 "scatterplots, eCDFplots and algorithm "
+                                 "footprints!",
 
         "Performance Table" : "The most common way to compare the "
                               "performance of two algorithms aggregated "
@@ -131,6 +132,15 @@ def get_tooltip(header):
                      "expensive target algorithm runs, we again use an EPM "
                      "for obtaining cost predictions (incl. uncertainty "
                      "estimates) as proposed by Biedenkapp et al.",
+
+        "Local Parameter Importance (LPI)" :
+                "Using an EPM, we calculate performance changes of a "
+                "configuration along each parameter. To quantify the "
+                "importance of a parameter value, we compute the variance of "
+                "all cost values by changing that parameter and then compute "
+                "the fraction of all variances. This analysis is inspired "
+                "by the human behaviour to look for improvements in the "
+                "neighborhood of individual parameters of a configuration.",
 
         "Violin and Box Plots" : "Box and Violin Plots show the distribution "
                                  "of each feature value across the instances. "
