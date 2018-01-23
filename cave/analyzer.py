@@ -207,12 +207,12 @@ class Analyzer(object):
             # Distinction between train and test
             # Create table
             array = np.array([[round(def_par10[0], dec_place),
-                               round(def_par10[1], dec_place),
                                round(inc_par10[0], dec_place),
+                               round(def_par10[1], dec_place),
                                round(inc_par10[1], dec_place)],
                               [round(def_par1[0], dec_place),
-                               round(def_par1[1], dec_place),
                                round(inc_par1[0], dec_place),
+                               round(def_par1[1], dec_place),
                                round(inc_par1[1], dec_place)],
                               ["{}/{}".format(def_timeout[0][0], def_timeout[0][1]),
                                "{}/{}".format(def_timeout[1][0], def_timeout[1][1]),
@@ -220,7 +220,7 @@ class Analyzer(object):
                                "{}/{}".format(inc_timeout[1][0], inc_timeout[1][1])
                                ]])
             df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
-                           columns=['Train', 'Test', 'Train', 'Test'])
+                           columns=['Default', 'Incumbent', 'Default', 'Incumbent'])
             table = df.to_html()
             # Insert two-column-header
             table = table.split(sep='</thead>', maxsplit=1)[1]
@@ -231,14 +231,14 @@ class Analyzer(object):
                         "  <thead>\n"\
                         "    <tr>\n"\
                         "      <td rowspan=\"2\"></td>\n"\
-                        "      <th colspan=\"2\" scope=\"colgroup\">Default</th>\n"\
-                        "      <th colspan=\"2\" scope=\"colgroup\">Incumbent</th>\n"\
+                        "      <th colspan=\"2\" scope=\"colgroup\">Train</th>\n"\
+                        "      <th colspan=\"2\" scope=\"colgroup\">Test</th>\n"\
                         "    </tr>\n"\
                         "    <tr>\n"\
-                        "      <th scope=\"col\">Train</th>\n"\
-                        "      <th scope=\"col\">Test</th>\n"\
-                        "      <th scope=\"col\">Train</th>\n"\
-                        "      <th scope=\"col\">Test</th>\n"\
+                        "      <th scope=\"col\">Default</th>\n"\
+                        "      <th scope=\"col\">Incumbent</th>\n"\
+                        "      <th scope=\"col\">Default</th>\n"\
+                        "      <th scope=\"col\">Incumbent</th>\n"\
                         "    </tr>\n"\
                         "</thead>\n"
             table = new_table + table
