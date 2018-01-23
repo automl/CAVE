@@ -481,15 +481,13 @@ class Analyzer(object):
 
     def plot_cdf(self):
         self.logger.info("... plotting eCDF")
-        cdf_path = os.path.join(self.output, 'cdf.png')
-        self.plotter.plot_cdf_compare(output=cdf_path)
-        return cdf_path
+        cdf_path = os.path.join(self.output, 'cdf')
+        return self.plotter.plot_cdf_compare(output_fn_base=cdf_path)
 
     def plot_scatter(self):
         self.logger.info("... plotting scatter")
-        scatter_path = os.path.join(self.output, 'scatter.png')
-        self.plotter.plot_scatter(output=scatter_path)
-        return scatter_path
+        scatter_path = os.path.join(self.output, 'scatter')
+        return self.plotter.plot_scatter(output_fn_base=scatter_path)
 
     @timing
     def plot_confviz(self, incumbents, runhistories, max_confs=1000):

@@ -5,6 +5,7 @@ import logging
 import os
 import sys
 import shutil
+import glob
 
 import matplotlib
 matplotlib.use('agg')
@@ -52,6 +53,7 @@ class CaveCLI(object):
         opt_opts.add_argument("--ta_exec_dir", default=None,
                               help="path to the execution-directory of the "
                                    "SMAC run.")
+
         opt_opts.add_argument("--param_importance", default="all", nargs='+',
                               help="what kind of parameter importance to "
                                    "calculate", choices=["all", "ablation",
@@ -75,6 +77,9 @@ class CaveCLI(object):
         opt_opts.add_argument("--parallel_coordinates", default="true",
                               choices=["true", "false"],
                               help="whether to plot parallel coordinates.")
+        opt_opts.add_argument("--algorithm_footprints", default="true",
+                              choices=["true", "false"],
+                              help="whether to plot algorithm footprints.")
 
         args_, misc = parser.parse_known_args()
 
@@ -84,7 +89,13 @@ class CaveCLI(object):
             logging.basicConfig(level=logging.DEBUG)
 
         # SMAC results
-        cave = CAVE(args_.folders, args_.output, args_.ta_exec_dir,
+        folders = []
+        for f in args_.folders:
+            if '*' in f:
+                folders.extend(list(glob.glob(f, recursive=True)))
+            else:
+                folders.append(f)
+        cave = CAVE(folders, args_.output, args_.ta_exec_dir,
                     missing_data_method=args_.validation,
                     max_pimp_samples=args_.max_pimp_samples,
                     fanova_pairwise=args_.fanova_pairwise)
@@ -111,7 +122,7 @@ class CaveCLI(object):
                      confviz=args_.confviz == "true",
                      parallel_coordinates=args_.parallel_coordinates == "true",
                      cost_over_time=args_.cost_over_time == "true",
-                     algo_footprint=True,
+                     algo_footprint=args_.algorithm_footprints == "true",
                      param_importance=param_imp,
                      feature_analysis=feature_analysis)
 
