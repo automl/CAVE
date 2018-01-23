@@ -1,78 +1,82 @@
 def get_tooltip(header):
-
     tooltips = {
-        "Meta Data" : "Meta data such as number of instances, "
-                      "parameters, general configurations...",
+        "Meta Data": "Meta data, i.e. number of instances and "
+                     "parameters as well as configuration budget.",
 
-        "Best configuration" : "Comparing parameters of default and incumbent. "
-                               "Parameters that differ from default to "
-                               "incumbent are presented first.",
+        "Best configuration": "Comparing parameters of default and incumbent. "
+                              "Parameters that differ from default to "
+                              "incumbent are presented first.",
 
-        "Performance Analysis" : "Comparing the performance of default and "
-                                 "incumbent configuration, using a table, "
-                                 "scatterplots, eCDFplots and algorithm "
-                                 "footprints!",
+        "Performance Analysis": "Contains different ways of analyzing"
+                                "the final incumbent and the performance of the algorithm’s default parameter"
+                                "configuration.",
 
-        "Performance Table" : "The most common way to compare the "
-                              "performance of two algorithms aggregated "
-                              "across all instances. Entries in the table "
-                              "depend on the cost metric defined for the "
-                              "configurator run, e.g., average runtime, "
-                              "penalized average runtime and number of "
-                              "timeouts for runtime as cost metric.",
+        "Performance Table": "The most common way to compare "
+                             "performances of algorithms on the same set of instances. "
+                             "Entries in the table "
+                             "depend on the cost metric of the "
+                             "configurator run. For scenarios optimizing running time, this includes average runtime, "
+                             "penalized average runtime as well as number of "
+                             "timeouts.",
 
-        "Scatterplot" : "Scatter plots show the costs of the default and "
-                        "optimized parameter "
-                        "configuration on each instance. Since we "
-                        "loose the detailed information about the individual "
-                        "cost on each instance by looking at aggregated cost "
-                        "values in tables, scatter plots provide a more "
-                        "detailed picture. They provide insights whether "
-                        "overall performance improvements can be explained "
-                        "only by some outliers or whether they are due to "
-                        "improvements on the entire instance set. On the "
-                        "left side the training-data is scattered, on the "
-                        "right side the test-data is scattered.",
+        "Scatterplot": "Scatter plots show the costs of the default and "
+                       "optimized parameter "
+                       "configuration on each instance. Since this "
+                       "looses detailed information about the individual "
+                       "cost on each instance by looking at aggregated cost "
+                       "values in tables, scatter plots provide a more "
+                       "detailed picture. They provide insights whether "
+                       "overall performance improvements can be explained "
+                       "only by some outliers or whether they are due to "
+                       "improvements on the entire instance set. On the "
+                       "left side the training-data is scattered, on the "
+                       "right side the test-data is scattered.",
 
-        "empirical Cumulative Distribution Function (eCDF)" :
-                "Cost distributions over the instances. "
-                "Since these are empirical distributions, "
-                "the plots show step functions. These plots provide insights into "
-                "how the configurations perform by using different runtime "
-                "cutoffs if the cost metric is runtime."
-                "On the left side the training-data is scattered, on the "
-                "right side the test-data is scattered.",
+        "empirical Cumulative Distribution Function (eCDF)":
+            "Depicts cost distributions over the set of instances. "
+            "Since these are empirical distributions, "
+            "the plots show step functions. These plots provide insights into "
+            "how well configurations perform up to a certain threshold. For runtime scenarios this "
+            "shows the probability of solving all instances from the set in a given timeframe. On the "
+            "left side the training-data is scattered, on the "
+            "right side the test-data is scattered.",
 
-        "Algorithm Footprints" : "The instance features are projected into a two"
-                                 "dimensional space using principal component "
-                                 "analysis (PCA) and the footprint of each "
-                                 "algorithm is plotted, i.e., on which "
-                                 "instances the default or the optimized "
-                                 "configuration performs well. In contrast "
-                                 "to the previously explained "
-                                 "analysis, these plots allow insights into "
-                                 "which of the two configurations performs "
-                                 "well on specific types or clusters of "
-                                 "instances. Inspired by Smith-Miles.",
+        "Algorithm Footprints": "The instance features are projected into a two"
+                                "dimensional space using principal component "
+                                "analysis (PCA) and the footprint of each "
+                                "algorithm is plotted, i.e., on which "
+                                "instances the default or the optimized "
+                                "configuration performs well. In contrast "
+                                "to the other analysis methods in this section, "
+                                "these plots allow insights into "
+                                "which of the two configurations performs "
+                                "well on specific types or clusters of "
+                                "instances. Inspired by Smith-Miles.",
 
-        "Configurator Footprint" : "Using PCA to reduce dimensionality of the "
-                                   "search space  and plot the distribution of "
-                                   "evaluated configurations. The bigger the dot, "
-                                   "the more often the configuration was "
-                                   "evaluated. The colours refer to the predicted "
-                                   "performance in that part of the search "
-                                   "space.",
+        "Configurator's behavior": "Analysis of the trajectory and the runhistory returned by a configurator "
+                                   "to gain insights into how the configurator tried to "
+                                   "find a well-performing configuration.",
 
-        "Cost over time" : "We plot the average cost of the best so far "
-                           "found configuration (using the trajectory data) "
-                           "over the time spent by the configurator "
-                           "(including target algorithm runs and the overhead "
-                           "generated by the configurator)"
-                           "If the curve flattens out early, it indicates that "
-                           "we spent too much time for the configurator run; "
-                           "whereas a curve that is still improving at the end of "
-                           "the budget indicates that we should increase the "
-                           "configuration budget.",
+        "Configurator Footprint": "Analysis of the iteratively sampled configurations during the optimization"
+                                  "procedure. "
+                                  "Multi-dimensional scaling (MDS) is used to reduce dimensionality of the "
+                                  "search space and plot the distribution of "
+                                  "evaluated configurations. The larger the dot, "
+                                  "the more often the configuration was "
+                                  "evaluated on instances from the set. The colours correspond to the predicted "
+                                  "performance in that part of the search "
+                                  "space.",
+
+        "Cost over time": "Depicts the average cost of the best so far "
+                          "found configuration (using the trajectory data) "
+                          "over the time spent by the configurator "
+                          "(including target algorithm runs and the overhead "
+                          "generated by the configurator)"
+                          "If the curve flattens out early, it indicates that "
+                          "too much time was spent for the configurator run; "
+                          "whereas a curve that is still improving at the end of "
+                          "the budget indicates that one should increase the "
+                          "configuration budget.",
 
         "Parallel Coordinates": "Previously used by Golovin et al. "
                                 "to study the frequency of chosen parameter "
@@ -82,10 +86,10 @@ def get_tooltip(header):
                                 "parameter settings and the corresponding "
                                 "(estimated) average cost. To "
                                 "handle large configuration spaces with "
-                                "hundreds of parameters, we plot "
+                                "hundreds of parameters, "
                                 "the (at most) 10 most important parameters "
                                 "based on a fANOVA parameter "
-                                "importance analysis. To emphasize better "
+                                "importance analysis are plotted. To emphasize better "
                                 "configurations, the performance is encoded "
                                 "in the color of each line, "
                                 "ranging from blue to red. These plots provide "
@@ -93,87 +97,74 @@ def get_tooltip(header):
                                 "focused on specific parameter values and "
                                 "how these correlate to their costs.",
 
-        "Parameter Importance" : "Parameter Importance explains the individual importance of the "
-                                 "parameters for the overall performance. Different techniques "
-                                 "are implemented: fANOVA (functional analysis of "
-                                 "variance), ablation and forward selection.",
+        "Parameter Importance": "Parameter Importance analysis to determine which of the parameters "
+                                "most influence the analysed algorithms performance.",
 
-        "fANOVA" : "fANOVA (functional analysis of variance) "
-                   "for parameter importance analysis computes the "
-                   "fraction of the variance in the cost space explained by "
-                   "changing a parameter by marginalizing over "
-                   "all other parameters, for each parameter (or for pairs "
-                   "of parameters). Parameters with high importance scores "
-                   "will have a large impact on the performance. "
-                   "To this end, we train a random forest as an EPM on the "
-                   "available empirical data from the available runhistories. "
-                   "To focus more on the high-performance regions, Hutter et "
-                   "al. also proposed to cap all cost "
-                   "values at a given threshold, e.g., the performance of the "
-                   "default parameter configuration.",
+        "fANOVA": "fANOVA (functional analysis of variance) "
+                  "computes the "
+                  "fraction of the variance in the cost space explained by "
+                  "changing a parameter by marginalizing over "
+                  "all other parameters, for each parameter (or for pairs "
+                  "of parameters). Parameters with high importance scores "
+                  "will have a large impact on the performance. "
+                  "To this end, a random forest is trained as an empirical performance model on the "
+                  "available empirical data from the available runhistories.",
 
-        "Forward Selection" : "Forward Selection is a generic method to "
-                              "obtain a subset of features to achieve the "
-                              "same prediction error as with the "
-                              "full instance set. As shown by Hutter et al. "
-                              "this method can also be used to study the "
-                              "importance of algorithm parameters. "
-                              "Each parameter is scored by how much the "
-                              "out-of-bag-error of an EPM based on a random "
-                              "forest is decreased.",
+        "Forward Selection": "Forward Selection is a generic method to "
+                             "obtain a subset of parameters to achieve the "
+                             "same prediction error as with the "
+                             "full parameter set. "
+                             "Each parameter is scored by how much the "
+                             "out-of-bag-error of an empirical performance model based on a random "
+                             "forest is decreased.",
 
-        "Ablation" : "Ablation Analysis is a method to determine parameter"
-                     "importance by comparing two parameter configurations, "
-                     "typically the default and the optimized configuration."
-                     "It uses a greedy forward search to determine the order "
-                     "of flipping the parameter settings from default "
-                     "configuration to incumbent such that in each step "
-                     "the cost is maximally decreased. To avoid "
-                     "expensive target algorithm runs, we again use an EPM "
-                     "for obtaining cost predictions (incl. uncertainty "
-                     "estimates) as proposed by Biedenkapp et al.",
+        "Ablation": "Ablation Analysis is a method to determine parameter"
+                    "importance by comparing two parameter configurations, "
+                    "typically the default and the optimized configuration."
+                    "It uses a greedy forward search to determine the order "
+                    "of flipping the parameter settings from default "
+                    "configuration to incumbent such that in each step "
+                    "the cost is maximally decreased.",
 
-        "Local Parameter Importance (LPI)" :
-                "Using an EPM, we calculate performance changes of a "
-                "configuration along each parameter. To quantify the "
-                "importance of a parameter value, we compute the variance of "
-                "all cost values by changing that parameter and then compute "
-                "the fraction of all variances. This analysis is inspired "
-                "by the human behaviour to look for improvements in the "
-                "neighborhood of individual parameters of a configuration.",
+        "Local Parameter Importance (LPI)":
+            "Using an empirical performance model, performance changes of a "
+            "configuration along each parameter are calculated. To quantify the "
+            "importance of a parameter value, the variance of "
+            "all cost values by changing that parameter are predicted and then "
+            "the fraction of all variances is computed. This analysis is inspired "
+            "by the human behaviour to look for improvements in the "
+            "neighborhood of individual parameters of a configuration.",
 
-        "Violin and Box Plots" : "Box and Violin Plots show the distribution "
-                                 "of each feature value across the instances. "
-                                 "Box plots show the quantiles of "
-                                 "the distribution and violin plots show the "
-                                 "approximated probability density of the "
-                                 "feature values. Such plots are useful to "
-                                 "inspect the instances and to detect "
-                                 "characteristics of the instances. For "
-                                 "example, if the distributions have two or "
-                                 "more modes, it could indicate that the "
-                                 "instance set is heterogeneous which could "
-                                 "cause problems in combination "
-                                 "with racing strategies configurators "
-                                 "typically use Violin and Box plots to show "
-                                 "the distribution of each instance feature. "
-                                 "We removed NaN from the data.",
+        "Feature Analysis": "Analysis of the instance features to gain insights into the instace set that "
+                            "was used during the optimization.",
 
-        "Feature Importance" : "Reduction of the out-of-the-bag root "
-                               "mean squared error of the random forest EPM "
-                               "by applying forward selection on the set of "
-                               "instance features. Using this method, we can "
-                               "identify a set of instance features that "
-                               "suffices to obtain prediction accuracy "
-                               "comparable to using the full set of "
-                               "features. Thus, for new instances only the "
-                               "most important features have to be computed, "
-                               "potentially reducing the amount of "
-                               "required computations.",
+        "Violin and Box Plots": "Box and Violin Plots show the distribution "
+                                "of each feature value across the instances. "
+                                "Box plots show the quantiles of "
+                                "the distribution and violin plots show the "
+                                "approximated probability density of the "
+                                "feature values. Such plots are useful to "
+                                "inspect the instances and to detect "
+                                "characteristics of the instances. For "
+                                "example, if the distributions have two or "
+                                "more modes, it could indicate that the "
+                                "instance set is heterogeneous which could "
+                                "cause problems in combination "
+                                "with racing strategies configurators "
+                                "typically use. NaN values are removed from the data.",
+
+        "Feature Importance": "Reduction of the out-of-the-bag root "
+                              "mean squared error of the random forest empirical performance model "
+                              "by applying forward selection on the set of "
+                              "instance features. Using this method, we can "
+                              "identify a set of instance features that "
+                              "suffices to obtain prediction accuracy "
+                              "comparable to using the full set of "
+                              "features.",
 
         "Correlation": "Correlation of features based on the Pearson "
                        "product-moment correlation. Since instance "
-                       "features are used to train an EPM in model-based "
+                       "features are used to train an empirical performance model in model-based "
                        "configurators, it can "
                        "be important to remove correlated features in a "
                        "pre-processing step "
