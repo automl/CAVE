@@ -177,15 +177,40 @@ class Analyzer(object):
         table: str
             overview table in HTML
         """
-        overview = OrderedDict([('Run with best incumbent', best_folder),
+        all_confs = self.original_rh.get_all_configs()
+        num_configs = len(all_confs)
+        ta_runtime = np.sum([self.original_rh.get_cost(conf) for conf in all_confs])
+        ta_evals = [len(self.original_rh.get_runs_for_config(conf)) for conf in all_confs]
+        ta_evals_d = len(self.original_rh.get_runs_for_config(self.default))
+        ta_evals_i = len(self.original_rh.get_runs_for_config(self.incumbent))
+        min_ta_evals, max_ta_evals, = np.min(ta_evals), np.max(ta_evals)
+        mean_ta_evals, ta_evals = np.mean(ta_evals), np.sum(ta_evals)
+        num_feats = self.scenario.n_features
+        dup_feats = DataFrame(self.scenario.feature_array)  # only contains train instances
+        num_dup_feats = len(dup_feats[dup_feats.duplicated()])
+        overview = OrderedDict([('Run with best incumbent', os.path.basename(best_folder)),
                                 ('# Train instances', len(self.scenario.train_insts)),
                                 ('# Test instances', len(self.scenario.test_insts)),
                                 ('# Parameters', len(self.scenario.cs.get_hyperparameters())),
+                                ('', ''),
+                                ('# Evaluated Configurations', num_configs),
+                                ('# Default evaluations', ta_evals_d),
+                                ('# Incumbent evaluations', ta_evals_i),
+                                ('Budget spent evaluating configurations', ta_runtime),
+                                ('', ''),
+                                ('# Features', num_feats),
                                 ('Cutoff', self.scenario.cutoff),
                                 ('Walltime budget', self.scenario.wallclock_limit),
                                 ('Runcount budget', self.scenario.ta_run_limit),
                                 ('CPU budget', self.scenario.algo_runs_timelimit),
                                 ('Deterministic', self.scenario.deterministic),
+                                ('', ''),
+                                ('# Runs per Config (min)', min_ta_evals),
+                                ('# Runs per Config (mean)', mean_ta_evals),
+                                ('# Runs per Config (max)', max_ta_evals),
+                                ('Total number of configuration runs', ta_evals),
+                                ('', ''),
+                                ('# Duplicate Feature vectors', num_dup_feats)
                                ])
         # Split into two columns
         overview_split = self._split_table(overview)
