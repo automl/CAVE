@@ -421,14 +421,14 @@ class Analyzer(object):
     def local_epm_plots(self):
         plots = OrderedDict([])
         if self.importance:
-            self.parameter_importance("incneighbor", self.incumbent,
+            self.parameter_importance("lpi", self.incumbent,
                                                    self.output, num_params=3)
             for p, i in [(k, v) for k, v in sorted(self.importance.items(),
                                 key=operator.itemgetter(1), reverse=True) if v > 0.05]:
-                plots[p] = os.path.join(self.output, 'incneighbor', p + '.png')
+                plots[p] = os.path.join(self.output, 'lpi', p + '.png')
 
         else:
-            self.logger.warning("Need to run fANOVA before incneighbor!")
+            self.logger.warning("Need to run fANOVA before LPI!")
             raise ValueError()
         return plots
 

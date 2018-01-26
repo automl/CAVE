@@ -57,7 +57,7 @@ class CaveCLI(object):
         opt_opts.add_argument("--param_importance", default="all", nargs='+',
                               help="what kind of parameter importance to "
                                    "calculate", choices=["all", "ablation",
-                                   "forward_selection", "fanova", "incneighbor",
+                                   "forward_selection", "fanova", "lpi",
                                    "none"])
         opt_opts.add_argument("--max_pimp_samples", default=-1, type=int,
                               help="How many datapoints to use with PIMP")
@@ -102,7 +102,7 @@ class CaveCLI(object):
         # Expand configs
         if "all" in args_.param_importance:
             param_imp = ["ablation", "forward_selection", "fanova",
-                         "incneighbor"]
+                         "lpi"]
         elif "none" in args_.param_importance:
             param_imp = []
         else:
