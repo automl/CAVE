@@ -16,27 +16,26 @@ from ConfigSpace.hyperparameters import CategoricalHyperparameter, \
     UniformFloatHyperparameter, UniformIntegerHyperparameter, Constant
 
 
-def convert_data(scenario:Scenario, runhistory:RunHistory):
-    '''
-        converts data from runhistory into EPM format
+def convert_data_for_epm(scenario:Scenario, runhistory:RunHistory):
+    """
+    converts data from runhistory into EPM format
 
-        Parameters
-        ----------
-        scenario: Scenario
-            smac.scenario.scenario.Scenario Object
-        runhistory: RunHistory
-            smac.runhistory.runhistory.RunHistory Object with all necessary data
+    Parameters
+    ----------
+    scenario: Scenario
+        smac.scenario.scenario.Scenario Object
+    runhistory: RunHistory
+        smac.runhistory.runhistory.RunHistory Object with all necessary data
 
-        Returns
-        -------
-        np.array
-            X matrix with configuartion x features for all observed samples
-        np.array
-            y matrix with all observations
-        np.array
-            types of X cols -- necessary to train our RF implementation
-    '''
-
+    Returns
+    -------
+    np.array
+        X matrix with configuartion x features for all observed samples
+    np.array
+        y matrix with all observations
+    np.array
+        types of X cols -- necessary to train our RF implementation
+    """
     types = np.zeros(len(scenario.cs.get_hyperparameters()),
                          dtype=np.uint)
 
