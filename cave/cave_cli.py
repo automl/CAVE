@@ -80,7 +80,6 @@ class CaveCLI(object):
                               default=None,
                               help="path to the execution-directory of the "
                                    "SMAC run. ")
-
         opt_opts.add_argument("--max_pimp_samples",
                               default=-1,
                               type=int,

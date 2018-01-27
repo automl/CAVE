@@ -224,7 +224,7 @@ class CAVE(object):
 
         # Check arguments
         for p in param_importance:
-            if p not in ['forward_selection', 'ablation', 'fanova', 'incneighbor']:
+            if p not in ['forward_selection', 'ablation', 'fanova', 'lpi']:
                 raise ValueError("%s not a valid option for parameter "
                                  "importance!", p)
         for f in feature_analysis:
@@ -315,7 +315,7 @@ class CAVE(object):
                                   fanova='fanova' in param_importance,
                                   forward_selection='forward_selection' in
                                                     param_importance,
-                                  incneighbor='incneighbor' in param_importance)
+                                  lpi='lpi' in param_importance)
 
         self.build_website()
 
@@ -343,10 +343,10 @@ class CAVE(object):
 
 
     def parameter_importance(self, ablation=False, fanova=False,
-                             forward_selection=False, incneighbor=False):
+                             forward_selection=False, lpi=False):
         """Perform the specified parameter importance procedures. """
         # PARAMETER IMPORTANCE
-        if (ablation or forward_selection or fanova or incneighbor):
+        if (ablation or forward_selection or fanova or lpi):
             self.website["Parameter Importance"] = OrderedDict()
         sum_ = 0
         if fanova:
@@ -389,7 +389,7 @@ class CAVE(object):
             self.website["Parameter Importance"]["Forward Selection"] = {
                         "figure": [f_s_barplot_path, f_s_chng_path]}
 
-        if incneighbor:
+        if lpi:
             sum_ += 1
             self.logger.info("Local EPM-predictions around incumbent...")
             plots = self.analyzer.local_epm_plots()
