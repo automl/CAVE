@@ -20,7 +20,7 @@ from smac.utils.util_funcs import get_types
 from smac.runhistory.runhistory import RunHistory
 
 from cave.plot.scatter import plot_scatter_plot
-from cave.plot.confs_viz.viz_sampled_confs import SampleViz
+from cave.plot.configurator_footprint import ConfiguratorFootprint
 from cave.plot.parallel_coordinates import ParallelCoordinatesPlotter
 
 __author__ = "Joshua Marben"
@@ -194,7 +194,8 @@ class Plotter(object):
             # configurations to be plotted
         """
 
-        sz = SampleViz(scenario=scen,
+        sz = ConfiguratorFootprint(
+                       scenario=scen,
                        runhistories=runhistories,
                        incs=incumbents, max_plot=max_confs_plot,
                        output_dir=self.output)

@@ -14,6 +14,8 @@ import logging
 import json
 import copy
 import typing
+import itertools
+from collections import OrderedDict
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import numpy as np
@@ -48,10 +50,10 @@ from ConfigSpace.util import impute_inactive_values
 from ConfigSpace.hyperparameters import FloatHyperparameter, IntegerHyperparameter
 from ConfigSpace import CategoricalHyperparameter, UniformFloatHyperparameter, UniformIntegerHyperparameter
 
-from cave.plot.confs_viz.utils.set_up import convert_data
+from cave.utils.convert_for_epm import convert_data_for_epm
 
 
-class SampleViz(object):
+class ConfiguratorFootprint(object):
 
     def __init__(self, scenario: Scenario,
                  runhistories: typing.List[RunHistory],
@@ -94,9 +96,15 @@ class SampleViz(object):
             self.output_dir = None
 
     def run(self):
-        '''
-            main method
-        '''
+        """
+        Uses available Configurator-data to perform a MDS, estimate performance
+        data and plot the configurator footprint.
+
+        Returns
+        -------
+        html_code: str
+            html-embedded plot-data
+        """
 
         conf_matrix, conf_list, runs_per_conf = self.get_conf_matrix()
         self.logger.debug("Number of Configurations: %d" %
@@ -110,7 +118,7 @@ class SampleViz(object):
         inc_list = self.incs
 
         return self.plot(red_dists, conf_list, runs_per_conf,
-                         inc_list, contour_data=contour_data)
+                         inc_list=inc_list, contour_data=contour_data)
 
     def get_pred_surface(self, X_scaled, conf_list: list):
         '''
@@ -158,8 +166,8 @@ class SampleViz(object):
                                seed=seed, additional_info=additional_info)
         self.relevant_rh = new_rh
 
-        X, y, types = convert_data(scenario=self.scenario,
-                                   runhistory=new_rh)
+        X, y, types = convert_data_for_epm(scenario=self.scenario,
+                                           runhistory=new_rh)
 
         types = np.array(np.zeros((2+n_feats)), dtype=np.uint)
 
@@ -206,20 +214,21 @@ class SampleViz(object):
         return xx, yy, Z
 
     def get_distance(self, conf_matrix, cs: ConfigurationSpace):
-        '''
-            computes the distance between all pairs of configurations
+        """
+        Computes the distance between all pairs of configurations.
 
-            Parameters
-            ----------
-            conf_matrx: np.array
-                numpy array with cols as parameter values
-            cs: ConfigurationSpace
-                ConfigurationSpace to get conditionalities
+        Parameters
+        ----------
+        conf_matrx: np.array
+            numpy array with cols as parameter values
+        cs: ConfigurationSpace
+            ConfigurationSpace to get conditionalities
 
-            Returns
-            -------
+        Returns
+        -------
+        dists: np.array
             np.array with distances between configurations i,j in dists[i,j] or dists[j,i]
-        '''
+        """
         n_confs = conf_matrix.shape[0]
         dists = np.zeros((n_confs, n_confs))
 
@@ -246,17 +255,17 @@ class SampleViz(object):
         return dists
 
     def get_depth(self, cs: ConfigurationSpace, param: str):
-        '''
-            get depth in configuration space of a given parameter name
-            breadth search until reaching a leaf for the first time
+        """
+        Get depth in configuration space of a given parameter name
+        breadth search until reaching a leaf for the first time
 
-            Parameters
-            ----------
-            cs :ConfigurationSpace
-                ConfigurationSpace to get parents of a parameter
-            param: str
-                name of parameter to inspect
-        '''
+        Parameters
+        ----------
+        cs: ConfigurationSpace
+            ConfigurationSpace to get parents of a parameter
+        param: str
+            name of parameter to inspect
+        """
         parents = cs.get_parents_of(param)
         if not parents:
             return 1
@@ -274,26 +283,27 @@ class SampleViz(object):
                     return d
 
     def get_mds(self, dists):
-        '''
-            compute multi-dimensional scaling (using sklearn MDS) -- nonlinear scaling
+        """
+        Compute multi-dimensional scaling (using sklearn MDS) -- nonlinear scaling
 
-            Parameters
-            ----------
-            dists: np.array
-                full matrix of distances between all configurations
+        Parameters
+        ----------
+        dists: np.array
+            full matrix of distances between all configurations
 
-            Returns
-            -------
-            np.array
-                scaled coordinates in 2-dim room
-        '''
+        Returns
+        -------
+        np.array
+            scaled coordinates in 2-dim room
+        """
 
         mds = MDS(
             n_components=2, dissimilarity="precomputed", random_state=12345)
         return mds.fit_transform(dists)
 
     def get_conf_matrix(self):
-        """Iterates through runhistory to get a matrix of configurations (in
+        """
+        Iterates through runhistory to get a matrix of configurations (in
         vector representation), a list of configurations and the number of
         runs per configuration.
         Does only consider configs in self.configs_to_plot.
@@ -357,125 +367,119 @@ class SampleViz(object):
     def _get_size(self, r_p_c):
         return 10 + ((r_p_c - self.min_runs_per_conf) / (self.max_runs_per_conf - self.min_runs_per_conf)) * 40
 
-    def plot(self, X, conf_list: list, runs_runs_conf, inc_list: list,
-             runs_labels=None, contour_data=None):
-        '''
-            plots sampled configuration in 2d-space;
-            saves results in self.output, if set
+    def plot(self, X, conf_list: list, runs_runs_conf, runs_labels=None,
+             inc_list: list=[], contour_data=None):
+        """
+        plots sampled configuration in 2d-space;
+        saves results in self.output, if set
 
-            Parameters
-            ----------
-            X: np.array
-                np.array with 2-d coordinates for each configuration
-            conf_list: list
-                list of configurations in the same order as X
-            runs_runs_conf: list[np.array]
-                list of runs to be analyzed, each a np.array with runs per
-                config. if 2 runs are analyzed with 3 configs, this might look
-                like: [np.array([0,2,1]), np.array([2,7,1])]
-            inc_list: list
-                list of incumbents (Configuration)
-            contour_data: list
-                contour data (xx,yy,Z)
+        Parameters
+        ----------
+        X: np.array
+            np.array with 2-d coordinates for each configuration
+        conf_list: list
+            list of ALL configurations in the same order as X
+        runs_runs_conf: list[np.array]
+            list of configurator-runs to be analyzed, each as a np.array with
+            the number of target-algorithm-runs per config.
+            if 2 configurator-runs are analyzed with 3 configs, this might
+            look like: [np.array([0,2,1]), np.array([2,7,1])]
+        runs_labels: list[str]
+            labels for the individual configurator-runs. if None, they are
+            enumerated
+        inc_list: list
+            list of incumbents (Configuration)
+        contour_data: list
+            contour data (xx,yy,Z)
 
-            Returns
-            -------
-            html_script: str
-                HTML script representing the visualization
-
-        '''
+        Returns
+        -------
+        html_script: str
+            HTML script representing the visualization
+        """
+        if not runs_labels:  # We only plot first run atm anyway, this will be used later
+            runs_labels = range(len(runs_runs_conf))
 
         fig, ax = plt.subplots()
 
+        # Plot contour
         if contour_data is not None:
             self.logger.debug("Plot Contour")
             min_z = np.min(np.unique(contour_data[2]))
             max_z = np.max(np.unique(contour_data[2]))
             v = np.linspace(min_z, max_z, 15, endpoint=True)
-            print(contour_data[2])
             contour = ax.contourf(contour_data[0], contour_data[1], contour_data[2],
                                   min(100, np.unique(contour_data[2]).shape[0]), zorder=1)
             plt.colorbar(contour, ticks=v)  #, pad=0.15)
 
-        # Plot individual runs as scatter
-        self.logger.debug("Plot Scatter")
-        if not runs_labels:
-            runs_labels = range(len(runs_runs_conf))
-        for runs_per_conf, label in list(zip(runs_runs_conf,
-                runs_labels))[:self.max_rhs_to_plot]:
-            scatter = ax.scatter(
-               X[:, 0], X[:, 1], sizes=self._get_size(runs_per_conf),
-               color="white", edgecolors="black", label=label, zorder=50)
+        # Scatter best run(s), create groups associated with different colors/zorders
+        groups = OrderedDict()  # key is label, value is list of indices
+        scatter_handles = OrderedDict()  # save scatters for tooltips
+
+        # Find random- and local-indices
+        for label in ['Random', 'Local']:
+            groups[label] = [idx for idx, conf in enumerate(conf_list)
+                             if conf.origin and conf.origin.startswith(label)]
+        # Find incumbent-indices
+        groups['Incumbent'] = [idx for idx, conf in enumerate(conf_list) if conf
+                               in inc_list]
+        # All left-over indices (if no origin is saved, for example)
+        groups['Candidate'] = [idx for idx in range(len(conf_list)) if idx not in
+                               itertools.chain(*groups.values())]
+
+        # Assign colors and zorders
+        colors = {'Random' : 'b', 'Local' : 'y', 'Candidate' : 'w', 'Incumbent' : 'r'}
+        zorders = {'Random' : 20, 'Local' : 50, 'Candidate' : 20, 'Incumbent' : 99}
+
+        self.logger.debug("Scatter {}".format(str({k: len(v) for k, v in
+                                                   groups.items()})))
+
+        # Iterate over configurator runs, plot the first 'self.max_rhs_to_plot'
+        for runs_per_conf, label in list(
+                zip(runs_runs_conf, runs_labels))[:self.max_rhs_to_plot]:
+            for k, v in groups.items():
+                if len(v) == 0:
+                    continue
+                scatter_handles[k] = ax.scatter(
+                                        X[v, 0], X[v, 1],
+                                        color=colors[k], edgecolors='k',
+                                        sizes=self._get_size(runs_per_conf[v]),
+                                        zorder=zorders[k],
+                                        label=k)
 
         ax.set_xlim(X[:, 0].min() - 0.5, X[:, 0].max() + 0.5)
         ax.set_ylim(X[:, 1].min() - 0.5, X[:, 1].max() + 0.5)
 
-        inc_indx = []
-        scatter_inc = None
-        if inc_list:
-            if isinstance(inc_list, list):
-                inc_list = inc_list
-            else:
-                inc_list = [inc_list]
-            self.logger.debug("Plot Incumbents")
-            for idx, conf in enumerate(conf_list):
-                if conf in inc_list:
-                    inc_indx.append(idx)
-            self.logger.debug("Indexes of %d incumbent configurations: %s",
-                              len(inc_list), str(inc_indx))
-            scatter_inc = ax.scatter(X[inc_indx, 0],
-                                     X[inc_indx, 1],
-                                     color="r", edgecolors="k",
-                                     sizes=self._get_size(runs_per_conf[inc_indx]), zorder=99)
+        # Generate labels for individual configurations (tooltip-preparation!)
         labels = []
         for idx, c in enumerate(conf_list):
-            values = []
-            names = []
-            for p in c:
-                if c[p]:
-                    names.append(str(p))
-                    values.append(c[p])
-
+            values, names = zip(*[(c[p], str(p)) for p in c if p in c])
+            values, names = np.array(values), np.array(names)
             label = pd.DataFrame(
-                data=values, index=names, columns=["Conf %d" % (idx +
-                    1)]).to_html()
-            label = label.replace("dataframe", "config")
+                data=values, index=names, columns=["Conf %d" % (idx + 1)])
+            # Write origin in left upper corner if available
+            label.columns.name = "{}".format(c.origin if c.origin else "")
+            label = label.to_html().replace("dataframe", "config")
             labels.append(label)
 
         plt.xlabel('MDS-X')
         plt.ylabel('MDS-Y')
         plt.tight_layout()
         if self.output_dir:
-            path = os.path.join(self.output_dir, 'conf_viz.png')
+            path = os.path.join(self.output_dir, 'configurator_footprint.png')
             self.logger.debug("Save %s", path)
             fig.savefig(path)
 
-        # WORK IN PROGRESS
-        # # Show only desired run
-        # handles, labels = ax.get_legend_handles_labels() # return lines and labels
-        # self.logger.debug("Handles: %s", handles)
-        # self.logger.debug("Labels: %s", labels)
-        # interactive_legend = mpld3.plugins.InteractiveLegendPlugin(zip(handles,
-        #                                                          ax.collections),
-        #                                                      labels,
-        #                                                      alpha_unsel=0,
-        #                                                      alpha_over=1,
-        #                                                      start_visible=True)
-        # mpld3.plugins.connect(fig, interactive_legend)
+        # Create the hover-tooltips
+        for k, v in scatter_handles.items():
+            tooltip = mpld3.plugins.PointHTMLTooltip(v,
+                        np.array(labels)[groups[k]].tolist(),
+                        voffset=10, hoffset=10)
+            mpld3.plugins.connect(fig, tooltip)
 
-        tooltip = mpld3.plugins.PointHTMLTooltip(scatter, labels,
-                                                 voffset=10, hoffset=10)#, css=self.css)
-
-        mpld3.plugins.connect(fig, tooltip)
-
-        if scatter_inc:
-            tooltip = mpld3.plugins.PointHTMLTooltip(scatter_inc, np.array(labels)[inc_indx].tolist(),
-                                                     voffset=10, hoffset=10)#, css=self.css)
-
-        mpld3.plugins.connect(fig, tooltip)
-
+        # Save the html-figure
         if self.output_dir:
-            path = os.path.join(self.output_dir, 'conf_vizs.html')
+            path = os.path.join(self.output_dir, 'configurator_footprint.html')
             self.logger.debug("Save to %s", path)
             with open(path, "w") as fp:
                 mpld3.save_html(fig, fp)
