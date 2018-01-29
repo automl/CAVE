@@ -71,7 +71,7 @@ class ConfiguratorFootprint(object):
         runhistories: List[RunHistory]
             runhistories from configurator runs - first one assumed to be best
         incs: list
-            incumbents (same length as runhistories!)
+            incumbents of best configurator run, last entry is final incumbent
         max_plot: int
             maximum number of configs to plot
         contour_step_size: float
@@ -365,7 +365,9 @@ class ConfiguratorFootprint(object):
         return np.array(conf_matrix), conf_list, runs_runs_conf
 
     def _get_size(self, r_p_c):
-        return 10 + ((r_p_c - self.min_runs_per_conf) / (self.max_runs_per_conf - self.min_runs_per_conf)) * 40
+        sizes = 10 + ((r_p_c - self.min_runs_per_conf) / (self.max_runs_per_conf - self.min_runs_per_conf)) * 40
+        sizes *= np.array([0 if r == 0 else 1 for r in r_p_c])
+        return sizes
 
     def plot(self, X, conf_list: list, runs_runs_conf, runs_labels=None,
              inc_list: list=[], contour_data=None):
@@ -420,16 +422,26 @@ class ConfiguratorFootprint(object):
         for label in ['Random', 'Local']:
             groups[label] = [idx for idx, conf in enumerate(conf_list)
                              if conf.origin and conf.origin.startswith(label)]
-        # Find incumbent-indices
+        # Find default- and incumbent-indices
+        default = conf_list[0].configuration_space.get_default_configuration()
+        groups['Default'] = [conf_list.index(default)]
         groups['Incumbent'] = [idx for idx, conf in enumerate(conf_list) if conf
-                               in inc_list]
+                               in inc_list[:-1]]
+        groups['Final Incumbent'] = [conf_list.index(inc_list[-1])]
         # All left-over indices (if no origin is saved, for example)
         groups['Candidate'] = [idx for idx in range(len(conf_list)) if idx not in
                                itertools.chain(*groups.values())]
 
         # Assign colors and zorders
-        colors = {'Random' : 'b', 'Local' : 'y', 'Candidate' : 'w', 'Incumbent' : 'r'}
-        zorders = {'Random' : 20, 'Local' : 50, 'Candidate' : 20, 'Incumbent' : 99}
+        colors = {'Random' : 'w', 'Local' : 'w', 'Incumbent' : 'r',
+                  'Final Incumbent' : 'r', 'Default' : 'orange',
+                  'Candidate' : 'w'}
+        shapes = {'Random' : 'o', 'Local' : 'X', 'Incumbent' : 'd',
+                  'Final Incumbent' : '*', 'Default' : 's',
+                  'Candidate' : 'o'}
+        zorders = {'Random' : 20, 'Local' : 50, 'Incumbent' : 80,
+                   'Final Incumbent' : 99, 'Default' : 98,
+                   'Candidate' : 20}
 
         self.logger.debug("Scatter {}".format(str({k: len(v) for k, v in
                                                    groups.items()})))
@@ -445,6 +457,7 @@ class ConfiguratorFootprint(object):
                                         color=colors[k], edgecolors='k',
                                         sizes=self._get_size(runs_per_conf[v]),
                                         zorder=zorders[k],
+                                        marker=shapes[k],
                                         label=k)
 
         ax.set_xlim(X[:, 0].min() - 0.5, X[:, 0].max() + 0.5)
