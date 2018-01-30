@@ -299,7 +299,7 @@ class CAVE(object):
 
             confviz_script = self.analyzer.plot_confviz(incumbents, runhistories)
             self.website["Configurator's behavior"]["Configurator Footprint"] = {
-                    "table" : confviz_script}
+                    "bokeh" : confviz_script}
         elif confviz:
             self.logger.info("Configuration visualization desired, but no "
                              "instance-features available.")

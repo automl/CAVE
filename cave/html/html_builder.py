@@ -53,6 +53,12 @@ class HTMLBuilder(object):
 <link href="css/help-tip.css" rel="stylesheet" />
 <link href="css/global.css" rel="stylesheet" />
 <link href="css/back-to-top.css" rel="stylesheet" />
+
+
+<link href="css/bokeh-0.12.13.min.css" rel="stylesheet" />
+<script src="js/bokeh-0.12.13.min.js"></script>
+
+HEADPLACEHOLDER
 </head>
 <body>
 <script src="http://www.w3schools.com/lib/w3data.js"></script>
@@ -112,29 +118,19 @@ for (i = 0; i < acc.length; i++) {
             html = self.add_layer(html_str=html, layer_name=k, data_dict=v)
         html += self.footer
 
+        html = html.replace("HEADPLACEHOLDER", "")
+
         with open(os.path.join(self.output_dn, "report.html"), "w") as fp:
             fp.write(html)
 
-        try:
-            if not os.path.isdir(os.path.join(self.output_dn,"css")):
-                shutil.copytree(os.path.join(self.own_folder, "web_files", "css"), os.path.join(self.output_dn,"css"))
-        except OSError:
-            print_exc()
-        try:
-            if not os.path.isdir(os.path.join(self.output_dn,"images")):
-                shutil.copytree(os.path.join(self.own_folder, "web_files", "images"), os.path.join(self.output_dn,"images"))
-        except OSError:
-            print_exc()
-        try:
-            if not os.path.isdir(os.path.join(self.output_dn,"js")):
-                shutil.copytree(os.path.join(self.own_folder, "web_files", "js"), os.path.join(self.output_dn,"js"))
-        except OSError:
-            print_exc()
-        try:
-            if not os.path.isdir(os.path.join(self.output_dn,"font")):
-                shutil.copytree(os.path.join(self.own_folder, "web_files", "font"), os.path.join(self.output_dn,"font"))
-        except OSError:
-            print_exc()
+        subfolders = ["css", "images", "js", "font"]
+        for sf in subfolders:
+            try:
+                if not os.path.isdir(os.path.join(self.output_dn, sf)):
+                    shutil.copytree(os.path.join(self.own_folder, "web_files", sf),
+                                    os.path.join(self.output_dn, sf))
+            except OSError:
+                print_exc()
 
 
     def add_layer(self, html_str:str, layer_name, data_dict:dict):
@@ -173,6 +169,12 @@ for (i = 0; i < acc.length; i++) {
             elif k == "html":
                 html_str += "<div align=\"center\">\n<a href='{}'>Interactive Plot</a>\n</div>\n".format(v[len(self.output_dn):].lstrip("/"))
                 #html_str += "<div align=\"center\"><iframe src='{}' frameborder='0' scrolling='no' width='700px' height='500px'></iframe></div>\n".format(v[len(self.output_dn):].lstrip("/"))
+            elif k == "bokeh":
+                # HEADPLACEHOLDER is needed so that we can modify the header
+                if not "HEADPLACEHOLDER" in html_str:
+                    raise ValueError()
+                html_str = html_str.replace("HEADPLACEHOLDER", v[0] + "HEADPLACEHOLDER")
+                html_str += "<div align=\"center\">\n{}\n</div>\n".format(v[1])
 
         html_str += "</div>"
         return html_str
