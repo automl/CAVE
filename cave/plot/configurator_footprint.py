@@ -27,6 +27,12 @@ from sklearn.manifold.mds import MDS
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
+from bokeh.plotting import figure, ColumnDataSource
+from bokeh.embed import components
+from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker
+from bokeh.models.sources import CDSView
+from bokeh.models.filters import GroupFilter
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -366,10 +372,69 @@ class ConfiguratorFootprint(object):
 
     def _get_size(self, r_p_c):
         sizes = 10 + ((r_p_c - self.min_runs_per_conf) / (self.max_runs_per_conf - self.min_runs_per_conf)) * 40
-        sizes *= np.array([0 if r == 0 else 1 for r in r_p_c])
+        sizes *= np.array([0 if r == 0 else 1 for r in r_p_c])  # 0 size if 0 runs
         return sizes
 
-    def plot(self, X, conf_list: list, runs_runs_conf, runs_labels=None,
+    def _get_zorder(self, cds):
+        """
+        Parameters:
+        -----------
+        cds: ColumnDataSource
+            data for bokeh plot
+
+        Returns:
+        --------
+        zorders: list
+            list of stringed zorder-values. strings because we apply a
+            GroupFilter to sort create views of the data and that GroupFilter
+            accepts no integers
+        markers: dict
+            mapping zorder-values to marker-type. done here to keep things
+            contextual close, we cannot embed marker in the data as we do with
+            size or color, so we need an extra datastructure
+        """
+
+        zorders = np.array([0 if not o else
+                            10 if o.startswith("Random") else
+                            20 if o.startswith("Local") else
+                            0 for o in cds.data['origin']])
+        zorders += np.array([60 if t == "Default" else
+                             30 if t == "Incumbent" else
+                             90 if t == "Final Incumbent" else
+                             0 for t in cds.data['types']])
+        zorders = [str(z) for z in zorders]
+        markers = {'0' : 'circle', '10' : 'circle',
+                   '20' : 'circle_x', '30' : 'square',
+                   '40' : 'square', '50' : 'square_x',
+                   '60' : 'triangle', '70' : 'triangle',
+                   '80' : 'triangle', '90' : 'inverted_triangle',
+                   '100' : 'inverted_triangle', '110' : 'inverted_triangle'}
+        return zorders, markers
+
+
+    def _get_color(self, cds):
+        """
+        Parameters:
+        -----------
+        cds: ColumnDataSource
+            data for bokeh plot
+
+        Returns:
+        --------
+        colors: list
+            list of color per config
+        """
+        colors = []
+        for t in cds.data['types']:
+            if t == "Default":
+                colors.append('orange')
+            elif "Incumbent" in  t:
+                colors.append('red')
+            else:
+                colors.append('white')
+        return colors
+
+    def plot(self, X, conf_list: list, configurator_runs, runs_labels=None,
              inc_list: list=[], contour_data=None):
         """
         plots sampled configuration in 2d-space;
@@ -381,11 +446,11 @@ class ConfiguratorFootprint(object):
             np.array with 2-d coordinates for each configuration
         conf_list: list
             list of ALL configurations in the same order as X
-        runs_runs_conf: list[np.array]
+        configurator_runs: list[np.array]
             list of configurator-runs to be analyzed, each as a np.array with
             the number of target-algorithm-runs per config.
-            if 2 configurator-runs are analyzed with 3 configs, this might
-            look like: [np.array([0,2,1]), np.array([2,7,1])]
+            if 2 configurator-runs are analyzed with 3 configs evaluated in
+            total, this might look like: [np.array([0,2,1]), np.array([2,7,1])]
         runs_labels: list[str]
             labels for the individual configurator-runs. if None, they are
             enumerated
@@ -399,104 +464,81 @@ class ConfiguratorFootprint(object):
         html_script: str
             HTML script representing the visualization
         """
-        if not runs_labels:  # We only plot first run atm anyway, this will be used later
-            runs_labels = range(len(runs_runs_conf))
+        if not runs_labels:  # TODO We only plot first run atm anyway, this will be used later
+            runs_labels = range(len(configurator_runs))
 
-        fig, ax = plt.subplots()
+        hp_names = [k.name for k in  # Hyperparameter names
+                    conf_list[0].configuration_space.get_hyperparameters()]
+
+
+        # Create ColumnDataSource, x/y coordinates, config-params, sizes
+        def escape_param_name(p):
+            """Necessary because:
+                1. parameters called 'size' or 'origin' might exist in cs
+                2. '-' not allowed in bokeh's CDS"""
+            return 'p_' + p.replace('-','_')
+
+        source = ColumnDataSource(data=dict(x=X[:, 0], y=X[:, 1]))
+        for k in hp_names:
+            source.add([c[k] if c[k] else "None" for c in conf_list],
+                       escape_param_name(k))
+        # TODO differentiate between different configurator-runs below
+        default = conf_list[0].configuration_space.get_default_configuration()
+        conf_types = ["Default" if c == default else "Final Incumbent" if c == inc_list[-1]
+                      else "Incumbent" if c in inc_list else "Candidate" for c in conf_list]
+        source.add(conf_types, 'types')
+        source.add([c.origin for c in conf_list], 'origin')
+        source.add(self._get_size(configurator_runs[0]), 'size')
+        zorders, markers = self._get_zorder(source)
+        source.add(zorders, 'zorder')
+        source.add(self._get_color(source), 'color')
+        source.add(configurator_runs[0], 'runs')
+
+
+        # Define what appears in tooltips
+        # TODO add only important parameters (needs to change order of exec)
+        hover = HoverTool(tooltips=[('type', '@types'), ('origin', '@origin'), ('runs', '@runs')] +
+                                   [(k, '@' + escape_param_name(k)) for k in hp_names])
+
+        # bokeh-figure
+        x_range = [min(X[:, 0]) - 1, max(X[:, 0]) + 1]
+        y_range = [min(X[:, 1]) - 1, max(X[:, 1]) + 1]
+        p = figure(tools=[hover], x_range=x_range, y_range=y_range)
 
         # Plot contour
         if contour_data is not None:
-            self.logger.debug("Plot Contour")
             min_z = np.min(np.unique(contour_data[2]))
             max_z = np.max(np.unique(contour_data[2]))
-            v = np.linspace(min_z, max_z, 15, endpoint=True)
-            contour = ax.contourf(contour_data[0], contour_data[1], contour_data[2],
-                                  min(100, np.unique(contour_data[2]).shape[0]), zorder=1)
-            plt.colorbar(contour, ticks=v)  #, pad=0.15)
+            color_mapper = LinearColorMapper(palette="Viridis256",
+                                             low=min_z, high=max_z)
+            p.image(image=contour_data, x=x_range[0], y=y_range[0],
+                    dw=x_range[1] - x_range[0], dh=y_range[1] - y_range[0],
+                    color_mapper=color_mapper)
+            color_bar = ColorBar(color_mapper=color_mapper,
+                                 ticker=BasicTicker(desired_num_ticks=15),
+                                 label_standoff=12,
+                                 border_line_color=None, location=(0,0))
+            p.add_layout(color_bar, 'right')
 
-        # Scatter best run(s), create groups associated with different colors/zorders
-        groups = OrderedDict()  # key is label, value is list of indices
-        scatter_handles = OrderedDict()  # save scatters for tooltips
+        # Scatter configurations in order of zorder
+        # TODO expand on multiple configurator runs
+        zorder_values = sorted(list(set(source.data['zorder'])),
+                               key=lambda x: int(x))
+        views = [CDSView(source=source, filters=[
+                            GroupFilter(column_name='zorder', group=z)])
+                 for z in zorder_values]
+        for z, view in zip(zorder_values, views):
+            p.scatter(x='x', y='y',
+                      source=source,
+                      view=view,
+                      color='color', line_color='black',
+                      size='size',
+                      marker=markers[z],
+                      )
 
-        # Find random- and local-indices
-        for label in ['Random', 'Local']:
-            groups[label] = [idx for idx, conf in enumerate(conf_list)
-                             if conf.origin and conf.origin.startswith(label)]
-        # Find default- and incumbent-indices
-        default = conf_list[0].configuration_space.get_default_configuration()
-        groups['Default'] = [conf_list.index(default)]
-        groups['Incumbent'] = [idx for idx, conf in enumerate(conf_list) if conf
-                               in inc_list[:-1]]
-        groups['Final Incumbent'] = [conf_list.index(inc_list[-1])]
-        # All left-over indices (if no origin is saved, for example)
-        groups['Candidate'] = [idx for idx in range(len(conf_list)) if idx not in
-                               itertools.chain(*groups.values())]
+        p.xaxis.axis_label = "MDS-X"
+        p.yaxis.axis_label = "MDS-Y"
 
-        # Assign colors and zorders
-        colors = {'Random' : 'w', 'Local' : 'w', 'Incumbent' : 'r',
-                  'Final Incumbent' : 'r', 'Default' : 'orange',
-                  'Candidate' : 'w'}
-        shapes = {'Random' : 'o', 'Local' : 'X', 'Incumbent' : 'd',
-                  'Final Incumbent' : '*', 'Default' : 's',
-                  'Candidate' : 'o'}
-        zorders = {'Random' : 20, 'Local' : 50, 'Incumbent' : 80,
-                   'Final Incumbent' : 99, 'Default' : 98,
-                   'Candidate' : 20}
+        script, div = components(p)
 
-        self.logger.debug("Scatter {}".format(str({k: len(v) for k, v in
-                                                   groups.items()})))
-
-        # Iterate over configurator runs, plot the first 'self.max_rhs_to_plot'
-        for runs_per_conf, label in list(
-                zip(runs_runs_conf, runs_labels))[:self.max_rhs_to_plot]:
-            for k, v in groups.items():
-                if len(v) == 0:
-                    continue
-                scatter_handles[k] = ax.scatter(
-                                        X[v, 0], X[v, 1],
-                                        color=colors[k], edgecolors='k',
-                                        sizes=self._get_size(runs_per_conf[v]),
-                                        zorder=zorders[k],
-                                        marker=shapes[k],
-                                        label=k)
-
-        ax.set_xlim(X[:, 0].min() - 0.5, X[:, 0].max() + 0.5)
-        ax.set_ylim(X[:, 1].min() - 0.5, X[:, 1].max() + 0.5)
-
-        # Generate labels for individual configurations (tooltip-preparation!)
-        labels = []
-        for idx, c in enumerate(conf_list):
-            values, names = zip(*[(c[p], str(p)) for p in c if p in c])
-            values, names = np.array(values), np.array(names)
-            label = pd.DataFrame(
-                data=values, index=names, columns=["Conf %d" % (idx + 1)])
-            # Write origin in left upper corner if available
-            label.columns.name = "{}".format(c.origin if c.origin else "")
-            label = label.to_html().replace("dataframe", "config")
-            labels.append(label)
-
-        plt.xlabel('MDS-X')
-        plt.ylabel('MDS-Y')
-        plt.tight_layout()
-        if self.output_dir:
-            path = os.path.join(self.output_dir, 'configurator_footprint.png')
-            self.logger.debug("Save %s", path)
-            fig.savefig(path)
-
-        # Create the hover-tooltips
-        for k, v in scatter_handles.items():
-            tooltip = mpld3.plugins.PointHTMLTooltip(v,
-                        np.array(labels)[groups[k]].tolist(),
-                        voffset=10, hoffset=10)
-            mpld3.plugins.connect(fig, tooltip)
-
-        # Save the html-figure
-        if self.output_dir:
-            path = os.path.join(self.output_dir, 'configurator_footprint.html')
-            self.logger.debug("Save to %s", path)
-            with open(path, "w") as fp:
-                mpld3.save_html(fig, fp)
-
-        html = mpld3.fig_to_html(fig)
-        plt.close(fig)
-        return html
+        return script, div
