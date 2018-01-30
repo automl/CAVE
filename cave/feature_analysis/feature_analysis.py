@@ -19,8 +19,6 @@ import matplotlib
 from sklearn.tree.tests.test_tree import y_random
 import matplotlib.pyplot as plt
 
-from plottingscripts.plotting.scatter import plot_scatter_plot
-
 __author__ = "Marius Lindauer"
 __copyright__ = "Copyright 2016, ML4AAD"
 __license__ = "MIT"
