@@ -371,7 +371,7 @@ class ConfiguratorFootprint(object):
         return np.array(conf_matrix), conf_list, runs_runs_conf
 
     def _get_size(self, r_p_c):
-        sizes = 10 + ((r_p_c - self.min_runs_per_conf) / (self.max_runs_per_conf - self.min_runs_per_conf)) * 40
+        sizes = 5 + ((r_p_c - self.min_runs_per_conf) / (self.max_runs_per_conf - self.min_runs_per_conf)) * 20
         sizes *= np.array([0 if r == 0 else 1 for r in r_p_c])  # 0 size if 0 runs
         return sizes
 
@@ -503,7 +503,8 @@ class ConfiguratorFootprint(object):
         # bokeh-figure
         x_range = [min(X[:, 0]) - 1, max(X[:, 0]) + 1]
         y_range = [min(X[:, 1]) - 1, max(X[:, 1]) + 1]
-        p = figure(tools=[hover], x_range=x_range, y_range=y_range)
+        p = figure(plot_height=500, plot_width=600,
+                   tools=[hover], x_range=x_range, y_range=y_range)
 
         # Plot contour
         if contour_data is not None:
