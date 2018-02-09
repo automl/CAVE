@@ -90,16 +90,16 @@ class ConfiguratorFootprint(object):
 
         self.scenario = copy.deepcopy(scenario)  # pca changes feats
         self.runhistories = runhistories
+        self.runs_per_rh = []  # number of configuration-evaluations per
+                                  # rh (=configurator) in same order as
+                                  # runhistories
         self.incs = incs
         self.max_plot = max_plot
         self.max_rhs_to_plot = 1  # Maximum number of runhistories 2 b plotted
 
         self.contour_step_size = contour_step_size
         self.relevant_rh = None
-        if output_dir:
-            self.output_dir = output_dir
-        else:
-            self.output_dir = None
+        self.output_dir = output_dir if output_dir else None
 
     def run(self):
         """
@@ -123,7 +123,7 @@ class ConfiguratorFootprint(object):
 
         inc_list = self.incs
 
-        return self.plot(red_dists, conf_list, runs_per_conf,
+        return self.plot(red_dists, conf_list, self.runs_per_rh,
                          inc_list=inc_list, contour_data=contour_data)
 
     def get_pred_surface(self, X_scaled, conf_list: list):
@@ -165,7 +165,7 @@ class ConfiguratorFootprint(object):
         for rh in self.runhistories:
             for key, value in rh.data.items():
                 config = rh.ids_config[key.config_id]
-                if config in self.configs_to_plot:
+                if config in conf_list:
                     config_id, instance, seed = key
                     cost, time, status, additional_info = value
                     new_rh.add(config, cost, time, status, instance_id=instance,
@@ -312,28 +312,24 @@ class ConfiguratorFootprint(object):
         Iterates through runhistory to get a matrix of configurations (in
         vector representation), a list of configurations and the number of
         runs per configuration.
-        Does only consider configs in self.configs_to_plot.
-
-        Parameters
-        ----------
-        rh: RunHistory
-            runhistory of SMAC
 
         Returns
         -------
-        np.array
+        conf_matrix: np.array
             matrix of configurations in vector representation
-        list
-            list of Configuration objects
-        np.array
+        conf_list: list
+            list of all Configuration objects that appeared in any runhistory
+            the order of this list is used to determine all kinds of properties
+            in the plotting
+        runs_per_conf: np.array
             one-dim numpy array of runs per configuration
+            FOR BEST RUNHISTORY ONLY
         """
-        self.logger.debug("Gathering configurations to be plotted...")
-
         conf_matrix = []
         conf_list = []
         runs_runs_conf = []
 
+        # Get all configurations. Index of c in conf_list serves as identifier
         for rh in self.runhistories:
             for c in rh.get_all_configs():
                 if not c in conf_list:
@@ -343,7 +339,7 @@ class ConfiguratorFootprint(object):
             if inc not in conf_list:
                 conf_list.append(inc)
 
-        # Get total runs per config
+        # Get total runs per config per rh
         self.min_runs_per_conf = np.inf
         self.max_runs_per_conf = -np.inf
         for rh in self.runhistories:
@@ -355,20 +351,12 @@ class ConfiguratorFootprint(object):
                 elif r_p_c > self.max_runs_per_conf:
                     self.max_runs_per_conf = r_p_c
                 runs_per_conf[conf_list.index(c)] = r_p_c
-            runs_runs_conf.append(np.array(runs_per_conf))
+            self.runs_per_rh.append(np.array(runs_per_conf))
 
-        # Now decide what configurations to plot depending on max_plots and #runs
-        ## Use #runs to determine the most "important" configs to plot
-        #self.logger.info("Reducing number of configs (from %d) to be visualized"
-        #                 ", plotting only the %d most often run configs.",
-        #                 len(all_configs), len(configs_to_plot))
-        runs_per_conf = np.zeros(len(conf_list), dtype=int)
-        for r in runs_runs_conf:
-            runs_per_conf += r
-        assert(len(runs_per_conf) == len(conf_list))
-        self.configs_to_plot = conf_list
+        self.logger.debug("Gathered %d configurations from %d runhistories." %
+                          (len(conf_list), len(self.runs_per_rh)))
 
-        return np.array(conf_matrix), conf_list, runs_runs_conf
+        return np.array(conf_matrix), conf_list, self.runs_per_rh[0]
 
     def _get_size(self, r_p_c):
         sizes = 5 + ((r_p_c - self.min_runs_per_conf) / (self.max_runs_per_conf - self.min_runs_per_conf)) * 20

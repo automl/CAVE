@@ -544,8 +544,7 @@ class Analyzer(object):
     @timing
     def plot_cost_over_time(self, traj, validator):
         path = os.path.join(self.output, 'cost_over_time.png')
-        self.logger.info("... cost over time:")
-        self.logger.info("    plotting!")
+        self.logger.info("... cost over time")
         self.plotter.plot_cost_over_time(self.validated_rh, traj, output=path,
                                          validator=validator)
         return path
@@ -554,8 +553,7 @@ class Analyzer(object):
     def plot_algorithm_footprint(self, algorithms=None, density=200, purity=0.95):
         if not algorithms:
             algorithms = {self.default: "default", self.incumbent: "incumbent"}
-        self.logger.info("... algorithm footprints:")
-        self.logger.info("    for: {}".format(algorithms.values()))
+        self.logger.info("... algorithm footprints for: {}".format(", ".join(algorithms.values())))
         footprint = AlgorithmFootprint(self.validated_rh,
                                        self.scenario.feature_dict, algorithms,
                                        self.scenario.cutoff, self.output)
