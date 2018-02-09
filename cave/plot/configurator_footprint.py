@@ -375,43 +375,6 @@ class ConfiguratorFootprint(object):
         sizes *= np.array([0 if r == 0 else 1 for r in r_p_c])  # 0 size if 0 runs
         return sizes
 
-    def _get_zorder(self, cds):
-        """
-        Parameters:
-        -----------
-        cds: ColumnDataSource
-            data for bokeh plot
-
-        Returns:
-        --------
-        zorders: list
-            list of stringed zorder-values. strings because we apply a
-            GroupFilter to sort create views of the data and that GroupFilter
-            accepts no integers
-        markers: dict
-            mapping zorder-values to marker-type. done here to keep things
-            contextual close, we cannot embed marker in the data as we do with
-            size or color, so we need an extra datastructure
-        """
-
-        zorders = np.array([0 if not o else
-                            10 if o.startswith("Random") else
-                            20 if o.startswith("Local") else
-                            0 for o in cds.data['origin']])
-        zorders += np.array([60 if t == "Default" else
-                             30 if t == "Incumbent" else
-                             90 if t == "Final Incumbent" else
-                             0 for t in cds.data['types']])
-        zorders = [str(z) for z in zorders]
-        markers = {'0' : 'circle', '10' : 'circle',
-                   '20' : 'circle_x', '30' : 'square',
-                   '40' : 'square', '50' : 'square_x',
-                   '60' : 'triangle', '70' : 'triangle',
-                   '80' : 'triangle', '90' : 'inverted_triangle',
-                   '100' : 'inverted_triangle', '110' : 'inverted_triangle'}
-        return zorders, markers
-
-
     def _get_color(self, cds):
         """
         Parameters:
@@ -425,7 +388,7 @@ class ConfiguratorFootprint(object):
             list of color per config
         """
         colors = []
-        for t in cds.data['types']:
+        for t in cds.data['type']:
             if t == "Default":
                 colors.append('orange')
             elif "Incumbent" in  t:
@@ -470,7 +433,6 @@ class ConfiguratorFootprint(object):
         hp_names = [k.name for k in  # Hyperparameter names
                     conf_list[0].configuration_space.get_hyperparameters()]
 
-
         # Create ColumnDataSource, x/y coordinates, config-params, sizes
         def escape_param_name(p):
             """Necessary because:
@@ -486,18 +448,29 @@ class ConfiguratorFootprint(object):
         default = conf_list[0].configuration_space.get_default_configuration()
         conf_types = ["Default" if c == default else "Final Incumbent" if c == inc_list[-1]
                       else "Incumbent" if c in inc_list else "Candidate" for c in conf_list]
-        source.add(conf_types, 'types')
-        source.add([c.origin for c in conf_list], 'origin')
+        origins = ["Unknown" if not c.origin else
+                   "Random" if c.origin.startswith("Random") else
+                   "Local" if c.origin.startswith("Local") else
+                   "Unknown" for c in conf_list]
+        source.add(conf_types, 'type')
+        source.add(origins, 'origin')
         source.add(self._get_size(configurator_runs[0]), 'size')
-        zorders, markers = self._get_zorder(source)
-        source.add(zorders, 'zorder')
         source.add(self._get_color(source), 'color')
         source.add(configurator_runs[0], 'runs')
 
+        # To enforce zorder, we categorize all entries according to their size
+        # Since we plot all different zorder-levels sequentially, we use a
+        # manually defined level of influence
+        num_bins = 20  # How fine-grained the size-ordering should be
+        min_size, max_size = min(source.data['size']), max(source.data['size'])
+        step_size = (max_size - min_size) / num_bins
+        zorder = [str(int((s - min_size) / step_size)) for s in source.data['size']]
+        source.add(zorder, 'zorder')  # string, so we can apply group filter
 
         # Define what appears in tooltips
-        # TODO add only important parameters (needs to change order of exec)
-        hover = HoverTool(tooltips=[('type', '@types'), ('origin', '@origin'), ('runs', '@runs')] +
+        # TODO add only important parameters (needs to change order of exec:
+        #                                        pimp before conf-footprints)
+        hover = HoverTool(tooltips=[('type', '@type'), ('origin', '@origin'), ('runs', '@runs')] +
                                    [(k, '@' + escape_param_name(k)) for k in hp_names])
 
         # bokeh-figure
@@ -521,20 +494,43 @@ class ConfiguratorFootprint(object):
                                  border_line_color=None, location=(0,0))
             p.add_layout(color_bar, 'right')
 
-        # Scatter configurations in order of zorder
-        # TODO expand on multiple configurator runs
-        zorder_values = sorted(list(set(source.data['zorder'])),
-                               key=lambda x: int(x))
-        views = [CDSView(source=source, filters=[
-                            GroupFilter(column_name='zorder', group=z)])
-                 for z in zorder_values]
-        for z, view in zip(zorder_values, views):
+        # Scatter
+        # TODO expand on multiple configurator runs(?)
+        # Create views in order of plotting, so more interesting views are
+        # plotted on top. Order of interest:
+        # default > final-incumbent > incumbent > candidate
+        #   local > random
+        #     num_runs (ascending, more evaluated -> more interesting)
+
+        def _get_marker(t, o):
+            """ returns marker according to type t and origin o """
+            if t == "Default":
+                shape = 'triangle'
+            elif t == 'Final Incumbent':
+                shape = 'inverted_triangle'
+            else:
+                shape = 'square' if t == "Incumbent" else 'circle'
+                shape += '_x' if o.startswith("Local") else ''
+            return shape
+
+        views, markers = [], []
+        for t in ['Candidate', 'Incumbent', 'Final Incumbent', 'Default']:
+            for o in ['Unknown', 'Random', 'Local']:
+                for z in sorted(list(set(source.data['zorder'])),
+                                key=lambda x: int(x)):
+                    views.append(CDSView(source=source, filters=[
+                            GroupFilter(column_name='type', group=t),
+                            GroupFilter(column_name='origin', group=o),
+                            GroupFilter(column_name='zorder', group=z)]))
+                    markers.append(_get_marker(t, o))
+
+        for view, marker in zip(views, markers):
             p.scatter(x='x', y='y',
                       source=source,
                       view=view,
                       color='color', line_color='black',
                       size='size',
-                      marker=markers[z],
+                      marker=marker,
                       )
 
         p.xaxis.axis_label = "MDS-X"
