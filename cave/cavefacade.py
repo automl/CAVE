@@ -295,10 +295,11 @@ class CAVE(object):
                     zip(*sorted(zip(costs, incumbents, runhistories, trajectories), key=lambda
                         x: x[0])))
             incumbents = list(map(lambda x: x['incumbent'], trajectories[0]))
+            assert(incumbents[-1] == trajectories[0][-1]['incumbent'])
 
             confviz_script = self.analyzer.plot_confviz(incumbents, runhistories)
             self.website["Configurator's behavior"]["Configurator Footprint"] = {
-                    "table" : confviz_script}
+                    "bokeh" : confviz_script}
         elif confviz:
             self.logger.info("Configuration visualization desired, but no "
                              "instance-features available.")
