@@ -459,6 +459,35 @@ class Analyzer(object):
         self.evaluators.append(self.pimp.evaluator)
         return self.pimp
 
+    def importance_table(self):
+        """Create a html-table over all evaluated parameter-importance-methods.
+        Parameters are sorted after their average importance."""
+        parameters = [p.name for p in self.scenario.cs.get_hyperparameters()]
+        index, values, columns = [], [], []
+        columns = [e.name for e in self.evaluators]
+        # Sort parameters after average importance
+        p_avg = {p : np.mean([e.evaluated_parameter_importance[p] for e in self.evaluators
+                    if p in e.evaluated_parameter_importance]) for p in parameters}
+        p_avg = {p : 0 if np.isnan(v) else v for p, v in p_avg.items()}
+        p_order = sorted(parameters, key=lambda p: p_avg[p], reverse=True)
+        # Only add parameters where at least one evaluator shows importance > 0.05
+        for p in p_order:
+            values_for_p = []
+            add_parameter = False
+            for e in self.evaluators:
+                if p in e.evaluated_parameter_importance:
+                    values_for_p.append(e.evaluated_parameter_importance[p])
+                    if e.evaluated_parameter_importance[p] > 0.05:
+                        add_parameter = True
+                else:
+                    values_for_p.append('-')
+            if add_parameter:
+                values.append(values_for_p)
+                index.append(p)
+
+        comp_table = DataFrame(values, columns=columns, index=index)
+        return comp_table.to_html()
+
 ####################################### FEATURE IMPORTANCE #######################################
     def feature_importance(self):
         self.logger.info("... plotting feature importance")

@@ -403,21 +403,9 @@ class CAVE(object):
             of = os.path.join(self.output, 'pimp.tex')
             self.logger.info('Creating pimp latex table at %s' % of)
             self.analyzer.pimp.table_for_comparison(self.analyzer.evaluators, of, style='latex')
-            # Hack until supported by pimp-package (or if denied, properly
-            # implemented here): write to file, parse, turn into table
-            of = os.path.join(self.output, 'pimp_table.txt')
-            self.analyzer.pimp.table_for_comparison(self.analyzer.evaluators, of, style='cmd')
-            with open(of, 'r') as fh:
-                lines = list(fh.readlines())
-            columns = [name.strip() for name in lines[0].split('|')][1:]
-            values = [[v.strip() for v in line.split('|')] for line in lines[2:-2]]
-            index = [l[0] for l in values]
-            values = [l[1:] for l in values]
 
-            comp_table = DataFrame(values, columns=columns, index=index)
-            comp_table = comp_table.to_html()
-            self.website["Parameter Importance"]["Table"] = {
-                "table": comp_table}
+            table = self.analyzer.importance_table()
+            self.website["Parameter Importance"]["Table"] = {"table" : table}
             self.website["Parameter Importance"].move_to_end("Table", last=False)
 
 
