@@ -100,3 +100,15 @@ class TestCLI(unittest.TestCase):
                 testargs.extend(["--ta_exec", "examples/spear_qcp_small/"])
                 with mock.patch.object(sys, 'argv', testargs):
                     self.assertRaises(ValueError, self.cavecli.main_cli)
+
+    def test_exceptions(self):
+        test_folder = "examples/spear_qcp_small/example_output/run_1"
+
+        testargs = ["python", "scripts/cave",
+                    "--folders", test_folder,
+                    "--ta_exec", "examples/spear_qcp_small/",
+                    "--pimp_sort_table_by", "fanova",
+                    "--param_importance", "ablation"]
+        # No ta_exec -> scenario cannot be loaded
+        with mock.patch.object(sys, 'argv', testargs):
+            self.assertRaises(ValueError, self.cavecli.main_cli)

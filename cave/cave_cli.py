@@ -36,6 +36,7 @@ class CaveCLI(object):
                      "lpi",
                      "none"
         ]
+        p_sort_by_choices = ["average"] + p_choices[1:-1]
         f_choices = [
                      "all",
                      "box_violin",
@@ -88,6 +89,11 @@ class CaveCLI(object):
                               action="store_false",
                               dest="fanova_pairwise",
                               help="fANOVA won't compute pairwise marginals")
+        opt_opts.add_argument("--pimp_sort_table_by",
+                              default="average",
+                              choices=p_sort_by_choices,
+                              help="raw|what kind of parameter importance method to "
+                                   "use to sort the overview-table.")
         opt_opts.add_argument("--param_importance",
                               default="all",
                               nargs='+',
@@ -149,6 +155,11 @@ class CaveCLI(object):
         else:
             param_imp = args_.param_importance
 
+        if not (args_.pimp_sort_table_by == "average" or
+                args_.pimp_sort_table_by in param_imp):
+            raise ValueError("Pimp comparison sorting key is {}, but this "
+                             "method is deactivated.".format(args_.pimp_sort_table_by))
+
         if "all" in args_.feat_analysis:
             feature_analysis = ["box_violin", "correlation", "importance",
                                 "clustering", "feature_cdf"]
@@ -177,7 +188,8 @@ class CaveCLI(object):
         cave = CAVE(folders, args_.output, args_.ta_exec_dir,
                     missing_data_method=args_.validation,
                     max_pimp_samples=args_.max_pimp_samples,
-                    fanova_pairwise=args_.fanova_pairwise)
+                    fanova_pairwise=args_.fanova_pairwise,
+                    pimp_sort_table_by=args_.pimp_sort_table_by)
 
         # Analyze
         cave.analyze(performance=args_.tabular_analysis,
