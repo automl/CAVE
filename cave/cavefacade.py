@@ -5,7 +5,6 @@ from collections import OrderedDict
 from contextlib import contextmanager
 import typing
 import json
-import glob
 import copy
 
 import numpy as np
@@ -28,6 +27,7 @@ from cave.plot.plotter import Plotter
 from cave.smacrun import SMACrun
 from cave.analyzer import Analyzer
 from cave.utils.helpers import get_cost_dict_for_config
+from cave.utils.tooltips import get_tooltip
 
 from cave.feature_analysis.feature_analysis import FeatureAnalysis
 from cave.plot.algorithm_footprint import AlgorithmFootprint
@@ -57,9 +57,10 @@ class CAVE(object):
 
     def __init__(self, folders: typing.List[str], output: str,
                  ta_exec_dir: Union[str, None]=None, missing_data_method: str='epm',
-                 max_pimp_samples: int=-1, fanova_pairwise=True):
+                 max_pimp_samples: int=-1, fanova_pairwise=True,
+                 pimp_sort_table_by="average"):
         """
-        Initialize SpySMAC facade to handle analyzing, plotting and building the
+        Initialize CAVE facade to handle analyzing, plotting and building the
         report-page easily. During initialization, the analysis-infrastructure
         is built and the data is validated, meaning the overall best
         incumbent is found and default+incumbent are evaluated for all
@@ -82,9 +83,8 @@ class CAVE(object):
             from [validation, epm], how to estimate missing runs
         """
         self.logger = logging.getLogger("cave.cavefacade")
+        self.logger.debug("Folders: %s", str(folders))
         self.ta_exec_dir = ta_exec_dir
-        if self.ta_exec_dir and '*' in self.ta_exec_dir:  # multiple possibilities for exec dir
-            self.ta_exec_dir = list(sorted(glob.glob(self.ta_exec_dir, recursive=True)))[0]
 
         # Create output if necessary
         self.output = output
@@ -162,9 +162,12 @@ class CAVE(object):
                                  self.scenario, self.validator, self.output,
                                  max_pimp_samples, fanova_pairwise)
 
-        self.builder = HTMLBuilder(self.output, "SpySMAC")
+        self.pimp_sort_table_by = pimp_sort_table_by
+
+        self.builder = HTMLBuilder(self.output, "CAVE")
         # Builder for html-website
         self.website = OrderedDict([])
+
 
     def complete_data(self, method="epm"):
         """Complete missing data of runs to be analyzed. Either using validation
@@ -197,7 +200,7 @@ class CAVE(object):
                 parallel_coordinates=True, cost_over_time=True,
                 algo_footprint=True):
         """Analyze the available data and build HTML-webpage as dict.
-        Save webpage in 'self.output/SpySMAC/report.html'.
+        Save webpage in 'self.output/CAVE/report.html'.
         Analyzing is performed with the analyzer-instance that is initialized in
         the __init__
 
@@ -225,7 +228,7 @@ class CAVE(object):
 
         # Check arguments
         for p in param_importance:
-            if p not in ['forward_selection', 'ablation', 'fanova', 'incneighbor']:
+            if p not in ['forward_selection', 'ablation', 'fanova', 'lpi']:
                 raise ValueError("%s not a valid option for parameter "
                                  "importance!", p)
         for f in feature_analysis:
@@ -235,16 +238,10 @@ class CAVE(object):
 
         # Start analysis
         overview = self.analyzer.create_overview_table(self.best_run.folder)
-        self.website["Meta Data"] = {
-                     "table": overview,
-                     "tooltip": "Meta data such as number of instances, "
-                                "parameters, general configurations..." }
+        self.website["Meta Data"] = {"table": overview}
 
         compare_config = self.analyzer.config_to_html(self.default, self.incumbent)
-        self.website["Best configuration"] = {"table": compare_config,
-                     "tooltip": "Comparing parameters of default and incumbent. "
-                                "Parameters that differ from default to "
-                                "incumbent are presented first."}
+        self.website["Best configuration"] = {"table": compare_config}
 
         ########## PERFORMANCE ANALYSIS
         self.website["Performance Analysis"] = OrderedDict()
@@ -256,20 +253,13 @@ class CAVE(object):
 
         if cdf:
             cdf_path = self.analyzer.plot_cdf()
-            self.website["Performance Analysis"]["Cumulative distribution function (CDF)"] = {
-                     "figure": cdf_path,
-                     "tooltip": "Plot default versus incumbent performance "
-                                "on a cumulative distribution plot. Uses "
-                                "validated data!"}
+            self.website["Performance Analysis"]["empirical Cumulative Distribution Function (eCDF)"] = {
+                     "figure": cdf_path}
 
         if scatter and (self.scenario.train_insts != [[None]]):
             scatter_path = self.analyzer.plot_scatter()
             self.website["Performance Analysis"]["Scatterplot"] = {
-                     "figure" : scatter_path,
-                     "tooltip": "Plot all evaluated instances on a scatter plot, "
-                                "to directly compare performance of incumbent "
-                                "and default for each instance. Uses validated "
-                                "data! (Left: training data; Right: test data)"}
+                     "figure" : scatter_path}
         elif scatter:
             self.logger.info("Scatter plot desired, but no instances available.")
 
@@ -286,9 +276,10 @@ class CAVE(object):
             algo_footprint_plots = self.analyzer.plot_algorithm_footprint(algorithms)
             self.website["Performance Analysis"]["Algorithm Footprints"] = OrderedDict()
             for p in algo_footprint_plots:
-                self.website["Performance Analysis"]["Algorithm Footprints"][os.path.splitext(os.path.split(p)[1])[0]] = {
+                header = os.path.splitext(os.path.split(p)[1])[0]  # algo name
+                self.website["Performance Analysis"]["Algorithm Footprints"][header] = {
                     "figure" : p,
-                    "tooltip" : "Footprints as described in Smith-Miles."}
+                    "tooltip" : get_tooltip("Algorithm Footprints") + ": " + header}
 
 
         self.build_website()
@@ -308,16 +299,11 @@ class CAVE(object):
                     zip(*sorted(zip(costs, incumbents, runhistories, trajectories), key=lambda
                         x: x[0])))
             incumbents = list(map(lambda x: x['incumbent'], trajectories[0]))
+            assert(incumbents[-1] == trajectories[0][-1]['incumbent'])
 
             confviz_script = self.analyzer.plot_confviz(incumbents, runhistories)
             self.website["Configurator's behavior"]["Configurator Footprint"] = {
-                    "table" : confviz_script,
-                    "tooltip" : "Using PCA to reduce dimensionality of the "
-                                "search space  and plot the distribution of "
-                                "evaluated configurations. The bigger the dot, "
-                                "the more often the configuration was "
-                                "evaluated. The colours refer to the predicted "
-                                "performance in that part of the search space."}
+                    "bokeh" : confviz_script}
         elif confviz:
             self.logger.info("Configuration visualization desired, but no "
                              "instance-features available.")
@@ -326,10 +312,7 @@ class CAVE(object):
 
         if cost_over_time:
             cost_over_time_path = self.analyzer.plot_cost_over_time(self.best_run.traj, self.validator)
-            self.website["Configurator's behavior"]["Cost over time"] = {"figure": cost_over_time_path,
-                    "tooltip": "The cost of the incumbent estimated over the "
-                               "time. The cost is estimated using an EPM that "
-                               "is based on the actual runs."}
+            self.website["Configurator's behavior"]["Cost over time"] = {"figure": cost_over_time_path}
 
         self.build_website()
 
@@ -337,7 +320,7 @@ class CAVE(object):
                                   fanova='fanova' in param_importance,
                                   forward_selection='forward_selection' in
                                                     param_importance,
-                                  incneighbor='incneighbor' in param_importance)
+                                  lpi='lpi' in param_importance)
 
         self.build_website()
 
@@ -346,8 +329,7 @@ class CAVE(object):
             n_params = 6
             parallel_path = self.analyzer.plot_parallel_coordinates(n_params)
             self.website["Configurator's behavior"]["Parallel Coordinates"] = {
-                         "figure" : parallel_path,
-                         "tooltip": "Plot explored range of most important parameters."}
+                         "figure" : parallel_path}
 
         self.build_website()
 
@@ -366,29 +348,17 @@ class CAVE(object):
 
 
     def parameter_importance(self, ablation=False, fanova=False,
-                             forward_selection=False, incneighbor=False):
+                             forward_selection=False, lpi=False):
         """Perform the specified parameter importance procedures. """
         # PARAMETER IMPORTANCE
-        if (ablation or forward_selection or fanova or incneighbor):
-            self.website["Parameter Importance"] = OrderedDict([("tooltip",
-                "Parameter Importance explains the individual importance of the "
-                "parameters for the overall performance. Different techniques "
-                "are implemented: fANOVA (functional analysis of "
-                "variance), ablation and forward selection.")])
+        if (ablation or forward_selection or fanova or lpi):
+            self.website["Parameter Importance"] = OrderedDict()
         sum_ = 0
         if fanova:
             sum_ += 1
             table, plots, pair_plots = self.analyzer.fanova(self.incumbent)
 
-            self.website["Parameter Importance"]["fANOVA"] = OrderedDict([
-                ("tooltip", "fANOVA stands for functional analysis of variance "
-                            "and predicts a parameters marginal performance. "
-                            "The predicted local neighbourhood of "
-                            "a parameters optimized value and "
-                            "correlations to other parameters are considered. "
-                            "This parameters importance is isolated by predicting "
-                            "performance changes that depend on other "
-                            "parameters.")])
+            self.website["Parameter Importance"]["fANOVA"] = OrderedDict()
 
             self.website["Parameter Importance"]["fANOVA"]["Importance"] = {
                          "table": table}
@@ -410,36 +380,44 @@ class CAVE(object):
                                                self.output)
             ablationpercentage_path = os.path.join(self.output, "ablationpercentage.png")
             ablationperformance_path = os.path.join(self.output, "ablationperformance.png")
-            self.website["Parameter Importance"]["Ablation (percentage)"] = {
-                        "figure": ablationpercentage_path}
-            self.website["Parameter Importance"]["Ablation (performance)"] = {
-                        "figure": ablationperformance_path}
+            self.website["Parameter Importance"]["Ablation"] = {
+                        "figure": [ablationpercentage_path,
+                                   ablationperformance_path]}
 
         if forward_selection:
             sum_ += 1
             self.logger.info("Forward Selection...")
             self.analyzer.parameter_importance("forward-selection", self.incumbent,
                                                self.output)
-            f_s_barplot_path = os.path.join(self.output, "forward-selection-barplot.png")
-            f_s_chng_path = os.path.join(self.output, "forward-selection-chng.png")
-            self.website["Parameter Importance"]["Forward Selection (barplot)"] = {
-                        "figure": f_s_barplot_path}
-            self.website["Parameter Importance"]["Forward Selection (chng)"] = {
-                        "figure": f_s_chng_path}
+            f_s_barplot_path = os.path.join(self.output, "forward selection-barplot.png")
+            f_s_chng_path = os.path.join(self.output, "forward selection-chng.png")
+            self.website["Parameter Importance"]["Forward Selection"] = {
+                        "figure": [f_s_barplot_path, f_s_chng_path]}
 
-        if incneighbor:
+        if lpi:
             sum_ += 1
             self.logger.info("Local EPM-predictions around incumbent...")
             plots = self.analyzer.local_epm_plots()
-            self.website["Parameter Importance"]["Local EPM around incumbent"] = OrderedDict([])
+            self.website["Parameter Importance"]["Local Parameter Importance (LPI)"] = OrderedDict([])
             for param, plot in plots.items():
-                self.website["Parameter Importance"]["Local EPM around incumbent"][param] = {
+                self.website["Parameter Importance"]["Local Parameter Importance (LPI)"][param] = {
                     "figure": plot}
 
         if sum_:
             of = os.path.join(self.output, 'pimp.tex')
             self.logger.info('Creating pimp latex table at %s' % of)
             self.analyzer.pimp.table_for_comparison(self.analyzer.evaluators, of, style='latex')
+
+            table = self.analyzer.importance_table(self.pimp_sort_table_by)
+            self.website["Parameter Importance"]["Importance Table"] = {
+                    "table" : table,
+                    "tooltip" : "Parameters are sorted by the {} "
+                                "importance-value. Note, that the values are not "
+                                "directly comparable, since the different techniques "
+                                "provide different metrics (see respective tooltips "
+                                "for details on the differences).".format(
+                                    self.pimp_sort_table_by)}
+            self.website["Parameter Importance"].move_to_end("Importance Table", last=False)
 
 
     def feature_analysis(self, box_violin=False, correlation=False,
@@ -472,41 +450,38 @@ class CAVE(object):
 
         # feature importance using forward selection
         if importance:
-            self.website["Feature Analysis"]["Feature importance"] = OrderedDict()
+            self.website["Feature Analysis"]["Feature Importance"] = OrderedDict()
             imp, plots = self.analyzer.feature_importance()
             imp = DataFrame(data=list(imp.values()), index=list(imp.keys()),
                     columns=["Error"])
             imp = imp.to_html()  # this is a table with the values in html
-            self.website["Feature Analysis"]["Feature importance"]["Table"] = {"tooltip":
-                         "Feature importance calculated using forward selection.",
-                                                            "table": imp}
+            self.website["Feature Analysis"]["Feature Importance"]["Table"] = {
+                         "table": imp}
             for p in plots:
                 name = os.path.splitext(os.path.basename(p))[0]
-                self.website["Feature Analysis"]["Feature importance"][name] = {"tooltip":
-                         "Feature importance calculated using forward selection.",
+                self.website["Feature Analysis"]["Feature Importance"][name] = {
                          "figure": p}
 
         # box and violin plots
         if box_violin:
             name_plots = self.analyzer.feature_analysis('box_violin', feat_names)
-            self.website["Feature Analysis"]["Violin and box plots"] = OrderedDict({
-                "tooltip": "Violin and Box plots to show the distribution of each instance feature. We removed NaN from the data."})
+            self.website["Feature Analysis"]["Violin and Box Plots"] = OrderedDict()
             for plot_tuple in name_plots:
                 key = "%s" % (plot_tuple[0])
-                self.website["Feature Analysis"]["Violin and box plots"][
+                self.website["Feature Analysis"]["Violin and Box Plots"][
                     key] = {"figure": plot_tuple[1]}
 
         # correlation plot
         if correlation:
             correlation_plot = self.analyzer.feature_analysis('correlation', feat_names)
             if correlation_plot:
-                self.website["Feature Analysis"]["Correlation plot"] = {"tooltip": "Correlation based on Pearson product-moment correlation coefficients between all features and clustered with Wards hierarchical clustering approach. Darker fields corresponds to a larger correlation between the features.",
+                self.website["Feature Analysis"]["Correlation"] = {
                                                             "figure": correlation_plot}
 
         # cluster instances in feature space
         if clustering:
             cluster_plot = self.analyzer.feature_analysis('clustering', feat_names)
-            self.website["Feature Analysis"]["Clustering"] = {"tooltip": "Clustering instances in 2d; the color encodes the cluster assigned to each cluster. Similar to ISAC, we use a k-means to cluster the instances in the feature space. As pre-processing, we use standard scaling and a PCA to 2 dimensions. To guess the number of clusters, we use the silhouette score on the range of 2 to 12 in the number of clusters",
+            self.website["Feature Analysis"]["Clustering"] = {
                                                       "figure": cluster_plot}
 
         self.build_website()

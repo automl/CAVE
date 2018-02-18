@@ -19,8 +19,6 @@ import matplotlib
 from sklearn.tree.tests.test_tree import y_random
 import matplotlib.pyplot as plt
 
-from plottingscripts.plotting.scatter import plot_scatter_plot
-
 __author__ = "Marius Lindauer"
 __copyright__ = "Copyright 2016, ML4AAD"
 __license__ = "MIT"
@@ -243,6 +241,9 @@ class FeatureAnalysis(object):
 
         plt.figure()
         plt.scatter(features[:, 0], features[:, 1], c=y_pred)
+        ax = plt.gca()
+        ax.set_ylabel('principal component 1')
+        ax.set_xlabel('principal component 2')
 
         plt.tight_layout()
         out_fn = os.path.join(self.output_dn, "feature_clusters.png")

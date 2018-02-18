@@ -106,6 +106,10 @@ def plot_scatter_plot(x_data, y_data, labels, title="", debug=False,
     y_min = min([min(y) for y in y_data])
     x_max = max([max(x) for x in x_data])
     y_max = max([max(y) for y in y_data])
+    x_min = min([x_min, y_min])
+    y_min = x_min
+    x_max = max([x_max, y_max])
+    y_max = x_max
     if min_val is not None:
         auto_min_val = min([x_min, y_min, min_val])
     else:
@@ -330,20 +334,6 @@ def plot_scatter_plot(x_data, y_data, labels, title="", debug=False,
                         new_ticks_label.append(str(r"$10^{%d}$" %
                                                    int(np.log10(ticks_x[l_idx]))))
             ax.set_xticklabels(new_ticks_label)  # , rotation=45)
-
-            ticks_y = ax.get_yticks()
-            new_ticks_label = list()
-            for l_idx in range(len(ticks_y)):
-                if ticks_y[l_idx] < maximum_value:
-                    if 0 < ticks_y[l_idx] < 1:
-                        new_ticks_label.append(str(r"$10^{%d}$" %
-                                                   int(np.log10(ticks_y[l_idx]))))
-                    if 1 <= ticks_y[l_idx] < 1000:
-                        new_ticks_label.append(str(r"$%d^{ }$" %
-                                                   int(ticks_y[l_idx])))
-                    if 1000 <= ticks_y[l_idx]:
-                        new_ticks_label.append(str(r"$10^{%d}$" %
-                                                   int(np.log10(ticks_y[l_idx]))))
             ax.set_yticklabels(new_ticks_label)  # , rotation=45)
 
     # Change fontsize for ticklabels

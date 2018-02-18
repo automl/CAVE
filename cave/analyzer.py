@@ -45,7 +45,8 @@ class Analyzer(object):
     """
 
     def __init__(self, original_rh, validated_rh, default, incumbent,
-                 train_test, scenario, validator, output, max_pimp_samples, fanova_pairwise=True):
+                 train_test, scenario, validator, output, max_pimp_samples,
+                 fanova_pairwise=True):
         """
         Parameters
         ----------
@@ -177,15 +178,40 @@ class Analyzer(object):
         table: str
             overview table in HTML
         """
-        overview = OrderedDict([('Run with best incumbent', best_folder),
+        all_confs = self.original_rh.get_all_configs()
+        num_configs = len(all_confs)
+        ta_runtime = np.sum([self.original_rh.get_cost(conf) for conf in all_confs])
+        ta_evals = [len(self.original_rh.get_runs_for_config(conf)) for conf in all_confs]
+        ta_evals_d = len(self.original_rh.get_runs_for_config(self.default))
+        ta_evals_i = len(self.original_rh.get_runs_for_config(self.incumbent))
+        min_ta_evals, max_ta_evals, = np.min(ta_evals), np.max(ta_evals)
+        mean_ta_evals, ta_evals = np.mean(ta_evals), np.sum(ta_evals)
+        num_feats = self.scenario.n_features
+        dup_feats = DataFrame(self.scenario.feature_array)  # only contains train instances
+        num_dup_feats = len(dup_feats[dup_feats.duplicated()])
+        overview = OrderedDict([('Run with best incumbent', os.path.basename(best_folder)),
                                 ('# Train instances', len(self.scenario.train_insts)),
                                 ('# Test instances', len(self.scenario.test_insts)),
                                 ('# Parameters', len(self.scenario.cs.get_hyperparameters())),
+                                ('', ''),
+                                ('# Evaluated Configurations', num_configs),
+                                ('# Default evaluations', ta_evals_d),
+                                ('# Incumbent evaluations', ta_evals_i),
+                                ('Budget spent evaluating configurations', ta_runtime),
+                                ('', ''),
+                                ('# Features', num_feats),
                                 ('Cutoff', self.scenario.cutoff),
                                 ('Walltime budget', self.scenario.wallclock_limit),
                                 ('Runcount budget', self.scenario.ta_run_limit),
                                 ('CPU budget', self.scenario.algo_runs_timelimit),
                                 ('Deterministic', self.scenario.deterministic),
+                                ('', ''),
+                                ('# Runs per Config (min)', min_ta_evals),
+                                ('# Runs per Config (mean)', mean_ta_evals),
+                                ('# Runs per Config (max)', max_ta_evals),
+                                ('Total number of configuration runs', ta_evals),
+                                ('', ''),
+                                ('# Duplicate Feature vectors', num_dup_feats)
                                ])
         # Split into two columns
         overview_split = self._split_table(overview)
@@ -207,12 +233,12 @@ class Analyzer(object):
             # Distinction between train and test
             # Create table
             array = np.array([[round(def_par10[0], dec_place),
-                               round(def_par10[1], dec_place),
                                round(inc_par10[0], dec_place),
+                               round(def_par10[1], dec_place),
                                round(inc_par10[1], dec_place)],
                               [round(def_par1[0], dec_place),
-                               round(def_par1[1], dec_place),
                                round(inc_par1[0], dec_place),
+                               round(def_par1[1], dec_place),
                                round(inc_par1[1], dec_place)],
                               ["{}/{}".format(def_timeout[0][0], def_timeout[0][1]),
                                "{}/{}".format(def_timeout[1][0], def_timeout[1][1]),
@@ -220,7 +246,7 @@ class Analyzer(object):
                                "{}/{}".format(inc_timeout[1][0], inc_timeout[1][1])
                                ]])
             df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
-                           columns=['Train', 'Test', 'Train', 'Test'])
+                           columns=['Default', 'Incumbent', 'Default', 'Incumbent'])
             table = df.to_html()
             # Insert two-column-header
             table = table.split(sep='</thead>', maxsplit=1)[1]
@@ -231,14 +257,14 @@ class Analyzer(object):
                         "  <thead>\n"\
                         "    <tr>\n"\
                         "      <td rowspan=\"2\"></td>\n"\
-                        "      <th colspan=\"2\" scope=\"colgroup\">Default</th>\n"\
-                        "      <th colspan=\"2\" scope=\"colgroup\">Incumbent</th>\n"\
+                        "      <th colspan=\"2\" scope=\"colgroup\">Train</th>\n"\
+                        "      <th colspan=\"2\" scope=\"colgroup\">Test</th>\n"\
                         "    </tr>\n"\
                         "    <tr>\n"\
-                        "      <th scope=\"col\">Train</th>\n"\
-                        "      <th scope=\"col\">Test</th>\n"\
-                        "      <th scope=\"col\">Train</th>\n"\
-                        "      <th scope=\"col\">Test</th>\n"\
+                        "      <th scope=\"col\">Default</th>\n"\
+                        "      <th scope=\"col\">Incumbent</th>\n"\
+                        "      <th scope=\"col\">Default</th>\n"\
+                        "      <th scope=\"col\">Incumbent</th>\n"\
                         "    </tr>\n"\
                         "</thead>\n"
             table = new_table + table
@@ -395,16 +421,10 @@ class Analyzer(object):
 
     def local_epm_plots(self):
         plots = OrderedDict([])
-        if self.importance:
-            self.parameter_importance("incneighbor", self.incumbent,
-                                                   self.output, num_params=3)
-            for p, i in [(k, v) for k, v in sorted(self.importance.items(),
-                                key=operator.itemgetter(1), reverse=True) if v > 0.05]:
-                plots[p] = os.path.join(self.output, 'incneighbor', p + '.png')
-
-        else:
-            self.logger.warning("Need to run fANOVA before incneighbor!")
-            raise ValueError()
+        self.parameter_importance("lpi", self.incumbent, self.output, num_params=3)
+        for p, i in [(k, v) for k, v in sorted(self.importance.items(),
+                            key=operator.itemgetter(1), reverse=True) if v > 0.05]:
+            plots[p] = os.path.join(self.output, 'lpi', p + '.png')
         return plots
 
     def parameter_importance(self, modus, incumbent, output, num_params=4,
@@ -439,6 +459,49 @@ class Analyzer(object):
         result = self.pimp.evaluate_scenario([modus], save_folder)
         self.evaluators.append(self.pimp.evaluator)
         return self.pimp
+
+    def importance_table(self, pimp_sort_table_by):
+        """Create a html-table over all evaluated parameter-importance-methods.
+        Parameters are sorted after their average importance."""
+        parameters = [p.name for p in self.scenario.cs.get_hyperparameters()]
+        index, values, columns = [], [], []
+        columns = [e.name for e in self.evaluators]
+        columns_lower = [c.lower() for c in columns]
+        self.logger.debug("Sort pimp-table by %s" % pimp_sort_table_by)
+        if pimp_sort_table_by == "average":
+            # Sort parameters after average importance
+            p_avg = {p : np.mean([e.evaluated_parameter_importance[p] for e in self.evaluators
+                        if p in e.evaluated_parameter_importance]) for p in parameters}
+            p_avg = {p : 0 if np.isnan(v) else v for p, v in p_avg.items()}
+            p_order = sorted(parameters, key=lambda p: p_avg[p], reverse=True)
+        elif pimp_sort_table_by in columns_lower:
+            def __get_key(p):
+                imp = self.evaluators[columns_lower.index(pimp_sort_table_by)].evaluated_parameter_importance
+                return imp[p] if p in imp else 0
+            p_order = sorted(parameters,
+                             key=__get_key,
+                             reverse=True)
+        else:
+            raise ValueError("Trying to sort importance table after {}, which "
+                             "was not evaluated.".format(pimp_sort_table_by))
+
+        # Only add parameters where at least one evaluator shows importance > 0.05
+        for p in p_order:
+            values_for_p = []
+            add_parameter = False
+            for e in self.evaluators:
+                if p in e.evaluated_parameter_importance:
+                    values_for_p.append(e.evaluated_parameter_importance[p])
+                    if e.evaluated_parameter_importance[p] > 0.05:
+                        add_parameter = True
+                else:
+                    values_for_p.append('-')
+            if add_parameter:
+                values.append(values_for_p)
+                index.append(p)
+
+        comp_table = DataFrame(values, columns=columns, index=index)
+        return comp_table.to_html()
 
 ####################################### FEATURE IMPORTANCE #######################################
     def feature_importance(self):
@@ -481,15 +544,13 @@ class Analyzer(object):
 
     def plot_cdf(self):
         self.logger.info("... plotting eCDF")
-        cdf_path = os.path.join(self.output, 'cdf.png')
-        self.plotter.plot_cdf_compare(output=cdf_path)
-        return cdf_path
+        cdf_path = os.path.join(self.output, 'cdf')
+        return self.plotter.plot_cdf_compare(output_fn_base=cdf_path)
 
     def plot_scatter(self):
         self.logger.info("... plotting scatter")
-        scatter_path = os.path.join(self.output, 'scatter.png')
-        self.plotter.plot_scatter(output=scatter_path)
-        return scatter_path
+        scatter_path = os.path.join(self.output, 'scatter')
+        return self.plotter.plot_scatter(output_fn_base=scatter_path)
 
     @timing
     def plot_confviz(self, incumbents, runhistories, max_confs=1000):
@@ -521,8 +582,7 @@ class Analyzer(object):
     @timing
     def plot_cost_over_time(self, traj, validator):
         path = os.path.join(self.output, 'cost_over_time.png')
-        self.logger.info("... cost over time:")
-        self.logger.info("    plotting!")
+        self.logger.info("... cost over time")
         self.plotter.plot_cost_over_time(self.validated_rh, traj, output=path,
                                          validator=validator)
         return path
@@ -531,8 +591,7 @@ class Analyzer(object):
     def plot_algorithm_footprint(self, algorithms=None, density=200, purity=0.95):
         if not algorithms:
             algorithms = {self.default: "default", self.incumbent: "incumbent"}
-        self.logger.info("... algorithm footprints:")
-        self.logger.info("    for: {}".format(algorithms.values()))
+        self.logger.info("... algorithm footprints for: {}".format(", ".join(algorithms.values())))
         footprint = AlgorithmFootprint(self.validated_rh,
                                        self.scenario.feature_dict, algorithms,
                                        self.scenario.cutoff, self.output)

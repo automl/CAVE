@@ -1,7 +1,7 @@
 F.A.Q.
 ======
 
-.. rubric:: Why is SpySMAC so great?
+.. rubric:: Why is CAVE so great?
 
 42
 

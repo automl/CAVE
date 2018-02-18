@@ -20,7 +20,7 @@ from smac.utils.util_funcs import get_types
 from smac.runhistory.runhistory import RunHistory
 
 from cave.plot.scatter import plot_scatter_plot
-from cave.plot.confs_viz.viz_sampled_confs import SampleViz
+from cave.plot.configurator_footprint import ConfiguratorFootprint
 from cave.plot.parallel_coordinates import ParallelCoordinatesPlotter
 
 __author__ = "Joshua Marben"
@@ -81,7 +81,7 @@ class Plotter(object):
                 data[c][s] = np.array(data[c][s])
         self.data = data
 
-    def plot_scatter(self, output='scatter.png'):
+    def plot_scatter(self, output_fn_base='scatter'):
         """
         Creates a scatterplot of the two configurations on the given set of
         instances.
@@ -89,33 +89,35 @@ class Plotter(object):
 
         Parameters:
         -----------
-        output: string
-            path to save plot in
+        output_fn_base: string
+            base-path to save plot to
         """
-        self.logger.debug("Plot scatter to %s", output)
+        self.logger.debug("Plot scatter to %s[train|test].png", output_fn_base)
 
         metric = self.scenario.run_obj
         timeout = self.scenario.cutoff
         labels = ["default cost", "incumbent cost"]
 
-        if self.train_test:
-            conf1 = (self.data["default"]["train"],
-                    self.data["default"]["test"])
-            conf2 = (self.data["incumbent"]["train"],
-                    self.data["incumbent"]["test"])
-        else:
-            conf1 = (self.data["default"]["combined"],)
-            conf2 = (self.data["incumbent"]["combined"],)
+        conf1 = (self.data["default"]["train"], self.data["default"]["test"])
+        conf2 = (self.data["incumbent"]["train"], self.data["incumbent"]["test"])
 
-        fig = plot_scatter_plot(conf1, conf2,
-                                labels, metric=metric,
-                                user_fontsize=mpl.rcParams['font.size'],
-                                max_val=timeout,
-                                jitter_timeout=True)
-        fig.savefig(output)
-        plt.close(fig)
+        min_val = min(min([min(x) for x in conf1]), min([min(y) for y in conf2]))
 
-    def plot_cdf_compare(self, output="CDF_compare.png"):
+        paths = [output_fn_base+'train.png',
+                 output_fn_base+'test.png']
+
+        for idx in [0, 1]:
+            fig = plot_scatter_plot((conf1[idx],), (conf2[idx],),
+                                    labels, metric=metric,
+                                    user_fontsize=mpl.rcParams['font.size'],
+                                    min_val=min_val,
+                                    max_val=timeout,
+                                    jitter_timeout=True)
+            fig.savefig(paths[idx])
+            plt.close(fig)
+        return paths
+
+    def plot_cdf_compare(self, output_fn_base="CDF_compare.png"):
         """
         Plot the cumulated distribution functions for given configurations,
         plots will share y-axis and if desired x-axis.
@@ -123,10 +125,10 @@ class Plotter(object):
 
         Parameters
         ----------
-        output: string
+        output: List[str]
             filename, default: CDF_compare.png
         """
-        self.logger.debug("Plot CDF to %s", output)
+        self.logger.debug("Plot CDF to %s_[train|test].png", output_fn_base)
 
         timeout = self.scenario.cutoff
 
@@ -148,67 +150,35 @@ class Plotter(object):
                                data[config_name].items()}
                 for config_name in data}
 
-        # Until here the code is usable for an arbitrary number of
-        # configurations. Below, it is specified for plotting default vs
-        # incumbent only.
+        output_fn = [output_fn_base + "_" + inst_set + '.png' for inst_set in
+                                    ['train', 'test']]
 
-        if self.train_test:
-            f = plt.figure(1, dpi=100, figsize=(10,5))
-            ax1 = f.add_subplot(1,2,1)
-            ax2 = f.add_subplot(1,2,2)
-            ax1.step(data['default']['train'][0],
-                     data['default']['train'][1], color='red',
-                     linestyle='-', label='default train')
-            ax1.step(data['incumbent']['train'][0],
-                     data['incumbent']['train'][1], color='blue',
-                     linestyle='-', label='incumbent train')
-            ax2.step(data['default']['test'][0],
-                     data['default']['test'][1], color='red',
-                     linestyle='-', label='default test')
-            ax2.step(data['incumbent']['test'][0],
-                     data['incumbent']['test'][1], color='blue',
-                     linestyle='-', label='incumbent test')
-            ax2.legend()
-            ax2.grid(True)
-            ax2.set_xscale('log')
-            ax2.set_ylabel('probability of being solved')
-            ax2.set_xlabel('time')
-            # Plot 'timeout'
-            if timeout:
-                ax2.text(timeout,
-                         ax2.get_ylim()[0] - 0.1 * np.abs(ax2.get_ylim()[0]),
-                         "timeout ", horizontalalignment='center',
-                         verticalalignment="top", rotation=30)
-                ax2.axvline(x=timeout, linestyle='--')
-
-        else:
+        for inst_set, out in zip(['train', 'test'], output_fn):
             f = plt.figure(1, dpi=100, figsize=(10,10))
             ax1 = f.add_subplot(1,1,1)
-            ax1.step(data['default']['combined'][0],
-                     data['default']['combined'][1], color='red',
-                     label='default all instances')
-            ax1.step(data['incumbent']['combined'][0],
-                     data['incumbent']['combined'][1], color='blue',
-                     label='incumbent all instances')
-            ax1.set_title('PAR10 - CDF')
+            ax1.step(data['default'][inst_set][0],
+                     data['default'][inst_set][1], color='red',
+                     linestyle='-', label='default train')
+            ax1.step(data['incumbent'][inst_set][0],
+                     data['incumbent'][inst_set][1], color='blue',
+                     linestyle='-', label='incumbent train')
+            ax1.legend()
+            ax1.grid(True)
+            ax1.set_xscale('log')
+            ax1.set_ylabel('probability of being solved')
+            ax1.set_xlabel('time')
+            # Plot 'timeout'
+            if timeout:
+                ax1.text(timeout,
+                         ax1.get_ylim()[0] - 0.1 * np.abs(ax1.get_ylim()[0]),
+                         "timeout ", horizontalalignment='center',
+                         verticalalignment="top", rotation=30)
+                ax1.axvline(x=timeout, linestyle='--')
 
-        # Always set props for ax1
-        ax1.legend()
-        ax1.grid(True)
-        ax1.set_xscale('log')
-        ax1.set_ylabel('probability of being solved')
-        ax1.set_xlabel('time')
-        # Plot 'timeout'
-        if timeout:
-            ax1.text(timeout,
-                     ax1.get_ylim()[0] - 0.1 * np.abs(ax1.get_ylim()[0]),
-                     "timeout ", horizontalalignment='center',
-                     verticalalignment="top", rotation=30)
-            ax1.axvline(x=timeout, linestyle='--')
-
-        f.tight_layout()
-        f.savefig(output)
-        plt.close(f)
+            f.tight_layout()
+            f.savefig(out)
+            plt.close(f)
+        return output_fn
 
     def visualize_configs(self, scen, runhistories, incumbents=None, max_confs_plot=1000):
         """
@@ -224,7 +194,8 @@ class Plotter(object):
             # configurations to be plotted
         """
 
-        sz = SampleViz(scenario=scen,
+        sz = ConfiguratorFootprint(
+                       scenario=scen,
                        runhistories=runhistories,
                        incs=incumbents, max_plot=max_confs_plot,
                        output_dir=self.output)
@@ -295,7 +266,7 @@ class Plotter(object):
         self.logger.debug("Using %d samples (%d distinct) from trajectory.",
                           len(time), len(set(configs)))
 
-        if validator.epm:
+        if validator.epm:  # not log as validator epm is trained on cost, not log cost
             epm = validator.epm
         else:
             self.logger.debug("No EPM passed! Training new one from runhistory.")
@@ -337,10 +308,13 @@ class Plotter(object):
         #     epm.instance_features = backup_features_epm
         #=======================================================================
 
-        mean = mean[:,0]
-        var = var[:,0]
+        mean = mean[:, 0]
+        var = var[:, 0]
         uncertainty_upper = mean+np.sqrt(var)
         uncertainty_lower = mean-np.sqrt(var)
+        if self.scenario.run_obj == 'runtime':  # We have to clip at 0 as we want to put y on the logscale
+            uncertainty_lower[uncertainty_lower < 0] = 0
+            uncertainty_upper[uncertainty_upper < 0] = 0
 
         # plot
         fig = plt.figure()
@@ -352,8 +326,10 @@ class Plotter(object):
         ax.fill_between(time, uncertainty_upper, uncertainty_lower, alpha=0.8,
                 label="standard deviation")
         ax.set_xscale("log", nonposx='clip')
+        if self.scenario.run_obj == 'runtime':
+            ax.set_yscale('log')
 
-        ax.set_ylim(min(mean)*0.8, max(mean)*1.2)
+        # ax.set_ylim(min(mean)*0.8, max(mean)*1.2)
         # start after 1% of the configuration budget
         ax.set_xlim(min(time)+(max(time) - min(time))*0.01, max(time))
 
