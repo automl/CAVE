@@ -45,7 +45,8 @@ class Analyzer(object):
     """
 
     def __init__(self, original_rh, validated_rh, default, incumbent,
-                 train_test, scenario, validator, output, max_pimp_samples, fanova_pairwise=True):
+                 train_test, scenario, validator, output, max_pimp_samples,
+                 fanova_pairwise=True):
         """
         Parameters
         ----------
@@ -458,6 +459,49 @@ class Analyzer(object):
         result = self.pimp.evaluate_scenario([modus], save_folder)
         self.evaluators.append(self.pimp.evaluator)
         return self.pimp
+
+    def importance_table(self, pimp_sort_table_by):
+        """Create a html-table over all evaluated parameter-importance-methods.
+        Parameters are sorted after their average importance."""
+        parameters = [p.name for p in self.scenario.cs.get_hyperparameters()]
+        index, values, columns = [], [], []
+        columns = [e.name for e in self.evaluators]
+        columns_lower = [c.lower() for c in columns]
+        self.logger.debug("Sort pimp-table by %s" % pimp_sort_table_by)
+        if pimp_sort_table_by == "average":
+            # Sort parameters after average importance
+            p_avg = {p : np.mean([e.evaluated_parameter_importance[p] for e in self.evaluators
+                        if p in e.evaluated_parameter_importance]) for p in parameters}
+            p_avg = {p : 0 if np.isnan(v) else v for p, v in p_avg.items()}
+            p_order = sorted(parameters, key=lambda p: p_avg[p], reverse=True)
+        elif pimp_sort_table_by in columns_lower:
+            def __get_key(p):
+                imp = self.evaluators[columns_lower.index(pimp_sort_table_by)].evaluated_parameter_importance
+                return imp[p] if p in imp else 0
+            p_order = sorted(parameters,
+                             key=__get_key,
+                             reverse=True)
+        else:
+            raise ValueError("Trying to sort importance table after {}, which "
+                             "was not evaluated.".format(pimp_sort_table_by))
+
+        # Only add parameters where at least one evaluator shows importance > 0.05
+        for p in p_order:
+            values_for_p = []
+            add_parameter = False
+            for e in self.evaluators:
+                if p in e.evaluated_parameter_importance:
+                    values_for_p.append(e.evaluated_parameter_importance[p])
+                    if e.evaluated_parameter_importance[p] > 0.05:
+                        add_parameter = True
+                else:
+                    values_for_p.append('-')
+            if add_parameter:
+                values.append(values_for_p)
+                index.append(p)
+
+        comp_table = DataFrame(values, columns=columns, index=index)
+        return comp_table.to_html()
 
 ####################################### FEATURE IMPORTANCE #######################################
     def feature_importance(self):

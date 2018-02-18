@@ -57,7 +57,8 @@ class CAVE(object):
 
     def __init__(self, folders: typing.List[str], output: str,
                  ta_exec_dir: Union[str, None]=None, missing_data_method: str='epm',
-                 max_pimp_samples: int=-1, fanova_pairwise=True):
+                 max_pimp_samples: int=-1, fanova_pairwise=True,
+                 pimp_sort_table_by="average"):
         """
         Initialize CAVE facade to handle analyzing, plotting and building the
         report-page easily. During initialization, the analysis-infrastructure
@@ -161,9 +162,12 @@ class CAVE(object):
                                  self.scenario, self.validator, self.output,
                                  max_pimp_samples, fanova_pairwise)
 
+        self.pimp_sort_table_by = pimp_sort_table_by
+
         self.builder = HTMLBuilder(self.output, "CAVE")
         # Builder for html-website
         self.website = OrderedDict([])
+
 
     def complete_data(self, method="epm"):
         """Complete missing data of runs to be analyzed. Either using validation
@@ -403,6 +407,17 @@ class CAVE(object):
             of = os.path.join(self.output, 'pimp.tex')
             self.logger.info('Creating pimp latex table at %s' % of)
             self.analyzer.pimp.table_for_comparison(self.analyzer.evaluators, of, style='latex')
+
+            table = self.analyzer.importance_table(self.pimp_sort_table_by)
+            self.website["Parameter Importance"]["Importance Table"] = {
+                    "table" : table,
+                    "tooltip" : "Parameters are sorted by the {} "
+                                "importance-value. Note, that the values are not "
+                                "directly comparable, since the different techniques "
+                                "provide different metrics (see respective tooltips "
+                                "for details on the differences).".format(
+                                    self.pimp_sort_table_by)}
+            self.website["Parameter Importance"].move_to_end("Importance Table", last=False)
 
 
     def feature_analysis(self, box_violin=False, correlation=False,
