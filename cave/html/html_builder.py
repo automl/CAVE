@@ -164,6 +164,22 @@ for (i = 0; i < acc.length; i++) {
 
                     html_str += "<p style=\"clear: both;\">"
                 html_str +="</div>\n"
+            elif k == "figure_x2":
+                # four figures in a grid
+                html_str +="<div align=\"center\">\n"
+                for fig in v:
+                    path = fig[len(self.output_dn):].lstrip("/")
+                    html_str += "<a href=\"{}\" ".format(path)
+                    html_str += "data-lightbox=\"{}\" ".format(str(v))
+                    html_str += "data-title=\"{0}\"><img src=\"{0}\" alt=\"Plot\" ".format(path)
+                    html_str += "style=\"float: left; width: 49%; margin-right: 1%; margin-bottom: 0.5em;\"></a>\n"
+                    if v.index(fig) % 2 == 1:
+                        html_str += " <br> "
+
+                html_str += "<p style=\"clear: both;\">"
+                html_str +="</div>\n"
+
+
             elif k == "table":
                 html_str += "<div align=\"center\">\n{}\n</div>\n".format(v)
             elif k == "html":

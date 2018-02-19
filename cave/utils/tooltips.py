@@ -45,7 +45,7 @@ def get_tooltip(header):
             "right side the test-data is scattered.",
 
         "Algorithm Footprints": "The instance features are projected into a "
-                                "two dimensional space using principal "
+                                "two/three dimensional space using principal "
                                 "component analysis (PCA) and the footprint "
                                 "of each algorithm is plotted, i.e., on which "
                                 "instances the default or the optimized "
@@ -55,6 +55,10 @@ def get_tooltip(header):
                                 "which of the two configurations performs "
                                 "well on specific types or clusters of "
                                 "instances. Inspired by Smith-Miles.",
+
+        "Default vs Incumbent 2d" : "Comparing footprints of default (left) and "
+                                    "incumbent (right) in two-dimensional "
+                                    "feature space.",
 
         "Configurator's behavior": "Analysis of the trajectory and the "
                                    "runhistory returned by a configurator "

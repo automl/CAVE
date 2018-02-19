@@ -601,8 +601,9 @@ class Analyzer(object):
         #        footprint.footprint(a, 20, 0.95)
 
         # Plot footprints
-        plots = footprint.plot_points_per_cluster()
-        return plots
+        plots2d = footprint.plot2d()
+        plots3d = footprint.plot3d()
+        return (plots2d, plots3d)
 
 ####################################### FEATURE ANALYSIS #######################################
 
