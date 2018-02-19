@@ -1,3 +1,4 @@
+*.swp
 *.sh
 data/
 results/
