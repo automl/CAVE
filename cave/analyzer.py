@@ -46,7 +46,7 @@ class Analyzer(object):
 
     def __init__(self, original_rh, validated_rh, default, incumbent,
                  train_test, scenario, validator, output, max_pimp_samples,
-                 fanova_pairwise=True):
+                 fanova_pairwise=True, rng=None):
         """
         Parameters
         ----------
@@ -67,6 +67,11 @@ class Analyzer(object):
             output-directory
         """
         self.logger = logging.getLogger("cave.analyzer")
+        self.rng = rng
+        if not self.rng:
+            self.logger.info("No randomstate passed. Generate deterministic "
+                             "random state.")
+            self.rng = np.random.RandomState(42)
 
         # Important objects for analysis
         self.original_rh = original_rh
@@ -594,7 +599,8 @@ class Analyzer(object):
         self.logger.info("... algorithm footprints for: {}".format(", ".join(algorithms.values())))
         footprint = AlgorithmFootprint(self.validated_rh,
                                        self.scenario.feature_dict, algorithms,
-                                       self.scenario.cutoff, self.output)
+                                       self.scenario.cutoff, self.output,
+                                       rng=self.rng)
         # Calculate footprints
         #for i in range(100):
         #    for a in algorithms:

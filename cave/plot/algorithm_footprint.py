@@ -38,7 +38,7 @@ class AlgorithmFootprint(object):
          - map the instances onto a plane using pca
     """
     def __init__(self, rh: RunHistory, inst_feat, algorithms, cutoff=np.inf,
-                 output_dir=""):
+                 output_dir="", rng=None):
         """
         Parameters
         ----------
@@ -56,7 +56,11 @@ class AlgorithmFootprint(object):
         self.logger = logging.getLogger(
             self.__module__ + '.' + self.__class__.__name__)
         self.output_dir = output_dir
-        self.rng = np.random.RandomState(42)  # TODO random over module...
+        self.rng = rng
+        if not self.rng:
+            self.logger.info("No randomstate passed. Generate deterministic "
+                             "random state.")
+            self.rng = np.random.RandomState(42)
 
         self.rh = rh
         self.insts = list(inst_feat.keys())  # This is the order of instances!

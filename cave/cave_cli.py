@@ -77,6 +77,10 @@ class CaveCLI(object):
         opt_opts.add_argument("--output",
                               default="CAVE_output",
                               help="path to folder in which to save the HTML-report. ")
+        opt_opts.add_argument("--seed",
+                              default=42,
+                              type=int,
+                              help="random seed used throughout analysis")
         opt_opts.add_argument("--ta_exec_dir",
                               default=None,
                               help="path to the execution-directory of the "
@@ -189,7 +193,8 @@ class CaveCLI(object):
                     missing_data_method=args_.validation,
                     max_pimp_samples=args_.max_pimp_samples,
                     fanova_pairwise=args_.fanova_pairwise,
-                    pimp_sort_table_by=args_.pimp_sort_table_by)
+                    pimp_sort_table_by=args_.pimp_sort_table_by,
+                    seed=args_.seed)
 
         # Analyze
         cave.analyze(performance=args_.tabular_analysis,

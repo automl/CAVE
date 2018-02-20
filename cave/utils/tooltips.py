@@ -60,6 +60,11 @@ def get_tooltip(header):
                                     "incumbent (right) in two-dimensional "
                                     "feature space.",
 
+        "Default 3d" : "Projection of feature space into three dimensions, "
+                       "different viewpoints for enhanced explanation.",
+        "Incumbent 3d" : "Projection of feature space into three dimensions, "
+                         "different viewpoints for enhanced explanation.",
+
         "Configurator's behavior": "Analysis of the trajectory and the "
                                    "runhistory returned by a configurator "
                                    "to gain insights into how the configurator "
