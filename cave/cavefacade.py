@@ -28,6 +28,7 @@ from cave.smacrun import SMACrun
 from cave.analyzer import Analyzer
 from cave.utils.helpers import get_cost_dict_for_config
 from cave.utils.tooltips import get_tooltip
+from cave.utils.timing import timing
 
 from cave.feature_analysis.feature_analysis import FeatureAnalysis
 from cave.plot.algorithm_footprint import AlgorithmFootprint
@@ -83,16 +84,12 @@ class CAVE(object):
             from [validation, epm], how to estimate missing runs
         """
         self.logger = logging.getLogger("cave.cavefacade")
-        self.logger.debug("Folders: %s", str(folders))
         self.ta_exec_dir = ta_exec_dir
-
-        if seed:
-            self.rng = np.random.RandomState(seed)
-        else:
-            self.rng = np.random.RandomState(42)
+        self.output = output
+        self.rng = np.random.RandomState(seed) if seed else np.random.RandomState(42)
 
         # Create output if necessary
-        self.output = output
+        self.logger.debug("Folders: %s", str(folders))
         self.logger.info("Saving results to %s", self.output)
         if not os.path.exists(output):
             self.logger.debug("Output-dir %s does not exist, creating", self.output)
@@ -106,11 +103,14 @@ class CAVE(object):
         logger.addHandler(handler)
 
         # Global runhistory combines all actual runs of individual SMAC-runs
+        # We use it to initialize an Importance-object. From the
+        # Importance-object, we can use the trained random-forest-model for all
+        # further purposes.
         # We save the combined (unvalidated) runhistory to disk, so we can use it later on.
-        # We keep the validated runhistory (with as many runs as possible) in
-        # memory. The distinction is made to avoid using runs that are
-        # only estimated using an EPM for further EPMs or to handle runs
-        # validated on different hardware (depending on validation-method).
+        # We keep the runhistory, that was validated for default and incumbent
+        # on all instances in memory.
+        # The distinction is made to avoid using runs that are
+        # only estimated using an EPM as a basis for further EPMs.
         self.original_rh = RunHistory(average_cost)
         self.validated_rh = RunHistory(average_cost)
 
@@ -129,6 +129,7 @@ class CAVE(object):
 
         # Use scenario of first run for general purposes (expecting they are all the same anyway!)
         self.scenario = self.runs[0].solver.scenario
+        self.default = self.scenario.cs.get_default_configuration()
 
         # Update global runhistory with all available runhistories
         self.logger.debug("Update original rh with all available rhs!")
@@ -142,17 +143,31 @@ class CAVE(object):
                           len(runhistory_fns))
         self.original_rh.save_json(os.path.join(self.output, "combined_rh.json"))
 
+        # Create ParameterImportance-object and use it's trained model for
+        # validation and further predictions
+        self.pimp = Importance(scenario=copy.deepcopy(self.scenario),
+                               runhistory=self.original_rh,
+                               incumbent=self.default,  # Inject correct incumbent later
+                               parameters_to_evaluate=4,
+                               save_folder=self.output,
+                               seed=seed if seed else 12345,
+                               max_sample_size=max_pimp_samples,
+                               fANOVA_pairwise=fanova_pairwise,
+                               preprocess=False)
+        self.model = self.pimp.model
+
         # Validator for a) validating with epm, b) plot over time
         # Initialize without trajectory
         self.validator = Validator(self.scenario, None, None)
+        self.validator.epm = self.model
 
         # Estimate missing costs for [def, inc1, inc2, ...]
         self.complete_data(method=missing_data_method)
         self.best_run = min(self.runs, key=lambda run:
                 self.validated_rh.get_cost(run.solver.incumbent))
 
-        self.default = self.scenario.cs.get_default_configuration()
         self.incumbent = self.best_run.solver.incumbent
+        self.pimp.incumbent = self.incumbent
 
         self.logger.debug("Overall best run: %s, with incumbent: %s",
                           self.best_run.folder, self.incumbent)
@@ -164,7 +179,8 @@ class CAVE(object):
 
         self.analyzer = Analyzer(self.original_rh, self.validated_rh,
                                  self.default, self.incumbent, self.train_test,
-                                 self.scenario, self.validator, self.output,
+                                 self.scenario, self.validator, self.pimp,
+                                 self.model, self.output,
                                  max_pimp_samples, fanova_pairwise,
                                  rng=self.rng)
 
@@ -175,6 +191,7 @@ class CAVE(object):
         self.website = OrderedDict([])
 
 
+    @timing
     def complete_data(self, method="epm"):
         """Complete missing data of runs to be analyzed. Either using validation
         or EPM.
@@ -193,11 +210,11 @@ class CAVE(object):
                     new_rh = self.validator.validate_epm('def+inc', 'train+test', 1,
                                                          runhistory=self.original_rh)
                 else:
-                    raise ValueError("Missing data method illegal (%s)",
-                                     method)
+                    raise ValueError("Missing data method illegal (%s)", method)
                 self.validator.traj = None  # Avoid usage-mistakes
                 self.validated_rh.update(new_rh)
 
+    @timing
     def analyze(self,
                 performance=True, cdf=True, scatter=True, confviz=True,
                 param_importance=['forward_selection', 'ablation', 'fanova'],
