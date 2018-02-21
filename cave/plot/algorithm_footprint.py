@@ -2,6 +2,7 @@ import os
 import logging
 import time
 from collections import OrderedDict
+import itertools
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -434,21 +435,27 @@ class AlgorithmFootprint(object):
             good_idx, bad_idx = self._get_good_bad(a)
             good = np.array([self.features_3d[idx] for idx in good_idx])
             bad = np.array([self.features_3d[idx] for idx in bad_idx])
-            # Plot 3d
-            fig = plt.figure()
-            ax = fig.add_subplot(111, projection='3d')
-            if len(good) > 0: ax.scatter(xs=good[:, 0], ys=good[:, 1],
-                                         zs=good[:, 2], color="green")
-            if len(bad) > 0: ax.scatter(xs=bad[:, 0], ys=bad[:, 1],
-                                        zs=bad[:, 2], color="red")
-            ax.set_ylabel('principal component 1', fontsize=12)
-            ax.set_xlabel('principal component 2', fontsize=12)
-            ax.set_zlabel('principal component 3', fontsize=12)
-            plt.tight_layout()
-            for out_fn, angle in zip(out_fns, range(20, 381, 90)):
-                ax.view_init(30, angle)
+            axes = {0 : 'principal component 1',
+                    1 : 'principal component 2',
+                    2 : 'principal component 3'}
+            for out_fn, axes_ordered in zip(out_fns,
+                    list(itertools.permutations([0, 1, 2]))[:len(out_fns)]):
+                # Plot 3d
+                fig = plt.figure()
+                ax = fig.add_subplot(111, projection='3d')
+                x, y, z = axes_ordered
+                if len(good) > 0: ax.scatter(xs=good[:, x], ys=good[:, y],
+                                             zs=good[:, z], color="green")
+                if len(bad) > 0: ax.scatter(xs=bad[:, x], ys=bad[:, y],
+                                            zs=bad[:, z], color="red")
+                ax.set_xlabel(axes[x], fontsize=12)
+                ax.set_ylabel(axes[y], fontsize=12)
+                ax.set_zlabel(axes[z], fontsize=12)
+                plt.tight_layout()
+                #for out_fn, angle in zip(out_fns, range(20, 381, 90)):
+                #    ax.view_init(30, angle)
                 fig.savefig(out_fn)
-            plt.close(fig)
+                plt.close(fig)
             plots.append(out_fns)
         return plots
 
