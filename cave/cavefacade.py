@@ -58,7 +58,7 @@ class CAVE(object):
     def __init__(self, folders: typing.List[str], output: str,
                  ta_exec_dir: Union[str, None]=None, missing_data_method: str='epm',
                  max_pimp_samples: int=-1, fanova_pairwise=True,
-                 pimp_sort_table_by="average"):
+                 pimp_sort_table_by="average", seed=None):
         """
         Initialize CAVE facade to handle analyzing, plotting and building the
         report-page easily. During initialization, the analysis-infrastructure
@@ -85,6 +85,11 @@ class CAVE(object):
         self.logger = logging.getLogger("cave.cavefacade")
         self.logger.debug("Folders: %s", str(folders))
         self.ta_exec_dir = ta_exec_dir
+
+        if seed:
+            self.rng = np.random.RandomState(seed)
+        else:
+            self.rng = np.random.RandomState(42)
 
         # Create output if necessary
         self.output = output
@@ -160,7 +165,8 @@ class CAVE(object):
         self.analyzer = Analyzer(self.original_rh, self.validated_rh,
                                  self.default, self.incumbent, self.train_test,
                                  self.scenario, self.validator, self.output,
-                                 max_pimp_samples, fanova_pairwise)
+                                 max_pimp_samples, fanova_pairwise,
+                                 rng=self.rng)
 
         self.pimp_sort_table_by = pimp_sort_table_by
 
@@ -275,11 +281,16 @@ class CAVE(object):
 
             algo_footprint_plots = self.analyzer.plot_algorithm_footprint(algorithms)
             self.website["Performance Analysis"]["Algorithm Footprints"] = OrderedDict()
-            for p in algo_footprint_plots:
-                header = os.path.splitext(os.path.split(p)[1])[0]  # algo name
+            p_2d = algo_footprint_plots[0]
+            p_3d = algo_footprint_plots[1]
+            header = "Default vs Incumbent 2d"
+            self.website["Performance Analysis"]["Algorithm Footprints"][header] = {
+                "figure" : p_2d}
+            for plots in p_3d:
+                header = os.path.splitext(os.path.split(plots[0])[1])[0][10:-2]
+                header = header[0].upper() + header[1:].replace('_', ' ')
                 self.website["Performance Analysis"]["Algorithm Footprints"][header] = {
-                    "figure" : p,
-                    "tooltip" : get_tooltip("Algorithm Footprints") + ": " + header}
+                    "figure_x2" : plots}
 
 
         self.build_website()
