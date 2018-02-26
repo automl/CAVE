@@ -465,7 +465,7 @@ class Analyzer(object):
         self.evaluators.append(self.pimp.evaluator)
         return self.pimp
 
-    def importance_table(self, pimp_sort_table_by):
+    def importance_table(self, pimp_sort_table_by, threshold=0.0):
         """Create a html-table over all evaluated parameter-importance-methods.
         Parameters are sorted after their average importance."""
         parameters = [p.name for p in self.scenario.cs.get_hyperparameters()]
@@ -490,14 +490,16 @@ class Analyzer(object):
             raise ValueError("Trying to sort importance table after {}, which "
                              "was not evaluated.".format(pimp_sort_table_by))
 
-        # Only add parameters where at least one evaluator shows importance > 0.05
+        # Only add parameters where at least one evaluator shows importance > threshold
         for p in p_order:
             values_for_p = []
             add_parameter = False
             for e in self.evaluators:
                 if p in e.evaluated_parameter_importance:
-                    values_for_p.append(e.evaluated_parameter_importance[p])
-                    if e.evaluated_parameter_importance[p] > 0.05:
+                    value_percent = format(e.evaluated_parameter_importance[p] *
+                                           100, '.2f')
+                    values_for_p.append(value_percent)
+                    if float(value_percent) > threshold:
                         add_parameter = True
                 else:
                     values_for_p.append('-')

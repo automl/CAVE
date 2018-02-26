@@ -442,7 +442,9 @@ class ConfiguratorFootprint(object):
                    "Unknown" for c in conf_list]
         source.add(conf_types, 'type')
         source.add(origins, 'origin')
-        source.add(self._get_size(configurator_runs[0]), 'size')
+        sizes = self._get_size(configurator_runs[0])
+        sizes = [s * 3 if conf_types[idx] == "Default" else s for idx, s in enumerate(sizes)]
+        source.add(sizes, 'size')
         source.add(self._get_color(source), 'color')
         source.add(configurator_runs[0], 'runs')
 
