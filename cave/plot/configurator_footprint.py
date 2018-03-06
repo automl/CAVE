@@ -438,9 +438,8 @@ class ConfiguratorFootprint(object):
                       else "Incumbent" if c in inc_list else "Candidate" for c in conf_list]
         # We group "Local Search" and "Random Search (sorted)" both into local
         origins = ["Unknown" if not c.origin else
-                   "Random" if c.origin == "Random Search" else
-                   "Local" if (c.origin == "Local Search" or
-                               c.origin == "Random Search (sorted)") else
+                   "Acquisition Function" if c.origin.startswith("Local") or "sorted" in c.origin else
+                   "Random" if c.origin.startswith("Random") else
                    "Unknown" for c in conf_list]
         source.add(conf_types, 'type')
         source.add(origins, 'origin')
@@ -502,12 +501,12 @@ class ConfiguratorFootprint(object):
                 shape = 'inverted_triangle'
             else:
                 shape = 'square' if t == "Incumbent" else 'circle'
-                shape += '_x' if o.startswith("Local") else ''
+                shape += '_x' if o.startswith("Acquisition Function") else ''
             return shape
 
         views, markers = [], []
         for t in ['Candidate', 'Incumbent', 'Final Incumbent', 'Default']:
-            for o in ['Unknown', 'Random', 'Local']:
+            for o in ['Unknown', 'Random', 'Acquisition Function']:
                 for z in sorted(list(set(source.data['zorder'])),
                                 key=lambda x: int(x)):
                     views.append(CDSView(source=source, filters=[

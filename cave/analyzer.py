@@ -44,9 +44,19 @@ class Analyzer(object):
     constructed for cmdline-usage).
     """
 
-    def __init__(self, original_rh, validated_rh, best_run,
-                 train_test, scenario, validator, output, max_pimp_samples,
-                 fanova_pairwise=True, rng=None):
+    def __init__(self,
+                 original_rh,
+                 validated_rh,
+                 best_run,
+                 train_test,
+                 scenario,
+                 validator,
+                 pimp,
+                 model,
+                 output,
+                 max_pimp_samples,
+                 fanova_pairwise=True,
+                 rng=None):
         """
         Parameters
         ----------
@@ -63,6 +73,10 @@ class Analyzer(object):
             the scenario object
         validator: Validator
             validator object (to estimate using EPM)
+        pimp: Importance
+            parameter importance object with trained model
+        model: RandomForest
+            random forest trained on original (combinated) runhistory
         output: string
             output-directory
         """
@@ -82,7 +96,8 @@ class Analyzer(object):
         self.default = self.scenario.cs.get_default_configuration()
         self.incumbent = self.best_run.solver.incumbent
         self.validator = validator
-        self.pimp = None  # PIMP object for reuse
+        self.pimp = pimp
+        self.model = model
         self.feat_analysis = None  # feat_analysis object for reuse
         self.evaluators = []
         self.output = output
@@ -353,8 +368,7 @@ class Analyzer(object):
         return table_split
 
 ####################################### PARAMETER IMPORTANCE #######################################
-    def fanova(self, incumbent, num_params=10, num_pairs=0,
-               marginal_threshold=0.05):
+    def fanova(self, incumbent, marginal_threshold=0.05):
         """Wrapper for parameter_importance to save the importance-object/
         extract the results. We want to show the top X most important
         parameter-fanova-plots.
@@ -363,11 +377,6 @@ class Analyzer(object):
         ----------
         incumbent: Configuration
             incumbent configuration
-        num_params: int
-            how many of the top important parameters should be shown
-        num_pairs: int  (NOT WORKING)
-            for how many parameters pairwise marginals are plotted
-            n parameters -> n^2 plots
         marginal_threshold: float
             parameter/s must be at least this important to be mentioned
 
@@ -378,8 +387,7 @@ class Analyzer(object):
         plots: Dict[str: st]
             dictionary mapping single parameters to their plots
         """
-        self.parameter_importance("fanova", incumbent, self.output,
-                                  num_params, num_pairs=num_pairs)
+        self.parameter_importance("fanova", incumbent, self.output)
         parameter_imp = self.pimp.evaluator.evaluated_parameter_importance
         # Split single and pairwise (pairwise are string: "['p1','p2']")
         pairwise_imp = {k:v for k,v in parameter_imp.items() if k.startswith("[")}
@@ -393,9 +401,9 @@ class Analyzer(object):
 
         # Dicts to lists of tuples, sorted descending after importance and only
         #   including marginals > 0.05
-        parameter_imp = [(k, v) for k, v in sorted(parameter_imp.items(),
+        parameter_imp = [(k, v * 100) for k, v in sorted(parameter_imp.items(),
                                 key=operator.itemgetter(1), reverse=True) if v > 0.05]
-        pairwise_imp = [(k, v) for k, v in sorted(pairwise_imp.items(),
+        pairwise_imp = [(k, v * 100) for k, v in sorted(pairwise_imp.items(),
                                 key=operator.itemgetter(1), reverse=True) if v > 0.05]
         # Create table
         table = []
@@ -429,14 +437,13 @@ class Analyzer(object):
 
     def local_epm_plots(self):
         plots = OrderedDict([])
-        self.parameter_importance("lpi", self.incumbent, self.output, num_params=3)
+        self.parameter_importance("lpi", self.incumbent, self.output)
         for p, i in [(k, v) for k, v in sorted(self.param_imp['lpi'].items(),
                             key=operator.itemgetter(1), reverse=True) if v > 0.05]:
             plots[p] = os.path.join(self.output, 'lpi', p + '.png')
         return plots
 
-    def parameter_importance(self, modus, incumbent, output, num_params=4,
-            num_pairs=0):
+    def parameter_importance(self, modus, incumbent, output):
         """Calculate parameter-importance using the PIMP-package.
         Currently ablation, forward-selection and fanova are used.
 
@@ -453,18 +460,7 @@ class Analyzer(object):
         """
         self.logger.info("... parameter importance {}".format(modus))
         # Evaluate parameter importance
-        save_folder = output
-        if not self.pimp:
-            self.pimp = Importance(scenario=copy.deepcopy(self.scenario),
-                                   runhistory=self.original_rh,
-                                   incumbent=incumbent,
-                                   parameters_to_evaluate=num_params,
-                                   save_folder=save_folder,
-                                   seed=12345,
-                                   max_sample_size=self.max_pimp_samples,
-                                   fANOVA_pairwise=self.fanova_pairwise,
-                                   preprocess=False)
-        result = self.pimp.evaluate_scenario([modus], save_folder)
+        result = self.pimp.evaluate_scenario([modus], output)
         self.evaluators.append(self.pimp.evaluator)
         self.param_imp[modus] = self.pimp.evaluator.evaluated_parameter_importance
         return self.pimp

@@ -84,7 +84,8 @@ class CaveCLI(object):
         opt_opts.add_argument("--ta_exec_dir",
                               default=None,
                               help="path to the execution-directory of the "
-                                   "SMAC run. ")
+                                   "SMAC run. ",
+                              nargs='+')
         opt_opts.add_argument("--max_pimp_samples",
                               default=-1,
                               type=int,
