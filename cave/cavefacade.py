@@ -84,6 +84,9 @@ class CAVE(object):
             from [validation, epm], how to estimate missing runs
         """
         self.logger = logging.getLogger("cave.cavefacade")
+        if isinstance(ta_exec_dir, list):
+            if len(ta_exec_dir) < 2:
+                ta_exec_dir = ta_exec_dir[0]
         self.ta_exec_dir = ta_exec_dir
         self.output = output
         self.rng = np.random.RandomState(seed) if seed else np.random.RandomState(42)
@@ -117,6 +120,11 @@ class CAVE(object):
         # Save all relevant SMAC-runs in a list
         self.runs = []
         for folder in folders:
+            if isinstance(self.ta_exec_dir, list):
+                for d in self.ta_exec_dir:
+                    print(d)
+                    if d in folder:
+                        ta_exec_dir = d
             try:
                 self.logger.debug("Collecting data from %s.", folder)
                 self.runs.append(SMACrun(folder, ta_exec_dir))
@@ -126,6 +134,7 @@ class CAVE(object):
                 continue
         if not len(self.runs):
             raise ValueError("None of the specified SMAC-folders could be loaded.")
+        self.ta_exec_dir = ta_exec_dir
 
         # Use scenario of first run for general purposes (expecting they are all the same anyway!)
         self.scenario = self.runs[0].solver.scenario
