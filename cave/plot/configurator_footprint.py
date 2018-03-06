@@ -436,9 +436,11 @@ class ConfiguratorFootprint(object):
         default = conf_list[0].configuration_space.get_default_configuration()
         conf_types = ["Default" if c == default else "Final Incumbent" if c == inc_list[-1]
                       else "Incumbent" if c in inc_list else "Candidate" for c in conf_list]
+        # We group "Local Search" and "Random Search (sorted)" both into local
         origins = ["Unknown" if not c.origin else
-                   "Random" if c.origin.startswith("Random") else
-                   "Local" if c.origin.startswith("Local") else
+                   "Random" if c.origin == "Random Search" else
+                   "Local" if (c.origin == "Local Search" or
+                               c.origin == "Random Search (sorted)") else
                    "Unknown" for c in conf_list]
         source.add(conf_types, 'type')
         source.add(origins, 'origin')
