@@ -122,7 +122,6 @@ class CAVE(object):
         for folder in folders:
             if isinstance(self.ta_exec_dir, list):
                 for d in self.ta_exec_dir:
-                    print(d)
                     if d in folder:
                         ta_exec_dir = d
             try:
