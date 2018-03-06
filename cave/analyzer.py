@@ -44,7 +44,7 @@ class Analyzer(object):
     constructed for cmdline-usage).
     """
 
-    def __init__(self, original_rh, validated_rh, default, incumbent,
+    def __init__(self, original_rh, validated_rh, best_run,
                  train_test, scenario, validator, output, max_pimp_samples,
                  fanova_pairwise=True, rng=None):
         """
@@ -76,10 +76,11 @@ class Analyzer(object):
         # Important objects for analysis
         self.original_rh = original_rh
         self.validated_rh = validated_rh
-        self.default = default
-        self.incumbent = incumbent
+        self.best_run = best_run
         self.train_test = train_test
         self.scenario = scenario
+        self.default = self.scenario.cs.get_default_configuration()
+        self.incumbent = self.best_run.solver.incumbent
         self.validator = validator
         self.pimp = None  # PIMP object for reuse
         self.feat_analysis = None  # feat_analysis object for reuse
@@ -183,7 +184,7 @@ class Analyzer(object):
         table: str
             overview table in HTML
         """
-        all_confs = self.original_rh.get_all_configs()
+        all_confs = self.best_run.runhistory.get_all_configs()
         num_configs = len(all_confs)
         ta_runtime = np.sum([self.original_rh.get_cost(conf) for conf in all_confs])
         ta_evals = [len(self.original_rh.get_runs_for_config(conf)) for conf in all_confs]
@@ -195,16 +196,18 @@ class Analyzer(object):
         dup_feats = DataFrame(self.scenario.feature_array)  # only contains train instances
         num_dup_feats = len(dup_feats[dup_feats.duplicated()])
         overview = OrderedDict([('Run with best incumbent', os.path.basename(best_folder)),
+                                # Constants for scenario
                                 ('# Train instances', len(self.scenario.train_insts)),
                                 ('# Test instances', len(self.scenario.test_insts)),
                                 ('# Parameters', len(self.scenario.cs.get_hyperparameters())),
+                                ('# Features', num_feats),
+                                ('# Duplicate Feature vectors', num_dup_feats),
                                 ('', ''),
                                 ('# Evaluated Configurations', num_configs),
                                 ('# Default evaluations', ta_evals_d),
                                 ('# Incumbent evaluations', ta_evals_i),
                                 ('Budget spent evaluating configurations', ta_runtime),
                                 ('', ''),
-                                ('# Features', num_feats),
                                 ('Cutoff', self.scenario.cutoff),
                                 ('Walltime budget', self.scenario.wallclock_limit),
                                 ('Runcount budget', self.scenario.ta_run_limit),
@@ -216,7 +219,6 @@ class Analyzer(object):
                                 ('# Runs per Config (max)', max_ta_evals),
                                 ('Total number of configuration runs', ta_evals),
                                 ('', ''),
-                                ('# Duplicate Feature vectors', num_dup_feats)
                                ])
         # Split into two columns
         overview_split = self._split_table(overview)
@@ -340,12 +342,12 @@ class Analyzer(object):
         """
         table_split = []
         keys = list(table.keys())
-        half_size = len(keys)//2
+        half_size = len(keys) // 2
         for i in range(half_size):
             j = i + half_size
-            table_split.append(("<b>"+keys[i]+"</b>", table[keys[i]],
-                                "<b>"+keys[j]+"</b>", table[keys[j]]))
-        if len(keys)%2 == 1:
+            table_split.append(("<b>" + keys[i] + "</b>", table[keys[i]],
+                                "<b>" + keys[j] + "</b>", table[keys[j]]))
+        if len(keys) % 2 == 1:
             table_split.append(("<b>"+keys[-1]+"</b>", table[keys[-1]], '', ''))
         return table_split
 

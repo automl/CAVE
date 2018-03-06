@@ -1,7 +1,9 @@
 def get_tooltip(header):
     tooltips = {
         "Meta Data": "Meta data, i.e. number of instances and "
-                     "parameters as well as configuration budget.",
+                     "parameters as well as configuration budget. "
+                     "Statistics apply to the best run, if multiple "
+                     "configurator runs are compared.",
 
         "Best configuration": "Comparing parameters of default and incumbent. "
                               "Parameters that differ from default to "
