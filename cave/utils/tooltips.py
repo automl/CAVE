@@ -1,7 +1,9 @@
 def get_tooltip(header):
     tooltips = {
         "Meta Data": "Meta data, i.e. number of instances and "
-                     "parameters as well as configuration budget.",
+                     "parameters as well as configuration budget. "
+                     "Statistics apply to the best run, if multiple "
+                     "configurator runs are compared.",
 
         "Best configuration": "Comparing parameters of default and incumbent. "
                               "Parameters that differ from default to "
@@ -80,7 +82,15 @@ def get_tooltip(header):
                                   "evaluated configurations. The larger the "
                                   "dot, the more often the configuration was "
                                   "evaluated on instances from the set. "
-                                  "The colours correspond to the predicted "
+                                  "Configurations that were incumbents at least "
+                                  "once during optimization are marked as red "
+                                  "squares. "
+                                  "Configurations acquired through local search "
+                                  "are marked with a 'x'. "
+                                  "The downward triangle denotes the final "
+                                  "incumbent, whereas the orange upward triangle "
+                                  "denotes the default configuration. "
+                                  "The heatmap and the colorbar correspond to the predicted "
                                   "performance in that part of the search "
                                   "space.",
 

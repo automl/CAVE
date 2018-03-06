@@ -172,7 +172,7 @@ class CAVE(object):
         # Estimate missing costs for [def, inc1, inc2, ...]
         self.complete_data(method=missing_data_method)
         self.best_run = min(self.runs, key=lambda run:
-                self.validated_rh.get_cost(run.solver.incumbent))
+                            self.validated_rh.get_cost(run.solver.incumbent))
 
         self.incumbent = self.best_run.solver.incumbent
         self.pimp.incumbent = self.incumbent
@@ -186,7 +186,7 @@ class CAVE(object):
                                self.scenario.test_insts != [None])
 
         self.analyzer = Analyzer(self.original_rh, self.validated_rh,
-                                 self.default, self.incumbent, self.train_test,
+                                 self.best_run, self.train_test,
                                  self.scenario, self.validator, self.pimp,
                                  self.model, self.output,
                                  max_pimp_samples, fanova_pairwise,
