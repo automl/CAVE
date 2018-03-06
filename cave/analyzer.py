@@ -242,19 +242,14 @@ class Analyzer(object):
         if self.train_test:
             # Distinction between train and test
             # Create table
-            array = np.array([[round(def_par10[0], dec_place),
-                               round(inc_par10[0], dec_place),
-                               round(def_par10[1], dec_place),
-                               round(inc_par10[1], dec_place)],
-                              [round(def_par1[0], dec_place),
-                               round(inc_par1[0], dec_place),
-                               round(def_par1[1], dec_place),
-                               round(inc_par1[1], dec_place)],
-                              ["{}/{}".format(def_timeout[0][0], def_timeout[0][1]),
-                               "{}/{}".format(def_timeout[1][0], def_timeout[1][1]),
-                               "{}/{}".format(inc_timeout[0][0], inc_timeout[0][1]),
-                               "{}/{}".format(inc_timeout[1][0], inc_timeout[1][1])
-                               ]])
+            array = np.array([
+                [round(def_par10[0], dec_place), round(inc_par10[0], dec_place),
+                 round(def_par10[1], dec_place), round(inc_par10[1], dec_place)],
+                [round(def_par1[0], dec_place), round(inc_par1[0], dec_place),
+                 round(def_par1[1], dec_place), round(inc_par1[1], dec_place)],
+                ["{}/{}".format(def_timeout[0][0], def_timeout[0][1]), "{}/{}".format(inc_timeout[0][0], inc_timeout[0][1]),
+                 "{}/{}".format(def_timeout[1][0], def_timeout[1][1]),  "{}/{}".format(inc_timeout[1][0], inc_timeout[1][1])
+                 ]])
             df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
                            columns=['Default', 'Incumbent', 'Default', 'Incumbent'])
             table = df.to_html()
