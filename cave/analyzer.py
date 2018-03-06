@@ -87,9 +87,10 @@ class Analyzer(object):
         self.evaluators = []
         self.output = output
 
-        self.importance = None  # Used to store dictionary containing parameter
-                                # importances, so it can be used by analysis
-        self.feat_importance = None  # Used to store dictionary w feat_imp
+        # Save parameter importances evaluated as dictionaries
+        # {method : {parameter : importance}}
+        self.param_imp = OrderedDict()
+        self.feat_importance = None  # Used to store dictionary for feat_imp
 
         conf1_runs = get_cost_dict_for_config(self.validated_rh, self.default)
         conf2_runs = get_cost_dict_for_config(self.validated_rh, self.incumbent)
@@ -388,7 +389,7 @@ class Analyzer(object):
         # Set internal parameter importance for further analysis (such as
         #   parallel coordinates)
         self.logger.debug("Fanova importance: %s", str(parameter_imp))
-        self.importance = parameter_imp
+        self.param_imp['fanova'] = parameter_imp
 
         # Dicts to lists of tuples, sorted descending after importance and only
         #   including marginals > 0.05
@@ -429,7 +430,7 @@ class Analyzer(object):
     def local_epm_plots(self):
         plots = OrderedDict([])
         self.parameter_importance("lpi", self.incumbent, self.output, num_params=3)
-        for p, i in [(k, v) for k, v in sorted(self.importance.items(),
+        for p, i in [(k, v) for k, v in sorted(self.param_imp['lpi'].items(),
                             key=operator.itemgetter(1), reverse=True) if v > 0.05]:
             plots[p] = os.path.join(self.output, 'lpi', p + '.png')
         return plots
@@ -442,8 +443,8 @@ class Analyzer(object):
         Parameters
         ----------
         modus: str
-            modus for parameter importance, from [forward-selection, ablation,
-            fanova]
+            modus for parameter importance, from
+            [forward-selection, ablation, fanova, lpi]
 
         Returns
         -------
@@ -465,6 +466,7 @@ class Analyzer(object):
                                    preprocess=False)
         result = self.pimp.evaluate_scenario([modus], save_folder)
         self.evaluators.append(self.pimp.evaluator)
+        self.param_imp[modus] = self.pimp.evaluator.evaluated_parameter_importance
         return self.pimp
 
     def importance_table(self, pimp_sort_table_by, threshold=0.0):
@@ -532,10 +534,15 @@ class Analyzer(object):
         self.logger.info("... plotting parallel coordinates")
         # If a parameter importance has been performed in this analyzer-object,
         # only plot the n_param most important parameters.
-        if self.importance:
-            n_param = min(n_param, max(3, len([x for x in self.importance.values()
+        if self.param_imp:
+            # Use the first applied parameter importance analysis to choose
+            method, importance = list(self.param_imp.items())[0]
+            self.logger.debug("Choosing used parameters in parallel coordinates "
+                              "according to parameter importance method %s" %
+                              method)
+            n_param = min(n_param, max(3, len([x for x in importance.values()
                                                if x > 0.05])))
-            params = list(self.importance.keys())[:n_param]
+            params = list(importance.keys())[:n_param]
         else:
             # TODO what if no parameter importance has been performed?
             # plot all? random subset? -> atm: random
