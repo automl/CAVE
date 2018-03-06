@@ -383,9 +383,9 @@ class Analyzer(object):
 
         # Dicts to lists of tuples, sorted descending after importance and only
         #   including marginals > 0.05
-        parameter_imp = [(k, v) for k, v in sorted(parameter_imp.items(),
+        parameter_imp = [(k, v * 100) for k, v in sorted(parameter_imp.items(),
                                 key=operator.itemgetter(1), reverse=True) if v > 0.05]
-        pairwise_imp = [(k, v) for k, v in sorted(pairwise_imp.items(),
+        pairwise_imp = [(k, v * 100) for k, v in sorted(pairwise_imp.items(),
                                 key=operator.itemgetter(1), reverse=True) if v > 0.05]
         # Create table
         table = []
@@ -420,7 +420,7 @@ class Analyzer(object):
     def local_epm_plots(self):
         plots = OrderedDict([])
         self.parameter_importance("lpi", self.incumbent, self.output)
-        for p, i in [(k, v) for k, v in sorted(self.importance.items(),
+        for p, i in [(k, v * 100) for k, v in sorted(self.pimp.evaluator.evaluated_parameter_importance.items(),
                             key=operator.itemgetter(1), reverse=True) if v > 0.05]:
             plots[p] = os.path.join(self.output, 'lpi', p + '.png')
         return plots
