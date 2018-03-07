@@ -494,13 +494,20 @@ class Analyzer(object):
 ####################################### FEATURE IMPORTANCE #######################################
     def feature_importance(self):
         self.logger.info("... plotting feature importance")
-        forward_selector = FeatureForwardSelector(self.scenario,
-                self.original_rh)
-        imp = forward_selector.run()
+        # forward_selector = FeatureForwardSelector(self.scenario,
+        #         self.original_rh)
+        self.pimp.forwardsel_feat_imp = True
+        self.pimp._parameters_to_evaluate = -1
+        self.pimp.forwardsel_cv = True
+        dir_ = os.path.join(self.output, 'feature_plots/importance')
+        if not os.path.exists(dir_):
+            os.makedirs(dir_)
+        res = self.pimp.evaluate_scenario(['forward-selection'], dir_)
+        imp = res[0]['forward-selection']['imp']
         self.logger.debug("FEAT IMP %s", imp)
         self.feat_importance = imp
-        plots = forward_selector.plot_result(os.path.join(self.output,
-            'feature_plots/importance'))
+        plots = (os.path.join(dir_, 'forward-selection-barplot.png'),
+                 os.path.join(dir_, 'forward-selection-chng.png'))
         return (imp, plots)
 
 ####################################### PLOTS #######################################
