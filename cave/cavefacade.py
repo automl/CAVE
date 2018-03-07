@@ -142,8 +142,15 @@ class CAVE(object):
         # Update global runhistory with all available runhistories
         self.logger.debug("Update original rh with all available rhs!")
         runhistory_fns = [os.path.join(run.folder, "runhistory.json") for run in self.runs]
+        validated_runhistory_fns = [os.path.join(run.folder, "validated_runhistory.json") for run in self.runs]
         for rh_file in runhistory_fns:
             self.original_rh.update_from_json(rh_file, self.scenario.cs)
+        for rh_file in validated_runhistory_fns:
+            try:
+                self.original_rh.update_from_json(rh_file, self.scenario.cs)
+                self.logger.debug("Found \"%s\" and using it for evaluation" % rh_file)
+            except FileNotFoundError:
+                self.logger.debug("\"%s\" not found (that's probably alright)" % rh_file)
         self.logger.debug('Combined number of Runhistory data points: %d. '
                           '# Configurations: %d. # Runhistories: %d',
                           len(self.original_rh.data),
@@ -172,7 +179,7 @@ class CAVE(object):
         # Estimate missing costs for [def, inc1, inc2, ...]
         self.complete_data(method=missing_data_method)
         self.best_run = min(self.runs, key=lambda run:
-                self.validated_rh.get_cost(run.solver.incumbent))
+                            self.validated_rh.get_cost(run.solver.incumbent))
 
         self.incumbent = self.best_run.solver.incumbent
         self.pimp.incumbent = self.incumbent
@@ -186,7 +193,7 @@ class CAVE(object):
                                self.scenario.test_insts != [None])
 
         self.analyzer = Analyzer(self.original_rh, self.validated_rh,
-                                 self.default, self.incumbent, self.train_test,
+                                 self.best_run, self.train_test,
                                  self.scenario, self.validator, self.pimp,
                                  self.model, self.output,
                                  max_pimp_samples, fanova_pairwise,

@@ -44,9 +44,19 @@ class Analyzer(object):
     constructed for cmdline-usage).
     """
 
-    def __init__(self, original_rh, validated_rh, default, incumbent,
-                 train_test, scenario, validator, pimp, model,
-                 output, max_pimp_samples, fanova_pairwise=True, rng=None):
+    def __init__(self,
+                 original_rh,
+                 validated_rh,
+                 best_run,
+                 train_test,
+                 scenario,
+                 validator,
+                 pimp,
+                 model,
+                 output,
+                 max_pimp_samples,
+                 fanova_pairwise=True,
+                 rng=None):
         """
         Parameters
         ----------
@@ -80,10 +90,11 @@ class Analyzer(object):
         # Important objects for analysis
         self.original_rh = original_rh
         self.validated_rh = validated_rh
-        self.default = default
-        self.incumbent = incumbent
+        self.best_run = best_run
         self.train_test = train_test
         self.scenario = scenario
+        self.default = self.scenario.cs.get_default_configuration()
+        self.incumbent = self.best_run.solver.incumbent
         self.validator = validator
         self.pimp = pimp
         self.model = model
@@ -91,9 +102,10 @@ class Analyzer(object):
         self.evaluators = []
         self.output = output
 
-        self.importance = None  # Used to store dictionary containing parameter
-                                # importances, so it can be used by analysis
-        self.feat_importance = None  # Used to store dictionary w feat_imp
+        # Save parameter importances evaluated as dictionaries
+        # {method : {parameter : importance}}
+        self.param_imp = OrderedDict()
+        self.feat_importance = None  # Used to store dictionary for feat_imp
 
         conf1_runs = get_cost_dict_for_config(self.validated_rh, self.default)
         conf2_runs = get_cost_dict_for_config(self.validated_rh, self.incumbent)
@@ -188,7 +200,7 @@ class Analyzer(object):
         table: str
             overview table in HTML
         """
-        all_confs = self.original_rh.get_all_configs()
+        all_confs = self.best_run.runhistory.get_all_configs()
         num_configs = len(all_confs)
         ta_runtime = np.sum([self.original_rh.get_cost(conf) for conf in all_confs])
         ta_evals = [len(self.original_rh.get_runs_for_config(conf)) for conf in all_confs]
@@ -200,16 +212,18 @@ class Analyzer(object):
         dup_feats = DataFrame(self.scenario.feature_array)  # only contains train instances
         num_dup_feats = len(dup_feats[dup_feats.duplicated()])
         overview = OrderedDict([('Run with best incumbent', os.path.basename(best_folder)),
+                                # Constants for scenario
                                 ('# Train instances', len(self.scenario.train_insts)),
                                 ('# Test instances', len(self.scenario.test_insts)),
                                 ('# Parameters', len(self.scenario.cs.get_hyperparameters())),
+                                ('# Features', num_feats),
+                                ('# Duplicate Feature vectors', num_dup_feats),
                                 ('', ''),
                                 ('# Evaluated Configurations', num_configs),
                                 ('# Default evaluations', ta_evals_d),
                                 ('# Incumbent evaluations', ta_evals_i),
                                 ('Budget spent evaluating configurations', ta_runtime),
                                 ('', ''),
-                                ('# Features', num_feats),
                                 ('Cutoff', self.scenario.cutoff),
                                 ('Walltime budget', self.scenario.wallclock_limit),
                                 ('Runcount budget', self.scenario.ta_run_limit),
@@ -221,7 +235,6 @@ class Analyzer(object):
                                 ('# Runs per Config (max)', max_ta_evals),
                                 ('Total number of configuration runs', ta_evals),
                                 ('', ''),
-                                ('# Duplicate Feature vectors', num_dup_feats)
                                ])
         # Split into two columns
         overview_split = self._split_table(overview)
@@ -242,14 +255,19 @@ class Analyzer(object):
         if self.train_test:
             # Distinction between train and test
             # Create table
-            array = np.array([
-                [round(def_par10[0], dec_place), round(inc_par10[0], dec_place),
-                 round(def_par10[1], dec_place), round(inc_par10[1], dec_place)],
-                [round(def_par1[0], dec_place), round(inc_par1[0], dec_place),
-                 round(def_par1[1], dec_place), round(inc_par1[1], dec_place)],
-                ["{}/{}".format(def_timeout[0][0], def_timeout[0][1]), "{}/{}".format(inc_timeout[0][0], inc_timeout[0][1]),
-                 "{}/{}".format(def_timeout[1][0], def_timeout[1][1]),  "{}/{}".format(inc_timeout[1][0], inc_timeout[1][1])
-                 ]])
+            array = np.array([[round(def_par10[0], dec_place),
+                               round(inc_par10[0], dec_place),
+                               round(def_par10[1], dec_place),
+                               round(inc_par10[1], dec_place)],
+                              [round(def_par1[0], dec_place),
+                               round(inc_par1[0], dec_place),
+                               round(def_par1[1], dec_place),
+                               round(inc_par1[1], dec_place)],
+                              ["{}/{}".format(def_timeout[0][0], def_timeout[0][1]),
+                               "{}/{}".format(inc_timeout[0][0], inc_timeout[0][1]),
+                               "{}/{}".format(def_timeout[1][0], def_timeout[1][1]),
+                               "{}/{}".format(inc_timeout[1][0], inc_timeout[1][1])
+                               ]])
             df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
                            columns=['Default', 'Incumbent', 'Default', 'Incumbent'])
             table = df.to_html()
@@ -340,12 +358,12 @@ class Analyzer(object):
         """
         table_split = []
         keys = list(table.keys())
-        half_size = len(keys)//2
+        half_size = len(keys) // 2
         for i in range(half_size):
             j = i + half_size
-            table_split.append(("<b>"+keys[i]+"</b>", table[keys[i]],
-                                "<b>"+keys[j]+"</b>", table[keys[j]]))
-        if len(keys)%2 == 1:
+            table_split.append(("<b>" + keys[i] + "</b>", table[keys[i]],
+                                "<b>" + keys[j] + "</b>", table[keys[j]]))
+        if len(keys) % 2 == 1:
             table_split.append(("<b>"+keys[-1]+"</b>", table[keys[-1]], '', ''))
         return table_split
 
@@ -379,7 +397,7 @@ class Analyzer(object):
         # Set internal parameter importance for further analysis (such as
         #   parallel coordinates)
         self.logger.debug("Fanova importance: %s", str(parameter_imp))
-        self.importance = parameter_imp
+        self.param_imp['fanova'] = parameter_imp
 
         # Dicts to lists of tuples, sorted descending after importance and only
         #   including marginals > 0.05
@@ -420,7 +438,7 @@ class Analyzer(object):
     def local_epm_plots(self):
         plots = OrderedDict([])
         self.parameter_importance("lpi", self.incumbent, self.output)
-        for p, i in [(k, v * 100) for k, v in sorted(self.pimp.evaluator.evaluated_parameter_importance.items(),
+        for p, i in [(k, v) for k, v in sorted(self.param_imp['lpi'].items(),
                             key=operator.itemgetter(1), reverse=True) if v > 0.05]:
             plots[p] = os.path.join(self.output, 'lpi', p + '.png')
         return plots
@@ -432,8 +450,8 @@ class Analyzer(object):
         Parameters
         ----------
         modus: str
-            modus for parameter importance, from [forward-selection, ablation,
-            fanova]
+            modus for parameter importance, from
+            [forward-selection, ablation, fanova, lpi]
 
         Returns
         -------
@@ -444,6 +462,7 @@ class Analyzer(object):
         # Evaluate parameter importance
         result = self.pimp.evaluate_scenario([modus], output)
         self.evaluators.append(self.pimp.evaluator)
+        self.param_imp[modus] = self.pimp.evaluator.evaluated_parameter_importance
         return self.pimp
 
     def importance_table(self, pimp_sort_table_by, threshold=0.0):
@@ -518,10 +537,15 @@ class Analyzer(object):
         self.logger.info("... plotting parallel coordinates")
         # If a parameter importance has been performed in this analyzer-object,
         # only plot the n_param most important parameters.
-        if self.importance:
-            n_param = min(n_param, max(3, len([x for x in self.importance.values()
+        if self.param_imp:
+            # Use the first applied parameter importance analysis to choose
+            method, importance = list(self.param_imp.items())[0]
+            self.logger.debug("Choosing used parameters in parallel coordinates "
+                              "according to parameter importance method %s" %
+                              method)
+            n_param = min(n_param, max(3, len([x for x in importance.values()
                                                if x > 0.05])))
-            params = list(self.importance.keys())[:n_param]
+            params = list(importance.keys())[:n_param]
         else:
             # TODO what if no parameter importance has been performed?
             # plot all? random subset? -> atm: random
