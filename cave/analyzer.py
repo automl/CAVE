@@ -517,7 +517,7 @@ class Analyzer(object):
         #         self.original_rh)
         self.pimp.forwardsel_feat_imp = True
         self.pimp._parameters_to_evaluate = -1
-        self.pimp.forwardsel_cv = True
+        self.pimp.forwardsel_cv = False
         dir_ = os.path.join(self.output, 'feature_plots/importance')
         if not os.path.exists(dir_):
             os.makedirs(dir_)
