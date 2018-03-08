@@ -182,6 +182,7 @@ class CaveCLI(object):
             logging.basicConfig(level=logging.INFO)
         else:
             logging.basicConfig(level=logging.DEBUG)
+        logging.getLogger("smac.scenario").setLevel(logging.INFO)
 
         # SMAC results
         folders = []

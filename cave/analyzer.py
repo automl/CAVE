@@ -609,7 +609,8 @@ class Analyzer(object):
     @timing
     def plot_algorithm_footprint(self, algorithms=None, density=200, purity=0.95):
         if not algorithms:
-            algorithms = {self.default: "default", self.incumbent: "incumbent"}
+            algorithms = OrderedDict([(self.default, "default"),
+                                      (self.incumbent, "incumbent")])
         self.logger.info("... algorithm footprints for: {}".format(", ".join(algorithms.values())))
         footprint = AlgorithmFootprint(self.validated_rh,
                                        self.scenario.feature_dict, algorithms,

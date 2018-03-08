@@ -262,6 +262,8 @@ class Plotter(object):
             for entry in traj:
                 time.append(entry["wallclock_time"])
                 configs.append(entry["incumbent"])
+                self.logger.debug('Time: %d Runs: %d', time[-1],
+                                  len(rh.get_runs_for_config(configs[-1])))
 
             self.logger.debug("Using %d samples (%d distinct) from trajectory.",
                               len(time), len(set(configs)))

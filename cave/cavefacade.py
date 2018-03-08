@@ -109,7 +109,6 @@ class CAVE(object):
         # We use it to initialize an Importance-object. From the
         # Importance-object, we can use the trained random-forest-model for all
         # further purposes.
-        # We save the combined (unvalidated) runhistory to disk, so we can use it later on.
         # We keep the runhistory, that was validated for default and incumbent
         # on all instances in memory.
         # The distinction is made to avoid using runs that are
@@ -141,44 +140,16 @@ class CAVE(object):
 
         # Update global runhistory with all available runhistories
         self.logger.debug("Update original rh with all available rhs!")
-        runhistory_fns = [os.path.join(run.folder, "runhistory.json") for run in self.runs]
-        validated_runhistory_fns = [os.path.join(run.folder, "validated_runhistory.json") for run in self.runs]
-        for rh_file in runhistory_fns:
-            self.original_rh.update_from_json(rh_file, self.scenario.cs)
-        # print(len(self.original_rh.get_all_configs()))
-        # for idx, run in enumerate(self.runs):
-        #     for config in run.traj:
-        #         time = config['wallclock_time']
-        #         config = config['incumbent']
-        #         c = _cost(config, self.original_rh, self.original_rh.get_runs_for_config(config))
-        #         print(len(c), time)
-        for rh_file in validated_runhistory_fns:
-            try:
-                self.original_rh.update_from_json(rh_file, self.scenario.cs)
-                self.logger.debug("Found \"%s\" and using it for evaluation" % rh_file)
-            except FileNotFoundError:
-                self.logger.debug("\"%s\" not found (that's probably alright)" % rh_file)
+        for run in self.runs:
+            # if validated runhistory in folder, it's already read in the run
+            self.original_rh.update(run.runhistory)
+        self.validated_rh.update(self.original_rh)
+
         self.logger.debug('Combined number of Runhistory data points: %d. '
-                          '# Configurations: %d. # Runhistories: %d',
+                          '# Configurations: %d. # Configurator runs: %d',
                           len(self.original_rh.data),
                           len(self.original_rh.get_all_configs()),
-                          len(runhistory_fns))
-        # print(len(self.original_rh.get_all_configs()))
-        # for idx, run in enumerate(self.runs):
-        #     for config in run.traj:
-        #         time = config['wallclock_time']
-        #         config = config['incumbent']
-        #         c = _cost(config, self.original_rh, self.original_rh.get_runs_for_config(config))
-        #         print(len(c), time)
-        self.original_rh.save_json(os.path.join(self.output, "combined_rh.json"), save_external=True)
-        # self.original_rh.load_json(os.path.join(self.output, "combined_rh.json"), self.scenario.cs)
-        # print(len(self.original_rh.get_all_configs()))
-        # for idx, run in enumerate(self.runs):
-        #     for config in run.traj:
-        #         time = config['wallclock_time']
-        #         config = config['incumbent']
-        #         c = _cost(config, self.original_rh, self.original_rh.get_runs_for_config(config))
-        #         print(len(c), time)
+                          len(self.runs))
 
         # Create ParameterImportance-object and use it's trained model for
         # validation and further predictions
@@ -193,8 +164,7 @@ class CAVE(object):
                                preprocess=False)
         self.model = self.pimp.model
 
-        # Validator for a) validating with epm, b) plot over time
-        # Initialize without trajectory
+        # Validator (initialize without trajectory)
         self.validator = Validator(self.scenario, None, None)
         self.validator.epm = self.model
 
