@@ -237,8 +237,8 @@ class Plotter(object):
         output = parallel_coordinates_plotter.plot_n_configs(n_configs, params)
         return output
 
-    def plot_cost_over_time_pred(self, rh, traj, output="performance_over_time.png",
-                            validator=None):
+    def plot_cost_over_time(self, rh, traj, output="performance_over_time.png",
+                            validator=None, pred=True):
         """ Plot performance over time, using all trajectory entries
             with max_time = wallclock_limit or (if inf) the highest
             recorded time
@@ -258,48 +258,65 @@ class Plotter(object):
         validator.traj = traj  # set trajectory
         time, configs = [], []
 
-        for entry in traj:
-            time.append(entry["wallclock_time"])
-            configs.append(entry["incumbent"])
+        if pred:
+            for entry in traj:
+                time.append(entry["wallclock_time"])
+                configs.append(entry["incumbent"])
 
-        self.logger.debug("Using %d samples (%d distinct) from trajectory.",
-                          len(time), len(set(configs)))
+            self.logger.debug("Using %d samples (%d distinct) from trajectory.",
+                              len(time), len(set(configs)))
 
-        if validator.epm:  # not log as validator epm is trained on cost, not log cost
-            epm = validator.epm
+            if validator.epm:  # not log as validator epm is trained on cost, not log cost
+                epm = validator.epm
+            else:
+                self.logger.debug("No EPM passed! Training new one from runhistory.")
+                # Train random forest and transform training data (from given rh)
+                # Not using validator because we want to plot uncertainties
+                rh2epm = RunHistory2EPM4Cost(num_params=len(self.scenario.cs.get_hyperparameters()),
+                                             scenario=self.scenario)
+                X, y = rh2epm.transform(rh)
+                self.logger.debug("Training model with data of shape X: %s, y:%s",
+                                  str(X.shape), str(y.shape))
+
+                types, bounds = get_types(self.scenario.cs, self.scenario.feature_array)
+                epm = RandomForestWithInstances(types=types,
+                                                bounds=bounds,
+                                                instance_features=self.scenario.feature_array,
+                                                #seed=self.rng.randint(MAXINT),
+                                                ratio_features=1.0)
+                epm.train(X, y)
+
+            ## not necessary right now since the EPM only knows the features
+            ## of the training instances
+            # use only training instances
+            #=======================================================================
+            # if self.scenario.feature_dict:
+            #     feat_array = []
+            #     for inst in self.scenario.train_insts:
+            #         feat_array.append(self.scenario.feature_dict[inst])
+            #     backup_features_epm = epm.instance_features
+            #     epm.instance_features = np.array(feat_array)
+            #=======================================================================
+
+            # predict performance for all configurations in trajectory
+            config_array = convert_configurations_to_array(configs)
+            mean, var = epm.predict_marginalized_over_instances(config_array)
         else:
-            self.logger.debug("No EPM passed! Training new one from runhistory.")
-            # Train random forest and transform training data (from given rh)
-            # Not using validator because we want to plot uncertainties
-            rh2epm = RunHistory2EPM4Cost(num_params=len(self.scenario.cs.get_hyperparameters()),
-                                         scenario=self.scenario)
-            X, y = rh2epm.transform(rh)
-            self.logger.debug("Training model with data of shape X: %s, y:%s",
-                              str(X.shape), str(y.shape))
-
-            types, bounds = get_types(self.scenario.cs, self.scenario.feature_array)
-            epm = RandomForestWithInstances(types=types,
-                                            bounds=bounds,
-                                            instance_features=self.scenario.feature_array,
-                                            #seed=self.rng.randint(MAXINT),
-                                            ratio_features=1.0)
-            epm.train(X, y)
-
-        ## not necessary right now since the EPM only knows the features
-        ## of the training instances
-        # use only training instances
-        #=======================================================================
-        # if self.scenario.feature_dict:
-        #     feat_array = []
-        #     for inst in self.scenario.train_insts:
-        #         feat_array.append(self.scenario.feature_dict[inst])
-        #     backup_features_epm = epm.instance_features
-        #     epm.instance_features = np.array(feat_array)
-        #=======================================================================
-
-        # predict performance for all configurations in trajectory
-        config_array = convert_configurations_to_array(configs)
-        mean, var = epm.predict_marginalized_over_instances(config_array)
+            mean, var = [], []
+            c = []
+            for entry in traj:
+                time.append(entry["wallclock_time"])
+                configs.append(entry["incumbent"])
+                costs = _cost(configs[-1], rh, rh.get_runs_for_config(configs[-1]))
+                print(len(costs), time[-1])
+                if not costs:
+                    time.pop()
+                else:
+                    mean.append(np.mean(costs))
+                    var.append(0)  # No variance over instances
+                    c.append(1)
+            mean, var = np.array(mean).reshape(-1, 1), np.array(var).reshape(-1, 1)
+            c, time = np.array(c), np.array(time)
 
         #=======================================================================
         # # restore feature array in epm
@@ -321,83 +338,15 @@ class Plotter(object):
 
         ax.set_ylabel('performance')
         ax.set_xlabel('time [sec]')
-        ax.plot(time, mean, 'r-', label="estimated performance")
-        ax.fill_between(time, uncertainty_upper, uncertainty_lower, alpha=0.8,
-                label="standard deviation")
+        ax.step(time, mean, 'r-', label="estimated performance")
+        ax.fill_between(time, uncertainty_upper, uncertainty_lower, alpha=0.5,
+                label="standard deviation", step='pre')
         ax.set_xscale("log", nonposx='clip')
         if self.scenario.run_obj == 'runtime':
             ax.set_yscale('log')
 
         # ax.set_ylim(min(mean)*0.8, max(mean)*1.2)
         # start after 1% of the configuration budget
-        ax.set_xlim(min(time)+(max(time) - min(time))*0.01, max(time))
-
-        ax.legend()
-        plt.tight_layout()
-        fig.savefig(output)
-        plt.close(fig)
-
-    def plot_cost_over_time(self, rh, traj, output="performance_over_time.png",
-                            validator=None):
-        """ Plot performance over time, using all trajectory entries
-            with max_time = wallclock_limit or (if inf) the highest
-            recorded time
-
-            Parameters
-            ----------
-            rh: RunHistory
-                runhistory to use
-            traj: List
-                trajectory to take times/incumbents from
-            output: str
-                path to output-png
-            epm: RandomForestWithInstances
-                emperical performance model (expecting trained on all runs)
-        """
-        self.logger.debug("Estimating costs over time for best run.")
-        validator.traj = traj  # set trajectory
-        time, configs = [], []
-
-        mean, var = [], []
-        c = []
-        for entry in traj:
-            time.append(entry["wallclock_time"])
-            configs.append(entry["incumbent"])
-            costs = _cost(configs[-1], rh, rh.get_runs_for_config(configs[-1]))
-            print(len(costs), time[-1])
-            if not costs:
-                time.pop()
-            else:
-                mean.append(np.mean(costs))
-                var.append(np.var(costs))
-                c.append(1)
-        mean, var = np.array(mean).reshape(-1, 1), np.array(var).reshape(-1, 1)
-        c, time = np.array(c), np.array(time)
-
-        self.logger.debug("Using %d samples (%d distinct) from trajectory.",
-                          len(time), len(set(configs)))
-        mean = mean[:, 0]
-        var = var[:, 0]
-        uncertainty_upper = mean+np.sqrt(var)
-        uncertainty_lower = mean-np.sqrt(var)
-        if self.scenario.run_obj == 'runtime':  # We have to clip at 0 as we want to put y on the logscale
-            uncertainty_lower[uncertainty_lower < 0] = 0
-            uncertainty_upper[uncertainty_upper < 0] = 0
-
-        # plot
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-
-        ax.set_ylabel('performance')
-        ax.set_xlabel('time [sec]')
-        ax.plot(time, mean, 'r-', label="estimated performance")
-        ax.fill_between(time, uncertainty_upper, uncertainty_lower, alpha=0.8,
-                label="standard deviation")
-        ax.set_xscale("log", nonposx='clip')
-        ax.scatter(time[c == 0], mean[c == 0], color='k', marker='.', zorder=50)
-        ax.scatter(time[c == 1], mean[c == 1], color='g', marker='.', zorder=50)
-        if self.scenario.run_obj == 'runtime':
-            ax.set_yscale('log')
         ax.set_xlim(min(time)+(max(time) - min(time))*0.01, max(time))
 
         ax.legend()
