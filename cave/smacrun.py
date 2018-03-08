@@ -54,6 +54,7 @@ class SMACrun(SMAC):
 
         self.scen_fn = os.path.join(folder, 'scenario.txt')
         self.rh_fn = os.path.join(folder, 'runhistory.json')
+        self.validated_rh_fn = os.path.join(folder, 'validated_runhistory.json')
         self.traj_fn = os.path.join(folder, 'traj_aclib2.json')
         self.traj_old_fn = os.path.join(folder, 'traj_old.csv')
 
@@ -63,9 +64,15 @@ class SMACrun(SMAC):
         with changedir(ta_exec_dir):
             self.scen = Scenario(scen_dict)
 
-        # Load runhistory and trajectory
+        # Load runhistory
         self.runhistory = RunHistory(average_cost)
         self.runhistory.update_from_json(self.rh_fn, self.scen.cs)
+        if os.path.exists(self.validated_rh_fn):
+            self.logger.debug("Found validated runhistory for \"%s\" and using "
+                              "it for evaluation", self.folder)
+            self.runhistory.update_from_json(self.validated_rh_fn, self.scen.cs)
+
+        # Load trajectory
         self.traj = TrajLogger.read_traj_aclib_format(fn=self.traj_fn,
                                                       cs=self.scen.cs)
 
