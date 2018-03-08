@@ -368,7 +368,7 @@ class Plotter(object):
         p.x_range = Range1d(min(time)+(max(time) - min(time))*0.01, max(time))
 
         # Plot
-        p.line('x', 'y', source=source)
+        p.step('x', 'y', source=source)
 
         # Fill area (uncertainty)
         band_x = np.append(time, time[::-1])
