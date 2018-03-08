@@ -14,7 +14,7 @@ from ConfigSpace.util import impute_inactive_values
 from smac.utils.validate import Validator
 from smac.configspace import Configuration, convert_configurations_to_array
 from smac.epm.rf_with_instances import RandomForestWithInstances
-from smac.optimizer.objective import average_cost
+from smac.optimizer.objective import average_cost, _cost
 from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
 from smac.utils.util_funcs import get_types
 from smac.runhistory.runhistory import RunHistory
@@ -237,8 +237,7 @@ class Plotter(object):
         output = parallel_coordinates_plotter.plot_n_configs(n_configs, params)
         return output
 
-
-    def plot_cost_over_time(self, rh, traj, output="performance_over_time.png",
+    def plot_cost_over_time_pred(self, rh, traj, output="performance_over_time.png",
                             validator=None):
         """ Plot performance over time, using all trajectory entries
             with max_time = wallclock_limit or (if inf) the highest
@@ -331,6 +330,74 @@ class Plotter(object):
 
         # ax.set_ylim(min(mean)*0.8, max(mean)*1.2)
         # start after 1% of the configuration budget
+        ax.set_xlim(min(time)+(max(time) - min(time))*0.01, max(time))
+
+        ax.legend()
+        plt.tight_layout()
+        fig.savefig(output)
+        plt.close(fig)
+
+    def plot_cost_over_time(self, rh, traj, output="performance_over_time.png",
+                            validator=None):
+        """ Plot performance over time, using all trajectory entries
+            with max_time = wallclock_limit or (if inf) the highest
+            recorded time
+
+            Parameters
+            ----------
+            rh: RunHistory
+                runhistory to use
+            traj: List
+                trajectory to take times/incumbents from
+            output: str
+                path to output-png
+            epm: RandomForestWithInstances
+                emperical performance model (expecting trained on all runs)
+        """
+        self.logger.debug("Estimating costs over time for best run.")
+        validator.traj = traj  # set trajectory
+        time, configs = [], []
+
+        mean, var = [], []
+        c = []
+        for entry in traj:
+            time.append(entry["wallclock_time"])
+            configs.append(entry["incumbent"])
+            costs = _cost(configs[-1], rh, rh.get_runs_for_config(configs[-1]))
+            print(len(costs), time[-1])
+            if not costs:
+                time.pop()
+            else:
+                mean.append(np.mean(costs))
+                var.append(np.var(costs))
+                c.append(1)
+        mean, var = np.array(mean).reshape(-1, 1), np.array(var).reshape(-1, 1)
+        c, time = np.array(c), np.array(time)
+
+        self.logger.debug("Using %d samples (%d distinct) from trajectory.",
+                          len(time), len(set(configs)))
+        mean = mean[:, 0]
+        var = var[:, 0]
+        uncertainty_upper = mean+np.sqrt(var)
+        uncertainty_lower = mean-np.sqrt(var)
+        if self.scenario.run_obj == 'runtime':  # We have to clip at 0 as we want to put y on the logscale
+            uncertainty_lower[uncertainty_lower < 0] = 0
+            uncertainty_upper[uncertainty_upper < 0] = 0
+
+        # plot
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+
+        ax.set_ylabel('performance')
+        ax.set_xlabel('time [sec]')
+        ax.plot(time, mean, 'r-', label="estimated performance")
+        ax.fill_between(time, uncertainty_upper, uncertainty_lower, alpha=0.8,
+                label="standard deviation")
+        ax.set_xscale("log", nonposx='clip')
+        ax.scatter(time[c == 0], mean[c == 0], color='k', marker='.', zorder=50)
+        ax.scatter(time[c == 1], mean[c == 1], color='g', marker='.', zorder=50)
+        if self.scenario.run_obj == 'runtime':
+            ax.set_yscale('log')
         ax.set_xlim(min(time)+(max(time) - min(time))*0.01, max(time))
 
         ax.legend()

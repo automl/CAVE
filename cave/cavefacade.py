@@ -12,7 +12,7 @@ from pandas import DataFrame
 
 from ConfigSpace import Configuration
 from smac.epm.rf_with_instances import RandomForestWithInstances
-from smac.optimizer.objective import average_cost
+from smac.optimizer.objective import average_cost, _cost
 from smac.runhistory.runhistory import RunKey, RunValue, RunHistory
 from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
 from smac.scenario.scenario import Scenario
@@ -145,6 +145,13 @@ class CAVE(object):
         validated_runhistory_fns = [os.path.join(run.folder, "validated_runhistory.json") for run in self.runs]
         for rh_file in runhistory_fns:
             self.original_rh.update_from_json(rh_file, self.scenario.cs)
+        # print(len(self.original_rh.get_all_configs()))
+        # for idx, run in enumerate(self.runs):
+        #     for config in run.traj:
+        #         time = config['wallclock_time']
+        #         config = config['incumbent']
+        #         c = _cost(config, self.original_rh, self.original_rh.get_runs_for_config(config))
+        #         print(len(c), time)
         for rh_file in validated_runhistory_fns:
             try:
                 self.original_rh.update_from_json(rh_file, self.scenario.cs)
@@ -156,7 +163,22 @@ class CAVE(object):
                           len(self.original_rh.data),
                           len(self.original_rh.get_all_configs()),
                           len(runhistory_fns))
-        self.original_rh.save_json(os.path.join(self.output, "combined_rh.json"))
+        # print(len(self.original_rh.get_all_configs()))
+        # for idx, run in enumerate(self.runs):
+        #     for config in run.traj:
+        #         time = config['wallclock_time']
+        #         config = config['incumbent']
+        #         c = _cost(config, self.original_rh, self.original_rh.get_runs_for_config(config))
+        #         print(len(c), time)
+        self.original_rh.save_json(os.path.join(self.output, "combined_rh.json"), save_external=True)
+        # self.original_rh.load_json(os.path.join(self.output, "combined_rh.json"), self.scenario.cs)
+        # print(len(self.original_rh.get_all_configs()))
+        # for idx, run in enumerate(self.runs):
+        #     for config in run.traj:
+        #         time = config['wallclock_time']
+        #         config = config['incumbent']
+        #         c = _cost(config, self.original_rh, self.original_rh.get_runs_for_config(config))
+        #         print(len(c), time)
 
         # Create ParameterImportance-object and use it's trained model for
         # validation and further predictions
@@ -178,6 +200,20 @@ class CAVE(object):
 
         # Estimate missing costs for [def, inc1, inc2, ...]
         self.complete_data(method=missing_data_method)
+        self.validated_rh.update(self.original_rh)
+        # print('#'*120)
+        # print('#'*120)
+        # print('#'*120)
+        # print(len(self.validated_rh.get_all_configs()))
+        # for idx, run in enumerate(self.runs):
+        #     for config in run.traj:
+        #         time = config['wallclock_time']
+        #         config = config['incumbent']
+        #         try:
+        #             c = _cost(config, self.original_rh, self.validated_rh.get_runs_for_config(config))
+        #             print(len(c), time)
+        #         except KeyError:
+        #             print(-1, 'None')
         self.best_run = min(self.runs, key=lambda run:
                             self.validated_rh.get_cost(run.solver.incumbent))
 
@@ -344,7 +380,7 @@ class CAVE(object):
             incumbents = list(map(lambda x: x['incumbent'], trajectories[0]))
             assert(incumbents[-1] == trajectories[0][-1]['incumbent'])
 
-            confviz_script = self.analyzer.plot_confviz(incumbents, runhistories)
+            confviz_script = self.analyzer.plot_confviz(incumbents, runhistories, max_confs=5000)
             self.website["Configurator's behavior"]["Configurator Footprint"] = {
                     "bokeh" : confviz_script}
         elif confviz:
