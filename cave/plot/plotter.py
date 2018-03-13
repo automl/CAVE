@@ -26,6 +26,12 @@ from cave.plot.configurator_footprint import ConfiguratorFootprint
 from cave.plot.parallel_coordinates import ParallelCoordinatesPlotter
 from cave.smacrun import SMACrun
 
+from bokeh.plotting import figure, ColumnDataSource
+from bokeh.embed import components
+from bokeh.models import HoverTool, Range1d
+from bokeh.models.sources import CDSView
+from bokeh.models.filters import GroupFilter
+
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
 __license__ = "3-clause BSD"
@@ -343,30 +349,67 @@ class Plotter(object):
 
         mean = mean[:, 0]
         var = var[:, 0]
-        uncertainty_upper = mean+np.sqrt(var)
-        uncertainty_lower = mean-np.sqrt(var)
-        if self.scenario.run_obj == 'runtime':  # We have to clip at 0 as we want to put y on the logscale
-            uncertainty_lower[uncertainty_lower < 0] = 0
-            uncertainty_upper[uncertainty_upper < 0] = 0
 
-        # plot
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
+        uncertainty_upper = mean + np.sqrt(var)
+        uncertainty_lower = mean - np.sqrt(var)
+        clip_y_lower = False
+        if self.scenario.run_obj == 'runtime':  # y-axis on log -> clip plot
+            # Determine clipping point from lowest legal value
+            clip_y_lower = min(list(uncertainty_lower[uncertainty_lower > 0])
+                               + list(mean)) * 0.8
 
-        ax.set_ylabel('performance')
-        ax.set_xlabel('time [sec]')
-        ax.step(time, mean, 'r-', label="estimated performance")
-        ax.fill_between(time, uncertainty_upper, uncertainty_lower, alpha=0.5,
-                label="standard deviation", step='pre')
-        ax.set_xscale("log", nonposx='clip')
-        if self.scenario.run_obj == 'runtime':
-            ax.set_yscale('log')
+        #hp_names = [k.name for k in  # Hyperparameter names
+        #            configs[0].configuration_space.get_hyperparameters()]
 
-        # ax.set_ylim(min(mean)*0.8, max(mean)*1.2)
+        #def escape_param_name(p):
+        #    """Necessary because:
+        #        1. parameters called 'runs' or 'start-time' might exist in cs
+        #        2. '-' not allowed in bokeh's CDS"""
+        #    return 'p_' + p.replace('-','_')
+
+        source = ColumnDataSource(data=dict(
+                    x=time,
+                    y=mean,
+                    #start=time,
+                    #end=time[1:] + ['end'],
+                    #orig_perf=[rh.get_cost(c) for c in configs],
+                    #epm_perf=mean,
+                    #runs=[len(rh.get_runs_for_config(c)) for c in configs],
+                        ))
+        #for k in hp_names:
+        #    source.add([c[k] if c[k] else "None" for c in configs],
+        #               escape_param_name(k))
+
+        hover = HoverTool(tooltips=[
+                ("start time", "@start"),
+                ("end time", "@end"),
+                ("runs", "@runs"),
+                ("est. perf. (only original runs)", "@orig_perf"),
+                ("est. perf. (with epm'ed runs)", "@epm_perf"),])
+                #("Configuration", "------"),
+                #]+ [(k, '@' + escape_param_name(k)) for k in hp_names])
+
+        p = figure(plot_width=600, plot_height=400, tools=[hover],
+                   x_axis_type='log',
+                   y_axis_type='log' if self.scenario.run_obj=='runtime' else 'linear',
+                   title="Performance over time")
+
+        if clip_y_lower:
+            p.y_range = Range1d(clip_y_lower, 1.2 * max(uncertainty_upper))
+
         # start after 1% of the configuration budget
-        ax.set_xlim(min(time)+(max(time) - min(time))*0.01, max(time))
+        p.x_range = Range1d(min(time)+(max(time) - min(time))*0.01, max(time))
 
-        ax.legend()
-        plt.tight_layout()
-        fig.savefig(output)
-        plt.close(fig)
+        # Plot
+        p.step('x', 'y', source=source)
+
+        # Fill area (uncertainty)
+        band_x = np.append(time, time[::-1])
+        band_y = np.append(uncertainty_lower, uncertainty_upper[::-1])
+        p.patch(band_x, band_y, color='#7570B3', fill_alpha=0.2)
+
+        p.xaxis.axis_label = "time (sec)"
+        p.yaxis.axis_label = "estimated performance"
+
+        script, div = components(p)
+        return script, div

@@ -361,8 +361,8 @@ class CAVE(object):
         self.build_website()
 
         if cost_over_time:
-            cost_over_time_path = self.analyzer.plot_cost_over_time(self.runs, self.validator)
-            self.website["Configurator's behavior"]["Cost over time"] = {"figure": cost_over_time_path}
+            cost_over_time_script = self.analyzer.plot_cost_over_time(self.runs, self.validator)
+            self.website["Configurator's behavior"]["Cost over time"] = {"bokeh": cost_over_time_script}
 
         self.build_website()
 
