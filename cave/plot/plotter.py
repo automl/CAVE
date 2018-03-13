@@ -406,7 +406,7 @@ class Plotter(object):
         p.x_range = Range1d(min(time) + (max(time) - min(time)) * 0.01, max(time))
 
         # Plot
-        p.line('x', 'y', source=source)
+        p.line('x', 'y', source=source, legend="estimated performance")
 
         # Fill area (uncertainty)
         # Defined as sequence of coordinates, so for step-effect double and
@@ -418,7 +418,8 @@ class Plotter(object):
             uncertainty_upper) for u in sub][:-2]
         band_x = np.append(time_double, time_double[::-1])
         band_y = np.append(uncertainty_lower_double, uncertainty_upper_double[::-1])
-        p.patch(band_x, band_y, color='#7570B3', fill_alpha=0.2)
+        p.patch(band_x, band_y, color='#7570B3', fill_alpha=0.2,
+                legend="standard deviation")
 
         # Format labels as 10^x
         p.xaxis.major_label_orientation = 3/4
