@@ -143,6 +143,7 @@ class CAVE(object):
         for run in self.runs:
             # if validated runhistory in folder, it's already read in the run
             self.original_rh.update(run.runhistory)
+
         self.validated_rh.update(self.original_rh)
 
         self.logger.debug('Combined number of Runhistory data points: %d. '
@@ -185,7 +186,7 @@ class CAVE(object):
         #         except KeyError:
         #             print(-1, 'None')
         self.best_run = min(self.runs, key=lambda run:
-                            self.validated_rh.get_cost(run.solver.incumbent))
+                            self.validated_rh.get_cost(run.solver.incumbent))  # type: SMACrun
 
         self.incumbent = self.best_run.solver.incumbent
         self.pimp.incumbent = self.incumbent
@@ -360,7 +361,7 @@ class CAVE(object):
         self.build_website()
 
         if cost_over_time:
-            cost_over_time_path = self.analyzer.plot_cost_over_time(self.best_run.traj, self.validator)
+            cost_over_time_path = self.analyzer.plot_cost_over_time(self.runs, self.validator)
             self.website["Configurator's behavior"]["Cost over time"] = {"figure": cost_over_time_path}
 
         self.build_website()

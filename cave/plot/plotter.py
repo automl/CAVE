@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from typing import Union, List, Dict
 plt.style.use(os.path.join(os.path.dirname(__file__), 'mpl_style'))
 from matplotlib import ticker
 
@@ -18,10 +19,12 @@ from smac.optimizer.objective import average_cost, _cost
 from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
 from smac.utils.util_funcs import get_types
 from smac.runhistory.runhistory import RunHistory
+from smac.utils.validate import Validator
 
 from cave.plot.scatter import plot_scatter_plot
 from cave.plot.configurator_footprint import ConfiguratorFootprint
 from cave.plot.parallel_coordinates import ParallelCoordinatesPlotter
+from cave.smacrun import SMACrun
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -237,24 +240,7 @@ class Plotter(object):
         output = parallel_coordinates_plotter.plot_n_configs(n_configs, params)
         return output
 
-    def plot_cost_over_time(self, rh, traj, output="performance_over_time.png",
-                            validator=None, pred=True):
-        """ Plot performance over time, using all trajectory entries
-            with max_time = wallclock_limit or (if inf) the highest
-            recorded time
-
-            Parameters
-            ----------
-            rh: RunHistory
-                runhistory to use
-            traj: List
-                trajectory to take times/incumbents from
-            output: str
-                path to output-png
-            epm: RandomForestWithInstances
-                emperical performance model (expecting trained on all runs)
-        """
-        self.logger.debug("Estimating costs over time for best run.")
+    def _get_mean_var_time(self, validator, traj, pred, rh):
         validator.traj = traj  # set trajectory
         time, configs = [], []
 
@@ -287,25 +273,13 @@ class Plotter(object):
                                                 #seed=self.rng.randint(MAXINT),
                                                 ratio_features=1.0)
                 epm.train(X, y)
-
-            ## not necessary right now since the EPM only knows the features
-            ## of the training instances
-            # use only training instances
-            #=======================================================================
-            # if self.scenario.feature_dict:
-            #     feat_array = []
-            #     for inst in self.scenario.train_insts:
-            #         feat_array.append(self.scenario.feature_dict[inst])
-            #     backup_features_epm = epm.instance_features
-            #     epm.instance_features = np.array(feat_array)
-            #=======================================================================
-
-            # predict performance for all configurations in trajectory
             config_array = convert_configurations_to_array(configs)
             mean, var = epm.predict_marginalized_over_instances(config_array)
+            var = np.zeros(mean.shape)
+            # We don't want to show the uncertainty of the model but uncertainty over multiple optimizer runs
+            # This variance is computed in an outer loop.
         else:
             mean, var = [], []
-            c = []
             for entry in traj:
                 time.append(entry["wallclock_time"])
                 configs.append(entry["incumbent"])
@@ -316,15 +290,56 @@ class Plotter(object):
                 else:
                     mean.append(np.mean(costs))
                     var.append(0)  # No variance over instances
-                    c.append(1)
             mean, var = np.array(mean).reshape(-1, 1), np.array(var).reshape(-1, 1)
-            c, time = np.array(c), np.array(time)
+        return mean, var, time
 
-        #=======================================================================
-        # # restore feature array in epm
-        # if self.scenario.feature_dict:
-        #     epm.instance_features = backup_features_epm
-        #=======================================================================
+    def plot_cost_over_time(self, rh: RunHistory, runs: List[SMACrun],
+                            output: str="performance_over_time.png",
+                            validator: Union[None, Validator]=None):
+        """ Plot performance over time, using all trajectory entries
+            with max_time = wallclock_limit or (if inf) the highest
+            recorded time
+
+            Parameters
+            ----------
+            rh: RunHistory
+                runhistory to use
+            runs: List[SMACrun]
+            output: str
+                path to output-png
+            validator: TODO description
+        """
+        self.logger.debug("Estimating costs over time for best run.")
+
+        if len(runs) > 1:
+            means, times = [], []
+            all_times = []
+            for run in runs:
+                # Ignore variances as we plot variance over runs
+                mean, _, time = self._get_mean_var_time(validator, run.traj, not run.validated, rh)
+                means.append(mean.flatten())
+                all_times.extend(time)
+                times.append(time)
+            means = np.array(means)
+            times = np.array(times)
+            all_times = np.array(sorted(all_times))
+            at = [0 for _ in runs]  # keep track at which timestep each trajectory is
+            m = [np.nan for _ in runs]  # used to compute the mean over the timesteps
+            mean = np.ones((len(all_times), 1)) * -1
+            var = np.ones((len(all_times), 1)) * -1
+            for time_idx, t in enumerate(all_times):
+                for traj_idx, entry_idx in enumerate(at):
+                    try:
+                        if t == times[traj_idx][entry_idx]:
+                            m[traj_idx] = means[traj_idx][entry_idx]
+                            at[traj_idx] += 1
+                    except IndexError:
+                        pass  # Reached the end of one trajectory. No need to check it further
+                mean[time_idx][0] = np.nanmean(m)
+                var[time_idx][0] = np.nanvar(m)
+            time = all_times
+        else:  # no new statistics computation necessary
+            mean, var, time = self._get_mean_var_time(validator, runs[0].traj, not runs[0].validated, rh)
 
         mean = mean[:, 0]
         var = var[:, 0]
