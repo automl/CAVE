@@ -28,7 +28,7 @@ from cave.smacrun import SMACrun
 
 from bokeh.plotting import figure, ColumnDataSource
 from bokeh.embed import components
-from bokeh.models import HoverTool, Range1d
+from bokeh.models import HoverTool, Range1d, FuncTickFormatter
 from bokeh.models.sources import CDSView
 from bokeh.models.filters import GroupFilter
 
@@ -404,9 +404,22 @@ class Plotter(object):
         p.step('x', 'y', source=source)
 
         # Fill area (uncertainty)
-        band_x = np.append(time, time[::-1])
-        band_y = np.append(uncertainty_lower, uncertainty_upper[::-1])
+        # Defined as sequence of coordinates, so for step-effect double and
+        # arange accordingly ([(t0, v0), (t1, v0), (t1, v1), ... (tn, vn-1)])
+        time_double = [t for sub in zip(time, time) for t in sub][1:-1]
+        uncertainty_lower_double = [u for sub in zip(uncertainty_lower,
+            uncertainty_lower) for u in sub][:len(time_double)]
+        uncertainty_upper_double = [u for sub in zip(uncertainty_upper,
+            uncertainty_upper) for u in sub][2:]
+        band_x = np.append(time_double, time_double[::-1])
+        band_y = np.append(uncertainty_lower_double, uncertainty_upper_double[::-1])
         p.patch(band_x, band_y, color='#7570B3', fill_alpha=0.2)
+
+        # Format labels as 10^x
+        p.xaxis.major_label_orientation = 3/4
+        p.xaxis.formatter = FuncTickFormatter(code="""
+                    return (tick/(10**Math.floor(Math.log10(tick)))) + " * 10^" + (Math.floor(Math.log10(tick)))
+                    """)
 
         p.xaxis.axis_label = "time (sec)"
         p.yaxis.axis_label = "estimated performance"
