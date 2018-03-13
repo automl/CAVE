@@ -306,6 +306,9 @@ class Plotter(object):
             with max_time = wallclock_limit or (if inf) the highest
             recorded time
 
+            TODO JM: a few things are commented out because the tooltips make no
+            obvious sense for this kind of average... i will think of something.
+
             Parameters
             ----------
             rh: RunHistory
@@ -367,13 +370,15 @@ class Plotter(object):
         #        2. '-' not allowed in bokeh's CDS"""
         #    return 'p_' + p.replace('-','_')
 
+        time_double = [t for sub in zip(time, time) for t in sub][1:-1]
+        mean_double = [t for sub in zip(mean, mean) for t in sub][:-2]
         source = ColumnDataSource(data=dict(
-                    x=time,
-                    y=mean,
+                    x=time_double,
+                    y=mean_double,
                     #start=time,
                     #end=time[1:] + ['end'],
                     #orig_perf=[rh.get_cost(c) for c in configs],
-                    #epm_perf=mean,
+                    epm_perf=mean_double,
                     #runs=[len(rh.get_runs_for_config(c)) for c in configs],
                         ))
         #for k in hp_names:
@@ -381,11 +386,11 @@ class Plotter(object):
         #               escape_param_name(k))
 
         hover = HoverTool(tooltips=[
-                ("start time", "@start"),
-                ("end time", "@end"),
-                ("runs", "@runs"),
-                ("est. perf. (only original runs)", "@orig_perf"),
-                ("est. perf. (with epm'ed runs)", "@epm_perf"),])
+                #("start time", "@start"),
+                #("end time", "@end"),
+                #("runs", "@runs"),
+                #("est. perf. (only original runs)", "@orig_perf"),
+                ("performance", "@epm_perf"),])
                 #("Configuration", "------"),
                 #]+ [(k, '@' + escape_param_name(k)) for k in hp_names])
 
@@ -398,19 +403,19 @@ class Plotter(object):
             p.y_range = Range1d(clip_y_lower, 1.2 * max(uncertainty_upper))
 
         # start after 1% of the configuration budget
-        p.x_range = Range1d(min(time)+(max(time) - min(time))*0.01, max(time))
+        p.x_range = Range1d(min(time) + (max(time) - min(time)) * 0.01, max(time))
 
         # Plot
-        p.step('x', 'y', source=source)
+        p.line('x', 'y', source=source)
 
         # Fill area (uncertainty)
         # Defined as sequence of coordinates, so for step-effect double and
         # arange accordingly ([(t0, v0), (t1, v0), (t1, v1), ... (tn, vn-1)])
         time_double = [t for sub in zip(time, time) for t in sub][1:-1]
         uncertainty_lower_double = [u for sub in zip(uncertainty_lower,
-            uncertainty_lower) for u in sub][:len(time_double)]
+            uncertainty_lower) for u in sub][:-2]
         uncertainty_upper_double = [u for sub in zip(uncertainty_upper,
-            uncertainty_upper) for u in sub][2:]
+            uncertainty_upper) for u in sub][:-2]
         band_x = np.append(time_double, time_double[::-1])
         band_y = np.append(uncertainty_lower_double, uncertainty_upper_double[::-1])
         p.patch(band_x, band_y, color='#7570B3', fill_alpha=0.2)
