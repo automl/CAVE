@@ -375,6 +375,8 @@ class Plotter(object):
         band_y = np.append(uncertainty_lower, uncertainty_upper[::-1])
         p.patch(band_x, band_y, color='#7570B3', fill_alpha=0.2)
 
+        p.xaxis.major_label_orientation = 3/4
+
         p.xaxis.axis_label = "time (sec)"
         p.yaxis.axis_label = "estimated performance"
 
