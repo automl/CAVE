@@ -602,9 +602,9 @@ class Analyzer(object):
     def plot_cost_over_time(self, traj, validator):
         path = os.path.join(self.output, 'cost_over_time.png')
         self.logger.info("... cost over time")
-        self.plotter.plot_cost_over_time(self.validated_rh, traj, output=path,
+        script, div = self.plotter.plot_cost_over_time(self.validated_rh, traj, output=path,
                                          validator=validator)
-        return path
+        return script, div
 
     @timing
     def plot_algorithm_footprint(self, algorithms=None, density=200, purity=0.95):
