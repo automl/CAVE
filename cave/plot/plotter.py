@@ -363,6 +363,7 @@ class Plotter(object):
             # Determine clipping point from lowest legal value
             clip_y_lower = min(list(uncertainty_lower[uncertainty_lower > 0])
                                + list(mean)) * 0.8
+            uncertainty_lower[uncertainty_lower <= 0] = clip_y_lower * 0.9
 
         #hp_names = [k.name for k in  # Hyperparameter names
         #            configs[0].configuration_space.get_hyperparameters()]
@@ -425,6 +426,7 @@ class Plotter(object):
         band_y = np.append(uncertainty_lower_double, uncertainty_upper_double[::-1])
         p.patch(band_x, band_y, color='#7570B3', fill_alpha=0.2,
                 legend="standard deviation")
+        self.logger.debug(list(zip(band_x, band_y)))
 
         # Format labels as 10^x
         p.xaxis.major_label_orientation = 3/4
