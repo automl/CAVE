@@ -319,12 +319,14 @@ class Plotter(object):
             validator: TODO description
         """
         self.logger.debug("Estimating costs over time for best run.")
+        validated = True
 
         if len(runs) > 1:
             means, times = [], []
             all_times = []
             for run in runs:
                 # Ignore variances as we plot variance over runs
+                validated = validated and run.traj
                 mean, _, time = self._get_mean_var_time(validator, run.traj, not run.validated, rh)
                 means.append(mean.flatten())
                 all_times.extend(time)
@@ -348,6 +350,7 @@ class Plotter(object):
                 var[time_idx][0] = np.nanvar(m)
             time = all_times
         else:  # no new statistics computation necessary
+            validated = runs[0].validated
             mean, var, time = self._get_mean_var_time(validator, runs[0].traj, not runs[0].validated, rh)
 
         mean = mean[:, 0]
@@ -406,7 +409,9 @@ class Plotter(object):
         p.x_range = Range1d(min(time) + (max(time) - min(time)) * 0.01, max(time))
 
         # Plot
-        p.line('x', 'y', source=source, legend="estimated performance")
+        label = self.scenario.run_obj
+        label = '{}{}'.format('validated ' if validated else 'estimated ', label)
+        p.line('x', 'y', source=source, legend=label)
 
         # Fill area (uncertainty)
         # Defined as sequence of coordinates, so for step-effect double and
@@ -428,7 +433,7 @@ class Plotter(object):
                     """)
 
         p.xaxis.axis_label = "time (sec)"
-        p.yaxis.axis_label = "estimated performance"
+        p.yaxis.axis_label = label
 
         script, div = components(p)
         return script, div
