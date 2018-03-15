@@ -338,6 +338,8 @@ class Plotter(object):
             m = [np.nan for _ in runs]  # used to compute the mean over the timesteps
             mean = np.ones((len(all_times), 1)) * -1
             var = np.ones((len(all_times), 1)) * -1
+            upper = np.ones((len(all_times), 1)) * -1
+            lower = np.ones((len(all_times), 1)) * -1
             for time_idx, t in enumerate(all_times):
                 for traj_idx, entry_idx in enumerate(at):
                     try:
@@ -346,18 +348,26 @@ class Plotter(object):
                             at[traj_idx] += 1
                     except IndexError:
                         pass  # Reached the end of one trajectory. No need to check it further
-                mean[time_idx][0] = np.nanmean(m)
-                var[time_idx][0] = np.nanvar(m)
+                # var[time_idx][0] = np.nanvar(m)
+                u, l, m_ = np.nanpercentile(m, 75), np.nanpercentile(m, 25), np.nanpercentile(m, 50)
+                # print((mean[time_idx][0] + np.sqrt(var[time_idx][0]), mean[time_idx][0],
+                #        mean[time_idx][0] - np.sqrt(var[time_idx][0])))
+                # print((l, m_, u))
+                upper[time_idx][0] = u
+                mean[time_idx][0] = m_
+                lower[time_idx][0] = l
             time = all_times
         else:  # no new statistics computation necessary
             validated = runs[0].validated
             mean, var, time = self._get_mean_var_time(validator, runs[0].traj, not runs[0].validated, rh)
+            upper = lower = mean
 
         mean = mean[:, 0]
-        var = var[:, 0]
+        upper = upper[:, 0]
+        lower = lower[:, 0]
 
-        uncertainty_upper = mean + np.sqrt(var)
-        uncertainty_lower = mean - np.sqrt(var)
+        uncertainty_upper = upper  # mean + np.sqrt(var)
+        uncertainty_lower = lower  # mean - np.sqrt(var)
         clip_y_lower = False
         if self.scenario.run_obj == 'runtime':  # y-axis on log -> clip plot
             # Determine clipping point from lowest legal value
@@ -425,7 +435,7 @@ class Plotter(object):
         band_x = np.append(time_double, time_double[::-1])
         band_y = np.append(uncertainty_lower_double, uncertainty_upper_double[::-1])
         p.patch(band_x, band_y, color='#7570B3', fill_alpha=0.2,
-                legend="standard deviation")
+                legend="25%-75%")
         self.logger.debug(list(zip(band_x, band_y)))
 
         # Format labels as 10^x
