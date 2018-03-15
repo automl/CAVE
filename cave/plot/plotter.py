@@ -118,7 +118,7 @@ class Plotter(object):
         for idx in [0, 1]:
             fig = plot_scatter_plot((conf1[idx],), (conf2[idx],),
                                     labels, metric=metric,
-                                    user_fontsize=mpl.rcParams['font.size'],
+                                    user_fontsize=22,
                                     min_val=min_val,
                                     max_val=timeout,
                                     jitter_timeout=True)
@@ -408,7 +408,7 @@ class Plotter(object):
                 #("Configuration", "------"),
                 #]+ [(k, '@' + escape_param_name(k)) for k in hp_names])
 
-        p = figure(plot_width=600, plot_height=400, tools=[hover],
+        p = figure(plot_width=700, plot_height=500, tools=[hover],
                    x_axis_type='log',
                    y_axis_type='log' if self.scenario.run_obj=='runtime' else 'linear',
                    title="Performance over time")
@@ -434,8 +434,8 @@ class Plotter(object):
             uncertainty_upper) for u in sub][:-2]
         band_x = np.append(time_double, time_double[::-1])
         band_y = np.append(uncertainty_lower_double, uncertainty_upper_double[::-1])
-        p.patch(band_x, band_y, color='#7570B3', fill_alpha=0.2,
-                legend="25%-75%")
+        p.patch(band_x, band_y, color='#7570B3', fill_alpha=0.2)
+
         self.logger.debug(list(zip(band_x, band_y)))
 
         # Format labels as 10^x
@@ -446,6 +446,12 @@ class Plotter(object):
 
         p.xaxis.axis_label = "time (sec)"
         p.yaxis.axis_label = label
+        p.xaxis.axis_label_text_font_size = "15pt"
+        p.yaxis.axis_label_text_font_size = "15pt"
+        p.xaxis.major_label_text_font_size = "12pt"
+        p.yaxis.major_label_text_font_size = "12pt"
+        p.title.text_font_size = "15pt"
+        p.legend.label_text_font_size = "15pt"
 
         script, div = components(p)
         return script, div
