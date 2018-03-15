@@ -105,7 +105,7 @@ class Plotter(object):
 
         metric = self.scenario.run_obj
         timeout = self.scenario.cutoff
-        labels = ["default cost", "incumbent cost"]
+        labels = ["default {}".format(self.scenario.run_obj), "incumbent {}".format(self.scenario.run_obj)]
 
         conf1 = (self.data["default"]["train"], self.data["default"]["test"])
         conf2 = (self.data["incumbent"]["train"], self.data["incumbent"]["test"])
@@ -167,10 +167,10 @@ class Plotter(object):
             ax1 = f.add_subplot(1,1,1)
             ax1.step(data['default'][inst_set][0],
                      data['default'][inst_set][1], color='red',
-                     linestyle='-', label='default train')
+                     linestyle='-', label='default {}'.format(inst_set))
             ax1.step(data['incumbent'][inst_set][0],
                      data['incumbent'][inst_set][1], color='blue',
-                     linestyle='-', label='incumbent train')
+                     linestyle='-', label='incumbent {}'.format(inst_set))
             ax1.legend()
             ax1.grid(True)
             ax1.set_xscale('log')
@@ -409,15 +409,16 @@ class Plotter(object):
                 #]+ [(k, '@' + escape_param_name(k)) for k in hp_names])
 
         p = figure(plot_width=700, plot_height=500, tools=[hover],
+                   x_range=Range1d(min(time) + (max(time) - min(time)) * 0.01, max(time)),
                    x_axis_type='log',
                    y_axis_type='log' if self.scenario.run_obj=='runtime' else 'linear',
-                   title="Performance over time")
+                   title="Cost over time")
 
         if clip_y_lower:
             p.y_range = Range1d(clip_y_lower, 1.2 * max(uncertainty_upper))
 
         # start after 1% of the configuration budget
-        p.x_range = Range1d(min(time) + (max(time) - min(time)) * 0.01, max(time))
+        # p.x_range = Range1d(min(time) + (max(time) - min(time)) * 0.01, max(time))
 
         # Plot
         label = self.scenario.run_obj
