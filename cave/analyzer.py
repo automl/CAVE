@@ -599,11 +599,11 @@ class Analyzer(object):
         return confviz
 
     @timing
-    def plot_cost_over_time(self, traj, validator):
+    def plot_cost_over_time(self, runs, validator):
         path = os.path.join(self.output, 'cost_over_time.png')
         self.logger.info("... cost over time")
-        script, div = self.plotter.plot_cost_over_time(self.validated_rh, traj, output=path,
-                                         validator=validator)
+        script, div = self.plotter.plot_cost_over_time(self.validated_rh, runs, output=path,
+                                                       validator=validator)
         return script, div
 
     @timing

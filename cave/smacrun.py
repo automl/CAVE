@@ -11,6 +11,7 @@ from smac.runhistory.runhistory import RunKey, RunValue, RunHistory
 from smac.scenario.scenario import Scenario
 from smac.utils.io.traj_logging import TrajLogger
 from smac.utils.validate import Validator
+from smac.optimizer.objective import _cost
 
 @contextmanager
 def changedir(newdir):
@@ -68,13 +69,21 @@ class SMACrun(SMAC):
         self.runhistory = RunHistory(average_cost)
         self.runhistory.update_from_json(self.rh_fn, self.scen.cs)
         if os.path.exists(self.validated_rh_fn):
+            self.validated = True
             self.logger.debug("Found validated runhistory for \"%s\" and using "
                               "it for evaluation", self.folder)
             self.runhistory.update_from_json(self.validated_rh_fn, self.scen.cs)
+        else:
+            self.validated = False
 
         # Load trajectory
         self.traj = TrajLogger.read_traj_aclib_format(fn=self.traj_fn,
                                                       cs=self.scen.cs)
+        # for config in self.traj:
+        #     time = config['wallclock_time']
+        #     config = config['incumbent']
+        #     c = _cost(config, self.runhistory, self.runhistory.get_runs_for_config(config))
+        #     print(len(c), time)
 
         incumbent = self.traj[-1]['incumbent']
         self.train_inst = self.scen.train_insts

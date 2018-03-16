@@ -483,6 +483,7 @@ class ConfiguratorFootprint(object):
                                  ticker=BasicTicker(desired_num_ticks=15),
                                  label_standoff=12,
                                  border_line_color=None, location=(0,0))
+            color_bar.major_label_text_font_size = '12pt'
             p.add_layout(color_bar, 'right')
 
         # Scatter
@@ -526,6 +527,12 @@ class ConfiguratorFootprint(object):
 
         p.xaxis.axis_label = "MDS-X"
         p.yaxis.axis_label = "MDS-Y"
+        p.xaxis.axis_label_text_font_size = "15pt"
+        p.yaxis.axis_label_text_font_size = "15pt"
+        p.xaxis.major_label_text_font_size = "12pt"
+        p.yaxis.major_label_text_font_size = "12pt"
+        p.title.text_font_size = "15pt"
+        p.legend.label_text_font_size = "15pt"
 
         script, div = components(p)
 

@@ -11,6 +11,7 @@ from matplotlib import ticker
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import matplotlib.patheffects as path_efx
+from matplotlib.pyplot import setp
 
 from ConfigSpace.util import impute_inactive_values
 from ConfigSpace.hyperparameters import CategoricalHyperparameter, IntegerHyperparameter, FloatHyperparameter
@@ -241,6 +242,13 @@ class ParallelCoordinatesPlotter(object):
             normedC = scaler(vmax=self.worst_config_performance,
                              vmin=self.best_config_performance)
         scale = cmx.ScalarMappable(norm=normedC, cmap=cm)
+        # font.size: 16
+        # axes.titlesize: 24
+        # axes.labelsize: 22
+        # lines.linewidth: 3
+        # lines.markersize: 10
+        # xtick.labelsize: 20
+        # ytick.labelsize: 20
 
         # Plot data
         for i, ax in enumerate(axes):  # Iterate over params
@@ -293,6 +301,8 @@ class ParallelCoordinatesPlotter(object):
             ax.xaxis.set_major_locator(ticker.FixedLocator([p]))
             set_ticks_for_axis(p, ax, num_ticks=6)
             ax.set_xticklabels([params[p]], rotation=5)
+            setp(ax.get_yticklabels(), fontsize=15)
+            setp(ax.get_xticklabels(), fontsize=15)
 
         # Move the final axis' ticks to the right-hand side
         ax = plt.twinx(axes[-1])
@@ -301,6 +311,7 @@ class ParallelCoordinatesPlotter(object):
         set_ticks_for_axis(dim, ax, num_ticks=6)
         ax.set_xticklabels([params[-2], params[-1]], rotation=5)
         ax.set_ylim(axes[-1].get_ylim())
+        setp(ax.get_yticklabels(), fontsize=15)
 
         # Remove spaces between subplots
         plt.subplots_adjust(wspace=0)
