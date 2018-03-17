@@ -63,9 +63,23 @@ class CAVE(object):
         """
         Initialize CAVE facade to handle analyzing, plotting and building the
         report-page easily. During initialization, the analysis-infrastructure
-        is built and the data is validated, meaning the overall best
+        is built and the data is validated, the overall best
         incumbent is found and default+incumbent are evaluated for all
         instances for all runs, by default using an EPM.
+
+        Runhistories are organized as follows:
+            - each ConfiguratorRun has an `original_runhistory`- and a
+              `combined_runhistory`-attribute
+            - if available, each ConfiguratorRun's `validated_runhistory` contains
+              a runhistory with validation-data gathered after the optimization
+            - `combined_runhistory` always contains as many real runs as possible
+
+            - CaveFacade contains three runhistorie:
+                - `original_rh`: original runs that have been performed
+                                _during optimization_!
+                - `validated_rh`: runs that have been validated, so they were
+                                  not part of the original optimization
+
         The class holds two runhistories:
             self.original_rh -> only contains runs from the actual data
             self.validated_rh -> contains original runs and epm-predictions for
@@ -105,16 +119,13 @@ class CAVE(object):
         handler.setLevel(logging.DEBUG)
         logger.addHandler(handler)
 
-        # Global runhistory combines all actual runs of individual SMAC-runs
+        # All runs that have been actually explored during optimization
+        self.original_rh = RunHistory(average_cost)
+        # All original runs + EPM-estimated for def and inc on all insts
+        self.validated_rh = RunHistory(average_cost)
         # We use it to initialize an Importance-object. From the
         # Importance-object, we can use the trained random-forest-model for all
         # further purposes.
-        # We keep the runhistory, that was validated for default and incumbent
-        # on all instances in memory.
-        # The distinction is made to avoid using runs that are
-        # only estimated using an EPM as a basis for further EPMs.
-        self.original_rh = RunHistory(average_cost)
-        self.validated_rh = RunHistory(average_cost)
 
         # Save all relevant SMAC-runs in a list
         self.runs = []
@@ -141,16 +152,22 @@ class CAVE(object):
         # Update global runhistory with all available runhistories
         self.logger.debug("Update original rh with all available rhs!")
         for run in self.runs:
-            # if validated runhistory in folder, it's already read in the run
-            self.original_rh.update(run.runhistory)
+            # if validated r
+            self.original_rh.update(run.original_runhistory)
 
         self.validated_rh.update(self.original_rh)
+        for run in self.runs:
+            self.validated_rh.update(run.combined_runhistory)
 
-        self.logger.debug('Combined number of Runhistory data points: %d. '
-                          '# Configurations: %d. # Configurator runs: %d',
-                          len(self.original_rh.data),
-                          len(self.original_rh.get_all_configs()),
-                          len(self.runs))
+        for rh_name, rh in [("original", self.original_rh),
+                            ("validated", self.validated_rh)]:
+            self.logger.debug('Combined number of RunHistory data points '
+                              'for %s runhistory: %d '
+                              '# Configurations: %d. # Configurator runs: %d',
+                              rh_name,
+                              len(self.original_rh.data),
+                              len(self.original_rh.get_all_configs()),
+                              len(self.runs))
 
         # Create ParameterImportance-object and use it's trained model for
         # validation and further predictions
@@ -172,19 +189,6 @@ class CAVE(object):
         # Estimate missing costs for [def, inc1, inc2, ...]
         self.complete_data(method=missing_data_method)
         self.validated_rh.update(self.original_rh)
-        # print('#'*120)
-        # print('#'*120)
-        # print('#'*120)
-        # print(len(self.validated_rh.get_all_configs()))
-        # for idx, run in enumerate(self.runs):
-        #     for config in run.traj:
-        #         time = config['wallclock_time']
-        #         config = config['incumbent']
-        #         try:
-        #             c = _cost(config, self.original_rh, self.validated_rh.get_runs_for_config(config))
-        #             print(len(c), time)
-        #         except KeyError:
-        #             print(-1, 'None')
         self.best_run = min(self.runs, key=lambda run:
                             self.validated_rh.get_cost(run.solver.incumbent))  # type: SMACrun
 
@@ -223,6 +227,8 @@ class CAVE(object):
 
             path_for_validated_rhs = os.path.join(self.output, "validated_rhs")
             for run in self.runs:
+                if run.validated_runhistory:
+                    self.logger.debug("%s already validated, skipping!", run.folder)
                 self.validator.traj = run.traj
                 if method == "validation":
                     # TODO determine # repetitions

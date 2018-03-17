@@ -328,7 +328,8 @@ class Plotter(object):
             for run in runs:
                 # Ignore variances as we plot variance over runs
                 validated = validated and run.traj
-                mean, _, time = self._get_mean_var_time(validator, run.traj, not run.validated, rh)
+                mean, _, time = self._get_mean_var_time(validator, run.traj, not
+                                                        run.validated_runhistory, rh)
                 means.append(mean.flatten())
                 all_times.extend(time)
                 times.append(time)
