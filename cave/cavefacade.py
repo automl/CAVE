@@ -172,7 +172,7 @@ class CAVE(object):
         # Create ParameterImportance-object and use it's trained model for
         # validation and further predictions
         self.pimp = Importance(scenario=copy.deepcopy(self.scenario),
-                               runhistory=self.original_rh,
+                               runhistory=self.validated_rh,
                                incumbent=self.default,  # Inject correct incumbent later
                                parameters_to_evaluate=4,
                                save_folder=self.output,
