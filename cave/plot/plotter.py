@@ -31,6 +31,7 @@ from bokeh.embed import components
 from bokeh.models import HoverTool, Range1d, FuncTickFormatter
 from bokeh.models.sources import CDSView
 from bokeh.models.filters import GroupFilter
+from bokeh.models.tickers import AdaptiveTicker
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -445,6 +446,7 @@ class Plotter(object):
         p.xaxis.formatter = FuncTickFormatter(code="""
                     return (tick/(10**Math.floor(Math.log10(tick)))) + " * 10^" + (Math.floor(Math.log10(tick)))
                     """)
+        p.xaxis.ticker = AdaptiveTicker(mantissas=[1], base=10)
 
         p.xaxis.axis_label = "time (sec)"
         p.yaxis.axis_label = label
