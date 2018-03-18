@@ -349,7 +349,7 @@ class CAVE(object):
             # Sort runhistories and incs wrt cost
             incumbents = [r.solver.incumbent for r in self.runs]
             trajectories = [r.traj for r in self.runs]
-            runhistories = [r.runhistory for r in self.runs]
+            runhistories = [r.original_runhistory for r in self.runs]
             costs = [self.validated_rh.get_cost(i) for i in incumbents]
             costs, incumbents, runhistories, trajectories = (list(t) for t in
                     zip(*sorted(zip(costs, incumbents, runhistories, trajectories), key=lambda

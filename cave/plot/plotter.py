@@ -359,8 +359,8 @@ class Plotter(object):
                 lower[time_idx][0] = l
             time = all_times
         else:  # no new statistics computation necessary
-            validated = runs[0].validated
-            mean, var, time = self._get_mean_var_time(validator, runs[0].traj, not runs[0].validated, rh)
+            validated = True if runs[0].validated_runhistory else False
+            mean, var, time = self._get_mean_var_time(validator, runs[0].traj, not validated, rh)
             upper = lower = mean
 
         mean = mean[:, 0]
