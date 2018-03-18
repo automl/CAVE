@@ -68,7 +68,7 @@ class SMACrun(SMAC):
         # Load trajectory
         self.traj = TrajLogger.read_traj_aclib_format(fn=self.traj_fn,
                                                       cs=self.scen.cs)
-        self.default = self.scen.cs.get_default_configuration
+        self.default = self.scen.cs.get_default_configuration()
         self.incumbent = self.traj[-1]['incumbent']
         self.train_inst = self.scen.train_insts
         self.test_inst = self.scen.test_insts
