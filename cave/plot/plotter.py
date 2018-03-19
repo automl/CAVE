@@ -411,7 +411,7 @@ class Plotter(object):
                 #]+ [(k, '@' + escape_param_name(k)) for k in hp_names])
 
         p = figure(plot_width=700, plot_height=500, tools=[hover],
-                   x_range=Range1d(min(time) + (max(time) - min(time)) * 0.01, max(time)),
+                   x_range=Range1d(max(min(time), 1), max(time)),
                    x_axis_type='log',
                    y_axis_type='log' if self.scenario.run_obj=='runtime' else 'linear',
                    title="Cost over time")
@@ -446,7 +446,9 @@ class Plotter(object):
         p.xaxis.formatter = FuncTickFormatter(code="""
                     return (tick/(10**Math.floor(Math.log10(tick)))) + " * 10^" + (Math.floor(Math.log10(tick)))
                     """)
-        p.xaxis.ticker = AdaptiveTicker(mantissas=[1], base=10)
+        # p.xaxis.ticker = AdaptiveTicker(mantissas=[1, 2, 5], base=10)
+
+        p.legend.location = "bottom_left"
 
         p.xaxis.axis_label = "time (sec)"
         p.yaxis.axis_label = label
