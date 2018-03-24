@@ -3,7 +3,10 @@ def get_tooltip(header):
         "Meta Data": "Meta data, i.e. number of instances and "
                      "parameters as well as configuration budget. "
                      "Statistics apply to the best run, if multiple "
-                     "configurator runs are compared.",
+                     "configurator runs are compared. The p-value of "
+                     "the paired permutation test uses 10000 permutations "
+                     "and tests against the null-hypothesis that the mean "
+                     "of performance between default and incumbent is equal.",
 
         "Best configuration": "Comparing parameters of default and incumbent. "
                               "Parameters that differ from default to "
