@@ -29,7 +29,7 @@ from cave.plot.algorithm_footprint import AlgorithmFootprint
 from cave.smacrun import SMACrun
 from cave.utils.helpers import get_cost_dict_for_config, get_timeout
 from cave.utils.timing import timing
-from cave.utils.permutation_test import permutation_test
+from cave.utils.statistical_tests import paired_permutation
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -189,7 +189,7 @@ class Analyzer(object):
     def _permutation_test(self, default, incumbent, num_permutations):
         def_cost, inc_cost = get_cost_dict_for_config(self.validated_rh, default), get_cost_dict_for_config(self.validated_rh, incumbent)
         data1, data2 = zip(*[(def_cost[i], inc_cost[i]) for i in def_cost.keys()])
-        p = permutation_test(data1, data2, self.rng, logger=self.logger)
+        p = paired_permutation(data1, data2, self.rng, logger=self.logger)
         self.logger.debug("p-value for def/inc-difference: %f (permutation test)", p)
         return p
 

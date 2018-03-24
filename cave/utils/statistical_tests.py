@@ -1,9 +1,5 @@
-import logging
-
-from cave.utils.timing import timing
-
-@timing
-def permutation_test(data1, data2, rng, num_permutations=10000, logger=None):
+def paired_permutation(data1, data2, rng,
+        num_permutations=10000, logger=None):
     """Test for significance using paired permutation.
 
     Parameters:
