@@ -68,7 +68,7 @@ class ConfiguratorFootprint(object):
                  max_plot=None,
                  contour_step_size=0.2,
                  output_dir: str=None,
-                 export=False):
+                 ):
         '''
         Constructor
 
@@ -102,8 +102,6 @@ class ConfiguratorFootprint(object):
         self.contour_step_size = contour_step_size
         self.relevant_rh = None
         self.output_dir = output_dir if output_dir else None
-        self.export = export
-        self.export = True
 
     def run(self):
         """
@@ -540,7 +538,7 @@ class ConfiguratorFootprint(object):
 
         script, div = components(p)
 
-        if self.export and self.output_dir:
+        if self.output_dir:
             path = os.path.join(self.output_dir, "configurator_footprint.png")
             export_bokeh(p, path, self.logger)
 
