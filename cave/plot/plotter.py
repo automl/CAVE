@@ -32,6 +32,7 @@ from bokeh.embed import components
 from bokeh.models import HoverTool, Range1d, FuncTickFormatter
 from bokeh.models.sources import CDSView
 from bokeh.models.filters import GroupFilter
+from bokeh.models.tickers import AdaptiveTicker
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -329,7 +330,8 @@ class Plotter(object):
             for run in runs:
                 # Ignore variances as we plot variance over runs
                 validated = validated and run.traj
-                mean, _, time = self._get_mean_var_time(validator, run.traj, not run.validated, rh)
+                mean, _, time = self._get_mean_var_time(validator, run.traj, not
+                                                        run.validated_runhistory, rh)
                 means.append(mean.flatten())
                 all_times.extend(time)
                 times.append(time)
@@ -360,8 +362,8 @@ class Plotter(object):
                 lower[time_idx][0] = l
             time = all_times
         else:  # no new statistics computation necessary
-            validated = runs[0].validated
-            mean, var, time = self._get_mean_var_time(validator, runs[0].traj, not runs[0].validated, rh)
+            validated = True if runs[0].validated_runhistory else False
+            mean, var, time = self._get_mean_var_time(validator, runs[0].traj, not validated, rh)
             upper = lower = mean
 
         mean = mean[:, 0]
@@ -411,7 +413,7 @@ class Plotter(object):
                 #]+ [(k, '@' + escape_param_name(k)) for k in hp_names])
 
         p = figure(plot_width=700, plot_height=500, tools=[hover],
-                   x_range=Range1d(min(time) + (max(time) - min(time)) * 0.01, max(time)),
+                   x_range=Range1d(max(min(time), 1), max(time)),
                    x_axis_type='log',
                    y_axis_type='log' if self.scenario.run_obj=='runtime' else 'linear',
                    title="Cost over time")
@@ -446,6 +448,9 @@ class Plotter(object):
         p.xaxis.formatter = FuncTickFormatter(code="""
                     return (tick/(10**Math.floor(Math.log10(tick)))) + " * 10^" + (Math.floor(Math.log10(tick)))
                     """)
+        # p.xaxis.ticker = AdaptiveTicker(mantissas=[1, 2, 5], base=10)
+
+        p.legend.location = "bottom_left"
 
         p.xaxis.axis_label = "time (sec)"
         p.yaxis.axis_label = label

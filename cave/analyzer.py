@@ -200,7 +200,7 @@ class Analyzer(object):
         table: str
             overview table in HTML
         """
-        all_confs = self.best_run.runhistory.get_all_configs()
+        all_confs = self.best_run.original_runhistory.get_all_configs()
         num_configs = len(all_confs)
         ta_runtime = np.sum([self.original_rh.get_cost(conf) for conf in all_confs])
         ta_evals = [len(self.original_rh.get_runs_for_config(conf)) for conf in all_confs]
