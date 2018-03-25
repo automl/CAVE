@@ -57,6 +57,7 @@ from ConfigSpace.hyperparameters import FloatHyperparameter, IntegerHyperparamet
 from ConfigSpace import CategoricalHyperparameter, UniformFloatHyperparameter, UniformIntegerHyperparameter
 
 from cave.utils.convert_for_epm import convert_data_for_epm
+from cave.utils.io import export_bokeh
 
 
 class ConfiguratorFootprint(object):
@@ -66,7 +67,8 @@ class ConfiguratorFootprint(object):
                  incs: list=None,
                  max_plot=None,
                  contour_step_size=0.2,
-                 output_dir: str=None):
+                 output_dir: str=None,
+                 export=False):
         '''
         Constructor
 
@@ -100,6 +102,8 @@ class ConfiguratorFootprint(object):
         self.contour_step_size = contour_step_size
         self.relevant_rh = None
         self.output_dir = output_dir if output_dir else None
+        self.export = export
+        self.export = True
 
     def run(self):
         """
@@ -535,5 +539,9 @@ class ConfiguratorFootprint(object):
         p.legend.label_text_font_size = "15pt"
 
         script, div = components(p)
+
+        if self.export and self.output_dir:
+            path = os.path.join(self.output_dir, "configurator_footprint.png")
+            export_bokeh(p, path, self.logger)
 
         return script, div

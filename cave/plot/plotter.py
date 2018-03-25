@@ -25,6 +25,7 @@ from cave.plot.scatter import plot_scatter_plot
 from cave.plot.configurator_footprint import ConfiguratorFootprint
 from cave.plot.parallel_coordinates import ParallelCoordinatesPlotter
 from cave.smacrun import SMACrun
+from cave.utils.io import export_bokeh
 
 from bokeh.plotting import figure, ColumnDataSource
 from bokeh.embed import components
@@ -47,7 +48,7 @@ class Plotter(object):
     they can be easily adapted into other projects.
     """
 
-    def __init__(self, scenario, train_test, conf1_runs, conf2_runs, output):
+    def __init__(self, scenario, train_test, conf1_runs, conf2_runs, output_dir):
         """
         Parameters
         ----------
@@ -58,13 +59,13 @@ class Plotter(object):
         conf1_runs, conf2_runs: list(RunValue)
             lists with smac.runhistory.runhistory.RunValue, from which to read
             cost or time
-        output: str
+        output_dir: str
             output-directory
         """
         self.logger = logging.getLogger("cave.plotter")
         self.scenario = scenario
         self.train_test = train_test
-        self.output = output
+        self.output_dir = output_dir
         self.vizrh = None
 
         # Split data into train and test
@@ -207,7 +208,7 @@ class Plotter(object):
                        scenario=scen,
                        runhistories=runhistories,
                        incs=incumbents, max_plot=max_confs_plot,
-                       output_dir=self.output)
+                       output_dir=self.output_dir)
         r = sz.run()
         self.vizrh = sz.relevant_rh
         return r
@@ -240,7 +241,7 @@ class Plotter(object):
         output: str
             path to plot
         """
-        parallel_coordinates_plotter = ParallelCoordinatesPlotter(rh, self.output,
+        parallel_coordinates_plotter = ParallelCoordinatesPlotter(rh, self.output_dir,
                                                                   validator, self.scenario.cs,
                                                                   runtime=self.scenario.run_obj == 'runtime')
         output = parallel_coordinates_plotter.plot_n_configs(n_configs, params)
@@ -300,7 +301,7 @@ class Plotter(object):
         return mean, var, time
 
     def plot_cost_over_time(self, rh: RunHistory, runs: List[SMACrun],
-                            output: str="performance_over_time.png",
+                            output_fn: str="performance_over_time.png",
                             validator: Union[None, Validator]=None):
         """ Plot performance over time, using all trajectory entries
             with max_time = wallclock_limit or (if inf) the highest
@@ -314,7 +315,8 @@ class Plotter(object):
             rh: RunHistory
                 runhistory to use
             runs: List[SMACrun]
-            output: str
+                list of configurator-runs
+            output_fn: str
                 path to output-png
             validator: TODO description
         """
@@ -420,7 +422,7 @@ class Plotter(object):
         # start after 1% of the configuration budget
         # p.x_range = Range1d(min(time) + (max(time) - min(time)) * 0.01, max(time))
 
-        # Plot
+        ## Plot
         label = self.scenario.run_obj
         label = '{}{}'.format('validated ' if validated else 'estimated ', label)
         p.line('x', 'y', source=source, legend=label)
@@ -455,4 +457,7 @@ class Plotter(object):
         p.legend.label_text_font_size = "15pt"
 
         script, div = components(p)
+
+        #export_bokeh(p, os.path.join(self.output_dir, output_fn), self.logger)
+
         return script, div
