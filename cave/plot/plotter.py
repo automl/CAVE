@@ -292,7 +292,7 @@ class Plotter(object):
                 time.append(entry["wallclock_time"])
                 configs.append(entry["incumbent"])
                 costs = _cost(configs[-1], rh, rh.get_runs_for_config(configs[-1]))
-                print(len(costs), time[-1])
+                #print(len(costs), time[-1])
                 if not costs:
                     time.pop()
                 else:
@@ -441,14 +441,9 @@ class Plotter(object):
         band_y = np.append(uncertainty_lower_double, uncertainty_upper_double[::-1])
         p.patch(band_x, band_y, color='#7570B3', fill_alpha=0.2)
 
-        self.logger.debug(list(zip(band_x, band_y)))
-
         # Format labels as 10^x
         p.xaxis.major_label_orientation = 3/4
-        p.xaxis.formatter = FuncTickFormatter(code="""
-                    return (tick/(10**Math.floor(Math.log10(tick)))) + " * 10^" + (Math.floor(Math.log10(tick)))
-                    """)
-        # p.xaxis.ticker = AdaptiveTicker(mantissas=[1, 2, 5], base=10)
+        p.xaxis.ticker = AdaptiveTicker(mantissas=[1], base=10)
 
         p.legend.location = "bottom_left"
 
@@ -463,6 +458,6 @@ class Plotter(object):
 
         script, div = components(p)
 
-        #export_bokeh(p, os.path.join(self.output_dir, output_fn), self.logger)
+        export_bokeh(p, os.path.join(self.output_dir, output_fn), self.logger)
 
         return script, div
