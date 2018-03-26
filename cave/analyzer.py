@@ -29,6 +29,7 @@ from cave.plot.algorithm_footprint import AlgorithmFootprint
 from cave.smacrun import SMACrun
 from cave.utils.helpers import get_cost_dict_for_config, get_timeout
 from cave.utils.timing import timing
+from cave.utils.statistical_tests import paired_permutation
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -185,6 +186,14 @@ class Analyzer(object):
         else:
             return np.mean([c for i, c in runs])
 
+    def _permutation_test(self, default, incumbent, num_permutations):
+        def_cost, inc_cost = get_cost_dict_for_config(self.validated_rh, default), get_cost_dict_for_config(self.validated_rh, incumbent)
+        data1, data2 = zip(*[(def_cost[i], inc_cost[i]) for i in def_cost.keys()])
+        p = paired_permutation(data1, data2, self.rng, logger=self.logger)
+        self.logger.debug("p-value for def/inc-difference: %f (permutation test)", p)
+        return p
+
+
 ####################################### TABLES #######################################
 
     def create_overview_table(self, best_folder):
@@ -211,6 +220,7 @@ class Analyzer(object):
         num_feats = self.scenario.n_features
         dup_feats = DataFrame(self.scenario.feature_array)  # only contains train instances
         num_dup_feats = len(dup_feats[dup_feats.duplicated()])
+        p_value = round(self._permutation_test(self.default, self.incumbent, 10000), 5)
         overview = OrderedDict([('Run with best incumbent', os.path.basename(best_folder)),
                                 # Constants for scenario
                                 ('# Train instances', len(self.scenario.train_insts)),
@@ -218,29 +228,33 @@ class Analyzer(object):
                                 ('# Parameters', len(self.scenario.cs.get_hyperparameters())),
                                 ('# Features', num_feats),
                                 ('# Duplicate Feature vectors', num_dup_feats),
-                                ('', ''),
+                                ('empty1', 'empty1'),
                                 ('# Evaluated Configurations', num_configs),
                                 ('# Default evaluations', ta_evals_d),
                                 ('# Incumbent evaluations', ta_evals_i),
                                 ('Budget spent evaluating configurations', ta_runtime),
-                                ('', ''),
+                                ('p-value of paired permutation test', p_value),
                                 ('Cutoff', self.scenario.cutoff),
                                 ('Walltime budget', self.scenario.wallclock_limit),
                                 ('Runcount budget', self.scenario.ta_run_limit),
                                 ('CPU budget', self.scenario.algo_runs_timelimit),
                                 ('Deterministic', self.scenario.deterministic),
-                                ('', ''),
+                                ('empty2', 'empty2'),
+                                ('empty3', 'empty3'),
                                 ('# Runs per Config (min)', min_ta_evals),
                                 ('# Runs per Config (mean)', mean_ta_evals),
                                 ('# Runs per Config (max)', max_ta_evals),
                                 ('Total number of configuration runs', ta_evals),
-                                ('', ''),
+                                ('empty4', 'empty4'),
                                ])
         # Split into two columns
         overview_split = self._split_table(overview)
         # Convert to HTML
         df = DataFrame(data=overview_split)
         table = df.to_html(escape=False, header=False, index=False, justify='left')
+        # Insert empty lines
+        for i in range(10):
+            table = table.replace('empty'+str(i), '&nbsp')
         return table
 
     def create_performance_table(self, default, incumbent):
