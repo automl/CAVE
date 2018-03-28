@@ -16,6 +16,10 @@ with open("cave/__version__.py") as fh:
 setuptools.setup(
     name="cave",
     version=version,
+    packages=['cave', 'cave.feature_analysis', 'cave.html', 'cave.plot', 'cave.utils'],
+    package_data={'cave/plot':[
+       'cave/plot/mpl_style'
+    ]},
     author=cave.AUTHORS,
     # TODO author email
     author_email="",
@@ -26,7 +30,6 @@ setuptools.setup(
     url="",
     entry_points={'console_scripts': ['explore-cave=cave.cave_cli:entry_point',
                                       'cave=cave.cave_cli:entry_point']},
-    packages=setuptools.find_packages(exclude=['test', 'source']),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
