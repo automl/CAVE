@@ -9,7 +9,7 @@ mpld3
 bokeh
 smac>=0.8.0
 git+https://github.com/automl/fanova@master
--e git+https://github.com/automl/ParameterImportance.git@development#egg=pimp
+pyimp
 configspace>=0.4.2
 scipy
 sklearn
