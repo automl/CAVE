@@ -189,8 +189,11 @@ class CAVE(object):
         # Estimate missing costs for [def, inc1, inc2, ...]
         self.complete_data(method=missing_data_method)
         self.validated_rh.update(self.original_rh)
-        self.best_run = min(self.runs, key=lambda run:
-                            self.validated_rh.get_cost(run.solver.incumbent))  # type: SMACrun
+
+        # Sort runs (best first)
+        self.runs = sorted(self.runs, key=lambda run:
+                           self.validated_rh.get_cost(run.solver.incumbent))
+        self.best_run = self.runs[0]
 
         self.incumbent = self.best_run.solver.incumbent
         self.pimp.incumbent = self.incumbent

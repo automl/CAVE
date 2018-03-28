@@ -85,3 +85,10 @@ def get_cost_dict_for_config(rh, conf, aggregate=np.median):
         instance_losses = {i: aggregate(instance_losses[i]) for i in instance_losses}
 
     return instance_losses
+
+def escape_parameter_name(p):
+    """Necessary because:
+        1. parameters called 'size' or 'origin' might exist in cs
+        2. '-' not allowed in bokeh's CDS"""
+    return 'p_' + p.replace('-','_')
+
