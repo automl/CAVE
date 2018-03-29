@@ -1,25 +1,62 @@
+import os
+import shutil
+import subprocess
+import sys
+import traceback
 import setuptools
+from setuptools.command.install import install
 
 import cave
-
 
 with open('requirements.txt') as fh:
     requirements = fh.read()
 requirements = requirements.split('\n')
 requirements = [requirement.strip() for requirement in requirements
-                  if not "http" in requirement]
+                if not "http" in requirement]
 
 with open("cave/__version__.py") as fh:
     version = fh.readlines()[-1].split()[-1].strip("\"'")
 
+WEB_FILES_LOCATION = os.path.join(os.path.dirname(__file__), 'cave/html/web_files')
 
 setuptools.setup(
     name="cave",
     version=version,
     packages=['cave', 'cave.feature_analysis', 'cave.html', 'cave.plot', 'cave.utils'],
-    package_data={'cave/plot':[
-       'cave/plot/mpl_style'
-    ]},
+    package_data={
+        'cave/plot': [
+            'cave/plot/mpl_style'
+        ],
+        'cave/html': [
+            'cave/html/web_files/css/accordion.css',
+            'cave/html/web_files/css/back-to-top.css',
+            'cave/html/web_files/css/bokeh-0.12.13.min.css',
+            'cave/html/web_files/css/global.css',
+            'cave/html/web_files/css/help-tip.css',
+            'cave/html/web_files/css/lightbox.min.css',
+            'cave/html/web_files/css/table.css',
+
+            'cave/html/web_files/font/fontello/config.json',
+            'cave/html/web_files/font/fontello/fontello.eot',
+            'cave/html/web_files/font/fontello/fontello.svg',
+            'cave/html/web_files/font/fontello/fontello.ttf',
+            'cave/html/web_files/font/fontello/fontello.woff',
+            'cave/html/web_files/font/fontello/fontello.woff2',
+
+            'cave/html/web_files/images/close.png',
+            'cave/html/web_files/images/COSEAL_small.png',
+            'cave/html/web_files/images/loading.png',
+            'cave/html/web_files/images/ml4aad.png',
+            'cave/html/web_files/images/next.png',
+            'cave/html/web_files/images/prev.png',
+            'cave/html/web_files/images/SMAC3.png',
+            'cave/html/web_files/images/close.png',
+
+            'cave/html/web_files/js/back-to-top.js',
+            'cave/html/web_files/js/bokeh-0.12.13.min.js',
+            'cave/html/web_files/js/lightbox-plus-jquery.min.js',
+        ]},
+    include_package_data=True,
     author=cave.AUTHORS,
     # TODO author email
     author_email="",

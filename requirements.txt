@@ -8,8 +8,8 @@ sphinx_rtd_theme
 mpld3
 bokeh
 smac>=0.8.0
-git+https://github.com/automl/fanova@master
-pyimp
+fanova
+pyimp>=1.0.1
 configspace>=0.4.2
 scipy
 sklearn
