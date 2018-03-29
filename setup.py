@@ -58,8 +58,7 @@ setuptools.setup(
         ]},
     include_package_data=True,
     author=cave.AUTHORS,
-    # TODO author email
-    author_email="",
+    author_email="biedenka@cs.uni-freiburg.de",
     description=("CAVE, an analyzing tool for configuration optimizers"),
     license="3-clause BSD",
     keywords="machine learning algorithm configuration hyperparameter "
