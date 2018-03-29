@@ -43,7 +43,7 @@ def get_timeout(rh, conf, cutoff):
     timeouts = {i : np.floor(np.median(timeouts[i])) for i in timeouts.keys()}
     return timeouts
 
-def get_cost_dict_for_config(rh, conf, aggregate=np.mean):
+def get_cost_dict_for_config(rh, conf, aggregate=np.median):
     """
     Aggregates loss for configuration on evaluated instances over seeds.
 

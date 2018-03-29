@@ -12,7 +12,7 @@ from pandas import DataFrame
 
 from ConfigSpace import Configuration
 from smac.epm.rf_with_instances import RandomForestWithInstances
-from smac.optimizer.objective import average_cost
+from smac.optimizer.objective import average_cost, _cost
 from smac.runhistory.runhistory import RunKey, RunValue, RunHistory
 from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
 from smac.scenario.scenario import Scenario
@@ -28,6 +28,7 @@ from cave.smacrun import SMACrun
 from cave.analyzer import Analyzer
 from cave.utils.helpers import get_cost_dict_for_config
 from cave.utils.tooltips import get_tooltip
+from cave.utils.timing import timing
 
 from cave.feature_analysis.feature_analysis import FeatureAnalysis
 from cave.plot.algorithm_footprint import AlgorithmFootprint
@@ -57,13 +58,28 @@ class CAVE(object):
 
     def __init__(self, folders: typing.List[str], output: str,
                  ta_exec_dir: Union[str, None]=None, missing_data_method: str='epm',
-                 max_pimp_samples: int=-1, fanova_pairwise=True):
+                 max_pimp_samples: int=-1, fanova_pairwise=True,
+                 pimp_sort_table_by="average", seed=None):
         """
         Initialize CAVE facade to handle analyzing, plotting and building the
         report-page easily. During initialization, the analysis-infrastructure
-        is built and the data is validated, meaning the overall best
+        is built and the data is validated, the overall best
         incumbent is found and default+incumbent are evaluated for all
         instances for all runs, by default using an EPM.
+
+        Runhistories are organized as follows:
+            - each ConfiguratorRun has an `original_runhistory`- and a
+              `combined_runhistory`-attribute
+            - if available, each ConfiguratorRun's `validated_runhistory` contains
+              a runhistory with validation-data gathered after the optimization
+            - `combined_runhistory` always contains as many real runs as possible
+
+            - CaveFacade contains three runhistorie:
+                - `original_rh`: original runs that have been performed
+                                _during optimization_!
+                - `validated_rh`: runs that have been validated, so they were
+                                  not part of the original optimization
+
         The class holds two runhistories:
             self.original_rh -> only contains runs from the actual data
             self.validated_rh -> contains original runs and epm-predictions for
@@ -82,11 +98,15 @@ class CAVE(object):
             from [validation, epm], how to estimate missing runs
         """
         self.logger = logging.getLogger("cave.cavefacade")
-        self.logger.debug("Folders: %s", str(folders))
+        if isinstance(ta_exec_dir, list):
+            if len(ta_exec_dir) < 2:
+                ta_exec_dir = ta_exec_dir[0]
         self.ta_exec_dir = ta_exec_dir
+        self.output = output
+        self.rng = np.random.RandomState(seed) if seed else np.random.RandomState(42)
 
         # Create output if necessary
-        self.output = output
+        self.logger.debug("Folders: %s", str(folders))
         self.logger.info("Saving results to %s", self.output)
         if not os.path.exists(output):
             self.logger.debug("Output-dir %s does not exist, creating", self.output)
@@ -99,18 +119,21 @@ class CAVE(object):
         handler.setLevel(logging.DEBUG)
         logger.addHandler(handler)
 
-        # Global runhistory combines all actual runs of individual SMAC-runs
-        # We save the combined (unvalidated) runhistory to disk, so we can use it later on.
-        # We keep the validated runhistory (with as many runs as possible) in
-        # memory. The distinction is made to avoid using runs that are
-        # only estimated using an EPM for further EPMs or to handle runs
-        # validated on different hardware (depending on validation-method).
+        # All runs that have been actually explored during optimization
         self.original_rh = RunHistory(average_cost)
+        # All original runs + EPM-estimated for def and inc on all insts
         self.validated_rh = RunHistory(average_cost)
+        # We use it to initialize an Importance-object. From the
+        # Importance-object, we can use the trained random-forest-model for all
+        # further purposes.
 
         # Save all relevant SMAC-runs in a list
         self.runs = []
         for folder in folders:
+            if isinstance(self.ta_exec_dir, list):
+                for d in self.ta_exec_dir:
+                    if d in folder:
+                        ta_exec_dir = d
             try:
                 self.logger.debug("Collecting data from %s.", folder)
                 self.runs.append(SMACrun(folder, ta_exec_dir))
@@ -120,33 +143,57 @@ class CAVE(object):
                 continue
         if not len(self.runs):
             raise ValueError("None of the specified SMAC-folders could be loaded.")
+        self.ta_exec_dir = ta_exec_dir
 
         # Use scenario of first run for general purposes (expecting they are all the same anyway!)
         self.scenario = self.runs[0].solver.scenario
+        self.default = self.scenario.cs.get_default_configuration()
 
         # Update global runhistory with all available runhistories
         self.logger.debug("Update original rh with all available rhs!")
-        runhistory_fns = [os.path.join(run.folder, "runhistory.json") for run in self.runs]
-        for rh_file in runhistory_fns:
-            self.original_rh.update_from_json(rh_file, self.scenario.cs)
-        self.logger.debug('Combined number of Runhistory data points: %d. '
-                          '# Configurations: %d. # Runhistories: %d',
-                          len(self.original_rh.data),
-                          len(self.original_rh.get_all_configs()),
-                          len(runhistory_fns))
-        self.original_rh.save_json(os.path.join(self.output, "combined_rh.json"))
+        for run in self.runs:
+            # if validated r
+            self.original_rh.update(run.original_runhistory)
 
-        # Validator for a) validating with epm, b) plot over time
-        # Initialize without trajectory
+        self.validated_rh.update(self.original_rh)
+        for run in self.runs:
+            self.validated_rh.update(run.combined_runhistory)
+
+        for rh_name, rh in [("original", self.original_rh),
+                            ("validated", self.validated_rh)]:
+            self.logger.debug('Combined number of RunHistory data points '
+                              'for %s runhistory: %d '
+                              '# Configurations: %d. # Configurator runs: %d',
+                              rh_name,
+                              len(self.original_rh.data),
+                              len(self.original_rh.get_all_configs()),
+                              len(self.runs))
+
+        # Create ParameterImportance-object and use it's trained model for
+        # validation and further predictions
+        self.pimp = Importance(scenario=copy.deepcopy(self.scenario),
+                               runhistory=self.validated_rh,
+                               incumbent=self.default,  # Inject correct incumbent later
+                               parameters_to_evaluate=4,
+                               save_folder=self.output,
+                               seed=seed if seed else 12345,
+                               max_sample_size=max_pimp_samples,
+                               fANOVA_pairwise=fanova_pairwise,
+                               preprocess=False)
+        self.model = self.pimp.model
+
+        # Validator (initialize without trajectory)
         self.validator = Validator(self.scenario, None, None)
+        self.validator.epm = self.model
 
         # Estimate missing costs for [def, inc1, inc2, ...]
         self.complete_data(method=missing_data_method)
+        self.validated_rh.update(self.original_rh)
         self.best_run = min(self.runs, key=lambda run:
-                self.validated_rh.get_cost(run.solver.incumbent))
+                            self.validated_rh.get_cost(run.solver.incumbent))  # type: SMACrun
 
-        self.default = self.scenario.cs.get_default_configuration()
         self.incumbent = self.best_run.solver.incumbent
+        self.pimp.incumbent = self.incumbent
 
         self.logger.debug("Overall best run: %s, with incumbent: %s",
                           self.best_run.folder, self.incumbent)
@@ -157,14 +204,20 @@ class CAVE(object):
                                self.scenario.test_insts != [None])
 
         self.analyzer = Analyzer(self.original_rh, self.validated_rh,
-                                 self.default, self.incumbent, self.train_test,
-                                 self.scenario, self.validator, self.output,
-                                 max_pimp_samples, fanova_pairwise)
+                                 self.best_run, self.train_test,
+                                 self.scenario, self.validator, self.pimp,
+                                 self.model, self.output,
+                                 max_pimp_samples, fanova_pairwise,
+                                 rng=self.rng)
+
+        self.pimp_sort_table_by = pimp_sort_table_by
 
         self.builder = HTMLBuilder(self.output, "CAVE")
         # Builder for html-website
         self.website = OrderedDict([])
 
+
+    @timing
     def complete_data(self, method="epm"):
         """Complete missing data of runs to be analyzed. Either using validation
         or EPM.
@@ -174,6 +227,8 @@ class CAVE(object):
 
             path_for_validated_rhs = os.path.join(self.output, "validated_rhs")
             for run in self.runs:
+                if run.validated_runhistory:
+                    self.logger.debug("%s already validated, skipping!", run.folder)
                 self.validator.traj = run.traj
                 if method == "validation":
                     # TODO determine # repetitions
@@ -183,11 +238,11 @@ class CAVE(object):
                     new_rh = self.validator.validate_epm('def+inc', 'train+test', 1,
                                                          runhistory=self.original_rh)
                 else:
-                    raise ValueError("Missing data method illegal (%s)",
-                                     method)
+                    raise ValueError("Missing data method illegal (%s)", method)
                 self.validator.traj = None  # Avoid usage-mistakes
                 self.validated_rh.update(new_rh)
 
+    @timing
     def analyze(self,
                 performance=True, cdf=True, scatter=True, confviz=True,
                 param_importance=['forward_selection', 'ablation', 'fanova'],
@@ -224,7 +279,7 @@ class CAVE(object):
 
         # Check arguments
         for p in param_importance:
-            if p not in ['forward_selection', 'ablation', 'fanova', 'incneighbor']:
+            if p not in ['forward_selection', 'ablation', 'fanova', 'lpi']:
                 raise ValueError("%s not a valid option for parameter "
                                  "importance!", p)
         for f in feature_analysis:
@@ -271,11 +326,16 @@ class CAVE(object):
 
             algo_footprint_plots = self.analyzer.plot_algorithm_footprint(algorithms)
             self.website["Performance Analysis"]["Algorithm Footprints"] = OrderedDict()
-            for p in algo_footprint_plots:
-                header = os.path.splitext(os.path.split(p)[1])[0]  # algo name
+            p_2d = algo_footprint_plots[0]
+            p_3d = algo_footprint_plots[1]
+            header = "Default vs Incumbent 2d"
+            self.website["Performance Analysis"]["Algorithm Footprints"][header] = {
+                "figure" : p_2d}
+            for plots in p_3d:
+                header = os.path.splitext(os.path.split(plots[0])[1])[0][10:-2]
+                header = header[0].upper() + header[1:].replace('_', ' ')
                 self.website["Performance Analysis"]["Algorithm Footprints"][header] = {
-                    "figure" : p,
-                    "tooltip" : get_tooltip("Algorithm Footprints") + ": " + header}
+                    "figure_x2" : plots}
 
 
         self.build_website()
@@ -289,16 +349,17 @@ class CAVE(object):
             # Sort runhistories and incs wrt cost
             incumbents = [r.solver.incumbent for r in self.runs]
             trajectories = [r.traj for r in self.runs]
-            runhistories = [r.runhistory for r in self.runs]
+            runhistories = [r.original_runhistory for r in self.runs]
             costs = [self.validated_rh.get_cost(i) for i in incumbents]
             costs, incumbents, runhistories, trajectories = (list(t) for t in
                     zip(*sorted(zip(costs, incumbents, runhistories, trajectories), key=lambda
                         x: x[0])))
             incumbents = list(map(lambda x: x['incumbent'], trajectories[0]))
+            assert(incumbents[-1] == trajectories[0][-1]['incumbent'])
 
-            confviz_script = self.analyzer.plot_confviz(incumbents, runhistories)
+            confviz_script = self.analyzer.plot_confviz(incumbents, runhistories, max_confs=5000)
             self.website["Configurator's behavior"]["Configurator Footprint"] = {
-                    "table" : confviz_script}
+                    "bokeh" : confviz_script}
         elif confviz:
             self.logger.info("Configuration visualization desired, but no "
                              "instance-features available.")
@@ -306,8 +367,8 @@ class CAVE(object):
         self.build_website()
 
         if cost_over_time:
-            cost_over_time_path = self.analyzer.plot_cost_over_time(self.best_run.traj, self.validator)
-            self.website["Configurator's behavior"]["Cost over time"] = {"figure": cost_over_time_path}
+            cost_over_time_script = self.analyzer.plot_cost_over_time(self.runs, self.validator)
+            self.website["Configurator's behavior"]["Cost over time"] = {"bokeh": cost_over_time_script}
 
         self.build_website()
 
@@ -315,7 +376,7 @@ class CAVE(object):
                                   fanova='fanova' in param_importance,
                                   forward_selection='forward_selection' in
                                                     param_importance,
-                                  incneighbor='incneighbor' in param_importance)
+                                  lpi='lpi' in param_importance)
 
         self.build_website()
 
@@ -343,10 +404,10 @@ class CAVE(object):
 
 
     def parameter_importance(self, ablation=False, fanova=False,
-                             forward_selection=False, incneighbor=False):
+                             forward_selection=False, lpi=False):
         """Perform the specified parameter importance procedures. """
         # PARAMETER IMPORTANCE
-        if (ablation or forward_selection or fanova or incneighbor):
+        if (ablation or forward_selection or fanova or lpi):
             self.website["Parameter Importance"] = OrderedDict()
         sum_ = 0
         if fanova:
@@ -384,12 +445,12 @@ class CAVE(object):
             self.logger.info("Forward Selection...")
             self.analyzer.parameter_importance("forward-selection", self.incumbent,
                                                self.output)
-            f_s_barplot_path = os.path.join(self.output, "forward selection-barplot.png")
-            f_s_chng_path = os.path.join(self.output, "forward selection-chng.png")
-            self.website["Parameter Importance"]["Forward Selection"] = {
+            f_s_barplot_path = os.path.join(self.output, "forward-selection-barplot.png")
+            f_s_chng_path = os.path.join(self.output, "forward-selection-chng.png")
+            self.website["Parameter Importance"]["Forward-Selection"] = {
                         "figure": [f_s_barplot_path, f_s_chng_path]}
 
-        if incneighbor:
+        if lpi:
             sum_ += 1
             self.logger.info("Local EPM-predictions around incumbent...")
             plots = self.analyzer.local_epm_plots()
@@ -402,6 +463,17 @@ class CAVE(object):
             of = os.path.join(self.output, 'pimp.tex')
             self.logger.info('Creating pimp latex table at %s' % of)
             self.analyzer.pimp.table_for_comparison(self.analyzer.evaluators, of, style='latex')
+
+            table = self.analyzer.importance_table(self.pimp_sort_table_by)
+            self.website["Parameter Importance"]["Importance Table"] = {
+                    "table" : table,
+                    "tooltip" : "Parameters are sorted by the {} "
+                                "importance-value. Note, that the values are not "
+                                "directly comparable, since the different techniques "
+                                "provide different metrics (see respective tooltips "
+                                "for details on the differences).".format(
+                                    self.pimp_sort_table_by)}
+            self.website["Parameter Importance"].move_to_end("Importance Table", last=False)
 
 
     def feature_analysis(self, box_violin=False, correlation=False,

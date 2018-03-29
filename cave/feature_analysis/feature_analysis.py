@@ -19,8 +19,6 @@ import matplotlib
 from sklearn.tree.tests.test_tree import y_random
 import matplotlib.pyplot as plt
 
-from plottingscripts.plotting.scatter import plot_scatter_plot
-
 __author__ = "Marius Lindauer"
 __copyright__ = "Copyright 2016, ML4AAD"
 __license__ = "MIT"
@@ -52,7 +50,6 @@ class FeatureAnalysis(object):
         self.logger = logging.getLogger("Feature Analysis")
         self.scenario = scenario
         self.feat_names = scenario.feature_names
-        self.logger.debug(self.feat_names)
         self.feat_imp = feat_importance
         self.feature_data = {}
         for name in feat_names:
@@ -231,7 +228,6 @@ class FeatureAnalysis(object):
         for n_clusters in range(2, 12):
             km = KMeans(n_clusters=n_clusters)
             y_pred = km.fit_predict(features)
-            self.logger.debug(features)
             score = silhouette_score(features, y_pred)
             scores.append(score)
 
