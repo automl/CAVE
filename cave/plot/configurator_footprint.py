@@ -601,14 +601,10 @@ class ConfiguratorFootprint(object):
         code = js_runs + js_size + """
 var data = source.data;
 var time = time.value;
-x = data['x'];
-y = data['y'];
 size = data['size'];
 runs = data['runs'];
-for (i = 0; i < x.length; i++) {
-    runs[i] = runs_data[time][i]
-    size[i] = size_data[time][i]
-}
+runs = runs_data[time]
+size = size_data[time]
 source.change.emit();
 """
         # Create callback and slider itself
