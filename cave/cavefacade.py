@@ -6,6 +6,7 @@ from contextlib import contextmanager
 import typing
 import json
 import copy
+import traceback
 
 import numpy as np
 from pandas import DataFrame
@@ -13,7 +14,7 @@ from pandas import DataFrame
 from ConfigSpace import Configuration
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.optimizer.objective import average_cost, _cost
-from smac.runhistory.runhistory import RunKey, RunValue, RunHistory
+from smac.runhistory.runhistory import RunKey, RunValue, RunHistory, DataOrigin
 from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
 from smac.scenario.scenario import Scenario
 from smac.utils.io.traj_logging import TrajLogger
@@ -24,7 +25,7 @@ from pimp.importance.importance import Importance
 
 from cave.html.html_builder import HTMLBuilder
 from cave.plot.plotter import Plotter
-from cave.smacrun import SMACrun
+from cave.reader.configurator_run import ConfiguratorRun
 from cave.analyzer import Analyzer
 from cave.utils.helpers import get_cost_dict_for_config
 from cave.utils.tooltips import get_tooltip
@@ -136,10 +137,11 @@ class CAVE(object):
                         ta_exec_dir = d
             try:
                 self.logger.debug("Collecting data from %s.", folder)
-                self.runs.append(SMACrun(folder, ta_exec_dir))
+                self.runs.append(ConfiguratorRun(folder, ta_exec_dir))
             except Exception as err:
                 self.logger.warning("Folder %s could not be loaded, failed "
                                     "with error message: %s", folder, err)
+                self.logger.debug(traceback.format_exc())
                 continue
         if not len(self.runs):
             raise ValueError("None of the specified SMAC-folders could be loaded.")
@@ -153,11 +155,15 @@ class CAVE(object):
         self.logger.debug("Update original rh with all available rhs!")
         for run in self.runs:
             # if validated r
-            self.original_rh.update(run.original_runhistory)
+            self.original_rh.update(run.original_runhistory,
+                                    origin=DataOrigin.INTERNAL)
 
-        self.validated_rh.update(self.original_rh)
+        self.validated_rh.update(self.original_rh,
+                                 origin=DataOrigin.INTERNAL)
         for run in self.runs:
-            self.validated_rh.update(run.combined_runhistory)
+            if run.validated_runhistory:
+                self.validated_rh.update(run.validated_runhistory,
+                                         origin=DataOrigin.EXTERNAL_SAME_INSTANCES)
 
         for rh_name, rh in [("original", self.original_rh),
                             ("validated", self.validated_rh)]:

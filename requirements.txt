@@ -10,7 +10,7 @@ bokeh
 smac>=0.8.0
 git+https://github.com/automl/fanova@master
 -e git+https://github.com/automl/ParameterImportance.git@development#egg=pimp
-configspace>=0.4.2
+configspace>=0.4.6
 scipy
 sklearn
 orange3

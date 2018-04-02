@@ -13,21 +13,17 @@ from smac.utils.io.traj_logging import TrajLogger
 from smac.utils.validate import Validator
 from smac.optimizer.objective import _cost
 
-@contextmanager
-def changedir(newdir):
-    olddir = os.getcwd()
-    os.chdir(os.path.expanduser(newdir))
-    try:
-        yield
-    finally:
-        os.chdir(olddir)
+from cave.reader.smac3_reader import SMAC3Reader
 
-class SMACrun(SMAC):
+
+class ConfiguratorRun(SMAC):
     """
-    SMACrun keeps all information on a specific SMAC run. Extends the standard
-    SMAC-facade.
+    ConfiguratorRuns load and maintain information about individual configurator
+    runs. There are three supported formats: SMAC3, SMAC2 and CSV
+    This class is responsible for providing a scenario, a runhistory and a
+    trajectory.
     """
-    def __init__(self, folder: str, ta_exec_dir: str='.'):
+    def __init__(self, folder: str, ta_exec_dir: str='.', file_format: str='SMAC3'):
         """Initialize scenario, runhistory and incumbent from folder, execute
         init-method of SMAC facade (so you could simply use SMAC-instances instead)
 
@@ -40,46 +36,37 @@ class SMACrun(SMAC):
             there might be problems loading instance-, feature- or PCS-files
             in the scenario-object. since instance- and PCS-files are necessary,
             specify the path to the execution-dir of SMAC here
+        file_format: string
+            from [SMAC2, SMAC3, CSV]
         """
-        run_1_existed = os.path.exists('run_1')
         self.logger = logging.getLogger("cave.SMACrun.{}".format(folder))
-        in_reader = InputReader()
-
         self.folder = folder
         self.logger.debug("Loading from %s", folder)
+        self.ta_exec_dir = ta_exec_dir
 
-        split_folder = os.path.split(folder)
-        self.logger.info(split_folder)
-        if ta_exec_dir is None:
-            ta_exec_dir = '.'
+        if file_format == 'SMAC3':
+            self.reader = SMAC3Reader(folder, ta_exec_dir)
+        elif file_format == 'SMAC2':
+            self.reader = SMAC2Reader(folder, ta_exec_dir)
+        elif file_format == 'CSV':
+            self.reader = CSVReader(folder, ta_exec_dir)
+        else:
+            raise ValueError("%s not supported as file-format" % file_format)
 
-        self.traj_fn = os.path.join(folder, 'traj_aclib2.json')
-        self.traj_old_fn = os.path.join(folder, 'traj_old.csv')
+        self.scen = self.reader.get_scenario()
+        self.original_runhistory, self.validated_runhistory = self.reader.get_runhistory(self.scen.cs)
+        self.traj = self.reader.get_trajectory(cs=self.scen.cs)
 
-        # Create Scenario (disable output_dir to avoid cluttering)
-        self.scen_fn = os.path.join(folder, 'scenario.txt')
-        scen_dict = in_reader.read_scenario_file(self.scen_fn)
-        scen_dict['output_dir'] = ""
-        with changedir(ta_exec_dir):
-            self.logger.debug("Creating scenario from \"%s\"", ta_exec_dir)
-            self.scen = Scenario(scen_dict)
-
-        # Load RunHistory
-        self.rh_fn, self.original_runhistory = self._read_runhistory(file_format=self.file_format)
-        try:
-            self.validated_rh_fn, self.validated_runhistory = self._read_runhistory(file_format=self.file_format)
-            # Check validated runhistory for completeness
-            if self._check_rh_for_inc_and_def(self.validated_runhistory):
-                self.logger.info("Found validated runhistory for \"%s\" and using "
-                                  "it for evaluation. #configs in validated rh: %d",
-                                  self.folder, len(self.validated_runhistory.config_ids))
-            else:
-                self.logger.warning("Found validated runhistory, but it's not "
-                                    "evaluated for default and incumbent, so "
-                                    "it's disregarded.")
-                self.validated_runhistory = False
-        except FileNotFoundError:
-            self.logger.debug("No validated runhistory for \"%s\" found (probably ok)")
+        # Check validated runhistory for completeness
+        if (self.validated_runhistory and
+            self._check_rh_for_inc_and_def(self.validated_runhistory)):
+            self.logger.info("Found validated runhistory for \"%s\" and using "
+                              "it for evaluation. #configs in validated rh: %d",
+                              self.folder, len(self.validated_runhistory.config_ids))
+        elif self.validated_runhistory:
+            self.logger.warning("Found validated runhistory, but it's not "
+                                "evaluated for default and incumbent, so "
+                                "it's disregarded.")
             self.validated_runhistory = False
 
         self.combined_runhistory = RunHistory(average_cost)
@@ -89,9 +76,7 @@ class SMACrun(SMAC):
             self.combined_runhistory.update(self.validated_runhistory,
                                             origin=DataOrigin.EXTERNAL_SAME_INSTANCES)
 
-        # Load trajectory
-        self.traj = TrajLogger.read_traj_aclib_format(fn=self.traj_fn,
-                                                      cs=self.scen.cs)
+
         self.default = self.scen.cs.get_default_configuration()
         self.incumbent = self.traj[-1]['incumbent']
         self.train_inst = self.scen.train_insts
@@ -102,9 +87,6 @@ class SMACrun(SMAC):
                 #restore_incumbent=incumbent)
         # TODO use restore, delete next line
         self.solver.incumbent = self.incumbent
-
-        if (not run_1_existed) and os.path.exists('run_1'):
-            shutil.rmtree('run_1')
 
     def get_incumbent(self):
         return self.solver.incumbent
@@ -144,8 +126,6 @@ class SMACrun(SMAC):
         (path, rh)
         """
         if file_format == 'smac3':
-            rh = RunHistory(average_cost)
-            rh.load_from_json(rh_fn, self.scen.cs)
             return (rh_fn, rh)
         elif file_format == 'smac2':
             rh = SMAC2Reader().read_from_csv(self.folder,
