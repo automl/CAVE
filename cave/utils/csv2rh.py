@@ -6,7 +6,7 @@ from typing import Union
 import pandas as pd
 import numpy as np
 
-from smac.runhistory.runhistory import RunHistory
+from smac.runhistory.runhistory import RunHistory, DataOrigin
 from smac.optimizer.objective import average_cost, _cost
 from smac.utils.io.input_reader import InputReader
 from smac.tae.execute_ta_run import StatusType
@@ -25,7 +25,7 @@ class CSV2RH(object):
     def __init__(self):
         pass
 
-    def read_csv_to_rh(self, csv_path,
+    def read_csv_to_rh(self, data,
                        pcs:Union[None, str, ConfigurationSpace]=None,
                        configurations:Union[None, str, dict]=None,
                        train_inst:Union[None, str, list]=None,
@@ -60,13 +60,17 @@ class CSV2RH(object):
         self.cs = None
 
         # Read in data
-        with open(csv_path, 'r') as csv_file:
-            csv_data = list(csv.reader(csv_file, delimiter=',',
-                                       skipinitialspace=True))
-        header, csv_data = csv_data[0], np.array([csv_data[1:]])[0]
-        self.data = pd.DataFrame(csv_data, columns=header)
-        self.data = self.data.apply(pd.to_numeric, errors='ignore')
-        self.logger.debug("Headers: " + str(list(self.data.columns.values)))
+        if isinstance(data, str):
+            csv_path = data
+            with open(csv_path, 'r') as csv_file:
+                csv_data = list(csv.reader(csv_file, delimiter=',',
+                                           skipinitialspace=True))
+            header, csv_data = csv_data[0], np.array([csv_data[1:]])[0]
+            self.data = pd.DataFrame(csv_data, columns=header)
+            self.data = self.data.apply(pd.to_numeric, errors='ignore')
+            self.logger.debug("Headers: " + str(list(self.data.columns.values)))
+        else:
+            self.data = data
 
         # Expecting header as described in docstring
         valid_values = ['seed', 'cost', 'time', 'status', 'config_id', 'instance_id']
@@ -87,6 +91,7 @@ class CSV2RH(object):
 
         # Create RunHistory
         rh = RunHistory(average_cost)
+        print(self.id_to_config)
         def add_to_rh(row):
             new_status = self._interpret_status(row['status']) if 'status' in row else StatusType.SUCCESS
             rh.add(config=self.id_to_config[row['config_id']],
@@ -95,8 +100,8 @@ class CSV2RH(object):
                    status=new_status,
                    instance_id=row['instance_id'] if 'instance_id' in row else None,
                    seed=row['seed'] if 'seed' in row else None,
-                   additional_info=None,)
-            #       origin: DataOrigin=DataOrigin.INTERNAL):
+                   additional_info=None,
+                   origin=DataOrigin.INTERNAL)
 
         self.data.apply(add_to_rh, axis=1)
         return rh
@@ -171,38 +176,43 @@ class CSV2RH(object):
                 raise ValueError("When defining configs with \"config_id\" "
                                  "in header, you need to provide the argument "
                                  "\"configurations\" to the CSV2RH-object.")
-            # Read in configs from csv
-            with open(self.id_to_config, 'r') as csv_file:
-                config_data = list(csv.reader(csv_file, delimiter=',',
-                                           skipinitialspace=True))
-            header, config_data = config_data[0], np.array([config_data[1:]])[0]
-            config_data = pd.DataFrame(config_data, columns=header)
-            config_data.set_index('CONFIG_ID', inplace=True)
-            config_data = config_data.apply(pd.to_numeric, errors='ignore')
-            print(config_data)
-            parameters = ['p_' + p for p in config_data.columns]
-            print(parameters)
-            # Create and fill in p_-columns for cs-creation
-            for p in parameters:
-                self.data[p] = 0
-            def fill_parameters(row):
+            elif isinstance(self.id_to_config, str):
+                # Read in configs from csv
+                with open(self.id_to_config, 'r') as csv_file:
+                    config_data = list(csv.reader(csv_file, delimiter=',',
+                                               skipinitialspace=True))
+                header, config_data = config_data[0], np.array([config_data[1:]])[0]
+                config_data = pd.DataFrame(config_data, columns=header)
+                config_data.set_index('CONFIG_ID', inplace=True)
+                config_data = config_data.apply(pd.to_numeric, errors='ignore')
+                print(config_data)
+                parameters = ['p_' + p for p in config_data.columns]
+                print(parameters)
+                # Create and fill in p_-columns for cs-creation
                 for p in parameters:
-                    print(p)
-                    row[p] = config_data.loc[row['config_id'], p[2:]]
-                return row
-            print(self.data)
-            self.data = self.data.apply(fill_parameters, axis=1)
-            print(self.data)
-            self.get_cs()
-            self.id_to_config = {}
-            for index, row in config_data.iterrows():
-                print(list(zip(parameters, row)))
-                self.id_to_config[index] = Configuration(self.cs,
-                        values={name[2:] : value for name, value in
-                                         zip(parameters, row)})
-            print(self.id_to_config)
-            self.config_to_id = {conf : name for name, conf in
-                    self.id_to_config.items()}
+                    self.data[p] = 0
+                def fill_parameters(row):
+                    for p in parameters:
+                        print(p)
+                        row[p] = config_data.loc[row['config_id'], p[2:]]
+                    return row
+                print(self.data)
+                self.data = self.data.apply(fill_parameters, axis=1)
+                print(self.data)
+                self.get_cs()
+                self.id_to_config = {}
+                for index, row in config_data.iterrows():
+                    print(list(zip(parameters, row)))
+                    self.id_to_config[index] = Configuration(self.cs,
+                            values={name[2:] : value for name, value in
+                                             zip(parameters, row)})
+                print(self.id_to_config)
+                self.config_to_id = {conf : name for name, conf in
+                        self.id_to_config.items()}
+            elif isinstance(self.id_to_config, dict):
+                self.config_to_id = {conf : name for name, conf in
+                        self.id_to_config.items()}
+                self.get_cs()
         elif parameters:
             # Add new column for config-ids
             self.data['config_id'] = -1

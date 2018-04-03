@@ -14,6 +14,7 @@ from smac.utils.validate import Validator
 from smac.optimizer.objective import _cost
 
 from cave.reader.smac3_reader import SMAC3Reader
+from cave.reader.smac2_reader import SMAC2Reader
 
 
 class ConfiguratorRun(SMAC):
@@ -41,8 +42,9 @@ class ConfiguratorRun(SMAC):
         """
         self.logger = logging.getLogger("cave.SMACrun.{}".format(folder))
         self.folder = folder
-        self.logger.debug("Loading from %s", folder)
         self.ta_exec_dir = ta_exec_dir
+        self.logger.debug("Loading from %s", folder)
+        self.logger.debug("ta_exec_dir %s", ta_exec_dir)
 
         if file_format == 'SMAC3':
             self.reader = SMAC3Reader(folder, ta_exec_dir)

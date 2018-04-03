@@ -183,6 +183,7 @@ class CaveCLI(object):
         else:
             logging.basicConfig(level=logging.DEBUG)
         logging.getLogger("smac.scenario").setLevel(logging.INFO)
+        logging.getLogger("pimp.epm.unlogged_epar_x_rfwi.UnloggedEPARXrfi").setLevel(logging.INFO)
 
         # SMAC results
         folders = []
@@ -191,7 +192,9 @@ class CaveCLI(object):
                 folders.extend(list(glob.glob(f, recursive=True)))
             else:
                 folders.append(f)
-        cave = CAVE(folders, args_.output, args_.ta_exec_dir,
+        ta_exec_dir = args_.ta_exec_dir if args_.ta_exec_dir else folders
+
+        cave = CAVE(folders, args_.output, ta_exec_dir,
                     missing_data_method=args_.validation,
                     max_pimp_samples=args_.max_pimp_samples,
                     fanova_pairwise=args_.fanova_pairwise,

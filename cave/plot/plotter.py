@@ -253,6 +253,7 @@ class Plotter(object):
 
         if pred:
             for entry in traj:
+                print(entry)
                 time.append(entry["wallclock_time"])
                 configs.append(entry["incumbent"])
                 self.logger.debug('Time: %d Runs: %d', time[-1],
@@ -411,6 +412,7 @@ class Plotter(object):
                 #("Configuration", "------"),
                 #]+ [(k, '@' + escape_param_name(k)) for k in hp_names])
 
+        print(time)
         p = figure(plot_width=700, plot_height=500, tools=[hover],
                    x_range=Range1d(max(min(time), 1), max(time)),
                    x_axis_type='log',

@@ -58,7 +58,7 @@ class CAVE(object):
     """
 
     def __init__(self, folders: typing.List[str], output: str,
-                 ta_exec_dir: Union[str, None]=None, missing_data_method: str='epm',
+                 ta_exec_dir: str='.', missing_data_method: str='epm',
                  max_pimp_samples: int=-1, fanova_pairwise=True,
                  pimp_sort_table_by="average", seed=None):
         """
@@ -137,7 +137,8 @@ class CAVE(object):
                         ta_exec_dir = d
             try:
                 self.logger.debug("Collecting data from %s.", folder)
-                self.runs.append(ConfiguratorRun(folder, ta_exec_dir))
+                self.runs.append(ConfiguratorRun(folder, ta_exec_dir,
+                                                 file_format='SMAC2'))
             except Exception as err:
                 self.logger.warning("Folder %s could not be loaded, failed "
                                     "with error message: %s", folder, err)
