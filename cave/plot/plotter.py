@@ -408,7 +408,8 @@ class Plotter(object):
                 #("end time", "@end"),
                 #("runs", "@runs"),
                 #("est. perf. (only original runs)", "@orig_perf"),
-                ("performance", "@epm_perf"),])
+                ("performance", "@epm_perf"),
+                ("at-time", "@x")])
                 #("Configuration", "------"),
                 #]+ [(k, '@' + escape_param_name(k)) for k in hp_names])
 

@@ -1,1 +1,2 @@
 include requirements.txt
+recursive-include cave/html/web_files *.css *.js *.png *.json *.svg *.eot *.ttf *.woff*
