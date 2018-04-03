@@ -111,7 +111,7 @@ class Analyzer(object):
         conf1_runs = get_cost_dict_for_config(self.validated_rh, self.default)
         conf2_runs = get_cost_dict_for_config(self.validated_rh, self.incumbent)
         self.plotter = Plotter(self.scenario, self.train_test, conf1_runs,
-                conf2_runs, output=self.output)
+                              conf2_runs, output_dir=self.output)
         self.max_pimp_samples = max_pimp_samples
         self.fanova_pairwise = fanova_pairwise
 
@@ -614,9 +614,8 @@ class Analyzer(object):
 
     @timing
     def plot_cost_over_time(self, runs, validator):
-        path = os.path.join(self.output, 'cost_over_time.png')
         self.logger.info("... cost over time")
-        script, div = self.plotter.plot_cost_over_time(self.validated_rh, runs, output=path,
+        script, div = self.plotter.plot_cost_over_time(self.validated_rh, runs,
                                                        validator=validator)
         return script, div
 

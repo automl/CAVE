@@ -14,4 +14,5 @@ configspace>=0.4.2
 scipy
 sklearn
 orange3
+selenium
 nose
