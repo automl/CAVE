@@ -59,13 +59,14 @@ class HTMLBuilder(object):
 <link href="css/global.css" rel="stylesheet" />
 <link href="css/back-to-top.css" rel="stylesheet" />
 
-<link href="css/bokeh-0.12.14.min.css" rel="stylesheet" type="text/css">
-<link href="css/bokeh-widgets-0.12.14.min.css" rel="stylesheet" type="text/css">
-<link href="css/bokeh-tables-0.12.14.min.css" rel="stylesheet" type="text/css">
+<link href="css/bokeh-0.12.15.min.css" rel="stylesheet" type="text/css">
+<link href="css/bokeh-widgets-0.12.15.min.css" rel="stylesheet" type="text/css">
+<link href="css/bokeh-tables-0.12.15.min.css" rel="stylesheet" type="text/css">
 
-<script src="js/bokeh-0.12.14.min.js"></script>
-<script src="js/bokeh-widgets-0.12.14.min.js"></script>
-<script src="js/bokeh-tables-0.12.14.min.js"></script>
+<script src="js/bokeh-0.12.15.min.js"></script>
+<script src="js/bokeh-widgets-0.12.15.min.js"></script>
+<script src="js/bokeh-tables-0.12.15.min.js"></script>
+<script src="js/bokeh-api-0.12.15.min.js"></script>
 
 <!--Below here are the includes of scripts for the report (e.g. bokeh)-->
 '''

@@ -6,7 +6,7 @@ matplotlib==2.0.2
 sphinx
 sphinx_rtd_theme
 mpld3
-bokeh
+bokeh==0.12.15
 smac>=0.8.0
 git+https://github.com/automl/fanova@master
 -e git+https://github.com/automl/ParameterImportance.git@development#egg=pimp
