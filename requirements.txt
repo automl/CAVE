@@ -6,7 +6,7 @@ matplotlib==2.0.2
 sphinx
 sphinx_rtd_theme
 mpld3
-bokeh
+bokeh==0.12.14
 smac>=0.8.0
 fanova
 pyimp>=1.0.1
