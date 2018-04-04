@@ -27,7 +27,7 @@ from sklearn.manifold.mds import MDS
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-from bokeh.plotting import figure, ColumnDataSource
+from bokeh.plotting import figure, ColumnDataSource, show
 from bokeh.embed import components
 from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider
 from bokeh.models.sources import CDSView
@@ -357,7 +357,7 @@ class ConfiguratorFootprint(object):
             #   screenshots of the number of runs per config at different points
             #   in (i.e. different quantiles of) the runhistory, LAST quantile
             #   is full history!!
-            r_p_q_p_c = self._get_runs_per_config_quantiled(rh, quantiles=100)
+            r_p_q_p_c = self._get_runs_per_config_quantiled(rh, quantiles=10)
             self.runs_per_rh.append(np.array(r_p_q_p_c))
         # Get minimum and maximum for sizes of dots
         self.min_runs_per_conf = min([i for i in self.runs_per_rh[0][-1] if i > 0])
@@ -502,6 +502,11 @@ class ConfiguratorFootprint(object):
         source.add(sizes, 'size')
         source.add(self._get_color(source), 'color')
         source.add(configurator_runs[0][-1], 'runs')  # 0 for best run, -1 for full history
+        for idx, q in enumerate(configurator_runs[0]):
+            source.add(q, 'runs'+str(idx))
+        for idx, q in enumerate(configurator_runs[0]):
+            source.add(self._get_size(q), 'size'+str(idx))
+
 
         # To enforce zorder, we categorize all entries according to their size
         # Since we plot all different zorder-levels sequentially, we use a
@@ -590,21 +595,17 @@ class ConfiguratorFootprint(object):
 
         # Now we want to integrate a slider to visualize development over time
         # Since runhistory doesn't contain a timestamp, but are ordered, we use quantiles
-        # First, we create some js-script with numbers of runs/size per quantile
-        js_runs = "var runs_data = [" + ",".join(["[" + ",".join([str(q) for q
-            in quantile]) + "]\n" for quantile in configurator_runs[0]]) + "];\n"
-        js_size = "var size_data = [" + ",".join(["[" + ",".join([str(q) for q
-            in self._get_size(quantile)]) + "]\n" for quantile in
-            configurator_runs[0]]) + "];\n"
-        # Then we combine that with some js-script that updates the bokeh-plot
-        # on callback
-        code = js_runs + js_size + """
+        # Some js-script that updates the bokeh-plot on callback
+        code = """
 var data = source.data;
 var time = time.value;
-size = data['size'];
-runs = data['runs'];
-runs = runs_data[time]
-size = size_data[time]
+var num = num.value;
+data['runs'] = data['runs'+time.toString()]
+data['size'] = data['size'+time.toString()]
+
+//for (var key of Object.keys(data)) {
+//    data[key] = data[key].slice(0, num);
+//}
 source.change.emit();
 """
         # Create callback and slider itself
@@ -614,9 +615,12 @@ source.change.emit();
         time_slider = Slider(start=1, end=num_quantiles, value=num_quantiles, step=1,
                             title="Time", callback=callback)
         callback.args["time"] = time_slider
+        #num_slider = Slider(start=1, end=5000, value=5000, step=1,
+        #                    title="Number of configs", callback=callback)
+        #callback.args["num"] = num_slider
 
         # Slider below plot
-        layout = column(p, widgetbox(time_slider))
+        layout = column(p, widgetbox(time_slider))#, num_slider))
 
         script, div = components(layout)
 
