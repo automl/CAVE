@@ -599,13 +599,9 @@ class ConfiguratorFootprint(object):
         code = """
 var data = source.data;
 var time = time.value;
-var num = num.value;
 data['runs'] = data['runs'+time.toString()]
 data['size'] = data['size'+time.toString()]
 
-//for (var key of Object.keys(data)) {
-//    data[key] = data[key].slice(0, num);
-//}
 source.change.emit();
 """
         # Create callback and slider itself
@@ -615,12 +611,9 @@ source.change.emit();
         time_slider = Slider(start=1, end=num_quantiles, value=num_quantiles, step=1,
                             title="Time", callback=callback)
         callback.args["time"] = time_slider
-        #num_slider = Slider(start=1, end=5000, value=5000, step=1,
-        #                    title="Number of configs", callback=callback)
-        #callback.args["num"] = num_slider
 
         # Slider below plot
-        layout = column(p, widgetbox(time_slider))#, num_slider))
+        layout = column(p, widgetbox(time_slider))
 
         script, div = components(layout)
 
