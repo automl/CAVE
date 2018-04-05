@@ -81,6 +81,10 @@ class CaveCLI(object):
                               default=42,
                               type=int,
                               help="random seed used throughout analysis")
+        opt_opts.add_argument("--file_format",
+                              default='SMAC3',
+                              help="what format the configurator-files are in",
+                              choices=['SMAC2', 'SMAC3'])
         opt_opts.add_argument("--ta_exec_dir",
                               default=None,
                               help="path to the execution-directory of the "
@@ -195,6 +199,7 @@ class CaveCLI(object):
         ta_exec_dir = args_.ta_exec_dir if args_.ta_exec_dir else folders
 
         cave = CAVE(folders, args_.output, ta_exec_dir,
+                    file_format=args_.file_format,
                     missing_data_method=args_.validation,
                     max_pimp_samples=args_.max_pimp_samples,
                     fanova_pairwise=args_.fanova_pairwise,
