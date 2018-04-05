@@ -43,7 +43,6 @@ class SMAC2Reader(BaseReader):
         """
 
         validated_rh = False
-        print(os.listdir(self.folder))
         rh_fn = re.search(r'runs\_and\_results.*?\.csv', str(os.listdir(self.folder)))
         if not rh_fn:
             raise FileNotFoundError("Specified format is \'SMAC2\', but no "
@@ -68,7 +67,6 @@ class SMAC2Reader(BaseReader):
         self.logger.debug("Headers: " + str(list(csv_data.columns.values)))
         data = pd.DataFrame()
         data["config_id"] = csv_data["Run History Configuration ID"]
-        print(len(self.scen.train_insts))
         data["instance_id"] = csv_data["Instance ID"].apply(lambda x:
                 self.scen.train_insts[x-1])
         data["seed"] = csv_data["Seed"]
@@ -86,10 +84,9 @@ class SMAC2Reader(BaseReader):
         configurations = {}  # id to config
         for row in csv_data:
             config_id = int(re.match(r'^(\d*):', row[0]).group(1))
-            print(config_id)
             params = [re.match(r'^\d*: (.*)', row[0]).group(1)]
             params.extend(row[1:])
-            self.logger.debug(params)
+            #self.logger.debug(params)
             matches = [re.match(r'(.*)=\'(.*)\'', p) for p in params]
             values = {m.group(1) : m.group(2) for m in matches}
             rs = np.random.RandomState()
@@ -98,7 +95,6 @@ class SMAC2Reader(BaseReader):
                     values[name] = int(value)
                 if isinstance(cs.get_hyperparameter(name), FloatHyperparameter):
                     values[name] = float(value)
-            print(type(values["@1:save-progress"]))
             configurations[config_id] = self._remove_inactive(cs, Configuration(cs,
                                                     values=values,
                                                     allow_inactive_with_values=True),
@@ -112,7 +108,7 @@ class SMAC2Reader(BaseReader):
         return (rh, validated_rh)
 
     def get_trajectory(self, cs):
-        traj_fn = os.path.join(self.folder, 'traj-run-1.txt')
+        traj_fn = os.path.join(self.folder, '../traj-run-1.txt')
         with open(traj_fn, 'r') as csv_file:
             csv_data = list(csv.reader(csv_file, delimiter=',',
                                        skipinitialspace=True))

@@ -186,8 +186,11 @@ class CaveCLI(object):
             logging.basicConfig(level=logging.INFO)
         else:
             logging.basicConfig(level=logging.DEBUG)
-        logging.getLogger("smac.scenario").setLevel(logging.INFO)
-        logging.getLogger("pimp.epm.unlogged_epar_x_rfwi.UnloggedEPARXrfi").setLevel(logging.INFO)
+            disable_loggers = ["smac.scenario",
+                               "pimp.epm.unlogged_epar_x_rfwi.UnloggedEPARXrfi",]
+            for logger in disable_loggers:
+                logging.debug("Setting logger \'%s\' on level INFO", logger)
+                logging.getLogger(logger).setLevel(logging.INFO)
 
         # SMAC results
         folders = []

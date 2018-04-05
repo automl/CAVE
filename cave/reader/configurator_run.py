@@ -1,7 +1,6 @@
 import os
 import logging
 import shutil
-from contextlib import contextmanager
 from typing import Union
 
 from smac.facade.smac_facade import SMAC
@@ -22,9 +21,9 @@ class ConfiguratorRun(SMAC):
     ConfiguratorRuns load and maintain information about individual configurator
     runs. There are three supported formats: SMAC3, SMAC2 and CSV
     This class is responsible for providing a scenario, a runhistory and a
-    trajectory.
+    trajectory and handling original/validated data appropriately.
     """
-    def __init__(self, folder: str, ta_exec_dir: str='.', file_format: str='SMAC3'):
+    def __init__(self, folder: str, ta_exec_dir: str, file_format: str='SMAC3'):
         """Initialize scenario, runhistory and incumbent from folder, execute
         init-method of SMAC facade (so you could simply use SMAC-instances instead)
 
@@ -40,11 +39,11 @@ class ConfiguratorRun(SMAC):
         file_format: string
             from [SMAC2, SMAC3, CSV]
         """
-        self.logger = logging.getLogger("cave.SMACrun.{}".format(folder))
+        self.logger = logging.getLogger("cave.ConfiguratorRun.{}".format(folder))
         self.folder = folder
         self.ta_exec_dir = ta_exec_dir
-        self.logger.debug("Loading from %s", folder)
-        self.logger.debug("ta_exec_dir %s", ta_exec_dir)
+        self.logger.debug("Loading from \'%s\' with ta_exec_dir \'%s\'.",
+                          folder, ta_exec_dir)
 
         if file_format == 'SMAC3':
             self.reader = SMAC3Reader(folder, ta_exec_dir)
@@ -56,15 +55,17 @@ class ConfiguratorRun(SMAC):
             raise ValueError("%s not supported as file-format" % file_format)
 
         self.scen = self.reader.get_scenario()
-        self.original_runhistory, self.validated_runhistory = self.reader.get_runhistory(self.scen.cs)
+        runhistories = self.reader.get_runhistory(self.scen.cs)
+        self.original_runhistory = runhistories[0]
+        self.validated_runhistory = runhistories[1]
         self.traj = self.reader.get_trajectory(cs=self.scen.cs)
 
         # Check validated runhistory for completeness
         if (self.validated_runhistory and
             self._check_rh_for_inc_and_def(self.validated_runhistory)):
             self.logger.info("Found validated runhistory for \"%s\" and using "
-                              "it for evaluation. #configs in validated rh: %d",
-                              self.folder, len(self.validated_runhistory.config_ids))
+                             "it for evaluation. #configs in validated rh: %d",
+                             self.folder, len(self.validated_runhistory.config_ids))
         elif self.validated_runhistory:
             self.logger.warning("Found validated runhistory, but it's not "
                                 "evaluated for default and incumbent, so "
@@ -83,6 +84,10 @@ class ConfiguratorRun(SMAC):
         self.incumbent = self.traj[-1]['incumbent']
         self.train_inst = self.scen.train_insts
         self.test_inst = self.scen.test_insts
+        # HOTFIX, should be replaced by proper train-only-strategy
+        if self.test_inst == [None]:
+            self.test_inst = self.train_inst
+        self.logger.debug("TEST %s", str(self.test_inst))
 
         # Initialize SMAC-object
         super().__init__(scenario=self.scen, runhistory=self.combined_runhistory)
@@ -117,31 +122,4 @@ class ConfiguratorRun(SMAC):
                                         i_name, c_name, self.folder)
                     return_value = False
         return return_value
-
-    def _read_files(self, file_format):
-        """Runhistories should be in target directory. Allowed names are:
-            runhistory.json, runhistory.csv,
-            validated_runhistory.json, validated_runhistory.csv
-
-        Returns
-        -------
-        (path, rh)
-        """
-        if file_format == 'smac3':
-            return (rh_fn, rh)
-        elif file_format == 'smac2':
-            rh = SMAC2Reader().read_from_csv(self.folder,
-                                             scenario=self.scenario)
-
-        elif file_format == 'csv':
-            configurations = os.path.join(self.folder, "configurations.csv")
-
-            rh = CSV2RH().read_from_csv(rh_fn,
-                                        pcs=self.scenario.cs,
-                                        configurations=configurations,
-                                        train_inst=self.scenario.train_insts,
-                                        test_inst=self.scenario.test_insts,
-                                        instance_features=self.scenario.feature_dict,
-                                        )
-        return (rh_fn, rh)
 

@@ -111,7 +111,7 @@ class Analyzer(object):
         conf1_runs = get_cost_dict_for_config(self.validated_rh, self.default)
         conf2_runs = get_cost_dict_for_config(self.validated_rh, self.incumbent)
         self.plotter = Plotter(self.scenario, self.train_test, conf1_runs,
-                conf2_runs, output=self.output)
+                conf2_runs, output_dir=self.output)
         self.max_pimp_samples = max_pimp_samples
         self.fanova_pairwise = fanova_pairwise
 
@@ -582,8 +582,8 @@ class Analyzer(object):
 
     def plot_scatter(self):
         self.logger.info("... plotting scatter")
-        scatter_path = os.path.join(self.output, 'scatter')
-        return self.plotter.plot_scatter(output_fn_base=scatter_path)
+        return self.plotter.plot_scatter(self.default, self.incumbent,
+                self.validated_rh)
 
     @timing
     def plot_confviz(self, incumbents, runhistories, max_confs=1000):

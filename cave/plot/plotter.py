@@ -25,6 +25,7 @@ from cave.plot.scatter import plot_scatter_plot
 from cave.plot.configurator_footprint import ConfiguratorFootprint
 from cave.plot.parallel_coordinates import ParallelCoordinatesPlotter
 from cave.smacrun import SMACrun
+from cave.utils.helpers import get_cost_dict_for_config, get_timeout
 
 from bokeh.plotting import figure, ColumnDataSource
 from bokeh.embed import components
@@ -48,7 +49,7 @@ class Plotter(object):
     they can be easily adapted into other projects.
     """
 
-    def __init__(self, scenario, train_test, conf1_runs, conf2_runs, output):
+    def __init__(self, scenario, train_test, conf1_runs, conf2_runs, output_dir):
         """
         Parameters
         ----------
@@ -59,13 +60,13 @@ class Plotter(object):
         conf1_runs, conf2_runs: list(RunValue)
             lists with smac.runhistory.runhistory.RunValue, from which to read
             cost or time
-        output: str
+        output_dir: str
             output-directory
         """
         self.logger = logging.getLogger("cave.plotter")
         self.scenario = scenario
-        self.train_test = train_test
-        self.output = output
+        self.train_test = len(self.scenario.train_insts) > 1 and len(self.scenario.test_insts) > 1
+        self.output_dir = output_dir
         self.vizrh = None
 
         # Split data into train and test
@@ -78,20 +79,20 @@ class Plotter(object):
             data["default"]["combined"].append(conf1_runs[k])
             if k in train:
                 data["default"]["train"].append(conf1_runs[k])
-            if k in test:
+            if test and k in test:
                 data["default"]["test"].append(conf1_runs[k])
         for k in conf2_runs:
             data["incumbent"]["combined"].append(conf2_runs[k])
             if k in train:
                 data["incumbent"]["train"].append(conf2_runs[k])
-            if k in test:
+            if test and k in test:
                 data["incumbent"]["test"].append(conf2_runs[k])
         for c in ["default", "incumbent"]:
             for s in ["combined", "train", "test"]:
                 data[c][s] = np.array(data[c][s])
         self.data = data
 
-    def plot_scatter(self, output_fn_base='scatter'):
+    def plot_scatter(self, default, incumbent, runhistory):
         """
         Creates a scatterplot of the two configurations on the given set of
         instances.
@@ -102,28 +103,51 @@ class Plotter(object):
         output_fn_base: string
             base-path to save plot to
         """
-        self.logger.debug("Plot scatter to %s[train|test].png", output_fn_base)
+        #TODO docstring
+        self.logger.debug("Plot scatter to %s[train|test].png",
+                os.path.join(self.output_dir, 'scatter'))
 
         metric = self.scenario.run_obj
         timeout = self.scenario.cutoff
         labels = ["default {}".format(self.scenario.run_obj), "incumbent {}".format(self.scenario.run_obj)]
 
-        conf1 = (self.data["default"]["train"], self.data["default"]["test"])
-        conf2 = (self.data["incumbent"]["train"], self.data["incumbent"]["test"])
+        default_train = np.array([v for k, v in
+                                  get_cost_dict_for_config(runhistory, default).items()
+                                  if k in self.scenario.train_insts])
+        incumbent_train = np.array([v for k, v in
+                                   get_cost_dict_for_config(runhistory, incumbent).items()
+                                   if k in self.scenario.train_insts])
+        min_val = min(min(default_train),
+                      min(incumbent_train))
+        if self.train_test:
+            default_test = np.array([v for k, v in
+                                    get_cost_dict_for_config(runhistory, default).items()
+                                    if k in self.scenario.test_insts])
+            incumbent_test = np.array([v for k, v in
+                                      get_cost_dict_for_config(runhistory, incumbent).items()
+                                      if k in self.scenario.test_insts])
+            min_val = min(min_val, min(default_test),
+                                   min(incumbent_test))
 
-        min_val = min(min([min(x) for x in conf1]), min([min(y) for y in conf2]))
+        paths = os.path.join(self.output_dir, 'scatter_train.png')
 
-        paths = [output_fn_base+'train.png',
-                 output_fn_base+'test.png']
-
-        for idx in [0, 1]:
-            fig = plot_scatter_plot((conf1[idx],), (conf2[idx],),
+        fig = plot_scatter_plot((default_train,), (incumbent_train,),
+                                labels, metric=metric,
+                                user_fontsize=22,
+                                min_val=min_val,
+                                max_val=timeout,
+                                jitter_timeout=True)
+        fig.savefig(paths)
+        plt.close(fig)
+        if self.train_test:
+            paths = [paths, os.path.join(self.output_dir, 'scatter_test.png')]
+            fig = plot_scatter_plot((default_test,), (incumbent_test,),
                                     labels, metric=metric,
                                     user_fontsize=22,
                                     min_val=min_val,
                                     max_val=timeout,
                                     jitter_timeout=True)
-            fig.savefig(paths[idx])
+            fig.savefig(paths[-1])
             plt.close(fig)
         return paths
 
@@ -208,7 +232,7 @@ class Plotter(object):
                        scenario=scen,
                        runhistories=runhistories,
                        incs=incumbents, max_plot=max_confs_plot,
-                       output_dir=self.output)
+                       output_dir=self.output_dir)
         r = sz.run()
         self.vizrh = sz.relevant_rh
         return r
@@ -241,7 +265,7 @@ class Plotter(object):
         output: str
             path to plot
         """
-        parallel_coordinates_plotter = ParallelCoordinatesPlotter(rh, self.output,
+        parallel_coordinates_plotter = ParallelCoordinatesPlotter(rh, self.output_dir,
                                                                   validator, self.scenario.cs,
                                                                   runtime=self.scenario.run_obj == 'runtime')
         output = parallel_coordinates_plotter.plot_n_configs(n_configs, params)
@@ -253,7 +277,6 @@ class Plotter(object):
 
         if pred:
             for entry in traj:
-                print(entry)
                 time.append(entry["wallclock_time"])
                 configs.append(entry["incumbent"])
                 self.logger.debug('Time: %d Runs: %d', time[-1],
@@ -292,7 +315,7 @@ class Plotter(object):
                 time.append(entry["wallclock_time"])
                 configs.append(entry["incumbent"])
                 costs = _cost(configs[-1], rh, rh.get_runs_for_config(configs[-1]))
-                print(len(costs), time[-1])
+                #self.logger.debug(len(costs), time[-1])
                 if not costs:
                     time.pop()
                 else:
@@ -353,9 +376,9 @@ class Plotter(object):
                         pass  # Reached the end of one trajectory. No need to check it further
                 # var[time_idx][0] = np.nanvar(m)
                 u, l, m_ = np.nanpercentile(m, 75), np.nanpercentile(m, 25), np.nanpercentile(m, 50)
-                # print((mean[time_idx][0] + np.sqrt(var[time_idx][0]), mean[time_idx][0],
-                #        mean[time_idx][0] - np.sqrt(var[time_idx][0])))
-                # print((l, m_, u))
+                # self.logger.debug((mean[time_idx][0] + np.sqrt(var[time_idx][0]), mean[time_idx][0],
+                #                   mean[time_idx][0] - np.sqrt(var[time_idx][0])))
+                # self.logger.debug((l, m_, u))
                 upper[time_idx][0] = u
                 mean[time_idx][0] = m_
                 lower[time_idx][0] = l
@@ -378,41 +401,17 @@ class Plotter(object):
                                + list(mean)) * 0.8
             uncertainty_lower[uncertainty_lower <= 0] = clip_y_lower * 0.9
 
-        #hp_names = [k.name for k in  # Hyperparameter names
-        #            configs[0].configuration_space.get_hyperparameters()]
-
-        #def escape_param_name(p):
-        #    """Necessary because:
-        #        1. parameters called 'runs' or 'start-time' might exist in cs
-        #        2. '-' not allowed in bokeh's CDS"""
-        #    return 'p_' + p.replace('-','_')
-
         time_double = [t for sub in zip(time, time) for t in sub][1:-1]
         mean_double = [t for sub in zip(mean, mean) for t in sub][:-2]
         source = ColumnDataSource(data=dict(
                     x=time_double,
                     y=mean_double,
-                    #start=time,
-                    #end=time[1:] + ['end'],
-                    #orig_perf=[rh.get_cost(c) for c in configs],
-                    epm_perf=mean_double,
-                    #runs=[len(rh.get_runs_for_config(c)) for c in configs],
-                        ))
-        #for k in hp_names:
-        #    source.add([c[k] if c[k] else "None" for c in configs],
-        #               escape_param_name(k))
+                    epm_perf=mean_double))
 
         hover = HoverTool(tooltips=[
-                #("start time", "@start"),
-                #("end time", "@end"),
-                #("runs", "@runs"),
-                #("est. perf. (only original runs)", "@orig_perf"),
                 ("performance", "@epm_perf"),
                 ("at-time", "@x")])
-                #("Configuration", "------"),
-                #]+ [(k, '@' + escape_param_name(k)) for k in hp_names])
 
-        print(time)
         p = figure(plot_width=700, plot_height=500, tools=[hover],
                    x_range=Range1d(max(min(time), 1), max(time)),
                    x_axis_type='log',

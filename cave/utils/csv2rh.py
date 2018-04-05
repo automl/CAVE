@@ -91,7 +91,6 @@ class CSV2RH(object):
 
         # Create RunHistory
         rh = RunHistory(average_cost)
-        print(self.id_to_config)
         def add_to_rh(row):
             new_status = self._interpret_status(row['status']) if 'status' in row else StatusType.SUCCESS
             rh.add(config=self.id_to_config[row['config_id']],
@@ -111,10 +110,8 @@ class CSV2RH(object):
             cs = self.pcs
         elif self.pcs and type(self.pcs) == str:
             parameters = [p[2:] for p in self.data.columns if p.startswith('p_')]
-            print(self.pcs)
             with open(self.pcs, 'r') as fh:
                 cs = pcs.read(fh)
-            print(cs)
             diff = set(cs.get_hyperparameter_names()).symmetric_difference(set(parameters))
             if not len(diff) == 0:
                 raise ValueError("Comparing parameters from \"%s\" and csv. "
@@ -167,8 +164,6 @@ class CSV2RH(object):
         """
         self.config_to_id = {}
         parameters = [p for p in self.data.columns if p.startswith('p_')]
-        print(self.id_to_config)
-        print(parameters)
         if 'config_id' in self.data.columns and len(parameters) > 0:
             raise ValueError("Define configs either via \"p_\" or \"config\" in header, not both.")
         elif 'config_id' in self.data.columns:
@@ -185,28 +180,21 @@ class CSV2RH(object):
                 config_data = pd.DataFrame(config_data, columns=header)
                 config_data.set_index('CONFIG_ID', inplace=True)
                 config_data = config_data.apply(pd.to_numeric, errors='ignore')
-                print(config_data)
                 parameters = ['p_' + p for p in config_data.columns]
-                print(parameters)
                 # Create and fill in p_-columns for cs-creation
                 for p in parameters:
                     self.data[p] = 0
                 def fill_parameters(row):
                     for p in parameters:
-                        print(p)
                         row[p] = config_data.loc[row['config_id'], p[2:]]
                     return row
-                print(self.data)
                 self.data = self.data.apply(fill_parameters, axis=1)
-                print(self.data)
                 self.get_cs()
                 self.id_to_config = {}
                 for index, row in config_data.iterrows():
-                    print(list(zip(parameters, row)))
                     self.id_to_config[index] = Configuration(self.cs,
                             values={name[2:] : value for name, value in
                                              zip(parameters, row)})
-                print(self.id_to_config)
                 self.config_to_id = {conf : name for name, conf in
                         self.id_to_config.items()}
             elif isinstance(self.id_to_config, dict):
