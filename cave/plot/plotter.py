@@ -25,6 +25,7 @@ from cave.plot.scatter import plot_scatter_plot
 from cave.plot.configurator_footprint import ConfiguratorFootprint
 from cave.plot.parallel_coordinates import ParallelCoordinatesPlotter
 from cave.smacrun import SMACrun
+from cave.utils.io import export_bokeh
 
 from bokeh.plotting import figure, ColumnDataSource
 from bokeh.embed import components
@@ -48,7 +49,7 @@ class Plotter(object):
     they can be easily adapted into other projects.
     """
 
-    def __init__(self, scenario, train_test, conf1_runs, conf2_runs, output):
+    def __init__(self, scenario, train_test, conf1_runs, conf2_runs, output_dir):
         """
         Parameters
         ----------
@@ -59,13 +60,13 @@ class Plotter(object):
         conf1_runs, conf2_runs: list(RunValue)
             lists with smac.runhistory.runhistory.RunValue, from which to read
             cost or time
-        output: str
+        output_dir: str
             output-directory
         """
         self.logger = logging.getLogger("cave.plotter")
         self.scenario = scenario
         self.train_test = train_test
-        self.output = output
+        self.output_dir = output_dir
         self.vizrh = None
 
         # Split data into train and test
@@ -208,7 +209,7 @@ class Plotter(object):
                        scenario=scen,
                        runhistories=runhistories,
                        incs=incumbents, max_plot=max_confs_plot,
-                       output_dir=self.output)
+                       output_dir=self.output_dir)
         r = sz.run()
         self.vizrh = sz.relevant_rh
         return r
@@ -241,7 +242,7 @@ class Plotter(object):
         output: str
             path to plot
         """
-        parallel_coordinates_plotter = ParallelCoordinatesPlotter(rh, self.output,
+        parallel_coordinates_plotter = ParallelCoordinatesPlotter(rh, self.output_dir,
                                                                   validator, self.scenario.cs,
                                                                   runtime=self.scenario.run_obj == 'runtime')
         output = parallel_coordinates_plotter.plot_n_configs(n_configs, params)
@@ -291,7 +292,7 @@ class Plotter(object):
                 time.append(entry["wallclock_time"])
                 configs.append(entry["incumbent"])
                 costs = _cost(configs[-1], rh, rh.get_runs_for_config(configs[-1]))
-                print(len(costs), time[-1])
+                #print(len(costs), time[-1])
                 if not costs:
                     time.pop()
                 else:
@@ -301,7 +302,7 @@ class Plotter(object):
         return mean, var, time
 
     def plot_cost_over_time(self, rh: RunHistory, runs: List[SMACrun],
-                            output: str="performance_over_time.png",
+                            output_fn: str="performance_over_time.png",
                             validator: Union[None, Validator]=None):
         """ Plot performance over time, using all trajectory entries
             with max_time = wallclock_limit or (if inf) the highest
@@ -315,7 +316,8 @@ class Plotter(object):
             rh: RunHistory
                 runhistory to use
             runs: List[SMACrun]
-            output: str
+                list of configurator-runs
+            output_fn: str
                 path to output-png
             validator: TODO description
         """
@@ -423,7 +425,7 @@ class Plotter(object):
         # start after 1% of the configuration budget
         # p.x_range = Range1d(min(time) + (max(time) - min(time)) * 0.01, max(time))
 
-        # Plot
+        ## Plot
         label = self.scenario.run_obj
         label = '{}{}'.format('validated ' if validated else 'estimated ', label)
         p.line('x', 'y', source=source, legend=label)
@@ -440,14 +442,9 @@ class Plotter(object):
         band_y = np.append(uncertainty_lower_double, uncertainty_upper_double[::-1])
         p.patch(band_x, band_y, color='#7570B3', fill_alpha=0.2)
 
-        self.logger.debug(list(zip(band_x, band_y)))
-
         # Format labels as 10^x
         p.xaxis.major_label_orientation = 3/4
-        p.xaxis.formatter = FuncTickFormatter(code="""
-                    return (tick/(10**Math.floor(Math.log10(tick)))) + " * 10^" + (Math.floor(Math.log10(tick)))
-                    """)
-        # p.xaxis.ticker = AdaptiveTicker(mantissas=[1, 2, 5], base=10)
+        p.xaxis.ticker = AdaptiveTicker(mantissas=[1], base=10)
 
         p.legend.location = "bottom_left"
 
@@ -461,4 +458,7 @@ class Plotter(object):
         p.legend.label_text_font_size = "15pt"
 
         script, div = components(p)
+
+        export_bokeh(p, os.path.join(self.output_dir, output_fn), self.logger)
+
         return script, div

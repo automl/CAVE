@@ -60,6 +60,7 @@ from ConfigSpace import CategoricalHyperparameter, UniformFloatHyperparameter, U
 from cave.utils.convert_for_epm import convert_data_for_epm
 from cave.utils.helpers import escape_parameter_name
 from cave.utils.timing import timing
+from cave.utils.io import export_bokeh
 
 
 class ConfiguratorFootprint(object):
@@ -69,7 +70,8 @@ class ConfiguratorFootprint(object):
                  incs: list=None,
                  max_plot=None,
                  contour_step_size=0.2,
-                 output_dir: str=None):
+                 output_dir: str=None,
+                 ):
         '''
         Constructor
 
@@ -616,5 +618,9 @@ source.change.emit();
         layout = column(p, widgetbox(time_slider))
 
         script, div = components(layout)
+
+        if self.output_dir:
+            path = os.path.join(self.output_dir, "configurator_footprint.png")
+            export_bokeh(p, path, self.logger)
 
         return script, div
