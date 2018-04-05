@@ -3,6 +3,7 @@
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS
 import logging
 import glob
+import warnings
 
 import matplotlib
 
@@ -154,11 +155,22 @@ class CaveCLI(object):
         spe_opts.add_argument("-h", "--help", action="help", help="show this help message and exit")
 
         args_, misc = parser.parse_known_args()
+        fanova_ready = True
+        try:
+            import fanova
+        except ImportError:
+            fanova_ready = False
 
         # Expand configs
         if "all" in args_.param_importance:
             param_imp = ["ablation", "forward_selection", "fanova",
                          "lpi"]
+            if not fanova_ready:
+                raise ImportError('fANOVA is not installed! To install it please run '
+                                  '"git+http://github.com/automl/fanova.git@master"')
+        elif "fanova" in args_.param_importance and not fanova_ready:
+            raise ImportError('fANOVA is not installed! To install it please run '
+                              '"git+http://github.com/automl/fanova.git@master"')
         elif "none" in args_.param_importance:
             param_imp = []
         else:

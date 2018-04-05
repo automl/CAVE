@@ -26,6 +26,7 @@ from cave.plot.scatter import plot_scatter_plot
 from cave.plot.configurator_footprint import ConfiguratorFootprint
 from cave.plot.parallel_coordinates import ParallelCoordinatesPlotter
 from cave.utils.helpers import get_cost_dict_for_config, get_timeout
+from cave.utils.io import export_bokeh
 
 from bokeh.plotting import figure, ColumnDataSource
 from bokeh.embed import components
@@ -309,7 +310,7 @@ class Plotter(object):
                 time.append(entry["wallclock_time"])
                 configs.append(entry["incumbent"])
                 costs = _cost(configs[-1], rh, rh.get_runs_for_config(configs[-1]))
-                #self.logger.debug(len(costs), time[-1])
+                #self.logger.debug(len(costs), time[-1]
                 if not costs:
                     time.pop()
                 else:
@@ -330,7 +331,8 @@ class Plotter(object):
             rh: RunHistory
                 runhistory to use
             runs: List[SMACrun]
-            output: str
+                list of configurator-runs
+            output_fn: str
                 path to output-png
             validator: TODO description
         """
@@ -415,7 +417,7 @@ class Plotter(object):
         # start after 1% of the configuration budget
         # p.x_range = Range1d(min(time) + (max(time) - min(time)) * 0.01, max(time))
 
-        # Plot
+        ## Plot
         label = self.scenario.run_obj
         label = '{}{}'.format('validated ' if validated else 'estimated ', label)
         p.line('x', 'y', source=source, legend=label)
@@ -434,10 +436,7 @@ class Plotter(object):
 
         # Format labels as 10^x
         p.xaxis.major_label_orientation = 3/4
-        p.xaxis.formatter = FuncTickFormatter(code="""
-                    return (tick/(10**Math.floor(Math.log10(tick)))) + " * 10^" + (Math.floor(Math.log10(tick)))
-                    """)
-        # p.xaxis.ticker = AdaptiveTicker(mantissas=[1, 2, 5], base=10)
+        p.xaxis.ticker = AdaptiveTicker(mantissas=[1], base=10)
 
         p.legend.location = "bottom_left"
 
@@ -451,4 +450,7 @@ class Plotter(object):
         p.legend.label_text_font_size = "15pt"
 
         script, div = components(p)
+
+        export_bokeh(p, os.path.join(self.output_dir, output_fn), self.logger)
+
         return script, div

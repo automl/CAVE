@@ -108,8 +108,7 @@ class Analyzer(object):
         self.param_imp = OrderedDict()
         self.feat_importance = None  # Used to store dictionary for feat_imp
 
-        self.plotter = Plotter(self.scenario,
-                output_dir=self.output)
+        self.plotter = Plotter(self.scenario, output_dir=self.output)
         self.max_pimp_samples = max_pimp_samples
         self.fanova_pairwise = fanova_pairwise
 
@@ -612,9 +611,8 @@ class Analyzer(object):
 
     @timing
     def plot_cost_over_time(self, runs, validator):
-        path = os.path.join(self.output, 'cost_over_time.png')
         self.logger.info("... cost over time")
-        script, div = self.plotter.plot_cost_over_time(self.validated_rh, runs, output=path,
+        script, div = self.plotter.plot_cost_over_time(self.validated_rh, runs,
                                                        validator=validator)
         return script, div
 
