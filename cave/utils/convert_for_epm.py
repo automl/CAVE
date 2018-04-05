@@ -74,7 +74,7 @@ def convert_data_for_epm(scenario:Scenario, runhistory:RunHistory):
                                         num_params=num_params,
                                         success_states=[
                                             StatusType.SUCCESS, ],
-                                        impute_censored_data=False,
+                                        impute_censored_data=True,
                                         impute_state=[
                                             StatusType.TIMEOUT, ],
                                         imputor=imputor)

@@ -84,10 +84,6 @@ class ConfiguratorRun(SMAC):
         self.incumbent = self.traj[-1]['incumbent']
         self.train_inst = self.scen.train_insts
         self.test_inst = self.scen.test_insts
-        # HOTFIX, should be replaced by proper train-only-strategy
-        if self.test_inst == [None]:
-            self.test_inst = self.train_inst
-        self.logger.debug("TEST %s", str(self.test_inst))
 
         # Initialize SMAC-object
         super().__init__(scenario=self.scen, runhistory=self.combined_runhistory)

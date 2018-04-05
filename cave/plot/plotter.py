@@ -21,10 +21,10 @@ from smac.utils.util_funcs import get_types
 from smac.runhistory.runhistory import RunHistory
 from smac.utils.validate import Validator
 
+from cave.reader.configurator_run import ConfiguratorRun
 from cave.plot.scatter import plot_scatter_plot
 from cave.plot.configurator_footprint import ConfiguratorFootprint
 from cave.plot.parallel_coordinates import ParallelCoordinatesPlotter
-from cave.smacrun import SMACrun
 from cave.utils.helpers import get_cost_dict_for_config, get_timeout
 
 from bokeh.plotting import figure, ColumnDataSource
@@ -49,7 +49,7 @@ class Plotter(object):
     they can be easily adapted into other projects.
     """
 
-    def __init__(self, scenario, train_test, conf1_runs, conf2_runs, output_dir):
+    def __init__(self, scenario, output_dir):
         """
         Parameters
         ----------
@@ -68,29 +68,6 @@ class Plotter(object):
         self.train_test = len(self.scenario.train_insts) > 1 and len(self.scenario.test_insts) > 1
         self.output_dir = output_dir
         self.vizrh = None
-
-        # Split data into train and test
-        data = {"default" : {"combined" : [], "train" : [], "test" : []},
-                "incumbent" : {"combined" : [], "train" : [], "test" : []}}
-        train = scenario.train_insts
-        test = scenario.test_insts
-        # Create array for all instances
-        for k in conf1_runs:
-            data["default"]["combined"].append(conf1_runs[k])
-            if k in train:
-                data["default"]["train"].append(conf1_runs[k])
-            if test and k in test:
-                data["default"]["test"].append(conf1_runs[k])
-        for k in conf2_runs:
-            data["incumbent"]["combined"].append(conf2_runs[k])
-            if k in train:
-                data["incumbent"]["train"].append(conf2_runs[k])
-            if test and k in test:
-                data["incumbent"]["test"].append(conf2_runs[k])
-        for c in ["default", "incumbent"]:
-            for s in ["combined", "train", "test"]:
-                data[c][s] = np.array(data[c][s])
-        self.data = data
 
     def plot_scatter(self, default, incumbent, runhistory):
         """
@@ -151,7 +128,7 @@ class Plotter(object):
             plt.close(fig)
         return paths
 
-    def plot_cdf_compare(self, output_fn_base="CDF_compare.png"):
+    def plot_cdf_compare(self, default, incumbent, runhistory):
         """
         Plot the cumulated distribution functions for given configurations,
         plots will share y-axis and if desired x-axis.
@@ -162,11 +139,10 @@ class Plotter(object):
         output: List[str]
             filename, default: CDF_compare.png
         """
-        self.logger.debug("Plot CDF to %s_[train|test].png", output_fn_base)
+        self.logger.debug("Plot CDF to %s_[train|test].png",
+                          os.path.join(self.output_dir, 'cdf'))
 
         timeout = self.scenario.cutoff
-
-        data = self.data
 
         def prepare_data(x_data):
             """ Helper function to keep things easy, generates y_data and
@@ -180,12 +156,28 @@ class Plotter(object):
             return (x_data, y_data)
 
         # Generate y_data
-        data = {config_name : {label : prepare_data(x_data) for label, x_data in
-                               data[config_name].items()}
-                for config_name in data}
+        data = {'default' :
+                 {'train' : prepare_data(
+                           np.array([v for k, v in
+                                    get_cost_dict_for_config(runhistory, default).items()
+                                    if k in self.scenario.train_insts])),
+                  'test' : prepare_data(
+                           np.array([v for k, v in
+                                    get_cost_dict_for_config(runhistory, default).items()
+                                    if k in self.scenario.test_insts]))},
+                'incumbent' :
+                 {'train' : prepare_data(
+                           np.array([v for k, v in
+                                    get_cost_dict_for_config(runhistory, incumbent).items()
+                                    if k in self.scenario.train_insts])),
+                  'test' : prepare_data(
+                           np.array([v for k, v in
+                                    get_cost_dict_for_config(runhistory, incumbent).items()
+                                    if k in self.scenario.test_insts]))}}
 
-        output_fn = [output_fn_base + "_" + inst_set + '.png' for inst_set in
-                                    ['train', 'test']]
+        output_fn = [os.path.join(self.output_dir, 'cdf_train.png')]
+        if self.train_test:
+            output_fn.append(os.path.join(self.output_dir, 'cdf_test.png'))
 
         for inst_set, out in zip(['train', 'test'], output_fn):
             f = plt.figure(1, dpi=100, figsize=(10,10))
@@ -212,6 +204,8 @@ class Plotter(object):
             f.tight_layout()
             f.savefig(out)
             plt.close(f)
+        if len(output_fn) == 1:
+            return output_fn[0]
         return output_fn
 
     def visualize_configs(self, scen, runhistories, incumbents=None, max_confs_plot=1000):
@@ -324,15 +318,12 @@ class Plotter(object):
             mean, var = np.array(mean).reshape(-1, 1), np.array(var).reshape(-1, 1)
         return mean, var, time
 
-    def plot_cost_over_time(self, rh: RunHistory, runs: List[SMACrun],
+    def plot_cost_over_time(self, rh: RunHistory, runs: List[ConfiguratorRun],
                             output: str="performance_over_time.png",
                             validator: Union[None, Validator]=None):
         """ Plot performance over time, using all trajectory entries
             with max_time = wallclock_limit or (if inf) the highest
             recorded time
-
-            TODO JM: a few things are commented out because the tooltips make no
-            obvious sense for this kind of average... i will think of something.
 
             Parameters
             ----------
@@ -440,8 +431,6 @@ class Plotter(object):
         band_x = np.append(time_double, time_double[::-1])
         band_y = np.append(uncertainty_lower_double, uncertainty_upper_double[::-1])
         p.patch(band_x, band_y, color='#7570B3', fill_alpha=0.2)
-
-        self.logger.debug(list(zip(band_x, band_y)))
 
         # Format labels as 10^x
         p.xaxis.major_label_orientation = 3/4

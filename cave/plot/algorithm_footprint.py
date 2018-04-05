@@ -508,7 +508,7 @@ class AlgorithmFootprint(object):
         # get silhouette scores for k_means with 2 to 12 clusters
         # use number of clusters with highest silhouette score
         best_score, best_n_clusters = -1, -1
-        min_clusters, max_clusters = 2, 12
+        min_clusters, max_clusters = 2, min(features_2d.shape[0], 12)
         clusters = None
         for n_clusters in range(min_clusters, max_clusters):
             km = KMeans(n_clusters=n_clusters)
