@@ -320,7 +320,7 @@ class Plotter(object):
         return mean, var, time
 
     def plot_cost_over_time(self, rh: RunHistory, runs: List[ConfiguratorRun],
-                            output: str="performance_over_time.png",
+                            output_fn: str="performance_over_time.png",
                             validator: Union[None, Validator]=None):
         """ Plot performance over time, using all trajectory entries
             with max_time = wallclock_limit or (if inf) the highest

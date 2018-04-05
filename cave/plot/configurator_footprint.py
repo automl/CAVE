@@ -175,7 +175,8 @@ class ConfiguratorFootprint(object):
         self.relevant_rh = new_rh
 
         X, y, types = convert_data_for_epm(scenario=self.scenario,
-                                           runhistory=new_rh)
+                                           runhistory=new_rh,
+                                           logger=self.logger)
 
         types = np.array(np.zeros((2+n_feats)), dtype=np.uint)
 

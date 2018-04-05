@@ -211,7 +211,8 @@ class CaveCLI(object):
                 folders.extend(list(glob.glob(f, recursive=True)))
             else:
                 folders.append(f)
-        ta_exec_dir = args_.ta_exec_dir if args_.ta_exec_dir else folders
+        #ta_exec_dir = args_.ta_exec_dir if args_.ta_exec_dir else folders
+        ta_exec_dir = args_.ta_exec_dir if args_.ta_exec_dir else '.'
 
         cave = CAVE(folders, args_.output, ta_exec_dir,
                     file_format=args_.file_format,

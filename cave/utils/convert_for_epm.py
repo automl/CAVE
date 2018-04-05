@@ -16,7 +16,7 @@ from ConfigSpace.hyperparameters import CategoricalHyperparameter, \
     UniformFloatHyperparameter, UniformIntegerHyperparameter, Constant
 
 
-def convert_data_for_epm(scenario:Scenario, runhistory:RunHistory):
+def convert_data_for_epm(scenario:Scenario, runhistory:RunHistory, logger=None):
     """
     converts data from runhistory into EPM format
 
@@ -55,7 +55,9 @@ def convert_data_for_epm(scenario:Scenario, runhistory:RunHistory):
     params = scenario.cs.get_hyperparameters()
     num_params = len(params)
 
-    if scenario.run_obj == "runtime":
+    run_obj = scenario.run_obj
+
+    if run_obj == "runtime":
         # if we log the performance data,
         # the RFRImputator will already get
         # log transform data from the runhistory
@@ -78,12 +80,24 @@ def convert_data_for_epm(scenario:Scenario, runhistory:RunHistory):
                                         impute_state=[
                                             StatusType.TIMEOUT, ],
                                         imputor=imputor)
-    else:
+        try:
+            X, Y = rh2EPM.transform(runhistory)
+        except RuntimeError as e:
+            if logger:
+                logger.warning("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+                               "There was some error with the runhistory-"
+                               "transformation in the random-forest (run_obj "
+                               "is %s, if runtime then logged data is expected) "
+                               "with error message: %s", run_obj, err)
+                logger.debug(traceback.format_exc())
+            run_obj = 'runtime_'
+
+    if run_obj != 'runtime':
         rh2EPM = RunHistory2EPM4Cost(scenario=scenario,
                                      num_params=num_params,
                                      success_states=None,
                                      impute_censored_data=False,
                                      impute_state=None)
-    X, Y = rh2EPM.transform(runhistory)
+        X, Y = rh2EPM.transform(runhistory)
 
     return X, Y, types
