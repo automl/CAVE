@@ -29,7 +29,7 @@ from cave.plot.algorithm_footprint import AlgorithmFootprint
 from cave.smacrun import SMACrun
 from cave.utils.helpers import get_cost_dict_for_config, get_timeout
 from cave.utils.timing import timing
-from cave.utils.statistical_tests import paired_permutation
+from cave.utils.statistical_tests import paired_permutation, paired_t_student
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -193,6 +193,12 @@ class Analyzer(object):
         self.logger.debug("p-value for def/inc-difference: %f (permutation test)", p)
         return p
 
+    def _paired_t_test(self, default, incumbent, num_permutations):
+        def_cost, inc_cost = get_cost_dict_for_config(self.validated_rh, default), get_cost_dict_for_config(self.validated_rh, incumbent)
+        data1, data2 = zip(*[(def_cost[i], inc_cost[i]) for i in def_cost.keys()])
+        p = paired_t_student(data1, data2, logger=self.logger)
+        self.logger.debug("p-value for def/inc-difference: %f (paired t-test)", p)
+        return p
 
 ####################################### TABLES #######################################
 
@@ -220,7 +226,8 @@ class Analyzer(object):
         num_feats = self.scenario.n_features
         dup_feats = DataFrame(self.scenario.feature_array)  # only contains train instances
         num_dup_feats = len(dup_feats[dup_feats.duplicated()])
-        p_value = round(self._permutation_test(self.default, self.incumbent, 10000), 5)
+        p_value_perm = "%.5f" % self._permutation_test(self.default, self.incumbent, 10000)
+        p_value_t = "%.5f" % self._paired_t_test(self.default, self.incumbent, 10000)
         overview = OrderedDict([('Run with best incumbent', os.path.basename(best_folder)),
                                 # Constants for scenario
                                 ('# Train instances', len(self.scenario.train_insts)),
@@ -233,7 +240,8 @@ class Analyzer(object):
                                 ('# Default evaluations', ta_evals_d),
                                 ('# Incumbent evaluations', ta_evals_i),
                                 ('Budget spent evaluating configurations', ta_runtime),
-                                ('p-value of paired permutation test', p_value),
+                                ('p-value of paired permutation test', p_value_perm),
+                                ('p-value of paired t-test', p_value_t),
                                 ('Cutoff', self.scenario.cutoff),
                                 ('Walltime budget', self.scenario.wallclock_limit),
                                 ('Runcount budget', self.scenario.ta_run_limit),
@@ -246,6 +254,7 @@ class Analyzer(object):
                                 ('# Runs per Config (max)', max_ta_evals),
                                 ('Total number of configuration runs', ta_evals),
                                 ('empty4', 'empty4'),
+                                ('empty5', 'empty5'),
                                ])
         # Split into two columns
         overview_split = self._split_table(overview)
