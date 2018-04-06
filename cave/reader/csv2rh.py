@@ -107,6 +107,7 @@ class CSV2RH(object):
         return rh
 
     def get_cs(self):
+        # TODO use from pyimp after https://github.com/automl/ParameterImportance/issues/72 is implemented
         if self.pcs and type(self.pcs) == ConfigurationSpace:
             cs = self.pcs
         elif self.pcs and type(self.pcs) == str:
@@ -134,20 +135,21 @@ class CSV2RH(object):
         self.cs = cs
 
     def _interpret_status(self, status):
-        if status.upper() in ["SAT", "UNSAT", "SUCCESS"]:
+        status = status.strip().upper()
+        if status in ["SAT", "UNSAT", "SUCCESS"]:
             status = StatusType.SUCCESS
-        elif status.upper() in ["TIMEOUT"]:
+        elif status in ["TIMEOUT"]:
             status = StatusType.TIMEOUT
-        elif status.upper() in ["CRASHED"]:
+        elif status in ["CRASHED"]:
             status = StatusType.CRASHED
-        elif status.upper() in ["ABORT"]:
+        elif status in ["ABORT"]:
             status = StatusType.ABORT
-        elif status.upper() in ["MEMOUT"]:
+        elif status in ["MEMOUT"]:
             status = StatusType.MEMOUT
         else:
             logger.warning("Could not parse %s as a status. Valid values are: "
                            "[SUCCESS, TIMEOUT, CRASHED, ABORT, MEMOUT]. "
-                           "Treating as CRASHED run.")
+                           "Treating as CRASHED run.", status)
             status = StatusType.CRASHED
         return status
 
@@ -233,7 +235,7 @@ class CSV2RH(object):
                 self.id_to_inst_feats = {i : tuple(feat) for i, feat in self.instance_features[1]}
                 self.inst_feats_to_id = {feat : i for i, feat in self.id_to_inst_feats}
             else:
-                self.logger.warning("Instances defined but no instance features available.")
+                raise ValueError("Instances defined but no instance features available.")
         elif inst_feats:
             # Add new column for instance-ids
             self.data['instance_id'] = -1

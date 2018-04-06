@@ -201,6 +201,7 @@ class CaveCLI(object):
             logging.basicConfig(level=logging.DEBUG)
             disable_loggers = ["smac.scenario",
                                "pimp.epm.unlogged_epar_x_rfwi.UnloggedEPARXrfi",]
+            # TODO use different debug-levels
             for logger in disable_loggers:
                 logging.debug("Setting logger \'%s\' on level INFO", logger)
                 logging.getLogger(logger).setLevel(logging.INFO)

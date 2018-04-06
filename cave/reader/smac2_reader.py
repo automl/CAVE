@@ -14,7 +14,7 @@ from smac.utils.io.traj_logging import TrajLogger
 from smac.scenario.scenario import Scenario
 
 from cave.reader.base_reader import BaseReader, changedir
-from cave.utils.csv2rh import CSV2RH
+from cave.reader.csv2rh import CSV2RH
 
 class SMAC2Reader(BaseReader):
 

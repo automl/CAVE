@@ -14,6 +14,7 @@ from smac.optimizer.objective import _cost
 
 from cave.reader.smac3_reader import SMAC3Reader
 from cave.reader.smac2_reader import SMAC2Reader
+from cave.reader.csv2rh import CSV2RH
 
 
 class ConfiguratorRun(SMAC):
