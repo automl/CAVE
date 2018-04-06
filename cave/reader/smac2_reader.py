@@ -56,7 +56,7 @@ class SMAC2Reader(BaseReader):
                                     "\'paramstrings\'-file could be found "
                                     "in %s" % self.folder)
         configs_fn = os.path.join(self.folder, configs_fn.group())
-        self.logger.debug("Configurations loaded as kind-of csv from %s", configs_fn)
+        self.logger.debug("Configurations loaded from %s", configs_fn)
         # Translate smac2 to csv
         with open(rh_fn, 'r') as csv_file:
             csv_data = list(csv.reader(csv_file, delimiter=',',
@@ -108,7 +108,12 @@ class SMAC2Reader(BaseReader):
         return (rh, validated_rh)
 
     def get_trajectory(self, cs):
-        traj_fn = os.path.join(self.folder, '../traj-run-1.txt')
+        traj_fn = re.search(r'traj-run-\d*.txt', str(os.listdir(os.path.join(self.folder, '..'))))
+        if not traj_fn:
+            raise FileNotFoundError("Specified format is \'SMAC2\', but no "
+                                    "\'../traj-run\'-file could be found "
+                                    "in %s" % self.folder)
+        traj_fn = os.path.join(self.folder, '..', traj_fn.group())
         with open(traj_fn, 'r') as csv_file:
             csv_data = list(csv.reader(csv_file, delimiter=',',
                                        skipinitialspace=True))

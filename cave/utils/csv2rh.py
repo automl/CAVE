@@ -1,4 +1,5 @@
 import os
+import warnings
 import logging
 import csv
 from typing import Union
@@ -78,7 +79,7 @@ class CSV2RH(object):
             raise ValueError("Detected a duplicate in the columns of the "
                              "csv-file \"%s\"." % csv_path)
         for column_name in self.data.columns:
-            if not (column_name in valid_values or
+            if not (column_name.lower() in valid_values or
                     column_name.startswith('p_') or  # parameter
                     column_name.startswith('i_')):  # instance feature
                 raise ValueError("%s not a legal column name in %s." % column_name, csv_path)
@@ -121,9 +122,9 @@ class CSV2RH(object):
                                  str(set(parameters).difference(set(cs.get_hyperparameter_names())))))
         else:
             parameters = [p for p in self.data.columns if p.startswith('p_')]
-            self.logger.warning("No parameter configuration space (pcs) provided! "
-                                "Interpreting all parameters as floats. This might lead "
-                                "to suboptimal analysis.")
+            warnings.warn("No parameter configuration space (pcs) provided! "
+                          "Interpreting all parameters as floats. This might lead "
+                          "to suboptimal analysis.", RuntimeWarning)
             minima = self.data.min()  # to define ranges of hyperparameters
             maxima = self.data.max()
             cs = ConfigurationSpace(seed=42)

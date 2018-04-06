@@ -1,7 +1,6 @@
 #!/bin/python3
 
 import numpy as np
-import traceback
 
 from smac.scenario.scenario import Scenario
 from smac.tae.execute_ta_run import StatusType
@@ -90,7 +89,7 @@ def convert_data_for_epm(scenario:Scenario, runhistory:RunHistory, logger=None):
                                "transformation in the random-forest (run_obj "
                                "is %s, if runtime then logged data is expected) "
                                "with error message: %s", run_obj, err)
-                logger.debug(traceback.format_exc())
+                logger.exception(err)
             run_obj = 'runtime_'
 
     if run_obj != 'runtime':

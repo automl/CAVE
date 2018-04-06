@@ -6,7 +6,6 @@ from contextlib import contextmanager
 import typing
 import json
 import copy
-import traceback
 
 import numpy as np
 from pandas import DataFrame
@@ -143,7 +142,7 @@ class CAVE(object):
             except Exception as err:
                 self.logger.warning("Folder %s could not be loaded, failed "
                                     "with error message: %s", folder, err)
-                self.logger.debug(traceback.format_exc())
+                self.logger.exception(err)
                 continue
         if not len(self.runs):
             raise ValueError("None of the specified SMAC-folders could be loaded.")
