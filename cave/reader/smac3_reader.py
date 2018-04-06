@@ -36,7 +36,13 @@ class SMAC3Reader(BaseReader):
         rh_fn = os.path.join(self.folder, 'runhistory.json')
         validated_rh_fn = os.path.join(self.folder, 'validated_runhistory.json')
         rh = RunHistory(average_cost)
-        rh.load_json(rh_fn, cs)
+        try:
+            rh.load_json(rh_fn, cs)
+        except FileNotFoundError:
+            self.logger.warning("%s not found. trying to read SMAC3-output, "
+                                "if that's not correct, change it with the "
+                                "--file_format option!", rh_fn)
+            raise
         try:
             validated_rh = RunHistory(average_cost)
             validated_rh.load_json(validated_rh_fn, cs)

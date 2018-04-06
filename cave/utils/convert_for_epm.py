@@ -1,6 +1,7 @@
 #!/bin/python3
 
 import numpy as np
+import traceback
 
 from smac.scenario.scenario import Scenario
 from smac.tae.execute_ta_run import StatusType
@@ -82,7 +83,7 @@ def convert_data_for_epm(scenario:Scenario, runhistory:RunHistory, logger=None):
                                         imputor=imputor)
         try:
             X, Y = rh2EPM.transform(runhistory)
-        except RuntimeError as e:
+        except RuntimeError as err:
             if logger:
                 logger.warning("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
                                "There was some error with the runhistory-"
