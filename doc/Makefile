@@ -193,8 +193,8 @@ pseudoxml:
 	@echo "Build finished. The pseudo-XML files are in $(BUILDDIR)/pseudoxml."
 
 buildapi:
-	sphinx-apidoc -fePTMo apidoc/ ../smac/
-	rm apidoc/smac.rst
+	sphinx-apidoc -fePTMo apidoc/ ../cave/
+	rm apidoc/cave.rst
 	for f in apidoc/*;   \
 	do                   \
 	  sed -i '/Submodules/d' $$f; \

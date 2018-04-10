@@ -15,6 +15,7 @@ Contents:
    quickstart
    manual
    faq
+   api
    contact
    license
 
