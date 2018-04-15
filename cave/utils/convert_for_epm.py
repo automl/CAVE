@@ -7,6 +7,7 @@ from smac.tae.execute_ta_run import StatusType
 
 from smac.runhistory.runhistory import RunHistory
 from smac.runhistory.runhistory2epm import RunHistory2EPM4LogCost, RunHistory2EPM4Cost
+from smac.utils.util_funcs import get_types
 
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.epm.rfr_imputator import RFRImputator
@@ -36,21 +37,8 @@ def convert_data_for_epm(scenario:Scenario, runhistory:RunHistory, logger=None):
     np.array
         types of X cols -- necessary to train our RF implementation
     """
-    types = np.zeros(len(scenario.cs.get_hyperparameters()),
-                         dtype=np.uint)
-
-    for i, param in enumerate(scenario.cs.get_hyperparameters()):
-        if isinstance(param, (CategoricalHyperparameter)):
-            n_cats = len(param.choices)
-            types[i] = n_cats
-
-    if scenario.feature_array is not None:
-        types = np.hstack(
-            (types, np.zeros((scenario.feature_array.shape[1]))))
-
-    types = np.array(types, dtype=np.uint)
-
-    model = RandomForestWithInstances(types, scenario.feature_array)
+    types, bounds = get_types(scenario.cs, scenario.feature_array)
+    model = RandomForestWithInstances(types, bounds)
 
     params = scenario.cs.get_hyperparameters()
     num_params = len(params)
@@ -80,19 +68,8 @@ def convert_data_for_epm(scenario:Scenario, runhistory:RunHistory, logger=None):
                                         impute_state=[
                                             StatusType.TIMEOUT, ],
                                         imputor=imputor)
-        try:
-            X, Y = rh2EPM.transform(runhistory)
-        except RuntimeError as err:
-            if logger:
-                logger.warning("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-                               "There was some error with the runhistory-"
-                               "transformation in the random-forest (run_obj "
-                               "is %s, if runtime then logged data is expected) "
-                               "with error message: %s", run_obj, err)
-                logger.exception(err)
-            run_obj = 'runtime_'
-
-    if run_obj != 'runtime':
+        X, Y = rh2EPM.transform(runhistory)
+    else:
         rh2EPM = RunHistory2EPM4Cost(scenario=scenario,
                                      num_params=num_params,
                                      success_states=None,
