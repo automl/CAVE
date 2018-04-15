@@ -56,7 +56,11 @@ class CSV2RH(object):
         self.pcs = pcs
         self.train_inst = input_reader.read_instance_file(train_inst) if type(train_inst) == str else train_inst
         self.test_inst =  input_reader.read_instance_file(test_inst) if type(test_inst) == str else test_inst
-        self.instance_features = input_reader.read_instance_features_file(instance_features) if type(instance_features) == str else instance_features
+        if type(instance_features) == str:
+            names, feats = input_reader.read_instance_features_file(instance_features)
+            self.instance_features = feats
+        else:
+            self.instance_features = instance_features
         self.id_to_config = configurations if configurations else {}
         self.cs = None
 
@@ -231,9 +235,10 @@ class CSV2RH(object):
             raise ValueError("Define instances either via \"i_\" or \"instance_id\" in header, not both.")
         elif 'instance_id' in self.data.columns:
             if self.instance_features:
-                inst_feats = self.instance_features[0]
-                self.id_to_inst_feats = {i : tuple(feat) for i, feat in self.instance_features[1]}
-                self.inst_feats_to_id = {feat : i for i, feat in self.id_to_inst_feats}
+                self.id_to_inst_feats = {i : tuple(feat) for i, feat in
+                                         self.instance_features.items()}
+                self.inst_feats_to_id = {feat : i for i, feat in
+                                         self.id_to_inst_feats.items()}
             else:
                 raise ValueError("Instances defined but no instance features available.")
         elif inst_feats:

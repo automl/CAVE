@@ -101,9 +101,13 @@ class SMAC2Reader(BaseReader):
                                                     values)
         self.configurations = configurations
 
+        names, feats = self.scen.feature_names, self.scen.feature_dict
         rh = CSV2RH().read_csv_to_rh(data,
                                      pcs=cs,
-                                     configurations=configurations)
+                                     configurations=configurations,
+                                     train_inst=self.scen.train_insts,
+                                     test_inst=self.scen.test_insts,
+                                     instance_features=feats)
 
         return (rh, validated_rh)
 

@@ -226,7 +226,7 @@ class FeatureAnalysis(object):
 
         # cluster with k-means
         scores = []
-        for n_clusters in range(2, 12):
+        for n_clusters in range(2, min(features.shape[0], 12)):
             km = KMeans(n_clusters=n_clusters)
             y_pred = km.fit_predict(features)
             score = silhouette_score(features, y_pred)
