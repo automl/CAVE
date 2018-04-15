@@ -4,7 +4,7 @@ CAVE is invoked via the commandline. After completing the
 `Installation <installation.html>`_ , type
 .. code-block:: bash
 
-    python scripts/cave --folders examples/spear_qcp_small/example_output/* --ta_exec_dir examples/spear_qcp_small/
+    python scripts/cave --folders examples/smac3/example_output/* --ta_exec_dir examples/smac3/
 
 to start the example (assuming you
 cloned the GitHub-repository in which the example is included). By default, CAVE
