@@ -26,7 +26,7 @@ prevent compilation errors:
 
 Installation from pypi
 ----------------------
-To install SMAC3 from pypi, please use the following command on the command
+To install CAVE from pypi, please use the following command on the command
 line:
 
 .. code-block:: bash
