@@ -3,10 +3,22 @@ import csv
 import numpy as np
 import pandas as pd
 from ConfigSpace import Configuration, c_util
+from ConfigSpace.util import deactivate_inactive_hyperparameters, fix_types
 from ConfigSpace.hyperparameters import UniformFloatHyperparameter, CategoricalHyperparameter
 from bokeh.io import export_png
 
 def export_bokeh(plot, path, logger):
+    """Export bokeh-plot to png-file.
+
+    Parameters
+    ----------
+    plot: bokeh.plotting.figure
+        bokeh plot to export
+    path: str
+        path to save plot to
+    logger: Logger
+        logger for debugging
+    """
     logger.debug("Exporting to %s", path)
     plot.background_fill_color = None
     plot.border_fill_color = None
@@ -28,6 +40,31 @@ def load_csv_to_pandaframe(csv_path, logger):
     return data
 
 def load_config_csv(path, cs, logger):
+    """ Load configurations.csv in the following format:
+
+    +-----------+-----------------+-----------------+-----+
+    | CONFIG_ID | parameter_name1 | parameter_name2 | ... |
+    +===========+=================+=================+=====+
+    | 0         | value1          | value2          | ... |
+    +-----------+-----------------+-----------------+-----+
+    | ...       | ...             | ...             | ... |
+    +-----------+-----------------+-----------------+-----+
+
+    Parameters
+    ----------
+    path: str
+        path to csv-file
+    cs: ConfigurationSpace
+        configspace with matching parameters
+    logger: Logger
+        logger for debugs
+
+    Returns
+    -------
+    (parameters, id_to_config): (str, dict)
+        parameter-names and dict mapping ids to Configurations
+    """
+
     id_to_config = {}
     logger.debug("Trying to read configuration-csv-file: %s.", path)
     config_data = load_csv_to_pandaframe(path, logger)

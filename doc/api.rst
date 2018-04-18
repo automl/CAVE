@@ -11,4 +11,8 @@ API Documentation
     apidoc/cave.analyzer
     apidoc/cave.cave_cli
     apidoc/cave.cavefacade
+    apidoc/cave.plot
+    apidoc/cave.html
+    apidoc/cave.reader
+    apidoc/cave.utils
 

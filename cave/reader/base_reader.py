@@ -21,7 +21,9 @@ class BaseReader(object):
         self.ta_exec_dir = ta_exec_dir
 
     def get_scenario(self):
-        """Create Scenario-object from files."""
+        """Expects `self.folder/scenario.txt` with appropriately formatted
+        scenario-information (
+        `<https://automl.github.io/SMAC3/stable/options.html#scenario>`_)"""
         raise NotImplemented()
 
     def get_runhistory(self):

@@ -36,7 +36,16 @@ class CSVReader(BaseReader):
         return scen
 
     def get_runhistory(self, cs):
-        """
+        """Reads runhistory in csv-format:
+
+        +--------------------+--------------------+------+------+------+--------+
+        |      config_id     |  instance_id       | cost | time | seed | status |
+        +====================+====================+======+======+======+========+
+        | name of config 1   | name of instance 1 | ...  |  ... | ...  |  ...   |
+        +--------------------+--------------------+------+------+------+--------+
+        |         ...        |          ...       | ...  |  ... | ...  |  ...   |
+        +--------------------+--------------------+------+------+------+--------+
+
         Returns:
         --------
         (rh, validated_rh): RunHistory, Union[False, RunHistory]
@@ -54,7 +63,6 @@ class CSVReader(BaseReader):
         if os.path.exists(configs_fn):
             self.logger.debug("Found \'configurations.csv\' in %s." % self.folder)
             self.configurations = load_config_csv(configs_fn, self.scen.cs, self.logger)[1]
-            print(self.configurations)
         else:
             raise ValueError("No \'configurations.csv\' in %s." % self.folder)
 
@@ -69,6 +77,14 @@ class CSVReader(BaseReader):
         return (rh, validated_rh)
 
     def get_trajectory(self, cs):
+        """Reads `self.folder/trajectory.csv`, expected format:
+
+        +----------+------+----------------+-----------+
+        | cpu_time | cost | wallclock_time | incumbent |
+        +==========+======+================+===========+
+        | ...      | ...  | ...            | ...       |
+        +----------+------+----------------+-----------+
+        """
         traj_fn = os.path.join(self.folder, 'trajectory.csv')
         if not os.path.exists(traj_fn):
             self.logger.warning("Specified format is \'CSV\', but no "

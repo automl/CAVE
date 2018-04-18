@@ -30,20 +30,32 @@ class CSV2RH(object):
 
     def read_csv_to_rh(self, data,
                        pcs:Union[None, str, ConfigurationSpace]=None,
-                       configurations:Union[None, str, dict]=None,
+                       configurations:Union[None, dict]=None,
                        train_inst:Union[None, str, list]=None,
                        test_inst:Union[None, str, list]=None,
                        instance_features:Union[None, str, dict]=None,
                        logger=None,
                        seed=42):
         """ Interpreting a .csv-file as runhistory.
-        Expecting file with headers:
-            p_parameter1, p_parameter2, ...,
-            i_instancefeature1 (o), i_instancefeature2 (o), ...,
-            seed (o), cost, time (o), status (o)
+        Valid values for the header of the csv-file/DataFrame are:
+        ['seed', 'cost', 'time', 'status', 'config_id', 'instance_id']
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
+        data: str or pd.DataFrame
+            either string to csv-formatted runhistory-file or DataFrame
+            containing the same information
+        pcs: str or ConfigurationSpace
+            config-space to use for this runhistory
+        configurations: dict
+            mapping ids to Configuration-objects
+        train_inst: str or list[str]
+            train instances or path to file
+        test_inst: str or list[str]
+            test instances or path to file
+        instance_features: str or dict
+            instance features as dict mapping instance-ids to feature-array or
+            file to appropriately formatted instance-feature-file
         csv_path: str
             relative path to csv-file from executing directory
         pcs: Union
@@ -116,6 +128,20 @@ class CSV2RH(object):
         return rh
 
     def get_cs(self, cs, parameters=None):
+        """Create configuration-space
+
+        Parameters
+        ----------
+        cs: str or ConfigurationSpace
+            either a path to a pcs-file or ConfigurationSpace-object
+        parameters: list[str]
+            list with parameter-names to construct config-space
+
+        Returns
+        -------
+        cs: ConfigurationSpace
+            appropriate configuration space
+        """
         if cs and isinstance(cs, ConfigurationSpace):
             cs = cs
         elif cs and isinstance(cs, str):
@@ -158,10 +184,8 @@ class CSV2RH(object):
         return status
 
     def _complete_configs(self):
-        """Either config is None or parameters an empty list.
-        After completion, every unique configuration in the data will have a
-        corresponding id. If specified via parameters, they will be replaced by
-        the config-id.
+        """After completion, every unique configuration in the data will have a
+        corresponding id.
         """
         self.config_to_id = {}
         if 'config_id' in self.data.columns:

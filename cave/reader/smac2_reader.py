@@ -7,6 +7,7 @@ import pandas as pd
 
 from ConfigSpace import Configuration, c_util
 from ConfigSpace.hyperparameters import IntegerHyperparameter, FloatHyperparameter
+from ConfigSpace.util import deactivate_inactive_hyperparameters, fix_types
 from smac.optimizer.objective import average_cost
 from smac.utils.io.input_reader import InputReader
 from smac.runhistory.runhistory import RunKey, RunValue, RunHistory, DataOrigin
@@ -36,8 +37,13 @@ class SMAC2Reader(BaseReader):
 
     def get_runhistory(self, cs):
         """
-        Returns:
-        --------
+        Expects the following files:
+
+        - `self.folder/runs_and_results(...).csv`
+        - `self.folder/paramstrings(...).csv`
+
+        Returns
+        -------
         (rh, validated_rh): RunHistory, Union[False, RunHistory]
             runhistory and (if available) validated runhistory
         """
@@ -112,6 +118,10 @@ class SMAC2Reader(BaseReader):
         return (rh, validated_rh)
 
     def get_trajectory(self, cs):
+        """Expects the following files:
+
+        - `self.folder/traj-run-(...).csv`
+        """
         traj_fn = re.search(r'traj-run-\d*.txt', str(os.listdir(os.path.join(self.folder, '..'))))
         if not traj_fn:
             raise FileNotFoundError("Specified format is \'SMAC2\', but no "
