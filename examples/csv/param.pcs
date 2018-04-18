@@ -1,0 +1,3 @@
+parameter1 {0,1,2}[0]
+parameter2 [25, 3200] [100]il
+parameter3 [2, 20] [8]
