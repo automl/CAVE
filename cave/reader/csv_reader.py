@@ -15,8 +15,9 @@ from smac.scenario.scenario import Scenario
 
 from cave.reader.base_reader import BaseReader, changedir
 from cave.reader.csv2rh import CSV2RH
+from cave.utils.io import load_csv_to_pandaframe, load_config_csv
 
-class SMAC2Reader(BaseReader):
+class CSVReader(BaseReader):
 
     def get_scenario(self):
         run_1_existed = os.path.exists('run_1')
@@ -52,85 +53,38 @@ class SMAC2Reader(BaseReader):
         configs_fn = os.path.join(self.folder, 'configurations.csv')
         if os.path.exists(configs_fn):
             self.logger.debug("Found \'configurations.csv\' in %s." % self.folder)
+            self.configurations = load_config_csv(configs_fn, self.scen.cs, self.logger)[1]
+            print(self.configurations)
+        else:
+            raise ValueError("No \'configurations.csv\' in %s." % self.folder)
+
         rh = CSV2RH().read_csv_to_rh(rh_fn,
                                      pcs=self.scen.cs,
-                                     configurations=configs_fn,
+                                     configurations=self.configurations,
                                      train_inst=self.scen.train_insts,
                                      test_inst=self.scen.test_insts,
                                      instance_features=self.scen.feature_dict,
                                      )
-        # Translate smac2 to csv
-        with open(rh_fn, 'r') as csv_file:
-            csv_data = list(csv.reader(csv_file, delimiter=',',
-                                       skipinitialspace=True))
-        header, csv_data = csv_data[0], np.array([csv_data[1:]])[0]
-        csv_data = pd.DataFrame(csv_data, columns=header)
-        csv_data = csv_data.apply(pd.to_numeric, errors='ignore')
-        self.logger.debug("Headers: " + str(list(csv_data.columns.values)))
-        data = pd.DataFrame()
-        data["config_id"] = csv_data["Run History Configuration ID"]
-        data["instance_id"] = csv_data["Instance ID"].apply(lambda x:
-                self.scen.train_insts[x-1])
-        data["seed"] = csv_data["Seed"]
-        data["time"] = csv_data["Runtime"]
-        if self.scen.run_obj == 'runtime':
-            data["cost"] = csv_data["Runtime"]
-        else:
-            data["cost"] = csv_data["Run Quality"]
-        data["status"] = csv_data["Run Result"]
-
-        # Load configurations
-        with open(configs_fn, 'r') as csv_file:
-            csv_data = list(csv.reader(csv_file, delimiter=',',
-                                       skipinitialspace=True))
-        configurations = {}  # id to config
-        for row in csv_data:
-            config_id = int(re.match(r'^(\d*):', row[0]).group(1))
-            params = [re.match(r'^\d*: (.*)', row[0]).group(1)]
-            params.extend(row[1:])
-            #self.logger.debug(params)
-            matches = [re.match(r'(.*)=\'(.*)\'', p) for p in params]
-            values = {m.group(1) : m.group(2) for m in matches}
-            rs = np.random.RandomState()
-            for name, value in values.items():
-                if isinstance(cs.get_hyperparameter(name), IntegerHyperparameter):
-                    values[name] = int(value)
-                if isinstance(cs.get_hyperparameter(name), FloatHyperparameter):
-                    values[name] = float(value)
-            configurations[config_id] = self._remove_inactive(cs, Configuration(cs,
-                                                    values=values,
-                                                    allow_inactive_with_values=True),
-                                                    values)
-        self.configurations = configurations
-
-        rh = CSV2RH().read_csv_to_rh(data,
-                                     pcs=cs,
-                                     configurations=configurations)
 
         return (rh, validated_rh)
 
     def get_trajectory(self, cs):
-        traj_fn = re.search(r'traj-run-\d*.txt', str(os.listdir(os.path.join(self.folder, '..'))))
-        if not traj_fn:
-            raise FileNotFoundError("Specified format is \'SMAC2\', but no "
-                                    "\'../traj-run\'-file could be found "
-                                    "in %s" % self.folder)
-        traj_fn = os.path.join(self.folder, '..', traj_fn.group())
-        with open(traj_fn, 'r') as csv_file:
-            csv_data = list(csv.reader(csv_file, delimiter=',',
-                                       skipinitialspace=True))
-        header, csv_data = csv_data[0][:-1], np.array([csv_data[1:]])[0]
-        csv_data = pd.DataFrame(np.delete(csv_data, np.s_[5:], axis=1), columns=header)
-        csv_data = csv_data.apply(pd.to_numeric, errors='ignore')
+        traj_fn = os.path.join(self.folder, 'trajectory.csv')
+        if not os.path.exists(traj_fn):
+            self.logger.warning("Specified format is \'CSV\', but no "
+                                "\'../trajectory\'-file could be found "
+                                "at %s" % self.traj_fn)
+
+        csv_data = load_csv_to_pandaframe(traj_fn, self.logger)
         traj = []
         def add_to_traj(row):
             new_entry = {}
-            new_entry['cpu_time'] = row['CPU Time Used']
+            new_entry['cpu_time'] = row['cpu_time']
             new_entry['total_cpu_time'] = None
-            new_entry["wallclock_time"] = row['Wallclock Time']
+            new_entry["wallclock_time"] = row['wallclock_time']
             new_entry["evaluations"] = -1
-            new_entry["cost"] = row["Estimated Training Performance"]
-            new_entry["incumbent"] = self.configurations[row["Incumbent ID"]]
+            new_entry["cost"] = row["cost"]
+            new_entry["incumbent"] = self.configurations[row["incumbent"]]
             traj.append(new_entry)
         csv_data.apply(add_to_traj, axis=1)
         return traj

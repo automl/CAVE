@@ -1,0 +1,4 @@
+config_id, instance_id, cost, time, seed, status
+0, instance1,   1,    2,    1,    SUCCESS
+1, instance2,   2,    4,    1,    SUCCESS
+2, instance3,   2,    3,    1,    TIMEOUT

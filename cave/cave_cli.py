@@ -85,7 +85,7 @@ class CaveCLI(object):
         opt_opts.add_argument("--file_format",
                               default='SMAC3',
                               help="what format the configurator-files are in",
-                              choices=['SMAC2', 'SMAC3'],
+                              choices=['SMAC2', 'SMAC3', 'CSV'],
                               type=str.upper)
         opt_opts.add_argument("--ta_exec_dir",
                               default=None,

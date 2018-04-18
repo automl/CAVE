@@ -1,0 +1,2 @@
+instance3 SATISFIABLE
+instance4 UNSATISFIABLE

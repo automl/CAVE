@@ -13,8 +13,10 @@ from smac.utils.io.input_reader import InputReader
 from smac.tae.execute_ta_run import StatusType
 
 from ConfigSpace import Configuration, ConfigurationSpace
-from ConfigSpace.hyperparameters import UniformFloatHyperparameter
+from ConfigSpace.hyperparameters import UniformFloatHyperparameter, CategoricalHyperparameter
 from ConfigSpace.read_and_write import pcs
+
+from cave.utils.io import load_csv_to_pandaframe
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2018, ML4AAD"
@@ -53,43 +55,46 @@ class CSV2RH(object):
         """
         self.logger = logging.getLogger('cave.utils.csv2rh')
         self.input_reader = InputReader()
-        self.pcs = pcs
         self.train_inst = input_reader.read_instance_file(train_inst) if type(train_inst) == str else train_inst
         self.test_inst =  input_reader.read_instance_file(test_inst) if type(test_inst) == str else test_inst
+        feature_names = []  # names of instance-features
         if type(instance_features) == str:
             names, feats = input_reader.read_instance_features_file(instance_features)
+            feature_names = names
             self.instance_features = feats
         else:
             self.instance_features = instance_features
-        self.id_to_config = configurations if configurations else {}
-        self.cs = None
 
         # Read in data
         if isinstance(data, str):
-            csv_path = data
-            with open(csv_path, 'r') as csv_file:
-                csv_data = list(csv.reader(csv_file, delimiter=',',
-                                           skipinitialspace=True))
-            header, csv_data = csv_data[0], np.array([csv_data[1:]])[0]
-            self.data = pd.DataFrame(csv_data, columns=header)
-            self.data = self.data.apply(pd.to_numeric, errors='ignore')
-            self.logger.debug("Headers: " + str(list(self.data.columns.values)))
+            self.logger.debug("Detected path for csv-file (\'%s\')", data)
+            self.data = load_csv_to_pandaframe(data, self.logger)
         else:
             self.data = data
 
         # Expecting header as described in docstring
-        valid_values = ['seed', 'cost', 'time', 'status', 'config_id', 'instance_id']
+        self.valid_values = ['seed', 'cost', 'time', 'status', 'config_id', 'instance_id']
         if not len(self.data.columns) == len(set(self.data.columns)):
             raise ValueError("Detected a duplicate in the columns of the "
                              "csv-file \"%s\"." % csv_path)
-        for column_name in self.data.columns:
-            if not (column_name.lower() in valid_values or
-                    column_name.startswith('p_') or  # parameter
-                    column_name.startswith('i_')):  # instance feature
-                raise ValueError("%s not a legal column name in %s." % column_name, csv_path)
+
+        if isinstance(configurations, str):
+            parameters, self.id_to_config = self._load_config_csv(configurations, pcs)
+        elif isinstance(configurations, dict):
+            self.id_to_config = configurations
+            parameters = np.random.choice(list(self.id_to_config.values())).configuration_space.get_hyperparameter_names()
+        else:
+            self.id_to_config = {}
+            parameters = [c for c in self.data.columns if not
+                          (c.lower() in self.valid_values)]
+        if not feature_names:
+            feature_names = [c for c in self.data.columns if
+                             not c.lower() in self.valid_values and
+                             not c in parameters]
+        self.cs = self.get_cs(pcs, parameters)
 
         self._complete_configs()
-        self._complete_instances()
+        self._complete_instances(feature_names)
         self.logger.debug("Found: seed=%s, cost=%s, time=%s, status=%s",
                           'seed' in self.data.columns, 'cost' in self.data.columns,
                           'time' in self.data.columns, 'status' in self.data.columns)
@@ -110,33 +115,28 @@ class CSV2RH(object):
         self.data.apply(add_to_rh, axis=1)
         return rh
 
-    def get_cs(self):
-        # TODO use from pyimp after https://github.com/automl/ParameterImportance/issues/72 is implemented
-        if self.pcs and type(self.pcs) == ConfigurationSpace:
-            cs = self.pcs
-        elif self.pcs and type(self.pcs) == str:
-            parameters = [p[2:] for p in self.data.columns if p.startswith('p_')]
-            with open(self.pcs, 'r') as fh:
+    def get_cs(self, cs, parameters=None):
+        if cs and isinstance(cs, ConfigurationSpace):
+            cs = cs
+        elif cs and isinstance(cs, str):
+            self.logger.debug("Reading PCS from %s", cs)
+            with open(cs, 'r') as fh:
                 cs = pcs.read(fh)
-            diff = set(cs.get_hyperparameter_names()).symmetric_difference(set(parameters))
-            if not len(diff) == 0:
-                raise ValueError("Comparing parameters from \"%s\" and csv. "
-                                 "In pcs but not in csv: [%s]. "
-                                 "In csv but not in pcs: [%s]. " % (self.pcs,
-                                 str(set(cs.get_hyperparameter_names()).difference(set(parameters))),
-                                 str(set(parameters).difference(set(cs.get_hyperparameter_names())))))
-        else:
-            parameters = [p for p in self.data.columns if p.startswith('p_')]
+        elif parameters:
+            # TODO use from pyimp after https://github.com/automl/ParameterImportance/issues/72 is implemented
             warnings.warn("No parameter configuration space (pcs) provided! "
                           "Interpreting all parameters as floats. This might lead "
                           "to suboptimal analysis.", RuntimeWarning)
+            self.logger.debug("Interpreting as parameters: %s", parameters)
             minima = self.data.min()  # to define ranges of hyperparameters
             maxima = self.data.max()
             cs = ConfigurationSpace(seed=42)
             for p in parameters:
-                cs.add_hyperparameter(UniformFloatHyperparameter(p[2:],
+                cs.add_hyperparameter(UniformFloatHyperparameter(p,
                                       lower=minima[p] - 1, upper=maxima[p] + 1))
-        self.cs = cs
+        else:
+            raise ValueError("No pcs-file provided, parameters could not be interpreted.")
+        return cs
 
     def _interpret_status(self, status):
         status = status.strip().upper()
@@ -162,89 +162,53 @@ class CSV2RH(object):
         After completion, every unique configuration in the data will have a
         corresponding id. If specified via parameters, they will be replaced by
         the config-id.
-
-        Parameters:
-        -----------
-        config_id: bool
-            if not False, column_id-column present,
-            read in configurations from somewhere
         """
         self.config_to_id = {}
-        parameters = [p for p in self.data.columns if p.startswith('p_')]
-        if 'config_id' in self.data.columns and len(parameters) > 0:
-            raise ValueError("Define configs either via \"p_\" or \"config\" in header, not both.")
-        elif 'config_id' in self.data.columns:
+        if 'config_id' in self.data.columns:
             if not self.id_to_config:
                 raise ValueError("When defining configs with \"config_id\" "
                                  "in header, you need to provide the argument "
-                                 "\"configurations\" to the CSV2RH-object.")
-            elif isinstance(self.id_to_config, str):
-                # Read in configs from csv
-                with open(self.id_to_config, 'r') as csv_file:
-                    config_data = list(csv.reader(csv_file, delimiter=',',
-                                               skipinitialspace=True))
-                header, config_data = config_data[0], np.array([config_data[1:]])[0]
-                config_data = pd.DataFrame(config_data, columns=header)
-                config_data.set_index('CONFIG_ID', inplace=True)
-                config_data = config_data.apply(pd.to_numeric, errors='ignore')
-                parameters = ['p_' + p for p in config_data.columns]
-                # Create and fill in p_-columns for cs-creation
-                for p in parameters:
-                    self.data[p] = 0
-                def fill_parameters(row):
-                    for p in parameters:
-                        row[p] = config_data.loc[row['config_id'], p[2:]]
-                    return row
-                self.data = self.data.apply(fill_parameters, axis=1)
-                self.get_cs()
-                self.id_to_config = {}
-                for index, row in config_data.iterrows():
-                    self.id_to_config[index] = Configuration(self.cs,
-                            values={name[2:] : value for name, value in
-                                             zip(parameters, row)})
-                self.config_to_id = {conf : name for name, conf in
-                        self.id_to_config.items()}
-            elif isinstance(self.id_to_config, dict):
-                self.config_to_id = {conf : name for name, conf in
-                        self.id_to_config.items()}
-                self.get_cs()
-        elif parameters:
+                                 "\"configurations\" to the CSV2RH-object - "
+                                 "either as a dict, mapping the id's to "
+                                 "Configurations or as a path to a csv-file "
+                                 "containing the necessary information.")
+            self.config_to_id = {conf : name for name, conf in
+                                 self.id_to_config.items()}
+        else:
+            self.logger.debug("No \'config_id\'-column detected. Interpreting "
+                              "from pcs, if available.")
             # Add new column for config-ids
             self.data['config_id'] = -1
-            # Configs are defined via individual "p_"-header-columns
-            self.get_cs()
-            def add_config(row):
-                config = Configuration(self.cs, values={p[2:] : float(row[p]) for p in
-                                                   parameters})
+            for idx, row in enumerate(self.data.itertuples()):
+                values = {p : getattr(row, p) for p in
+                          self.cs.get_hyperparameter_names()}
+                values = {k : str(v) if isinstance(self.cs.get_hyperparameter(k),
+                                                   CategoricalHyperparameter)
+                          else v for k, v in values.items()}
+                config = Configuration(self.cs, values=values)
                 if not config in self.config_to_id.keys():
                     # New index (unseen config)
                     new_id = len(self.config_to_id)
                     self.config_to_id[config] = new_id
                     self.id_to_config[new_id] = config
-                row['config_id'] = self.config_to_id[config]
-                return row
-            self.data = self.data.apply(add_config, axis=1)
-        else:
-            raise ValueError("Define configs either via \"p_\" or \"config_id\" in header.")
+                self.data.loc[idx, 'config_id'] = self.config_to_id[config]
 
-    def _complete_instances(self):
+    def _complete_instances(self, feature_names):
         self.id_to_inst_feats = {}
         self.inst_feats_to_id = {}
-        inst_feats = [i for i in self.data.columns if i.startswith('i_')]
-        if inst_feats and 'instance_id' in self.data.columns:
-            raise ValueError("Define instances either via \"i_\" or \"instance_id\" in header, not both.")
-        elif 'instance_id' in self.data.columns:
+        inst_feats = feature_names
+        if 'instance_id' in self.data.columns:
             if self.instance_features:
                 self.id_to_inst_feats = {i : tuple(feat) for i, feat in
                                          self.instance_features.items()}
                 self.inst_feats_to_id = {feat : i for i, feat in
                                          self.id_to_inst_feats.items()}
             else:
-                raise ValueError("Instances defined but no instance features available.")
+                raise ValueError("Instances defined via \'instance_id\'-column, "
+                                 "but no instance features available.")
         elif inst_feats:
             # Add new column for instance-ids
             self.data['instance_id'] = -1
-            # Instances are defined via individual "i_"-header-columns
             def add_instance(row):
                 features = tuple([row[idx] for idx in inst_feats])
                 if not features in self.inst_feats_to_id.keys():
@@ -255,4 +219,4 @@ class CSV2RH(object):
                 return row
             self.data = self.data.apply(add_instance, axis=1)
         else:
-            self.logger.info("No instances detected. Define instances either via \"i_\" or \"instance_id\" in header.")
+            self.logger.info("No instances detected.")
