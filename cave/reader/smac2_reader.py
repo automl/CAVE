@@ -95,18 +95,10 @@ class SMAC2Reader(BaseReader):
             #self.logger.debug(params)
             matches = [re.match(r'(.*)=\'(.*)\'', p) for p in params]
             values = {m.group(1) : m.group(2) for m in matches}
-            rs = np.random.RandomState()
-            for name, value in values.items():
-                if isinstance(cs.get_hyperparameter(name), IntegerHyperparameter):
-                    values[name] = int(value)
-                if isinstance(cs.get_hyperparameter(name), FloatHyperparameter):
-                    values[name] = float(value)
-            configurations[config_id] = self._remove_inactive(cs, Configuration(cs,
-                                                    values=values,
-                                                    allow_inactive_with_values=True),
-                                                    values)
+            values = deactivate_inactive_hyperparameters(fix_types(values, cs),
+                                                         cs).get_dictionary()
+            configurations[config_id] = Configuration(cs, values=values)
         self.configurations = configurations
-
         names, feats = self.scen.feature_names, self.scen.feature_dict
         rh = CSV2RH().read_csv_to_rh(data,
                                      pcs=cs,
@@ -147,68 +139,3 @@ class SMAC2Reader(BaseReader):
         csv_data.apply(add_to_traj, axis=1)
         return traj
 
-    def _remove_inactive(self, cs, configuration, values):
-        num_hyperparameters = len(cs._hyperparameters)
-
-        unconditional_hyperparameters = cs.get_all_unconditional_hyperparameters()
-        hyperparameters_with_children = list()
-
-        _forbidden_clauses_unconditionals = []
-        _forbidden_clauses_conditionals = []
-        for clause in cs.get_forbiddens():
-            based_on_conditionals = False
-            for subclause in clause.get_descendant_literal_clauses():
-                if subclause.hyperparameter.name not in unconditional_hyperparameters:
-                    based_on_conditionals = True
-                    break
-            if based_on_conditionals:
-                _forbidden_clauses_conditionals.append(clause)
-            else:
-                _forbidden_clauses_unconditionals.append(clause)
-
-        for uhp in unconditional_hyperparameters:
-            children = cs._children_of[uhp]
-            if len(children) > 0:
-                hyperparameters_with_children.append(uhp)
-        vector = configuration.get_array()
-        return Configuration(
-                      cs,
-                      vector=c_util.correct_sampled_array(
-                          vector,
-                          _forbidden_clauses_unconditionals,
-                          _forbidden_clauses_conditionals,
-                          hyperparameters_with_children,
-                          len(cs._hyperparameters),
-                          cs.get_all_unconditional_hyperparameters(),
-                          cs._hyperparameter_idx,
-                          cs._parent_conditions_of,
-                          cs._parents_of,
-                          cs._children_of,
-                      ))
-
-        new_config = {}
-        vector = configuration.get_array()
-        for hp_name, hyperparameter in cs._hyperparameters.items():
-            hp_value = vector[cs._hyperparameter_idx[hp_name]]
-            active = True
-            conditions = cs._parent_conditions_of[hyperparameter.name]
-            for condition in conditions:
-
-                parent_vector_idx = condition.get_parents_vector()
-
-                # if one of the parents is None, the hyperparameter cannot be
-                # active! Else we have to check this
-                # Note from trying to optimize this - this is faster than using
-                # dedicated numpy functions and indexing
-                if any([vector[i] != vector[i] for i in parent_vector_idx]):
-                    active = False
-                    break
-
-                else:
-                    if not condition.evaluate_vector(vector):
-                        active = False
-                    break
-            if active:
-                new_config[hp_name] = values[hp_name]
-        #return configuration
-        return Configuration(cs, values=new_config)

@@ -76,9 +76,6 @@ def load_config_csv(path, cs, logger):
                          "\'%s\' (check parameters %s)" % (path, diff))
     for index, row in enumerate(config_data.itertuples()):
         values = {name : value for name, value in zip(config_data.columns, row[1:])}
-        values = {k : str(v) if isinstance(cs.get_hyperparameter(k),
-                                           CategoricalHyperparameter)
-                  else v for k, v in values.items()}
-        id_to_config[index] = Configuration(cs, values=values)
+        id_to_config[index] = deactivate_inactive_hyperparameters(fix_types(values, cs), cs)
     return config_data.columns, id_to_config
 

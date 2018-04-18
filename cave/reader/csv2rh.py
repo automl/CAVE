@@ -90,15 +90,8 @@ class CSV2RH(object):
             raise ValueError("Detected a duplicate in the columns of the "
                              "csv-file \"%s\"." % csv_path)
 
-        if isinstance(configurations, str):
-            parameters, self.id_to_config = self._load_config_csv(configurations, pcs)
-        elif isinstance(configurations, dict):
-            self.id_to_config = configurations
-            parameters = np.random.choice(list(self.id_to_config.values())).configuration_space.get_hyperparameter_names()
-        else:
-            self.id_to_config = {}
-            parameters = [c for c in self.data.columns if not
-                          (c.lower() in self.valid_values)]
+        self.id_to_config = configurations
+        parameters = np.random.choice(list(self.id_to_config.values())).configuration_space.get_hyperparameter_names()
         if not feature_names:
             feature_names = [c for c in self.data.columns if
                              not c.lower() in self.valid_values and
@@ -188,34 +181,15 @@ class CSV2RH(object):
         corresponding id.
         """
         self.config_to_id = {}
-        if 'config_id' in self.data.columns:
-            if not self.id_to_config:
-                raise ValueError("When defining configs with \"config_id\" "
-                                 "in header, you need to provide the argument "
-                                 "\"configurations\" to the CSV2RH-object - "
-                                 "either as a dict, mapping the id's to "
-                                 "Configurations or as a path to a csv-file "
-                                 "containing the necessary information.")
-            self.config_to_id = {conf : name for name, conf in
-                                 self.id_to_config.items()}
-        else:
-            self.logger.debug("No \'config_id\'-column detected. Interpreting "
-                              "from pcs, if available.")
-            # Add new column for config-ids
-            self.data['config_id'] = -1
-            for idx, row in enumerate(self.data.itertuples()):
-                values = {p : getattr(row, p) for p in
-                          self.cs.get_hyperparameter_names()}
-                values = {k : str(v) if isinstance(self.cs.get_hyperparameter(k),
-                                                   CategoricalHyperparameter)
-                          else v for k, v in values.items()}
-                config = Configuration(self.cs, values=values)
-                if not config in self.config_to_id.keys():
-                    # New index (unseen config)
-                    new_id = len(self.config_to_id)
-                    self.config_to_id[config] = new_id
-                    self.id_to_config[new_id] = config
-                self.data.loc[idx, 'config_id'] = self.config_to_id[config]
+        if not self.id_to_config:
+            raise ValueError("When defining configs with \"config_id\" "
+                             "in header, you need to provide the argument "
+                             "\"configurations\" to the CSV2RH-object - "
+                             "either as a dict, mapping the id's to "
+                             "Configurations or as a path to a csv-file "
+                             "containing the necessary information.")
+        self.config_to_id = {conf : name for name, conf in
+                             self.id_to_config.items()}
 
     def _complete_instances(self, feature_names):
         self.id_to_inst_feats = {}
