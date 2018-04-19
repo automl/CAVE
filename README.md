@@ -7,7 +7,8 @@ Status for development branch
 [![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=development)](https://travis-ci.org/automl/CAVE)
 
 # CAVE 
-CAVE is an analysis tool for automatic algorithm configurators.
+	CAVE is a versatile analysis tool for automatic algorithm configurators. It generates comprehensive reports (e.g. http://ml.informatik.uni-freiburg.de/~biedenka/cave.html) that
+give you insights into the configured algorithm, the used instance set and also the configuration tool itself.
 The current version works out-of-the-box with [SMAC3](https://github.com/automl/SMAC3), but can be easily adapted to other configurators, as long as they use the same output-structure.
 
 # LICENSE 
