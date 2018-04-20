@@ -92,6 +92,7 @@ class CSV2RH(object):
                 parameters = set(data.columns)
                 parameters -= set(self.valid_values)
                 parameters -= set(feature_names)
+                parameters = list(parameters)
             cs = self.create_cs_from_pandaframe(data[parameters])
 
         parameters = cs.get_hyperparameter_names()
