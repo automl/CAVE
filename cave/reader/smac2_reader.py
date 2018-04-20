@@ -16,6 +16,7 @@ from smac.scenario.scenario import Scenario
 
 from cave.reader.base_reader import BaseReader, changedir
 from cave.reader.csv2rh import CSV2RH
+from cave.utils.io import load_csv_to_pandaframe
 
 class SMAC2Reader(BaseReader):
 
@@ -64,13 +65,7 @@ class SMAC2Reader(BaseReader):
         configs_fn = os.path.join(self.folder, configs_fn.group())
         self.logger.debug("Configurations loaded from %s", configs_fn)
         # Translate smac2 to csv
-        with open(rh_fn, 'r') as csv_file:
-            csv_data = list(csv.reader(csv_file, delimiter=',',
-                                       skipinitialspace=True))
-        header, csv_data = csv_data[0], np.array([csv_data[1:]])[0]
-        csv_data = pd.DataFrame(csv_data, columns=header)
-        csv_data = csv_data.apply(pd.to_numeric, errors='ignore')
-        self.logger.debug("Headers: " + str(list(csv_data.columns.values)))
+        csv_data = load_csv_to_pandaframe(rh_fn, self.logger)
         data = pd.DataFrame()
         data["config_id"] = csv_data["Run History Configuration ID"]
         data["instance_id"] = csv_data["Instance ID"].apply(lambda x:
@@ -87,7 +82,7 @@ class SMAC2Reader(BaseReader):
         with open(configs_fn, 'r') as csv_file:
             csv_data = list(csv.reader(csv_file, delimiter=',',
                                        skipinitialspace=True))
-        configurations = {}  # id to config
+        id_to_config = {}
         for row in csv_data:
             config_id = int(re.match(r'^(\d*):', row[0]).group(1))
             params = [re.match(r'^\d*: (.*)', row[0]).group(1)]
@@ -97,12 +92,12 @@ class SMAC2Reader(BaseReader):
             values = {m.group(1) : m.group(2) for m in matches}
             values = deactivate_inactive_hyperparameters(fix_types(values, cs),
                                                          cs).get_dictionary()
-            configurations[config_id] = Configuration(cs, values=values)
-        self.configurations = configurations
+            id_to_config[config_id] = Configuration(cs, values=values)
+        self.id_to_config = id_to_config
         names, feats = self.scen.feature_names, self.scen.feature_dict
         rh = CSV2RH().read_csv_to_rh(data,
-                                     pcs=cs,
-                                     configurations=configurations,
+                                     cs=cs,
+                                     id_to_config=id_to_config,
                                      train_inst=self.scen.train_insts,
                                      test_inst=self.scen.test_insts,
                                      instance_features=feats)
@@ -134,7 +129,7 @@ class SMAC2Reader(BaseReader):
             new_entry["wallclock_time"] = row['Wallclock Time']
             new_entry["evaluations"] = -1
             new_entry["cost"] = row["Estimated Training Performance"]
-            new_entry["incumbent"] = self.configurations[row["Incumbent ID"]]
+            new_entry["incumbent"] = self.id_to_config[row["Incumbent ID"]]
             traj.append(new_entry)
         csv_data.apply(add_to_traj, axis=1)
         return traj

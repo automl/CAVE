@@ -1,2 +1,0 @@
-instance1 SATISFIABLE
-instance2 SATISFIABLE

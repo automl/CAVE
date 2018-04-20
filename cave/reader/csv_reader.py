@@ -62,45 +62,58 @@ class CSVReader(BaseReader):
         configs_fn = os.path.join(self.folder, 'configurations.csv')
         if os.path.exists(configs_fn):
             self.logger.debug("Found \'configurations.csv\' in %s." % self.folder)
-            self.configurations = load_config_csv(configs_fn, self.scen.cs, self.logger)[1]
+            self.id_to_config = load_config_csv(configs_fn, cs, self.logger)[1]
         else:
-            raise ValueError("No \'configurations.csv\' in %s." % self.folder)
+            self.logger.debug("No \'configurations.csv\' in %s." % self.folder)
+            self.id_to_config = {}
 
         rh = CSV2RH().read_csv_to_rh(rh_fn,
-                                     pcs=self.scen.cs,
-                                     configurations=self.configurations,
+                                     cs=cs,
+                                     id_to_config=self.id_to_config,
                                      train_inst=self.scen.train_insts,
                                      test_inst=self.scen.test_insts,
                                      instance_features=self.scen.feature_dict,
                                      )
+        if not self.id_to_config:
+            self.id_to_config = rh.ids_config
 
         return (rh, validated_rh)
 
     def get_trajectory(self, cs):
         """Reads `self.folder/trajectory.csv`, expected format:
 
-        +----------+------+----------------+-----------+
-        | cpu_time | cost | wallclock_time | incumbent |
-        +==========+======+================+===========+
-        | ...      | ...  | ...            | ...       |
-        +----------+------+----------------+-----------+
+        +----------+------+----------------+-------------+-----------+
+        | cpu_time | cost | wallclock_time | evaluations | config_id |
+        +==========+======+================+=============+===========+
+        | ...      | ...  | ...            | ...         | ...       |
+        +----------+------+----------------+-------------+-----------+
+
+        or
+
+        +----------+------+----------------+-------------+------------+------------+-----+
+        | cpu_time | cost | wallclock_time | evaluations | parameter1 | parameter2 | ... |
+        +==========+======+================+=============+============+============+=====+
+        | ...      | ...  | ...            | ...         | ...        | ...        | ... |
+        +----------+------+----------------+-------------+------------+------------+-----+
         """
         traj_fn = os.path.join(self.folder, 'trajectory.csv')
         if not os.path.exists(traj_fn):
             self.logger.warning("Specified format is \'CSV\', but no "
                                 "\'../trajectory\'-file could be found "
-                                "at %s" % self.traj_fn)
+                                "at %s" % traj_fn)
 
-        csv_data = load_csv_to_pandaframe(traj_fn, self.logger)
+        csv_data = load_csv_to_pandaframe(traj_fn, self.logger,
+                                          apply_numeric=False)
         traj = []
+        csv_data, configs = CSV2RH().extract_configs(csv_data, cs, self.id_to_config)
         def add_to_traj(row):
             new_entry = {}
-            new_entry['cpu_time'] = row['cpu_time']
+            new_entry['cpu_time'] = float(row['cpu_time'])
             new_entry['total_cpu_time'] = None
-            new_entry["wallclock_time"] = row['wallclock_time']
-            new_entry["evaluations"] = -1
-            new_entry["cost"] = row["cost"]
-            new_entry["incumbent"] = self.configurations[row["incumbent"]]
+            new_entry["wallclock_time"] = float(row['wallclock_time'])
+            new_entry["evaluations"] = int(row['evaluations'])
+            new_entry["cost"] = float(row["cost"])
+            new_entry["incumbent"] = self.id_to_config[row["config_id"]]
             traj.append(new_entry)
         csv_data.apply(add_to_traj, axis=1)
         return traj
