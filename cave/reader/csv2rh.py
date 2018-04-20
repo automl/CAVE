@@ -86,9 +86,12 @@ class CSV2RH(object):
                 cs = pcs.read(fh)
         elif not cs:
             # No config-space provided, create from columns
-            raise NotImplementedError("Automatic creation of config-spaces is "
-                                      "yet to be implemented.")
-            parameters = np.random.choice(list(self.id_to_config.values())).configuration_space.get_hyperparameter_names()
+            if self.id_to_config:
+                cs = np.random.choice(list(self.id_to_config.values())).configuration_space
+            else:
+                parameters = set(data.columns)
+                parameters -= set(self.valid_values)
+                parameters -= set(feature_names)
             cs = self.create_cs_from_pandaframe(data[parameters])
 
         parameters = cs.get_hyperparameter_names()
@@ -138,6 +141,19 @@ class CSV2RH(object):
                                   lower=minima[p] - 1, upper=maxima[p] + 1))
 
     def _interpret_status(self, status, types=None):
+        """
+        Parameters
+        ----------
+        status: str
+            status-string
+        types: dict[str:StatusType]
+            optional, mapping to use
+
+        Returns
+        -------
+        status: StatusType
+            interpreted status-type
+        """
         if not types:
             types = {"SAT" : StatusType.SUCCESS,
                      "UNSAT" : StatusType.SUCCESS,
