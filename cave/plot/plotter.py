@@ -21,10 +21,11 @@ from smac.utils.util_funcs import get_types
 from smac.runhistory.runhistory import RunHistory
 from smac.utils.validate import Validator
 
+from cave.reader.configurator_run import ConfiguratorRun
 from cave.plot.scatter import plot_scatter_plot
 from cave.plot.configurator_footprint import ConfiguratorFootprint
 from cave.plot.parallel_coordinates import ParallelCoordinatesPlotter
-from cave.smacrun import SMACrun
+from cave.utils.helpers import get_cost_dict_for_config, get_timeout
 from cave.utils.io import export_bokeh
 
 from bokeh.plotting import figure, ColumnDataSource
@@ -49,7 +50,7 @@ class Plotter(object):
     they can be easily adapted into other projects.
     """
 
-    def __init__(self, scenario, train_test, conf1_runs, conf2_runs, output_dir):
+    def __init__(self, scenario, output_dir):
         """
         Parameters
         ----------
@@ -65,34 +66,11 @@ class Plotter(object):
         """
         self.logger = logging.getLogger("cave.plotter")
         self.scenario = scenario
-        self.train_test = train_test
+        self.train_test = len(self.scenario.train_insts) > 1 and len(self.scenario.test_insts) > 1
         self.output_dir = output_dir
         self.vizrh = None
 
-        # Split data into train and test
-        data = {"default" : {"combined" : [], "train" : [], "test" : []},
-                "incumbent" : {"combined" : [], "train" : [], "test" : []}}
-        train = scenario.train_insts
-        test = scenario.test_insts
-        # Create array for all instances
-        for k in conf1_runs:
-            data["default"]["combined"].append(conf1_runs[k])
-            if k in train:
-                data["default"]["train"].append(conf1_runs[k])
-            if k in test:
-                data["default"]["test"].append(conf1_runs[k])
-        for k in conf2_runs:
-            data["incumbent"]["combined"].append(conf2_runs[k])
-            if k in train:
-                data["incumbent"]["train"].append(conf2_runs[k])
-            if k in test:
-                data["incumbent"]["test"].append(conf2_runs[k])
-        for c in ["default", "incumbent"]:
-            for s in ["combined", "train", "test"]:
-                data[c][s] = np.array(data[c][s])
-        self.data = data
-
-    def plot_scatter(self, output_fn_base='scatter'):
+    def plot_scatter(self, default, incumbent, runhistory):
         """
         Creates a scatterplot of the two configurations on the given set of
         instances.
@@ -103,32 +81,55 @@ class Plotter(object):
         output_fn_base: string
             base-path to save plot to
         """
-        self.logger.debug("Plot scatter to %s[train|test].png", output_fn_base)
+        #TODO docstring
+        self.logger.debug("Plot scatter to %s[train|test].png",
+                os.path.join(self.output_dir, 'scatter'))
 
         metric = self.scenario.run_obj
         timeout = self.scenario.cutoff
         labels = ["default {}".format(self.scenario.run_obj), "incumbent {}".format(self.scenario.run_obj)]
 
-        conf1 = (self.data["default"]["train"], self.data["default"]["test"])
-        conf2 = (self.data["incumbent"]["train"], self.data["incumbent"]["test"])
+        default_train = np.array([v for k, v in
+                                  get_cost_dict_for_config(runhistory, default).items()
+                                  if k in self.scenario.train_insts])
+        incumbent_train = np.array([v for k, v in
+                                   get_cost_dict_for_config(runhistory, incumbent).items()
+                                   if k in self.scenario.train_insts])
+        min_val = min(min(default_train),
+                      min(incumbent_train))
+        if self.train_test:
+            default_test = np.array([v for k, v in
+                                    get_cost_dict_for_config(runhistory, default).items()
+                                    if k in self.scenario.test_insts])
+            incumbent_test = np.array([v for k, v in
+                                      get_cost_dict_for_config(runhistory, incumbent).items()
+                                      if k in self.scenario.test_insts])
+            min_val = min(min_val, min(default_test),
+                                   min(incumbent_test))
 
-        min_val = min(min([min(x) for x in conf1]), min([min(y) for y in conf2]))
+        paths = os.path.join(self.output_dir, 'scatter_train.png')
 
-        paths = [output_fn_base+'train.png',
-                 output_fn_base+'test.png']
-
-        for idx in [0, 1]:
-            fig = plot_scatter_plot((conf1[idx],), (conf2[idx],),
+        fig = plot_scatter_plot((default_train,), (incumbent_train,),
+                                labels, metric=metric,
+                                user_fontsize=22,
+                                min_val=min_val,
+                                max_val=timeout,
+                                jitter_timeout=True)
+        fig.savefig(paths)
+        plt.close(fig)
+        if self.train_test:
+            paths = [paths, os.path.join(self.output_dir, 'scatter_test.png')]
+            fig = plot_scatter_plot((default_test,), (incumbent_test,),
                                     labels, metric=metric,
                                     user_fontsize=22,
                                     min_val=min_val,
                                     max_val=timeout,
                                     jitter_timeout=True)
-            fig.savefig(paths[idx])
+            fig.savefig(paths[-1])
             plt.close(fig)
         return paths
 
-    def plot_cdf_compare(self, output_fn_base="CDF_compare.png"):
+    def plot_cdf_compare(self, default, incumbent, runhistory):
         """
         Plot the cumulated distribution functions for given configurations,
         plots will share y-axis and if desired x-axis.
@@ -139,11 +140,10 @@ class Plotter(object):
         output: List[str]
             filename, default: CDF_compare.png
         """
-        self.logger.debug("Plot CDF to %s_[train|test].png", output_fn_base)
+        self.logger.debug("Plot CDF to %s_[train|test].png",
+                          os.path.join(self.output_dir, 'cdf'))
 
         timeout = self.scenario.cutoff
-
-        data = self.data
 
         def prepare_data(x_data):
             """ Helper function to keep things easy, generates y_data and
@@ -157,12 +157,28 @@ class Plotter(object):
             return (x_data, y_data)
 
         # Generate y_data
-        data = {config_name : {label : prepare_data(x_data) for label, x_data in
-                               data[config_name].items()}
-                for config_name in data}
+        data = {'default' :
+                 {'train' : prepare_data(
+                           np.array([v for k, v in
+                                    get_cost_dict_for_config(runhistory, default).items()
+                                    if k in self.scenario.train_insts])),
+                  'test' : prepare_data(
+                           np.array([v for k, v in
+                                    get_cost_dict_for_config(runhistory, default).items()
+                                    if k in self.scenario.test_insts]))},
+                'incumbent' :
+                 {'train' : prepare_data(
+                           np.array([v for k, v in
+                                    get_cost_dict_for_config(runhistory, incumbent).items()
+                                    if k in self.scenario.train_insts])),
+                  'test' : prepare_data(
+                           np.array([v for k, v in
+                                    get_cost_dict_for_config(runhistory, incumbent).items()
+                                    if k in self.scenario.test_insts]))}}
 
-        output_fn = [output_fn_base + "_" + inst_set + '.png' for inst_set in
-                                    ['train', 'test']]
+        output_fn = [os.path.join(self.output_dir, 'cdf_train.png')]
+        if self.train_test:
+            output_fn.append(os.path.join(self.output_dir, 'cdf_test.png'))
 
         for inst_set, out in zip(['train', 'test'], output_fn):
             f = plt.figure(1, dpi=100, figsize=(10,10))
@@ -189,6 +205,8 @@ class Plotter(object):
             f.tight_layout()
             f.savefig(out)
             plt.close(f)
+        if len(output_fn) == 1:
+            return output_fn[0]
         return output_fn
 
     def visualize_configs(self, scen, runhistories, incumbents=None, max_confs_plot=1000):
@@ -256,8 +274,8 @@ class Plotter(object):
             for entry in traj:
                 time.append(entry["wallclock_time"])
                 configs.append(entry["incumbent"])
-                self.logger.debug('Time: %d Runs: %d', time[-1],
-                                  len(rh.get_runs_for_config(configs[-1])))
+                #self.logger.debug('Time: %d Runs: %d', time[-1],
+                #                  len(rh.get_runs_for_config(configs[-1])))
 
             self.logger.debug("Using %d samples (%d distinct) from trajectory.",
                               len(time), len(set(configs)))
@@ -292,7 +310,7 @@ class Plotter(object):
                 time.append(entry["wallclock_time"])
                 configs.append(entry["incumbent"])
                 costs = _cost(configs[-1], rh, rh.get_runs_for_config(configs[-1]))
-                #print(len(costs), time[-1])
+                #self.logger.debug(len(costs), time[-1]
                 if not costs:
                     time.pop()
                 else:
@@ -301,15 +319,12 @@ class Plotter(object):
             mean, var = np.array(mean).reshape(-1, 1), np.array(var).reshape(-1, 1)
         return mean, var, time
 
-    def plot_cost_over_time(self, rh: RunHistory, runs: List[SMACrun],
+    def plot_cost_over_time(self, rh: RunHistory, runs: List[ConfiguratorRun],
                             output_fn: str="performance_over_time.png",
                             validator: Union[None, Validator]=None):
         """ Plot performance over time, using all trajectory entries
             with max_time = wallclock_limit or (if inf) the highest
             recorded time
-
-            TODO JM: a few things are commented out because the tooltips make no
-            obvious sense for this kind of average... i will think of something.
 
             Parameters
             ----------
@@ -354,9 +369,9 @@ class Plotter(object):
                         pass  # Reached the end of one trajectory. No need to check it further
                 # var[time_idx][0] = np.nanvar(m)
                 u, l, m_ = np.nanpercentile(m, 75), np.nanpercentile(m, 25), np.nanpercentile(m, 50)
-                # print((mean[time_idx][0] + np.sqrt(var[time_idx][0]), mean[time_idx][0],
-                #        mean[time_idx][0] - np.sqrt(var[time_idx][0])))
-                # print((l, m_, u))
+                # self.logger.debug((mean[time_idx][0] + np.sqrt(var[time_idx][0]), mean[time_idx][0],
+                #                   mean[time_idx][0] - np.sqrt(var[time_idx][0])))
+                # self.logger.debug((l, m_, u))
                 upper[time_idx][0] = u
                 mean[time_idx][0] = m_
                 lower[time_idx][0] = l
@@ -379,39 +394,16 @@ class Plotter(object):
                                + list(mean)) * 0.8
             uncertainty_lower[uncertainty_lower <= 0] = clip_y_lower * 0.9
 
-        #hp_names = [k.name for k in  # Hyperparameter names
-        #            configs[0].configuration_space.get_hyperparameters()]
-
-        #def escape_param_name(p):
-        #    """Necessary because:
-        #        1. parameters called 'runs' or 'start-time' might exist in cs
-        #        2. '-' not allowed in bokeh's CDS"""
-        #    return 'p_' + p.replace('-','_')
-
         time_double = [t for sub in zip(time, time) for t in sub][1:-1]
         mean_double = [t for sub in zip(mean, mean) for t in sub][:-2]
         source = ColumnDataSource(data=dict(
                     x=time_double,
                     y=mean_double,
-                    #start=time,
-                    #end=time[1:] + ['end'],
-                    #orig_perf=[rh.get_cost(c) for c in configs],
-                    epm_perf=mean_double,
-                    #runs=[len(rh.get_runs_for_config(c)) for c in configs],
-                        ))
-        #for k in hp_names:
-        #    source.add([c[k] if c[k] else "None" for c in configs],
-        #               escape_param_name(k))
+                    epm_perf=mean_double))
 
         hover = HoverTool(tooltips=[
-                #("start time", "@start"),
-                #("end time", "@end"),
-                #("runs", "@runs"),
-                #("est. perf. (only original runs)", "@orig_perf"),
                 ("performance", "@epm_perf"),
                 ("at-time", "@x")])
-                #("Configuration", "------"),
-                #]+ [(k, '@' + escape_param_name(k)) for k in hp_names])
 
         p = figure(plot_width=700, plot_height=500, tools=[hover],
                    x_range=Range1d(max(min(time), 1), max(time)),

@@ -175,7 +175,8 @@ class ConfiguratorFootprint(object):
         self.relevant_rh = new_rh
 
         X, y, types = convert_data_for_epm(scenario=self.scenario,
-                                           runhistory=new_rh)
+                                           runhistory=new_rh,
+                                           logger=self.logger)
 
         types = np.array(np.zeros((2+n_feats)), dtype=np.uint)
 
@@ -350,7 +351,7 @@ class ConfiguratorFootprint(object):
                 r_p_c = len(rh.get_runs_for_config(c))
                 if r_p_c < self.min_runs_per_conf:
                     self.min_runs_per_conf = r_p_c
-                elif r_p_c > self.max_runs_per_conf:
+                if r_p_c > self.max_runs_per_conf:
                     self.max_runs_per_conf = r_p_c
                 runs_per_conf[conf_list.index(c)] = r_p_c
             self.runs_per_rh.append(np.array(runs_per_conf))
@@ -361,7 +362,12 @@ class ConfiguratorFootprint(object):
         return np.array(conf_matrix), conf_list, self.runs_per_rh[0]
 
     def _get_size(self, r_p_c):
-        sizes = 5 + ((r_p_c - self.min_runs_per_conf) / (self.max_runs_per_conf - self.min_runs_per_conf)) * 20
+        self.logger.debug("Min runs per conf: %d, Max runs per conf: %d",
+                          self.min_runs_per_conf, self.max_runs_per_conf)
+        normalization_factor = self.max_runs_per_conf - self.min_runs_per_conf
+        if normalization_factor == 0:  # All configurations same size
+            normalization_factor = 1
+        sizes = 5 + ((r_p_c - self.min_runs_per_conf) / normalization_factor) * 20
         sizes *= np.array([0 if r == 0 else 1 for r in r_p_c])  # 0 size if 0 runs
         return sizes
 

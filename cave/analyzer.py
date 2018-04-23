@@ -26,7 +26,7 @@ from cave.feature_analysis.feature_imp import FeatureForwardSelector
 from cave.html.html_builder import HTMLBuilder
 from cave.plot.plotter import Plotter
 from cave.plot.algorithm_footprint import AlgorithmFootprint
-from cave.smacrun import SMACrun
+from cave.reader.configurator_run import ConfiguratorRun
 from cave.utils.helpers import get_cost_dict_for_config, get_timeout
 from cave.utils.timing import timing
 from cave.utils.statistical_tests import paired_permutation, paired_t_student
@@ -108,10 +108,7 @@ class Analyzer(object):
         self.param_imp = OrderedDict()
         self.feat_importance = None  # Used to store dictionary for feat_imp
 
-        conf1_runs = get_cost_dict_for_config(self.validated_rh, self.default)
-        conf2_runs = get_cost_dict_for_config(self.validated_rh, self.incumbent)
-        self.plotter = Plotter(self.scenario, self.train_test, conf1_runs,
-                              conf2_runs, output_dir=self.output)
+        self.plotter = Plotter(self.scenario, output_dir=self.output)
         self.max_pimp_samples = max_pimp_samples
         self.fanova_pairwise = fanova_pairwise
 
@@ -586,13 +583,13 @@ class Analyzer(object):
 
     def plot_cdf(self):
         self.logger.info("... plotting eCDF")
-        cdf_path = os.path.join(self.output, 'cdf')
-        return self.plotter.plot_cdf_compare(output_fn_base=cdf_path)
+        return self.plotter.plot_cdf_compare(self.default, self.incumbent,
+                self.validated_rh)
 
     def plot_scatter(self):
         self.logger.info("... plotting scatter")
-        scatter_path = os.path.join(self.output, 'scatter')
-        return self.plotter.plot_scatter(output_fn_base=scatter_path)
+        return self.plotter.plot_scatter(self.default, self.incumbent,
+                self.validated_rh)
 
     @timing
     def plot_confviz(self, incumbents, runhistories, max_confs=1000):
@@ -633,9 +630,15 @@ class Analyzer(object):
         if not algorithms:
             algorithms = OrderedDict([(self.default, "default"),
                                       (self.incumbent, "incumbent")])
+        # filter instance features
+        instances = self.scenario.train_insts
+        if not self.scenario.test_insts == [None]:
+            instances.extend(self.scenario.test_insts)
+        features = {k : v for k, v in self.scenario.feature_dict.items() if k in instances}
+
         self.logger.info("... algorithm footprints for: {}".format(", ".join(algorithms.values())))
         footprint = AlgorithmFootprint(self.validated_rh,
-                                       self.scenario.feature_dict, algorithms,
+                                       features, algorithms,
                                        self.scenario.cutoff, self.output,
                                        rng=self.rng)
         # Calculate footprints

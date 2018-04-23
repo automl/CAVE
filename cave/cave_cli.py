@@ -82,6 +82,11 @@ class CaveCLI(object):
                               default=42,
                               type=int,
                               help="random seed used throughout analysis")
+        opt_opts.add_argument("--file_format",
+                              default='SMAC3',
+                              help="what format the configurator-files are in",
+                              choices=['SMAC2', 'SMAC3', 'CSV'],
+                              type=str.upper)
         opt_opts.add_argument("--ta_exec_dir",
                               default=None,
                               help="path to the execution-directory of the "
@@ -194,7 +199,12 @@ class CaveCLI(object):
             logging.basicConfig(level=logging.INFO)
         else:
             logging.basicConfig(level=logging.DEBUG)
-        logging.getLogger("smac.scenario").setLevel(logging.INFO)
+            disable_loggers = ["smac.scenario",
+                               "pimp.epm.unlogged_epar_x_rfwi.UnloggedEPARXrfi",]
+            # TODO use different debug-levels
+            for logger in disable_loggers:
+                logging.debug("Setting logger \'%s\' on level INFO", logger)
+                logging.getLogger(logger).setLevel(logging.INFO)
 
         # SMAC results
         folders = []
@@ -203,7 +213,11 @@ class CaveCLI(object):
                 folders.extend(list(glob.glob(f, recursive=True)))
             else:
                 folders.append(f)
-        cave = CAVE(folders, args_.output, args_.ta_exec_dir,
+        #ta_exec_dir = args_.ta_exec_dir if args_.ta_exec_dir else folders
+        ta_exec_dir = args_.ta_exec_dir if args_.ta_exec_dir else '.'
+
+        cave = CAVE(folders, args_.output, ta_exec_dir,
+                    file_format=args_.file_format,
                     missing_data_method=args_.validation,
                     max_pimp_samples=args_.max_pimp_samples,
                     fanova_pairwise=args_.fanova_pairwise,

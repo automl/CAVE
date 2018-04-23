@@ -60,8 +60,8 @@ class HTMLBuilder(object):
 <link href="css/back-to-top.css" rel="stylesheet" />
 
 
-<link href="css/bokeh-0.12.13.min.css" rel="stylesheet" />
-<script src="js/bokeh-0.12.13.min.js"></script>
+<link href="css/bokeh-0.12.14.min.css" rel="stylesheet" />
+<script src="js/bokeh-0.12.14.min.js"></script>
 
 <!--Below here are the includes of scripts for the report (e.g. bokeh)-->
 '''

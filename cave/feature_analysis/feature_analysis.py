@@ -54,7 +54,8 @@ class FeatureAnalysis(object):
         self.feature_data = {}
         for name in feat_names:
             insts = self.scenario.train_insts
-            insts.extend(self.scenario.test_insts)
+            if not self.scenario.test_insts == [None]:
+                insts.extend(self.scenario.test_insts)
             self.feature_data[name] = {}
             for i in insts:
                 self.feature_data[name][i] = copy.deepcopy(self.scenario.feature_dict[i][feat_names.index(name)])
@@ -225,7 +226,7 @@ class FeatureAnalysis(object):
 
         # cluster with k-means
         scores = []
-        for n_clusters in range(2, 12):
+        for n_clusters in range(2, min(features.shape[0], 12)):
             km = KMeans(n_clusters=n_clusters)
             y_pred = km.fit_predict(features)
             score = silhouette_score(features, y_pred)
