@@ -55,6 +55,5 @@ class SMAC3Reader(BaseReader):
 
     def get_trajectory(self, cs):
         traj_fn = os.path.join(self.folder, 'traj_aclib2.json')
-        traj_old_fn = os.path.join(self.folder, 'traj_old.csv')
         traj = TrajLogger.read_traj_aclib_format(fn=traj_fn, cs=cs)
         return traj

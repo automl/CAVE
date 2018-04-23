@@ -18,9 +18,3 @@ class TestCSV2RH(unittest.TestCase):
             writer = csv.writer(csvfile, delimiter=',')
             for row in data:
                 writer.writerow(row)
-        return path
-
-    def test_define_configs_via_p_(self):
-        """ Test reading from csv-file when defining parameters of configs
-        directly in csv"""
-        pass

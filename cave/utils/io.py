@@ -31,6 +31,24 @@ def export_bokeh(plot, path, logger):
                        "selenium and phantomjs-prebuilt).")
 
 def load_csv_to_pandaframe(csv_path, logger, apply_numeric=True):
+    """Load csv-file and return pd.DataFrame. First line of file is expected to
+    be the header.
+
+    Parameters
+    ----------
+    csv_path: str
+        path to csv-file
+    logger: logging.Logger
+        logger, for debugging
+    apply_numeric: boolean
+        whether to an attempt should be taken to turn columns into numeric
+        values.
+
+    Returns
+    -------
+    data_frame: pd.DataFrame
+        csv-dataframe
+    """
     with open(csv_path, 'r') as csv_file:
         csv_data = list(csv.reader(csv_file, delimiter=',', skipinitialspace=True))
     header, csv_data = csv_data[0], np.array([csv_data[1:]])[0]
