@@ -7,6 +7,7 @@ from smac.tae.execute_ta_run import StatusType
 
 from smac.runhistory.runhistory import RunHistory
 from smac.runhistory.runhistory2epm import RunHistory2EPM4LogCost, RunHistory2EPM4Cost
+from smac.utils.util_funcs import get_types
 
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.epm.rfr_imputator import RFRImputator
@@ -16,7 +17,7 @@ from ConfigSpace.hyperparameters import CategoricalHyperparameter, \
     UniformFloatHyperparameter, UniformIntegerHyperparameter, Constant
 
 
-def convert_data_for_epm(scenario:Scenario, runhistory:RunHistory):
+def convert_data_for_epm(scenario:Scenario, runhistory:RunHistory, logger=None):
     """
     converts data from runhistory into EPM format
 
@@ -36,26 +37,15 @@ def convert_data_for_epm(scenario:Scenario, runhistory:RunHistory):
     np.array
         types of X cols -- necessary to train our RF implementation
     """
-    types = np.zeros(len(scenario.cs.get_hyperparameters()),
-                         dtype=np.uint)
-
-    for i, param in enumerate(scenario.cs.get_hyperparameters()):
-        if isinstance(param, (CategoricalHyperparameter)):
-            n_cats = len(param.choices)
-            types[i] = n_cats
-
-    if scenario.feature_array is not None:
-        types = np.hstack(
-            (types, np.zeros((scenario.feature_array.shape[1]))))
-
-    types = np.array(types, dtype=np.uint)
-
-    model = RandomForestWithInstances(types, scenario.feature_array)
+    types, bounds = get_types(scenario.cs, scenario.feature_array)
+    model = RandomForestWithInstances(types, bounds)
 
     params = scenario.cs.get_hyperparameters()
     num_params = len(params)
 
-    if scenario.run_obj == "runtime":
+    run_obj = scenario.run_obj
+
+    if run_obj == "runtime":
         # if we log the performance data,
         # the RFRImputator will already get
         # log transform data from the runhistory
@@ -78,12 +68,13 @@ def convert_data_for_epm(scenario:Scenario, runhistory:RunHistory):
                                         impute_state=[
                                             StatusType.TIMEOUT, ],
                                         imputor=imputor)
+        X, Y = rh2EPM.transform(runhistory)
     else:
         rh2EPM = RunHistory2EPM4Cost(scenario=scenario,
                                      num_params=num_params,
                                      success_states=None,
                                      impute_censored_data=False,
                                      impute_state=None)
-    X, Y = rh2EPM.transform(runhistory)
+        X, Y = rh2EPM.transform(runhistory)
 
     return X, Y, types

@@ -13,7 +13,7 @@ from pandas import DataFrame
 from ConfigSpace import Configuration
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.optimizer.objective import average_cost, _cost
-from smac.runhistory.runhistory import RunKey, RunValue, RunHistory
+from smac.runhistory.runhistory import RunKey, RunValue, RunHistory, DataOrigin
 from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
 from smac.scenario.scenario import Scenario
 from smac.utils.io.traj_logging import TrajLogger
@@ -24,7 +24,7 @@ from pimp.importance.importance import Importance
 
 from cave.html.html_builder import HTMLBuilder
 from cave.plot.plotter import Plotter
-from cave.smacrun import SMACrun
+from cave.reader.configurator_run import ConfiguratorRun
 from cave.analyzer import Analyzer
 from cave.utils.helpers import get_cost_dict_for_config
 from cave.utils.tooltips import get_tooltip
@@ -57,7 +57,8 @@ class CAVE(object):
     """
 
     def __init__(self, folders: typing.List[str], output: str,
-                 ta_exec_dir: Union[str, None]=None, missing_data_method: str='epm',
+                 ta_exec_dir: str='.', file_format='SMAC3',
+                 missing_data_method: str='epm',
                  max_pimp_samples: int=-1, fanova_pairwise=True,
                  pimp_sort_table_by="average", seed=None):
         """
@@ -136,10 +137,12 @@ class CAVE(object):
                         ta_exec_dir = d
             try:
                 self.logger.debug("Collecting data from %s.", folder)
-                self.runs.append(SMACrun(folder, ta_exec_dir))
+                self.runs.append(ConfiguratorRun(folder, ta_exec_dir,
+                                                 file_format=file_format))
             except Exception as err:
                 self.logger.warning("Folder %s could not be loaded, failed "
                                     "with error message: %s", folder, err)
+                self.logger.exception(err)
                 continue
         if not len(self.runs):
             raise ValueError("None of the specified SMAC-folders could be loaded.")
@@ -153,11 +156,15 @@ class CAVE(object):
         self.logger.debug("Update original rh with all available rhs!")
         for run in self.runs:
             # if validated r
-            self.original_rh.update(run.original_runhistory)
+            self.original_rh.update(run.original_runhistory,
+                                    origin=DataOrigin.INTERNAL)
 
-        self.validated_rh.update(self.original_rh)
+        self.validated_rh.update(self.original_rh,
+                                 origin=DataOrigin.INTERNAL)
         for run in self.runs:
-            self.validated_rh.update(run.combined_runhistory)
+            if run.validated_runhistory:
+                self.validated_rh.update(run.validated_runhistory,
+                                         origin=DataOrigin.EXTERNAL_SAME_INSTANCES)
 
         for rh_name, rh in [("original", self.original_rh),
                             ("validated", self.validated_rh)]:
