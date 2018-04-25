@@ -33,6 +33,8 @@ pip install -r requirements.txt
 ```
 
 # USAGE
+We are currently working on the [documentation](https://automl.github.io/CAVE/stable/) of CAVE. Here a little Quickstart-Guide.
+
 You can analyze multiple folders (that are generated with the same scenario) for the analysis, simply provide the paths to all the individual results in `--folders`.
 
 Commandline arguments:
