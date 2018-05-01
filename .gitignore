@@ -4,6 +4,9 @@ data/
 results/
 vespy/
 _run_number.txt
+logo.py
+traj2csv.py
+rh2csv.py
 
 # Specific examples
 data/
