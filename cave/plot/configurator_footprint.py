@@ -447,6 +447,123 @@ class ConfiguratorFootprint(object):
                 colors.append('white')
         return colors
 
+    def _plot_contour(self, p, contour_data, x_range, y_range):
+        """Plot contour data.
+
+        Parameters
+        ----------
+        p: bokeh.plotting.figure
+            figure to be drawn upon
+        contour_data: np.array
+            array with contour data
+        x_range: List[float, float]
+            min and max of x-axis
+        y_range: List[float, float]
+            min and max of y-axis
+
+        Returns
+        -------
+        p: bokeh.plotting.figure
+            modified figure handle
+        """
+        min_z = np.min(np.unique(contour_data[2]))
+        max_z = np.max(np.unique(contour_data[2]))
+        color_mapper = LinearColorMapper(palette="Viridis256",
+                                         low=min_z, high=max_z)
+        p.image(image=contour_data, x=x_range[0], y=y_range[0],
+                dw=x_range[1] - x_range[0], dh=y_range[1] - y_range[0],
+                color_mapper=color_mapper)
+        color_bar = ColorBar(color_mapper=color_mapper,
+                             ticker=BasicTicker(desired_num_ticks=15),
+                             label_standoff=12,
+                             border_line_color=None, location=(0,0))
+        color_bar.major_label_text_font_size = '12pt'
+        p.add_layout(color_bar, 'right')
+        return p
+
+    def _plot_create_views(self, source):
+        """Create views in order of plotting, so more interesting views are
+        plotted on top. Order of interest:
+        default > final-incumbent > incumbent > candidate
+          local > random
+            num_runs (ascending, more evaluated -> more interesting)
+        Individual views are necessary, since bokeh can only plot one
+        marker-type per 'scatter'-call
+
+        Parameters
+        ----------
+        source: ColumnDataSource
+            containing relevant information for plotting
+
+        Returns
+        -------
+        views: List[CDSView]
+            views in order of plotting
+        markers: List[string]
+            markers (to the view with the same index)
+        """
+
+        def _get_marker(t, o):
+            """ returns marker according to type t and origin o """
+            if t == "Default":
+                shape = 'triangle'
+            elif t == 'Final Incumbent':
+                shape = 'inverted_triangle'
+            else:
+                shape = 'square' if t == "Incumbent" else 'circle'
+                shape += '_x' if o.startswith("Acquisition Function") else ''
+            return shape
+
+        views, markers = [], []
+        for t in ['Candidate', 'Incumbent', 'Final Incumbent', 'Default']:
+            for o in ['Unknown', 'Random', 'Acquisition Function']:
+                for z in sorted(list(set(source.data['zorder'])),
+                                key=lambda x: int(x)):
+                    views.append(CDSView(source=source, filters=[
+                            GroupFilter(column_name='type', group=t),
+                            GroupFilter(column_name='origin', group=o),
+                            GroupFilter(column_name='zorder', group=z)]))
+                    markers.append(_get_marker(t, o))
+        return (views, markers)
+
+    def _plot_scatter(self, p, source, views, markers):
+        """
+        Parameters
+        ----------
+        p: bokeh.plotting.figure
+            figure
+        source: ColumnDataSource
+            data container
+        views: List[CDSView]
+            list with views to be plotted (in order!)
+        markers: List[str]
+            corresponding markers to the views
+
+        Returns
+        -------
+        scatter_handles: List[GlyphRenderer]
+            glyph renderer per view
+        """
+        scatter_handles = []
+        for view, marker in zip(views, markers):
+            scatter_handles.append(p.scatter(x='x', y='y',
+                                   source=source,
+                                   view=view,
+                                   color='color', line_color='black',
+                                   size='size',
+                                   marker=marker,
+                                   ))
+
+        p.xaxis.axis_label = "MDS-X"
+        p.yaxis.axis_label = "MDS-Y"
+        p.xaxis.axis_label_text_font_size = "15pt"
+        p.yaxis.axis_label_text_font_size = "15pt"
+        p.xaxis.major_label_text_font_size = "12pt"
+        p.yaxis.major_label_text_font_size = "12pt"
+        p.title.text_font_size = "15pt"
+        p.legend.label_text_font_size = "15pt"
+        return scatter_handles
+
     def plot(self, X, conf_list: list, configurator_runs, runs_labels=None,
              inc_list: list=[], contour_data=None):
         """
@@ -527,7 +644,7 @@ class ConfiguratorFootprint(object):
 
         # Define what appears in tooltips
         # TODO add only important parameters (needs to change order of exec:
-        #                                        pimp before conf-footprints)
+        #                                     pimp before conf-footprints)
         hover = HoverTool(tooltips=[('type', '@type'), ('origin', '@origin'), ('runs', '@runs')] +
                                    [(k, '@' + escape_parameter_name(k)) for k in hp_names])
 
@@ -539,67 +656,14 @@ class ConfiguratorFootprint(object):
 
         # Plot contour
         if contour_data is not None:
-            min_z = np.min(np.unique(contour_data[2]))
-            max_z = np.max(np.unique(contour_data[2]))
-            color_mapper = LinearColorMapper(palette="Viridis256",
-                                             low=min_z, high=max_z)
-            p.image(image=contour_data, x=x_range[0], y=y_range[0],
-                    dw=x_range[1] - x_range[0], dh=y_range[1] - y_range[0],
-                    color_mapper=color_mapper)
-            color_bar = ColorBar(color_mapper=color_mapper,
-                                 ticker=BasicTicker(desired_num_ticks=15),
-                                 label_standoff=12,
-                                 border_line_color=None, location=(0,0))
-            color_bar.major_label_text_font_size = '12pt'
-            p.add_layout(color_bar, 'right')
+           p = self._plot_contour(p, contour_data, x_range, y_range)
+
+        # Create views from source
+        views, markers = self._plot_create_views(source)
 
         # Scatter
-        # TODO expand on multiple configurator runs(?)
-        # Create views in order of plotting, so more interesting views are
-        # plotted on top. Order of interest:
-        # default > final-incumbent > incumbent > candidate
-        #   local > random
-        #     num_runs (ascending, more evaluated -> more interesting)
+        scatters = self._plot_scatter(p, source, views, markers)
 
-        def _get_marker(t, o):
-            """ returns marker according to type t and origin o """
-            if t == "Default":
-                shape = 'triangle'
-            elif t == 'Final Incumbent':
-                shape = 'inverted_triangle'
-            else:
-                shape = 'square' if t == "Incumbent" else 'circle'
-                shape += '_x' if o.startswith("Acquisition Function") else ''
-            return shape
-
-        views, markers = [], []
-        for t in ['Candidate', 'Incumbent', 'Final Incumbent', 'Default']:
-            for o in ['Unknown', 'Random', 'Acquisition Function']:
-                for z in sorted(list(set(source.data['zorder'])),
-                                key=lambda x: int(x)):
-                    views.append(CDSView(source=source, filters=[
-                            GroupFilter(column_name='type', group=t),
-                            GroupFilter(column_name='origin', group=o),
-                            GroupFilter(column_name='zorder', group=z)]))
-                    markers.append(_get_marker(t, o))
-
-        for view, marker in zip(views, markers):
-            p.scatter(x='x', y='y',
-                      source=source,
-                      view=view,
-                      color='color', line_color='black',
-                      size='size',
-                      marker=marker,
-                      )
-
-        p.xaxis.axis_label = "MDS-X"
-        p.yaxis.axis_label = "MDS-Y"
-        p.xaxis.axis_label_text_font_size = "15pt"
-        p.yaxis.axis_label_text_font_size = "15pt"
-        p.xaxis.major_label_text_font_size = "12pt"
-        p.yaxis.major_label_text_font_size = "12pt"
-        p.title.text_font_size = "15pt"
-        p.legend.label_text_font_size = "15pt"
 
         # Now we want to integrate a slider to visualize development over time
         # Since runhistory doesn't contain a timestamp, but are ordered, we use quantiles
