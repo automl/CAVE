@@ -29,7 +29,7 @@ from sklearn.preprocessing import StandardScaler
 
 from bokeh.plotting import figure, ColumnDataSource, show
 from bokeh.embed import components
-from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider
+from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider, RadioGroup
 from bokeh.models.sources import CDSView
 from bokeh.models.filters import GroupFilter
 from bokeh.layouts import row, column, widgetbox
@@ -522,7 +522,8 @@ class ConfiguratorFootprint(object):
                             GroupFilter(column_name='origin', group=o),
                             GroupFilter(column_name='zorder', group=z)]))
                     markers.append(_get_marker(t, o))
-        return (views, markers)
+        self.logger.debug("%d different glyph renderers", len(views))
+        self.logger.debug("%d different zorder-values", len(set(source.data['zorder'])))
 
     def _plot_scatter(self, p, source, views, markers):
         """
@@ -659,6 +660,30 @@ class ConfiguratorFootprint(object):
         # Scatter
         scatters = self._plot_scatter(p, source, views, markers)
 
+        line_list = ['line' + str(i) for i in range(len(scatters))]
+        #checkbox = RadioGroup(labels=line_list, active=0)
+        num_quantiles = len(configurator_runs[0])
+        checkbox = Slider(start=1, end=len(line_list), value=num_quantiles, step=1)
+        #line_list = "[" + ",".join(['line' + str(i) for i in range(len(scatters))]) + "]"
+        code = "line_list = [" + ','.join(line_list) + '];' + """
+lab_len=cb_obj.end;
+
+for (i=0;i<lab_len;i++) {
+    if (cb_obj.value == i) {
+        line_list[i].visible = true;
+        console.log('Setting to true: ' + i)
+    } else {
+        line_list[i].visible = false;
+        console.log('Setting to false: ' + i)
+    }
+}
+"""
+        self.logger.info(code)
+        args = {k : v for k, v in zip(['line' + str(i) for i in
+            range(len(line_list))], scatters)}
+        print(args)
+        checkbox.callback = CustomJS(args=args, code=code)
+        #dict(line0=scatters[0], line1=scatters[1]), code=code)
 
         # Now we want to integrate a slider to visualize development over time
         # Since runhistory doesn't contain a timestamp, but are ordered, we use quantiles
@@ -680,7 +705,7 @@ source.change.emit();
         callback.args["time"] = time_slider
 
         # Slider below plot
-        layout = column(p, widgetbox(time_slider))
+        layout = column(p, widgetbox(time_slider, checkbox))
 
         script, div = components(layout)
 
