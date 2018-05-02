@@ -61,6 +61,11 @@ class ConfiguratorRun(SMAC):
         self.original_runhistory = runhistories[0]
         self.validated_runhistory = runhistories[1]
         self.traj = self.reader.get_trajectory(cs=self.scen.cs)
+        self.default = self.scen.cs.get_default_configuration()
+        self.incumbent = self.traj[-1]['incumbent']
+        self.train_inst = self.scen.train_insts
+        self.test_inst = self.scen.test_insts
+
 
         # Check validated runhistory for completeness
         if (self.validated_runhistory and
@@ -81,11 +86,6 @@ class ConfiguratorRun(SMAC):
             self.combined_runhistory.update(self.validated_runhistory,
                                             origin=DataOrigin.EXTERNAL_SAME_INSTANCES)
 
-
-        self.default = self.scen.cs.get_default_configuration()
-        self.incumbent = self.traj[-1]['incumbent']
-        self.train_inst = self.scen.train_insts
-        self.test_inst = self.scen.test_insts
 
         # Initialize SMAC-object
         super().__init__(scenario=self.scen, runhistory=self.combined_runhistory)
