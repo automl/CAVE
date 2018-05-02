@@ -703,9 +703,12 @@ source.change.emit();
         origin: str
             origin of configuration (e.g. "Local", "Random", etc.)
         """
-        origin = "Unknown"
-        if c.origin.startswith("Local") or "sorted" in c.origin:
+        if not c.origin:
+            origin = "Unknown"
+        elif c.origin.startswith("Local") or "sorted" in c.origin:
             origin = "Acquisition Function"
         elif c.origin.startswith("Random"):
             origin = "Random"
+        else:
+            origin = "Unknown"
         return origin
