@@ -145,23 +145,21 @@ class ConfiguratorFootprint(object):
                          inc_list=inc_list, contour_data=contour_data)
 
     def get_pred_surface(self, X_scaled, conf_list: list):
-        '''
-            fit epm on the scaled input dimension and
-            return data to plot a contour plot
+        """fit epm on the scaled input dimension and
+        return data to plot a contour plot
 
-            Parameters
-            ----------
-            X_scaled: np.array
-                configurations in scaled 2dim
-            conf_list: list
-                list of Configuration objects
+        Parameters
+        ----------
+        X_scaled: np.array
+            configurations in scaled 2dim
+        conf_list: list
+            list of Configuration objects
 
-            Returns
-            -------
-            np.array, np.array, np.array
-                x,y,Z for contour plots
-
-        '''
+        Returns
+        -------
+        np.array, np.array, np.array
+            x,y,Z for contour plots
+        """
 
         # use PCA to reduce features to also at most 2 dims
         n_feats = self.scenario.feature_array.shape[1]
@@ -616,10 +614,7 @@ class ConfiguratorFootprint(object):
         conf_types = ["Default" if c == default else "Final Incumbent" if c == inc_list[-1]
                       else "Incumbent" if c in inc_list else "Candidate" for c in conf_list]
         # We group "Local Search" and "Random Search (sorted)" both into local
-        origins = ["Unknown" if not c.origin else
-                   "Acquisition Function" if c.origin.startswith("Local") or "sorted" in c.origin else
-                   "Random" if c.origin.startswith("Random") else
-                   "Unknown" for c in conf_list]
+        origins = [self._get_config_origin(c) for c in conf_list]
         source.add(conf_types, 'type')
         source.add(origins, 'origin')
         sizes = self._get_size(configurator_runs[0][-1])  # 0 for best run, -1 for full history
@@ -694,3 +689,23 @@ source.change.emit();
             export_bokeh(p, path, self.logger)
 
         return script, div
+
+    def _get_config_origin(self, c):
+        """Return appropriate configuration origin
+
+        Parameters
+        ----------
+        c: Configuration
+            configuration to be examined
+
+        Returns
+        -------
+        origin: str
+            origin of configuration (e.g. "Local", "Random", etc.)
+        """
+        origin = "Unknown"
+        if c.origin.startswith("Local") or "sorted" in c.origin:
+            origin = "Acquisition Function"
+        elif c.origin.startswith("Random"):
+            origin = "Random"
+        return origin
