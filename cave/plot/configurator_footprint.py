@@ -118,7 +118,9 @@ class ConfiguratorFootprint(object):
         self.max_rhs_to_plot = 1  # Maximum number of runhistories 2 b plotted
         self.time_slider = time_slider
 
-        self.num_quantiles = 2
+        self.num_quantiles = 10
+
+        # TODO docstrings, paths, num_quantiles as arg
 
         self.contour_step_size = contour_step_size
         self.output_dir = output_dir if output_dir else None
@@ -616,6 +618,7 @@ class ConfiguratorFootprint(object):
         return source
 
     def _plot_add_timeslider(self, time_slider, scatter_glyph_render_groups, source):
+        # TODO split up
         self.logger.debug("Create time-slider \"%s\"!", time_slider)
 
         # Since runhistory doesn't contain a timestamp, but are ordered,

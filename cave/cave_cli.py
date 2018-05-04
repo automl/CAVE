@@ -125,6 +125,7 @@ class CaveCLI(object):
                               help="prerender leads to long loading times and "
                                    "short interaction, online means shorter loading, "
                                    "but longer interaction.",
+                              default='off',
                               choices=['off', 'prerender', 'online'])
         opt_opts.add_argument("--no_tabular_analysis",
                               action='store_false',
