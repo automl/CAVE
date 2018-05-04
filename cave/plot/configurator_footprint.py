@@ -71,6 +71,7 @@ class ConfiguratorFootprint(object):
                  max_plot=None,
                  contour_step_size=0.2,
                  output_dir: str=None,
+                 time_slider: str='off',
                  ):
         '''
         Constructor
@@ -115,6 +116,9 @@ class ConfiguratorFootprint(object):
         self.incs = incs
         self.max_plot = max_plot
         self.max_rhs_to_plot = 1  # Maximum number of runhistories 2 b plotted
+        self.time_slider = time_slider
+
+        self.num_quantiles = 2
 
         self.contour_step_size = contour_step_size
         self.output_dir = output_dir if output_dir else None
@@ -142,7 +146,8 @@ class ConfiguratorFootprint(object):
         inc_list = self.incs
 
         return self.plot(red_dists, self.conf_list, self.runs_per_rh,
-                         inc_list=inc_list, contour_data=contour_data)
+                         inc_list=inc_list, contour_data=contour_data,
+                         time_slider=self.time_slider)
 
     def get_pred_surface(self, X_scaled, conf_list: list):
         """fit epm on the scaled input dimension and
@@ -358,7 +363,7 @@ class ConfiguratorFootprint(object):
             #   screenshots of the number of runs per config at different points
             #   in (i.e. different quantiles of) the runhistory, LAST quantile
             #   is full history!!
-            r_p_q_p_c = self._get_runs_per_config_quantiled(rh, quantiles=10)
+            r_p_q_p_c = self._get_runs_per_config_quantiled(rh, quantiles=self.num_quantiles)
             self.runs_per_rh.append(np.array(r_p_q_p_c))
         # Get minimum and maximum for sizes of dots
         self.min_runs_per_conf = min([i for i in self.runs_per_rh[0][-1] if i > 0])
@@ -524,7 +529,9 @@ class ConfiguratorFootprint(object):
                     markers.append(_get_marker(t, o))
         self.logger.debug("%d different glyph renderers", len(views))
         self.logger.debug("%d different zorder-values", len(set(source.data['zorder'])))
+        return (views, markers)
 
+    @timing
     def _plot_scatter(self, p, source, views, markers):
         """
         Parameters
@@ -561,10 +568,112 @@ class ConfiguratorFootprint(object):
         p.yaxis.major_label_text_font_size = "12pt"
         p.title.text_font_size = "15pt"
         p.legend.label_text_font_size = "15pt"
+        self.logger.debug("Scatter-handles: %d", len(scatter_handles))
         return scatter_handles
 
-    def plot(self, X, conf_list: list, configurator_runs, runs_labels=None,
-             inc_list: list=[], contour_data=None):
+    def _plot_get_source(self, conf_list, runs, X, inc_list, hp_names):
+        """
+        Create ColumnDataSource with all the necessary data
+        Contains for each configuration evaluated on any run:
+
+          - all parameters and values
+          - origin (if conflicting, origin from best run counts)
+          - type (default, incumbent or candidate)
+          - # of runs
+          - size
+          - color
+
+        Returns
+        -------
+        source: ColumnDataSource
+            source with attributes as requested
+        """
+        source = ColumnDataSource(data=dict(x=X[:, 0], y=X[:, 1]))
+        for k in hp_names:  # Add parameters for each config
+            source.add([c[k] if c[k] else "None" for c in conf_list],
+                       escape_parameter_name(k))
+        default = conf_list[0].configuration_space.get_default_configuration()
+        conf_types = ["Default" if c == default else "Final Incumbent" if c == inc_list[-1]
+                      else "Incumbent" if c in inc_list else "Candidate" for c in conf_list]
+        # We group "Local Search" and "Random Search (sorted)" both into local
+        origins = [self._get_config_origin(c) for c in conf_list]
+        source.add(conf_types, 'type')
+        source.add(origins, 'origin')
+        sizes = self._get_size(runs)
+        sizes = [s * 3 if conf_types[idx] == "Default" else s for idx, s in enumerate(sizes)]
+        source.add(sizes, 'size')
+        source.add(self._get_color(source), 'color')
+        source.add(runs, 'runs')
+        # To enforce zorder, we categorize all entries according to their size
+        # Since we plot all different zorder-levels sequentially, we use a
+        # manually defined level of influence
+        num_bins = 20  # How fine-grained the size-ordering should be
+        min_size, max_size = min(source.data['size']), max(source.data['size'])
+        step_size = (max_size - min_size) / num_bins
+        zorder = [str(int((s - min_size) / step_size)) for s in source.data['size']]
+        source.add(zorder, 'zorder')  # string, so we can apply group filter
+
+        return source
+
+    def _plot_add_timeslider(self, time_slider, scatter_glyph_render_groups, source):
+        self.logger.debug("Create time-slider \"%s\"!", time_slider)
+
+        # Since runhistory doesn't contain a timestamp, but are ordered,
+        # we use quantiles
+        # Some js-script that updates the bokeh-plot on callback
+        if time_slider == 'online':
+            code = """
+var data = source.data;
+var time = cb_obj.value;
+data['runs'] = data['runs'+(time-1).toString()]
+data['size'] = data['size'+(time-1).toString()]
+source.change.emit();
+"""
+            # Create callback and slider itself
+            callback = CustomJS(args=dict(source=source), code=code)
+
+        elif time_slider == 'prerender':
+            num_glyph_subgroups = sum([len(group) for group in scatter_glyph_render_groups])
+            glyph_renderers_flattened = ['glyph_renderer' + str(i) for i in range(num_glyph_subgroups)]
+            glyph_renderers = []
+            start = 0
+            for group in scatter_glyph_render_groups:
+                glyph_renderers.append(glyph_renderers_flattened[start : start+len(group)])
+                start += len(group)
+            self.logger.debug("%d, %d, %d", len(scatter_glyph_render_groups),
+                              len(glyph_renderers), num_glyph_subgroups)
+            num_quantiles = len(scatter_glyph_render_groups)
+            scatter_glyph_render_groups_flattened = [a for b in scatter_glyph_render_groups for a in b]
+            args = {name : glyph for name, glyph in zip(glyph_renderers_flattened,
+                                          scatter_glyph_render_groups_flattened)}
+            code = "glyph_renderers = [" + ','.join(['[' + ','.join(group) + ']' for
+                                        group in glyph_renderers]) + '];' + """
+lab_len = cb_obj.end;
+for (i = 0; i < lab_len; i++) {
+    if (cb_obj.value == i + 1) {
+        console.log('Setting to true: ' + i + '(' + glyph_renderers[i].length + ')')
+        for (j = 0; j < glyph_renderers[i].length; j++) {
+            glyph_renderers[i][j].visible = true;
+            console.log('Setting to true: ' + i + ' : ' + j)
+        }
+    } else {
+        console.log('Setting to false: ' + i + '(' + glyph_renderers[i].length + ')')
+        for (j = 0; j < glyph_renderers[i].length; j++) {
+            glyph_renderers[i][j].visible = false;
+            console.log('Setting to false: ' + i + ' : ' + j)
+        }
+    }
+}
+"""
+            callback = CustomJS(args=args, code=code)
+
+        time_slider = Slider(start=1, end=len(scatter_glyph_render_groups),
+                             value=len(scatter_glyph_render_groups), step=1,
+                             callback=callback, title='Time')
+        return time_slider
+
+    def plot(self, X, conf_list: list, configurator_runs,
+             inc_list: list=None, contour_data=None, time_slider="off"):
         """
         plots sampled configuration in 2d-space;
         uses bokeh for interactive plot
@@ -579,68 +688,42 @@ class ConfiguratorFootprint(object):
         configurator_runs: list[np.array]
             list of configurator-runs to be analyzed, each as a np.array with
             the number of target-algorithm-runs per config per quantile.
-        runs_labels: list[str]
-            labels for the individual configurator-runs. if None, they are
-            enumerated
         inc_list: list
             list of incumbents (Configuration)
         contour_data: list
             contour data (xx,yy,Z)
+        time_slider: str
+            option to toggle how to implement time_slider.
+            choose from: [off, prerender, online]
+            where prerender creates a large file that might take some time to
+            load and online creates a smaller file with long plot-updating times
+            for large data
 
         Returns
         -------
-        html_script: str
-            HTML script representing the visualization
+        script: str
+            script part of bokeh plot
+        div: str
+            div part of bokeh plot
+        over_time_paths: List[str]
+            list with paths to the different quantiled timesteps of the
+            configurator run (for static evaluation)
         """
-        if not runs_labels:  # TODO We only plot first run atm anyway, this will be used later
-            runs_labels = range(len(configurator_runs))
+        if not time_slider in ['off', 'prerender', 'online']:
+            raise ValueError("time_slider has to be one of ['off', 'prerender', 'online']")
+        if not inc_list:
+            inc_list = []
+        over_time_paths = []  # developement of the search space over time
 
         hp_names = [k.name for k in  # Hyperparameter names
                     conf_list[0].configuration_space.get_hyperparameters()]
 
-        # Create ColumnDataSource with all the necessary data
-        #   Contains for each configuration evaluated on any run:
-        #   - all parameters and values
-        #   - origin (if conflicting, origin from best run counts)
-        #   - type (default, incumbent or candidate)
-        #   - # of runs
-        #   - size
-        #   - color
-        source = ColumnDataSource(data=dict(x=X[:, 0], y=X[:, 1]))
-        for k in hp_names:  # Add parameters for each config
-            source.add([c[k] if c[k] else "None" for c in conf_list],
-                       escape_parameter_name(k))
-        # TODO differentiate between different configurator-runs below
-        default = conf_list[0].configuration_space.get_default_configuration()
-        conf_types = ["Default" if c == default else "Final Incumbent" if c == inc_list[-1]
-                      else "Incumbent" if c in inc_list else "Candidate" for c in conf_list]
-        # We group "Local Search" and "Random Search (sorted)" both into local
-        origins = [self._get_config_origin(c) for c in conf_list]
-        source.add(conf_types, 'type')
-        source.add(origins, 'origin')
-        sizes = self._get_size(configurator_runs[0][-1])  # 0 for best run, -1 for full history
-        sizes = [s * 3 if conf_types[idx] == "Default" else s for idx, s in enumerate(sizes)]
-        source.add(sizes, 'size')
-        source.add(self._get_color(source), 'color')
-        source.add(configurator_runs[0][-1], 'runs')  # 0 for best run, -1 for full history
-        for idx, q in enumerate(configurator_runs[0]):
-            source.add(q, 'runs'+str(idx))
-        for idx, q in enumerate(configurator_runs[0]):
-            source.add(self._get_size(q), 'size'+str(idx))
-
-
-        # To enforce zorder, we categorize all entries according to their size
-        # Since we plot all different zorder-levels sequentially, we use a
-        # manually defined level of influence
-        num_bins = 20  # How fine-grained the size-ordering should be
-        min_size, max_size = min(source.data['size']), max(source.data['size'])
-        step_size = (max_size - min_size) / num_bins
-        zorder = [str(int((s - min_size) / step_size)) for s in source.data['size']]
-        source.add(zorder, 'zorder')  # string, so we can apply group filter
+        # Get individual sources for quantiles of best run (first in list)
+        sources = [self._plot_get_source(conf_list, quantiled_run, X, inc_list, hp_names)
+                   for quantiled_run in configurator_runs[0]]
 
         # Define what appears in tooltips
-        # TODO add only important parameters (needs to change order of exec:
-        #                                     pimp before conf-footprints)
+        # TODO add only important parameters (needs to change order of exec pimp before conf-footprints)
         hover = HoverTool(tooltips=[('type', '@type'), ('origin', '@origin'), ('runs', '@runs')] +
                                    [(k, '@' + escape_parameter_name(k)) for k in hp_names])
 
@@ -653,59 +736,43 @@ class ConfiguratorFootprint(object):
         # Plot contour
         if contour_data is not None:
            p = self._plot_contour(p, contour_data, x_range, y_range)
+        scatter_glyph_render_groups = []
+        # If timeslider should update the data online, we need to add
+        # information about each quantile to the "base"-source
+        if time_slider == 'online':
+            for idx, q in enumerate(configurator_runs[0]):
+                sources[-1].add(q, 'runs' + str(idx))
+                sizes = [s * 3 if sources[-1].data['type'][idx] == "Default" else s for idx, s
+                         in enumerate(self._get_size(q))]
+                sources[-1].add(sizes, 'size' + str(idx))
+        # If time_slider is not prerender, we don't want all the sources in
+        # the plot -> in that case we create a new plot
+        if not (time_slider == 'prerender'):
+            p_quantiles = figure(plot_height=500, plot_width=600,
+                                 tools=[hover], x_range=x_range, y_range=y_range)
+            if contour_data is not None:
+               p_quantiles = self._plot_contour(p_quantiles, contour_data, x_range, y_range)
+        else:
+            p_quantiles = p  # if prerender, save all sources in original plot
+        for idx, source in enumerate(sources):
+            if idx == len(sources) - 1:  # final view on original plot!!
+                p_quantiles = p
+            views, markers = self._plot_create_views(source)
+            self.logger.debug("Plotting quantile %d!", idx)
+            scatter_glyph_render_groups.append(self._plot_scatter(p_quantiles, source, views, markers))
+            if self.output_dir:
+                path = os.path.join(self.output_dir,
+                        "configurator_footprint" + str(idx) + ".png")
+                self.logger.debug("Saving plot to %s", path)
+                over_time_paths.append(path)
+                export_bokeh(p_quantiles, path, self.logger)
 
-        # Create views from source
-        views, markers = self._plot_create_views(source)
-
-        # Scatter
-        scatters = self._plot_scatter(p, source, views, markers)
-
-        line_list = ['line' + str(i) for i in range(len(scatters))]
-        #checkbox = RadioGroup(labels=line_list, active=0)
-        num_quantiles = len(configurator_runs[0])
-        checkbox = Slider(start=1, end=len(line_list), value=num_quantiles, step=1)
-        #line_list = "[" + ",".join(['line' + str(i) for i in range(len(scatters))]) + "]"
-        code = "line_list = [" + ','.join(line_list) + '];' + """
-lab_len=cb_obj.end;
-
-for (i=0;i<lab_len;i++) {
-    if (cb_obj.value == i) {
-        line_list[i].visible = true;
-        console.log('Setting to true: ' + i)
-    } else {
-        line_list[i].visible = false;
-        console.log('Setting to false: ' + i)
-    }
-}
-"""
-        self.logger.info(code)
-        args = {k : v for k, v in zip(['line' + str(i) for i in
-            range(len(line_list))], scatters)}
-        print(args)
-        checkbox.callback = CustomJS(args=args, code=code)
-        #dict(line0=scatters[0], line1=scatters[1]), code=code)
-
-        # Now we want to integrate a slider to visualize development over time
-        # Since runhistory doesn't contain a timestamp, but are ordered, we use quantiles
-        # Some js-script that updates the bokeh-plot on callback
-        code = """
-var data = source.data;
-var time = time.value;
-data['runs'] = data['runs'+time.toString()]
-data['size'] = data['size'+time.toString()]
-
-source.change.emit();
-"""
-        # Create callback and slider itself
-        callback = CustomJS(args=dict(source=source), code=code)
-
-        num_quantiles = len(configurator_runs[0])
-        time_slider = Slider(start=1, end=num_quantiles, value=num_quantiles, step=1,
-                            title="Time", callback=callback)
-        callback.args["time"] = time_slider
-
-        # Slider below plot
-        layout = column(p, widgetbox(time_slider, checkbox))
+        if time_slider == 'off':
+            layout = column(p)
+        else:
+            # Slider below plot
+            layout = column(p, widgetbox(self._plot_add_timeslider(time_slider,
+                            scatter_glyph_render_groups, sources[-1])))
 
         script, div = components(layout)
 
@@ -713,7 +780,7 @@ source.change.emit();
             path = os.path.join(self.output_dir, "configurator_footprint.png")
             export_bokeh(p, path, self.logger)
 
-        return script, div
+        return script, div, over_time_paths
 
     def _get_config_origin(self, c):
         """Return appropriate configuration origin

@@ -255,6 +255,7 @@ class CAVE(object):
     @timing
     def analyze(self,
                 performance=True, cdf=True, scatter=True, confviz=True,
+                cfp_time_slider_type='off',
                 param_importance=['forward_selection', 'ablation', 'fanova'],
                 feature_analysis=["box_violin", "correlation",
                     "feat_importance", "clustering", "feature_cdf"],
@@ -367,9 +368,13 @@ class CAVE(object):
             incumbents = list(map(lambda x: x['incumbent'], trajectories[0]))
             assert(incumbents[-1] == trajectories[0][-1]['incumbent'])
 
-            confviz_script = self.analyzer.plot_confviz(incumbents, runhistories, max_confs=5000)
-            self.website["Configurator's behavior"]["Configurator Footprint"] = {
-                    "bokeh" : confviz_script}
+            script, div, cfp_paths = self.analyzer.plot_confviz(incumbents,
+                    runhistories, max_confs=5000, time_slider=cfp_time_slider_type)
+            self.website["Configurator's behavior"]["Configurator Footprint"] = {}
+            self.website["Configurator's behavior"]["Configurator Footprint"]["Interactive"] = {
+                    "bokeh" : (script, div)}
+            self.website["Configurator's behavior"]["Configurator Footprint"]["Static"] = {
+                    "figure" : cfp_paths}
         elif confviz:
             self.logger.info("Configuration visualization desired, but no "
                              "instance-features available.")

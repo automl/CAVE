@@ -121,6 +121,11 @@ class CaveCLI(object):
                                                                                                  "all/none",
                               choices=f_choices,
                               type=str.lower)
+        opt_opts.add_argument("--cfp_time_slider_type",
+                              help="prerender leads to long loading times and "
+                                   "short interaction, online means shorter loading, "
+                                   "but longer interaction.",
+                              choices=['off', 'prerender', 'online'])
         opt_opts.add_argument("--no_tabular_analysis",
                               action='store_false',
                               help="don't create performance table.",
@@ -200,7 +205,8 @@ class CaveCLI(object):
         else:
             logging.basicConfig(level=logging.DEBUG)
             disable_loggers = ["smac.scenario",
-                               "pimp.epm.unlogged_epar_x_rfwi.UnloggedEPARXrfi",]
+                               "pimp.epm.unlogged_epar_x_rfwi.UnloggedEPARXrfi",
+                               "selenium.webdriver.remote.remote_connection"]
             # TODO use different debug-levels
             for logger in disable_loggers:
                 logging.debug("Setting logger \'%s\' on level INFO", logger)
@@ -229,6 +235,7 @@ class CaveCLI(object):
                      cdf=args_.ecdf,
                      scatter=args_.scatter_plots,
                      confviz=args_.confviz,
+                     cfp_time_slider_type=args_.cfp_time_slider_type,
                      parallel_coordinates=args_.parallel_coordinates,
                      cost_over_time=args_.cost_over_time,
                      algo_footprint=args_.algorithm_footprints,

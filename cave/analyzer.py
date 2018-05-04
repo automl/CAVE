@@ -592,7 +592,8 @@ class Analyzer(object):
                 self.validated_rh)
 
     @timing
-    def plot_confviz(self, incumbents, runhistories, max_confs=1000):
+    def plot_confviz(self, incumbents, runhistories, max_confs=1000,
+                     time_slider='off'):
         """ Plot the visualization of configurations, highlightning the
         incumbents. Using original rh, so the explored configspace can be
         estimated.
@@ -614,7 +615,7 @@ class Analyzer(object):
         self.logger.info("... visualizing explored configspace")
         confviz = self.plotter.visualize_configs(self.scenario,
                     runhistories=runhistories, incumbents=incumbents,
-                    max_confs_plot=max_confs)
+                    max_confs_plot=max_confs, time_slider=time_slider)
 
         return confviz
 

@@ -209,7 +209,8 @@ class Plotter(object):
             return output_fn[0]
         return output_fn
 
-    def visualize_configs(self, scen, runhistories, incumbents=None, max_confs_plot=1000):
+    def visualize_configs(self, scen, runhistories, incumbents=None,
+                          max_confs_plot=1000, time_slider='off'):
         """
         Parameters
         ----------
@@ -227,7 +228,8 @@ class Plotter(object):
                        scenario=scen,
                        runhistories=runhistories,
                        incs=incumbents, max_plot=max_confs_plot,
-                       output_dir=self.output_dir)
+                       output_dir=self.output_dir,
+                       time_slider=time_slider)
         r = sz.run()
         self.vizrh = sz.relevant_rh
         return r
