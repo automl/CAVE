@@ -1,3 +1,5 @@
+from scipy.stats import ttest_rel
+
 def paired_permutation(data1, data2, rng,
         num_permutations=10000, logger=None):
     """Test for significance using paired permutation.
@@ -38,3 +40,25 @@ def paired_permutation(data1, data2, rng,
                      "the real data (%f), yielding a p-value of %f",
                      larger, len(s), t, p)
     return p
+
+def paired_t_student(data1, data2, logger=None):
+    """Test for significance using paired t-test.
+
+    Parameters:
+    -----------
+    data1, data2: List<float>, List<float>
+        ordered results for instances for two different configurations
+    logger: logging.Logger
+        to log scores, if given
+
+    Returns:
+    --------
+    p: float
+        p-value for statistical test
+    """
+    t, p = ttest_rel(data1, data2)
+    if logger:
+        logger.debug("Paired t-test with %d samples yields t-value of %f and "
+                     "p-value of %f", len(data1), t, p)
+    return p
+

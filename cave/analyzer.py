@@ -26,10 +26,10 @@ from cave.feature_analysis.feature_imp import FeatureForwardSelector
 from cave.html.html_builder import HTMLBuilder
 from cave.plot.plotter import Plotter
 from cave.plot.algorithm_footprint import AlgorithmFootprint
-from cave.smacrun import SMACrun
+from cave.reader.configurator_run import ConfiguratorRun
 from cave.utils.helpers import get_cost_dict_for_config, get_timeout
 from cave.utils.timing import timing
-from cave.utils.statistical_tests import paired_permutation
+from cave.utils.statistical_tests import paired_permutation, paired_t_student
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -108,10 +108,7 @@ class Analyzer(object):
         self.param_imp = OrderedDict()
         self.feat_importance = None  # Used to store dictionary for feat_imp
 
-        conf1_runs = get_cost_dict_for_config(self.validated_rh, self.default)
-        conf2_runs = get_cost_dict_for_config(self.validated_rh, self.incumbent)
-        self.plotter = Plotter(self.scenario, self.train_test, conf1_runs,
-                conf2_runs, output=self.output)
+        self.plotter = Plotter(self.scenario, output_dir=self.output)
         self.max_pimp_samples = max_pimp_samples
         self.fanova_pairwise = fanova_pairwise
 
@@ -193,6 +190,12 @@ class Analyzer(object):
         self.logger.debug("p-value for def/inc-difference: %f (permutation test)", p)
         return p
 
+    def _paired_t_test(self, default, incumbent, num_permutations):
+        def_cost, inc_cost = get_cost_dict_for_config(self.validated_rh, default), get_cost_dict_for_config(self.validated_rh, incumbent)
+        data1, data2 = zip(*[(def_cost[i], inc_cost[i]) for i in def_cost.keys()])
+        p = paired_t_student(data1, data2, logger=self.logger)
+        self.logger.debug("p-value for def/inc-difference: %f (paired t-test)", p)
+        return p
 
 ####################################### TABLES #######################################
 
@@ -220,7 +223,8 @@ class Analyzer(object):
         num_feats = self.scenario.n_features
         dup_feats = DataFrame(self.scenario.feature_array)  # only contains train instances
         num_dup_feats = len(dup_feats[dup_feats.duplicated()])
-        p_value = round(self._permutation_test(self.default, self.incumbent, 10000), 5)
+        p_value_perm = "%.5f" % self._permutation_test(self.default, self.incumbent, 10000)
+        p_value_t = "%.5f" % self._paired_t_test(self.default, self.incumbent, 10000)
         overview = OrderedDict([('Run with best incumbent', os.path.basename(best_folder)),
                                 # Constants for scenario
                                 ('# Train instances', len(self.scenario.train_insts)),
@@ -233,7 +237,8 @@ class Analyzer(object):
                                 ('# Default evaluations', ta_evals_d),
                                 ('# Incumbent evaluations', ta_evals_i),
                                 ('Budget spent evaluating configurations', ta_runtime),
-                                ('p-value of paired permutation test', p_value),
+                                ('p-value of paired permutation test', p_value_perm),
+                                ('p-value of paired t-test', p_value_t),
                                 ('Cutoff', self.scenario.cutoff),
                                 ('Walltime budget', self.scenario.wallclock_limit),
                                 ('Runcount budget', self.scenario.ta_run_limit),
@@ -246,6 +251,7 @@ class Analyzer(object):
                                 ('# Runs per Config (max)', max_ta_evals),
                                 ('Total number of configuration runs', ta_evals),
                                 ('empty4', 'empty4'),
+                                ('empty5', 'empty5'),
                                ])
         # Split into two columns
         overview_split = self._split_table(overview)
@@ -577,13 +583,13 @@ class Analyzer(object):
 
     def plot_cdf(self):
         self.logger.info("... plotting eCDF")
-        cdf_path = os.path.join(self.output, 'cdf')
-        return self.plotter.plot_cdf_compare(output_fn_base=cdf_path)
+        return self.plotter.plot_cdf_compare(self.default, self.incumbent,
+                self.validated_rh)
 
     def plot_scatter(self):
         self.logger.info("... plotting scatter")
-        scatter_path = os.path.join(self.output, 'scatter')
-        return self.plotter.plot_scatter(output_fn_base=scatter_path)
+        return self.plotter.plot_scatter(self.default, self.incumbent,
+                self.validated_rh)
 
     @timing
     def plot_confviz(self, incumbents, runhistories, max_confs=1000):
@@ -614,9 +620,8 @@ class Analyzer(object):
 
     @timing
     def plot_cost_over_time(self, runs, validator):
-        path = os.path.join(self.output, 'cost_over_time.png')
         self.logger.info("... cost over time")
-        script, div = self.plotter.plot_cost_over_time(self.validated_rh, runs, output=path,
+        script, div = self.plotter.plot_cost_over_time(self.validated_rh, runs,
                                                        validator=validator)
         return script, div
 
@@ -625,9 +630,15 @@ class Analyzer(object):
         if not algorithms:
             algorithms = OrderedDict([(self.default, "default"),
                                       (self.incumbent, "incumbent")])
+        # filter instance features
+        instances = self.scenario.train_insts
+        if not self.scenario.test_insts == [None]:
+            instances.extend(self.scenario.test_insts)
+        features = {k : v for k, v in self.scenario.feature_dict.items() if k in instances}
+
         self.logger.info("... algorithm footprints for: {}".format(", ".join(algorithms.values())))
         footprint = AlgorithmFootprint(self.validated_rh,
-                                       self.scenario.feature_dict, algorithms,
+                                       features, algorithms,
                                        self.scenario.cutoff, self.output,
                                        rng=self.rng)
         # Calculate footprints

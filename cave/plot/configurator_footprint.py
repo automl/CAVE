@@ -1,10 +1,10 @@
 #!/bin/python
 
-__author__ = "Marius Lindauer"
+__author__ = "Marius Lindauer & Joshua Marben"
 __copyright__ = "Copyright 2016, ML4AAD"
 __license__ = "BSD"
-__maintainer__ = "Marius Lindauer"
-__email__ = "lindauer@cs.uni-freiburg.de"
+__maintainer__ = "Joshua Marben"
+__email__ = "marbenj@cs.uni-freiburg.de"
 __version__ = "0.0.1"
 
 import os
@@ -27,11 +27,12 @@ from sklearn.manifold.mds import MDS
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-from bokeh.plotting import figure, ColumnDataSource
+from bokeh.plotting import figure, ColumnDataSource, show
 from bokeh.embed import components
-from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker
+from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider
 from bokeh.models.sources import CDSView
 from bokeh.models.filters import GroupFilter
+from bokeh.layouts import row, column, widgetbox
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -57,6 +58,9 @@ from ConfigSpace.hyperparameters import FloatHyperparameter, IntegerHyperparamet
 from ConfigSpace import CategoricalHyperparameter, UniformFloatHyperparameter, UniformIntegerHyperparameter
 
 from cave.utils.convert_for_epm import convert_data_for_epm
+from cave.utils.helpers import escape_parameter_name
+from cave.utils.timing import timing
+from cave.utils.io import export_bokeh
 
 
 class ConfiguratorFootprint(object):
@@ -66,7 +70,8 @@ class ConfiguratorFootprint(object):
                  incs: list=None,
                  max_plot=None,
                  contour_step_size=0.2,
-                 output_dir: str=None):
+                 output_dir: str=None,
+                 ):
         '''
         Constructor
 
@@ -90,15 +95,28 @@ class ConfiguratorFootprint(object):
 
         self.scenario = copy.deepcopy(scenario)  # pca changes feats
         self.runhistories = runhistories
-        self.runs_per_rh = []  # number of configuration-evaluations per
-                                  # rh (=configurator) in same order as
-                                  # runhistories
+        # runs_per_rh holds a list for every rh in the order of self.runhistores
+        # each list holds a list in turn with the number of
+        #   configuration-evaluations in the order of conf-list
+        #   for that rh after the fraction of total runs in that
+        #   runhistory that corresponds to the index of the inner list, so for
+        #   two runhistories with three configs and four quantiles thats:
+        #     [
+        #      # runhistory 1
+        #      [[1, 2, 1], [3, 5, 2], [5, 6, 7], [9, 9, 8]],
+        #      # runhistory 2
+        #      [[2, 5, 10], [4, 6, 13], [7, 8, 14], [9, 9, 14]],
+        #     ]
+        #   so to access the full # runs for the best configurator-run, just
+        #   go for self.runs_per_rh[0][-1]
+        self.runs_per_rh = []
+        self.conf_list = []
+        self.conf_matrix = []
         self.incs = incs
         self.max_plot = max_plot
         self.max_rhs_to_plot = 1  # Maximum number of runhistories 2 b plotted
 
         self.contour_step_size = contour_step_size
-        self.relevant_rh = None
         self.output_dir = output_dir if output_dir else None
 
     def run(self):
@@ -112,38 +130,36 @@ class ConfiguratorFootprint(object):
             html-embedded plot-data
         """
 
-        conf_matrix, conf_list, runs_per_conf = self.get_conf_matrix()
+        self.get_conf_matrix()
         self.logger.debug("Number of Configurations: %d" %
-                         (conf_matrix.shape[0]))
-        dists = self.get_distance(conf_matrix, self.scenario.cs)
+                         (self.conf_matrix.shape[0]))
+        dists = self.get_distance(self.conf_matrix, self.scenario.cs)
         red_dists = self.get_mds(dists)
 
         contour_data = self.get_pred_surface(
-                X_scaled=red_dists, conf_list=conf_list[:])
+                X_scaled=red_dists, conf_list=self.conf_list[:])
 
         inc_list = self.incs
 
-        return self.plot(red_dists, conf_list, self.runs_per_rh,
+        return self.plot(red_dists, self.conf_list, self.runs_per_rh,
                          inc_list=inc_list, contour_data=contour_data)
 
     def get_pred_surface(self, X_scaled, conf_list: list):
-        '''
-            fit epm on the scaled input dimension and
-            return data to plot a contour plot
+        """fit epm on the scaled input dimension and
+        return data to plot a contour plot
 
-            Parameters
-            ----------
-            X_scaled: np.array
-                configurations in scaled 2dim
-            conf_list: list
-                list of Configuration objects
+        Parameters
+        ----------
+        X_scaled: np.array
+            configurations in scaled 2dim
+        conf_list: list
+            list of Configuration objects
 
-            Returns
-            -------
-            np.array, np.array, np.array
-                x,y,Z for contour plots
-
-        '''
+        Returns
+        -------
+        np.array, np.array, np.array
+            x,y,Z for contour plots
+        """
 
         # use PCA to reduce features to also at most 2 dims
         n_feats = self.scenario.feature_array.shape[1]
@@ -173,7 +189,8 @@ class ConfiguratorFootprint(object):
         self.relevant_rh = new_rh
 
         X, y, types = convert_data_for_epm(scenario=self.scenario,
-                                           runhistory=new_rh)
+                                           runhistory=new_rh,
+                                           logger=self.logger)
 
         types = np.array(np.zeros((2+n_feats)), dtype=np.uint)
 
@@ -309,12 +326,11 @@ class ConfiguratorFootprint(object):
 
     def get_conf_matrix(self):
         """
-        Iterates through runhistory to get a matrix of configurations (in
+        Iterates through runhistories to get a matrix of configurations (in
         vector representation), a list of configurations and the number of
-        runs per configuration.
+        runs per configuration in a quantiled manner.
 
-        Returns
-        -------
+        Sideeffect creates
         conf_matrix: np.array
             matrix of configurations in vector representation
         conf_list: list
@@ -325,41 +341,85 @@ class ConfiguratorFootprint(object):
             one-dim numpy array of runs per configuration
             FOR BEST RUNHISTORY ONLY
         """
-        conf_matrix = []
-        conf_list = []
-        runs_runs_conf = []
-
         # Get all configurations. Index of c in conf_list serves as identifier
         for rh in self.runhistories:
             for c in rh.get_all_configs():
-                if not c in conf_list:
-                    conf_matrix.append(c.get_array())
-                    conf_list.append(c)
+                if not c in self.conf_list:
+                    self.conf_matrix.append(c.get_array())
+                    self.conf_list.append(c)
         for inc in self.incs:
-            if inc not in conf_list:
-                conf_list.append(inc)
+            if inc not in self.conf_list:
+                self.conf_matrix.append(inc.get_array())
+                self.conf_list.append(inc)
 
         # Get total runs per config per rh
-        self.min_runs_per_conf = np.inf
-        self.max_runs_per_conf = -np.inf
         for rh in self.runhistories:
-            runs_per_conf = np.zeros(len(conf_list), dtype=int)
-            for c in rh.get_all_configs():
-                r_p_c = len(rh.get_runs_for_config(c))
-                if r_p_c < self.min_runs_per_conf:
-                    self.min_runs_per_conf = r_p_c
-                elif r_p_c > self.max_runs_per_conf:
-                    self.max_runs_per_conf = r_p_c
-                runs_per_conf[conf_list.index(c)] = r_p_c
-            self.runs_per_rh.append(np.array(runs_per_conf))
+            # We want to visualize the development over time, so we take
+            #   screenshots of the number of runs per config at different points
+            #   in (i.e. different quantiles of) the runhistory, LAST quantile
+            #   is full history!!
+            r_p_q_p_c = self._get_runs_per_config_quantiled(rh, quantiles=10)
+            self.runs_per_rh.append(np.array(r_p_q_p_c))
+        # Get minimum and maximum for sizes of dots
+        self.min_runs_per_conf = min([i for i in self.runs_per_rh[0][-1] if i > 0])
+        self.max_runs_per_conf = max(self.runs_per_rh[0][-1])
 
         self.logger.debug("Gathered %d configurations from %d runhistories." %
-                          (len(conf_list), len(self.runs_per_rh)))
+                          (len(self.conf_list), len(self.runs_per_rh)))
+        self.conf_matrix = np.array(self.conf_matrix)
 
-        return np.array(conf_matrix), conf_list, self.runs_per_rh[0]
+    @timing
+    def _get_runs_per_config_quantiled(self, rh, quantiles=10):
+        """Creates a
+        list of configurator-runs to be analyzed, each as a np.array with
+        the number of target-algorithm-runs per config per quantile.
+        two runhistories with three configs and four quantiles thats:
+          [
+           # runhistory 1
+           [[1, 2, 1], [3, 5, 2], [5, 6, 7], [9, 9, 8]],
+           # runhistory 2
+           [[2, 5, 10], [4, 6, 13], [7, 8, 14], [9, 9, 14]],
+          ]
+
+        Parameters
+        ----------
+        rh: RunHistory
+            rh to evaluate
+        quantiles: int
+            number of fractions to split rh into
+
+        Returns:
+        --------
+        runs_per_config: Dict[Configuration : int]
+            number of runs for config in rh up to given time
+        """
+        runs_total = len(rh.data)
+        step = int(runs_total / quantiles)
+        self.logger.debug("Creating %d quantiles with a step of %d and a total "
+                          "runs of %d", quantiles, step, runs_total)
+        r_p_q_p_c = []  # runs per quantile per config
+        tmp_rh = RunHistory(average_cost)
+        as_list = list(rh.data.items())
+        ranges = [0] + list(range(step, runs_total-step, step)) + [runs_total]
+
+        for i, j in zip(ranges[:-1], ranges[1:]):
+            for idx in range(i, j):
+                k, v = as_list[idx]
+                tmp_rh.add(config=rh.ids_config[k.config_id],
+                           cost=v.cost, time=v.time, status=v.status,
+                           instance_id=k.instance_id, seed=k.seed)
+            r_p_q_p_c.append([len(tmp_rh.get_runs_for_config(c)) for c in
+                self.conf_list])
+            #self.logger.debug("Using %d of %d runs", len(tmp_rh.data), len(rh.data))
+        return r_p_q_p_c
 
     def _get_size(self, r_p_c):
-        sizes = 5 + ((r_p_c - self.min_runs_per_conf) / (self.max_runs_per_conf - self.min_runs_per_conf)) * 20
+        self.logger.debug("Min runs per conf: %d, Max runs per conf: %d",
+                          self.min_runs_per_conf, self.max_runs_per_conf)
+        normalization_factor = self.max_runs_per_conf - self.min_runs_per_conf
+        if normalization_factor == 0:  # All configurations same size
+            normalization_factor = 1
+        sizes = 5 + ((r_p_c - self.min_runs_per_conf) / normalization_factor) * 20
         sizes *= np.array([0 if r == 0 else 1 for r in r_p_c])  # 0 size if 0 runs
         return sizes
 
@@ -385,114 +445,61 @@ class ConfiguratorFootprint(object):
                 colors.append('white')
         return colors
 
-    def plot(self, X, conf_list: list, configurator_runs, runs_labels=None,
-             inc_list: list=[], contour_data=None):
-        """
-        plots sampled configuration in 2d-space;
-        saves results in self.output, if set
+    def _plot_contour(self, p, contour_data, x_range, y_range):
+        """Plot contour data.
 
         Parameters
         ----------
-        X: np.array
-            np.array with 2-d coordinates for each configuration
-        conf_list: list
-            list of ALL configurations in the same order as X
-        configurator_runs: list[np.array]
-            list of configurator-runs to be analyzed, each as a np.array with
-            the number of target-algorithm-runs per config.
-            if 2 configurator-runs are analyzed with 3 configs evaluated in
-            total, this might look like: [np.array([0,2,1]), np.array([2,7,1])]
-        runs_labels: list[str]
-            labels for the individual configurator-runs. if None, they are
-            enumerated
-        inc_list: list
-            list of incumbents (Configuration)
-        contour_data: list
-            contour data (xx,yy,Z)
+        p: bokeh.plotting.figure
+            figure to be drawn upon
+        contour_data: np.array
+            array with contour data
+        x_range: List[float, float]
+            min and max of x-axis
+        y_range: List[float, float]
+            min and max of y-axis
 
         Returns
         -------
-        html_script: str
-            HTML script representing the visualization
+        p: bokeh.plotting.figure
+            modified figure handle
         """
-        if not runs_labels:  # TODO We only plot first run atm anyway, this will be used later
-            runs_labels = range(len(configurator_runs))
+        min_z = np.min(np.unique(contour_data[2]))
+        max_z = np.max(np.unique(contour_data[2]))
+        color_mapper = LinearColorMapper(palette="Viridis256",
+                                         low=min_z, high=max_z)
+        p.image(image=contour_data, x=x_range[0], y=y_range[0],
+                dw=x_range[1] - x_range[0], dh=y_range[1] - y_range[0],
+                color_mapper=color_mapper)
+        color_bar = ColorBar(color_mapper=color_mapper,
+                             ticker=BasicTicker(desired_num_ticks=15),
+                             label_standoff=12,
+                             border_line_color=None, location=(0,0))
+        color_bar.major_label_text_font_size = '12pt'
+        p.add_layout(color_bar, 'right')
+        return p
 
-        hp_names = [k.name for k in  # Hyperparameter names
-                    conf_list[0].configuration_space.get_hyperparameters()]
+    def _plot_create_views(self, source):
+        """Create views in order of plotting, so more interesting views are
+        plotted on top. Order of interest:
+        default > final-incumbent > incumbent > candidate
+          local > random
+            num_runs (ascending, more evaluated -> more interesting)
+        Individual views are necessary, since bokeh can only plot one
+        marker-type per 'scatter'-call
 
-        # Create ColumnDataSource, x/y coordinates, config-params, sizes
-        def escape_param_name(p):
-            """Necessary because:
-                1. parameters called 'size' or 'origin' might exist in cs
-                2. '-' not allowed in bokeh's CDS"""
-            return 'p_' + p.replace('-','_')
+        Parameters
+        ----------
+        source: ColumnDataSource
+            containing relevant information for plotting
 
-        source = ColumnDataSource(data=dict(x=X[:, 0], y=X[:, 1]))
-        for k in hp_names:
-            source.add([c[k] if c[k] else "None" for c in conf_list],
-                       escape_param_name(k))
-        # TODO differentiate between different configurator-runs below
-        default = conf_list[0].configuration_space.get_default_configuration()
-        conf_types = ["Default" if c == default else "Final Incumbent" if c == inc_list[-1]
-                      else "Incumbent" if c in inc_list else "Candidate" for c in conf_list]
-        # We group "Local Search" and "Random Search (sorted)" both into local
-        origins = ["Unknown" if not c.origin else
-                   "Acquisition Function" if c.origin.startswith("Local") or "sorted" in c.origin else
-                   "Random" if c.origin.startswith("Random") else
-                   "Unknown" for c in conf_list]
-        source.add(conf_types, 'type')
-        source.add(origins, 'origin')
-        sizes = self._get_size(configurator_runs[0])
-        sizes = [s * 3 if conf_types[idx] == "Default" else s for idx, s in enumerate(sizes)]
-        source.add(sizes, 'size')
-        source.add(self._get_color(source), 'color')
-        source.add(configurator_runs[0], 'runs')
-
-        # To enforce zorder, we categorize all entries according to their size
-        # Since we plot all different zorder-levels sequentially, we use a
-        # manually defined level of influence
-        num_bins = 20  # How fine-grained the size-ordering should be
-        min_size, max_size = min(source.data['size']), max(source.data['size'])
-        step_size = (max_size - min_size) / num_bins
-        zorder = [str(int((s - min_size) / step_size)) for s in source.data['size']]
-        source.add(zorder, 'zorder')  # string, so we can apply group filter
-
-        # Define what appears in tooltips
-        # TODO add only important parameters (needs to change order of exec:
-        #                                        pimp before conf-footprints)
-        hover = HoverTool(tooltips=[('type', '@type'), ('origin', '@origin'), ('runs', '@runs')] +
-                                   [(k, '@' + escape_param_name(k)) for k in hp_names])
-
-        # bokeh-figure
-        x_range = [min(X[:, 0]) - 1, max(X[:, 0]) + 1]
-        y_range = [min(X[:, 1]) - 1, max(X[:, 1]) + 1]
-        p = figure(plot_height=500, plot_width=600,
-                   tools=[hover], x_range=x_range, y_range=y_range)
-
-        # Plot contour
-        if contour_data is not None:
-            min_z = np.min(np.unique(contour_data[2]))
-            max_z = np.max(np.unique(contour_data[2]))
-            color_mapper = LinearColorMapper(palette="Viridis256",
-                                             low=min_z, high=max_z)
-            p.image(image=contour_data, x=x_range[0], y=y_range[0],
-                    dw=x_range[1] - x_range[0], dh=y_range[1] - y_range[0],
-                    color_mapper=color_mapper)
-            color_bar = ColorBar(color_mapper=color_mapper,
-                                 ticker=BasicTicker(desired_num_ticks=15),
-                                 label_standoff=12,
-                                 border_line_color=None, location=(0,0))
-            color_bar.major_label_text_font_size = '12pt'
-            p.add_layout(color_bar, 'right')
-
-        # Scatter
-        # TODO expand on multiple configurator runs(?)
-        # Create views in order of plotting, so more interesting views are
-        # plotted on top. Order of interest:
-        # default > final-incumbent > incumbent > candidate
-        #   local > random
-        #     num_runs (ascending, more evaluated -> more interesting)
+        Returns
+        -------
+        views: List[CDSView]
+            views in order of plotting
+        markers: List[string]
+            markers (to the view with the same index)
+        """
 
         def _get_marker(t, o):
             """ returns marker according to type t and origin o """
@@ -515,15 +522,35 @@ class ConfiguratorFootprint(object):
                             GroupFilter(column_name='origin', group=o),
                             GroupFilter(column_name='zorder', group=z)]))
                     markers.append(_get_marker(t, o))
+        return (views, markers)
 
+    def _plot_scatter(self, p, source, views, markers):
+        """
+        Parameters
+        ----------
+        p: bokeh.plotting.figure
+            figure
+        source: ColumnDataSource
+            data container
+        views: List[CDSView]
+            list with views to be plotted (in order!)
+        markers: List[str]
+            corresponding markers to the views
+
+        Returns
+        -------
+        scatter_handles: List[GlyphRenderer]
+            glyph renderer per view
+        """
+        scatter_handles = []
         for view, marker in zip(views, markers):
-            p.scatter(x='x', y='y',
-                      source=source,
-                      view=view,
-                      color='color', line_color='black',
-                      size='size',
-                      marker=marker,
-                      )
+            scatter_handles.append(p.scatter(x='x', y='y',
+                                   source=source,
+                                   view=view,
+                                   color='color', line_color='black',
+                                   size='size',
+                                   marker=marker,
+                                   ))
 
         p.xaxis.axis_label = "MDS-X"
         p.yaxis.axis_label = "MDS-Y"
@@ -533,7 +560,155 @@ class ConfiguratorFootprint(object):
         p.yaxis.major_label_text_font_size = "12pt"
         p.title.text_font_size = "15pt"
         p.legend.label_text_font_size = "15pt"
+        return scatter_handles
 
-        script, div = components(p)
+    def plot(self, X, conf_list: list, configurator_runs, runs_labels=None,
+             inc_list: list=[], contour_data=None):
+        """
+        plots sampled configuration in 2d-space;
+        uses bokeh for interactive plot
+        saves results in self.output, if set
+
+        Parameters
+        ----------
+        X: np.array
+            np.array with 2-d coordinates for each configuration
+        conf_list: list
+            list of ALL configurations in the same order as X
+        configurator_runs: list[np.array]
+            list of configurator-runs to be analyzed, each as a np.array with
+            the number of target-algorithm-runs per config per quantile.
+        runs_labels: list[str]
+            labels for the individual configurator-runs. if None, they are
+            enumerated
+        inc_list: list
+            list of incumbents (Configuration)
+        contour_data: list
+            contour data (xx,yy,Z)
+
+        Returns
+        -------
+        html_script: str
+            HTML script representing the visualization
+        """
+        if not runs_labels:  # TODO We only plot first run atm anyway, this will be used later
+            runs_labels = range(len(configurator_runs))
+
+        hp_names = [k.name for k in  # Hyperparameter names
+                    conf_list[0].configuration_space.get_hyperparameters()]
+
+        # Create ColumnDataSource with all the necessary data
+        #   Contains for each configuration evaluated on any run:
+        #   - all parameters and values
+        #   - origin (if conflicting, origin from best run counts)
+        #   - type (default, incumbent or candidate)
+        #   - # of runs
+        #   - size
+        #   - color
+        source = ColumnDataSource(data=dict(x=X[:, 0], y=X[:, 1]))
+        for k in hp_names:  # Add parameters for each config
+            source.add([c[k] if c[k] else "None" for c in conf_list],
+                       escape_parameter_name(k))
+        # TODO differentiate between different configurator-runs below
+        default = conf_list[0].configuration_space.get_default_configuration()
+        conf_types = ["Default" if c == default else "Final Incumbent" if c == inc_list[-1]
+                      else "Incumbent" if c in inc_list else "Candidate" for c in conf_list]
+        # We group "Local Search" and "Random Search (sorted)" both into local
+        origins = [self._get_config_origin(c) for c in conf_list]
+        source.add(conf_types, 'type')
+        source.add(origins, 'origin')
+        sizes = self._get_size(configurator_runs[0][-1])  # 0 for best run, -1 for full history
+        sizes = [s * 3 if conf_types[idx] == "Default" else s for idx, s in enumerate(sizes)]
+        source.add(sizes, 'size')
+        source.add(self._get_color(source), 'color')
+        source.add(configurator_runs[0][-1], 'runs')  # 0 for best run, -1 for full history
+        for idx, q in enumerate(configurator_runs[0]):
+            source.add(q, 'runs'+str(idx))
+        for idx, q in enumerate(configurator_runs[0]):
+            source.add(self._get_size(q), 'size'+str(idx))
+
+
+        # To enforce zorder, we categorize all entries according to their size
+        # Since we plot all different zorder-levels sequentially, we use a
+        # manually defined level of influence
+        num_bins = 20  # How fine-grained the size-ordering should be
+        min_size, max_size = min(source.data['size']), max(source.data['size'])
+        step_size = (max_size - min_size) / num_bins
+        zorder = [str(int((s - min_size) / step_size)) for s in source.data['size']]
+        source.add(zorder, 'zorder')  # string, so we can apply group filter
+
+        # Define what appears in tooltips
+        # TODO add only important parameters (needs to change order of exec:
+        #                                     pimp before conf-footprints)
+        hover = HoverTool(tooltips=[('type', '@type'), ('origin', '@origin'), ('runs', '@runs')] +
+                                   [(k, '@' + escape_parameter_name(k)) for k in hp_names])
+
+        # bokeh-figure
+        x_range = [min(X[:, 0]) - 1, max(X[:, 0]) + 1]
+        y_range = [min(X[:, 1]) - 1, max(X[:, 1]) + 1]
+        p = figure(plot_height=500, plot_width=600,
+                   tools=[hover], x_range=x_range, y_range=y_range)
+
+        # Plot contour
+        if contour_data is not None:
+           p = self._plot_contour(p, contour_data, x_range, y_range)
+
+        # Create views from source
+        views, markers = self._plot_create_views(source)
+
+        # Scatter
+        scatters = self._plot_scatter(p, source, views, markers)
+
+
+        # Now we want to integrate a slider to visualize development over time
+        # Since runhistory doesn't contain a timestamp, but are ordered, we use quantiles
+        # Some js-script that updates the bokeh-plot on callback
+        code = """
+var data = source.data;
+var time = time.value;
+data['runs'] = data['runs'+time.toString()]
+data['size'] = data['size'+time.toString()]
+
+source.change.emit();
+"""
+        # Create callback and slider itself
+        callback = CustomJS(args=dict(source=source), code=code)
+
+        num_quantiles = len(configurator_runs[0])
+        time_slider = Slider(start=1, end=num_quantiles, value=num_quantiles, step=1,
+                            title="Time", callback=callback)
+        callback.args["time"] = time_slider
+
+        # Slider below plot
+        layout = column(p, widgetbox(time_slider))
+
+        script, div = components(layout)
+
+        if self.output_dir:
+            path = os.path.join(self.output_dir, "configurator_footprint.png")
+            export_bokeh(p, path, self.logger)
 
         return script, div
+
+    def _get_config_origin(self, c):
+        """Return appropriate configuration origin
+
+        Parameters
+        ----------
+        c: Configuration
+            configuration to be examined
+
+        Returns
+        -------
+        origin: str
+            origin of configuration (e.g. "Local", "Random", etc.)
+        """
+        if not c.origin:
+            origin = "Unknown"
+        elif c.origin.startswith("Local") or "sorted" in c.origin:
+            origin = "Acquisition Function"
+        elif c.origin.startswith("Random"):
+            origin = "Random"
+        else:
+            origin = "Unknown"
+        return origin

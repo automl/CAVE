@@ -56,11 +56,11 @@ class TestCLI(unittest.TestCase):
         """
         Testing basic CLI from base.
         """
-        test_folders = [["examples/spear_qcp_small/example_output/*"],
-                        ["examples/spear_qcp_small/example_output/run_1",
-                         "examples/spear_qcp_small/example_output/run_2"],
-                        ["examples/spear_qcp_small/example_output/* ",
-                         "examples/spear_qcp_small/example_output/run_2"]
+        test_folders = [["examples/smac3/example_output/*"],
+                        ["examples/smac3/example_output/run_1",
+                         "examples/smac3/example_output/run_2"],
+                        ["examples/smac3/example_output/* ",
+                         "examples/smac3/example_output/run_2"]
                        ]
 
         for folders in test_folders:
@@ -72,7 +72,7 @@ class TestCLI(unittest.TestCase):
             # No ta_exec -> scenario cannot be loaded
             with mock.patch.object(sys, 'argv', testargs):
                 self.assertRaises(SystemExit, self.cavecli.main_cli)
-            testargs.extend(["--ta_exec", "examples/spear_qcp_small/"])
+            testargs.extend(["--ta_exec", "examples/smac3/"])
             with mock.patch.object(sys, 'argv', testargs):
                 self.cavecli.main_cli()
 
@@ -87,7 +87,7 @@ class TestCLI(unittest.TestCase):
                          "example_output/run_2"]
                        ]
 
-        with changedir("examples/spear_qcp_small"):
+        with changedir("examples/smac3"):
             for folders in test_folders:
                 # Run from base-path
                 testargs = ["python", "../../scripts/cave",
@@ -97,12 +97,12 @@ class TestCLI(unittest.TestCase):
                 with mock.patch.object(sys, 'argv', testargs):
                     self.cavecli.main_cli()
                 # Wrong ta_exec -> scenario cannot be loaded
-                testargs.extend(["--ta_exec", "examples/spear_qcp_small/"])
+                testargs.extend(["--ta_exec", "examples/smac3/"])
                 with mock.patch.object(sys, 'argv', testargs):
                     self.assertRaises(ValueError, self.cavecli.main_cli)
 
     def test_exceptions(self):
-        test_folder = "examples/spear_qcp_small/example_output/run_1"
+        test_folder = "examples/smac3/example_output/run_1"
 
         testargs = ["python", "scripts/cave",
                     "--folders", test_folder,
