@@ -354,30 +354,30 @@ class CAVE(object):
         ########### Configurator's behavior
         self.website["Configurator's behavior"] = OrderedDict()
 
-        if confviz:
-            if self.scenario.feature_array is None:
-                self.scenario.feature_array = np.array([[]])
-            # Sort runhistories and incs wrt cost
-            incumbents = [r.solver.incumbent for r in self.runs]
-            trajectories = [r.traj for r in self.runs]
-            runhistories = [r.original_runhistory for r in self.runs]
-            costs = [self.validated_rh.get_cost(i) for i in incumbents]
-            costs, incumbents, runhistories, trajectories = (list(t) for t in
-                    zip(*sorted(zip(costs, incumbents, runhistories, trajectories), key=lambda
-                        x: x[0])))
-            incumbents = list(map(lambda x: x['incumbent'], trajectories[0]))
-            assert(incumbents[-1] == trajectories[0][-1]['incumbent'])
+        if self.scenario.feature_array is None:
+            self.scenario.feature_array = np.array([[]])
+        # Sort runhistories and incs wrt cost
+        incumbents = [r.solver.incumbent for r in self.runs]
+        trajectories = [r.traj for r in self.runs]
+        runhistories = [r.original_runhistory for r in self.runs]
+        costs = [self.validated_rh.get_cost(i) for i in incumbents]
+        costs, incumbents, runhistories, trajectories = (list(t) for t in
+                zip(*sorted(zip(costs, incumbents, runhistories, trajectories), key=lambda
+                    x: x[0])))
+        incumbents = list(map(lambda x: x['incumbent'], trajectories[0]))
+        assert(incumbents[-1] == trajectories[0][-1]['incumbent'])
 
-            script, div, cfp_paths = self.analyzer.plot_confviz(incumbents,
-                    runhistories, max_confs=5000, time_slider=cfp_time_slider_type)
+        script, div, cfp_paths = self.analyzer.plot_confviz(incumbents,
+                runhistories, max_confs=5000, time_slider=cfp_time_slider_type)
+        if cfp_time_slider_type == 'off':
+            self.website["Configurator's behavior"]["Configurator Footprint"] = {
+                    "bokeh" : (script, div)}
+        else:
             self.website["Configurator's behavior"]["Configurator Footprint"] = {}
             self.website["Configurator's behavior"]["Configurator Footprint"]["Interactive"] = {
                     "bokeh" : (script, div)}
             self.website["Configurator's behavior"]["Configurator Footprint"]["Static"] = {
                     "figure" : cfp_paths}
-        elif confviz:
-            self.logger.info("Configuration visualization desired, but no "
-                             "instance-features available.")
 
         self.build_website()
 

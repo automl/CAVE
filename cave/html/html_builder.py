@@ -52,20 +52,20 @@ class HTMLBuilder(object):
 <html>
 <head>
 <title>CAVE</title>
-<link href="css/accordion.css" rel="stylesheet" />
-<link href="css/table.css" rel="stylesheet" />
-<link href="css/lightbox.min.css" rel="stylesheet" />
-<link href="css/help-tip.css" rel="stylesheet" />
-<link href="css/global.css" rel="stylesheet" />
-<link href="css/back-to-top.css" rel="stylesheet" />
+<link href="html/css/accordion.css" rel="stylesheet" />
+<link href="html/css/table.css" rel="stylesheet" />
+<link href="html/css/lightbox.min.css" rel="stylesheet" />
+<link href="html/css/help-tip.css" rel="stylesheet" />
+<link href="html/css/global.css" rel="stylesheet" />
+<link href="html/css/back-to-top.css" rel="stylesheet" />
 
-<link href="css/bokeh-0.12.14.min.css" rel="stylesheet" type="text/css">
-<link href="css/bokeh-widgets-0.12.14.min.css" rel="stylesheet" type="text/css">
-<link href="css/bokeh-tables-0.12.14.min.css" rel="stylesheet" type="text/css">
+<link href="html/css/bokeh-0.12.14.min.css" rel="stylesheet" type="text/css">
+<link href="html/css/bokeh-widgets-0.12.14.min.css" rel="stylesheet" type="text/css">
+<link href="html/css/bokeh-tables-0.12.14.min.css" rel="stylesheet" type="text/css">
 
-<script src="js/bokeh-0.12.14.min.js"></script>
-<script src="js/bokeh-widgets-0.12.14.min.js"></script>
-<script src="js/bokeh-tables-0.12.14.min.js"></script>
+<script src="html/js/bokeh-0.12.14.min.js"></script>
+<script src="html/js/bokeh-widgets-0.12.14.min.js"></script>
+<script src="html/js/bokeh-tables-0.12.14.min.js"></script>
 
 <!--Below here are the includes of scripts for the report (e.g. bokeh)-->
 '''
@@ -76,11 +76,11 @@ class HTMLBuilder(object):
 </head>
 <body>
 <script src="http://www.w3schools.com/lib/w3data.js"></script>
-<script src="js/lightbox-plus-jquery.min.js"></script>
+<script src="html/js/lightbox-plus-jquery.min.js"></script>
 <header>
     <div class='l-wrapper'>
-        <img class='logo logo--smac3' src="images/SMAC3.png" />
-        <img class='logo logo--ml' src="images/ml4aad.png" />
+        <img class='logo logo--smac3' src="html/images/SMAC3.png" />
+        <img class='logo logo--ml' src="html/images/ml4aad.png" />
     </div>
 </header>
 <div class='l-wrapper'>
@@ -104,7 +104,7 @@ for (i = 0; i < acc.length; i++) {
   }
 }
 </script>
-<script src="js/back-to-top.js"></script>
+<script src="html/js/back-to-top.js"></script>
 </body>
 </html>
 '''
@@ -147,9 +147,9 @@ for (i = 0; i < acc.length; i++) {
         subfolders = ["css", "images", "js", "font"]
         for sf in subfolders:
             try:
-                if not os.path.isdir(os.path.join(self.output_dn, sf)):
+                if not os.path.isdir(os.path.join(self.output_dn, "html", sf)):
                     shutil.copytree(os.path.join(self.own_folder, "web_files", sf),
-                                    os.path.join(self.output_dn, sf))
+                                    os.path.join(self.output_dn, "html", sf))
             except OSError:
                 print_exc()
 

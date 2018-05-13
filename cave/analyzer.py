@@ -170,8 +170,7 @@ class Analyzer(object):
                         for k in runs]
         else:
             runs = [(k, runs[k]) for k in runs]
-            self.logger.info("Calculating penalized average runtime without "
-                             "cutoff...")
+            self.logger.info("Calculating penalized average runtime without cutoff...")
 
         # Average
         if self.train_test:
@@ -612,7 +611,8 @@ class Analyzer(object):
         confviz: str
             script to generate the interactive html
         """
-        self.logger.info("... visualizing explored configspace")
+        self.logger.info("... visualizing explored configspace (this may take "
+                         "some hours, if there is a lot of data)")
         confviz = self.plotter.visualize_configs(self.scenario,
                     runhistories=runhistories, incumbents=incumbents,
                     max_confs_plot=max_confs, time_slider=time_slider)

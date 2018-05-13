@@ -22,6 +22,8 @@ def export_bokeh(plot, path, logger):
     logger.debug("Exporting to %s", path)
     plot.background_fill_color = None
     plot.border_fill_color = None
+    if not os.path.exists(os.path.basename(path))
+        os.makedirs(os.path.basename(path))
     try:
         export_png(plot, filename=path)
     except (RuntimeError, TypeError) as err:

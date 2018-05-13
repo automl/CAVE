@@ -124,9 +124,10 @@ class CaveCLI(object):
         opt_opts.add_argument("--cfp_time_slider_type",
                               help="prerender leads to long loading times and "
                                    "short interaction, online means shorter loading, "
-                                   "but longer interaction.",
-                              default='off',
-                              choices=['off', 'prerender', 'online'])
+                                   "but longer interaction and static only "
+                                   "generates the figures beforehand as .png's.",
+                              default='static',
+                              choices=['off', 'static', 'prerender', 'online'])
         opt_opts.add_argument("--no_tabular_analysis",
                               action='store_false',
                               help="don't create performance table.",

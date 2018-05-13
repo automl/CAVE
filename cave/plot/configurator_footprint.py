@@ -72,6 +72,7 @@ class ConfiguratorFootprint(object):
                  contour_step_size=0.2,
                  output_dir: str=None,
                  time_slider: str='off',
+                 num_quantiles: int=10,
                  ):
         '''
         Constructor
@@ -137,8 +138,7 @@ class ConfiguratorFootprint(object):
         """
 
         self.get_conf_matrix()
-        self.logger.debug("Number of Configurations: %d" %
-                         (self.conf_matrix.shape[0]))
+        self.logger.debug("Number of Configurations: %d", self.conf_matrix.shape[0])
         dists = self.get_distance(self.conf_matrix, self.scenario.cs)
         red_dists = self.get_mds(dists)
 
@@ -183,7 +183,7 @@ class ConfiguratorFootprint(object):
             self.scenario.feature_dict = dict([(inst, feature_array[idx,:]) for idx, inst in enumerate(insts)])
             self.scenario.n_features = 2
 
-        # Create new rh with only wanted configs
+        self.logger.debug("Create new rh with relevant configs")
         new_rh = RunHistory(average_cost)
         for rh in self.runhistories:
             for key, value in rh.data.items():
@@ -195,6 +195,7 @@ class ConfiguratorFootprint(object):
                                seed=seed, additional_info=additional_info)
         self.relevant_rh = new_rh
 
+        self.logger.debug("Convert data for epm.")
         X, y, types = convert_data_for_epm(scenario=self.scenario,
                                            runhistory=new_rh,
                                            logger=self.logger)
@@ -217,6 +218,7 @@ class ConfiguratorFootprint(object):
             X_trans.append(x_new)
         X_trans = np.array(X_trans)
 
+        self.logger.debug("Train random forest for contour-plot.")
         bounds = np.array([(0, np.nan), (0, np.nan)], dtype=object)
         model = RandomForestWithInstances(types=types, bounds=bounds,
                                           instance_features=np.array(self.scenario.feature_array),
@@ -243,6 +245,7 @@ class ConfiguratorFootprint(object):
 
         return xx, yy, Z
 
+    @timing
     def get_distance(self, conf_matrix, cs: ConfigurationSpace):
         """
         Computes the distance between all pairs of configurations.
@@ -259,6 +262,7 @@ class ConfiguratorFootprint(object):
         dists: np.array
             np.array with distances between configurations i,j in dists[i,j] or dists[j,i]
         """
+        self.logger.debug("Calculate distance between configurations.")
         n_confs = conf_matrix.shape[0]
         dists = np.zeros((n_confs, n_confs))
 
@@ -281,6 +285,8 @@ class ConfiguratorFootprint(object):
                 dist /= depth
                 dists[i, j] = np.sum(dist)
                 dists[j, i] = np.sum(dist)
+            if i % (n_confs // 5) == 0:
+                self.logger.debug("%.2f%% of all distances calculated...", 100 * i / n_confs)
 
         return dists
 
@@ -337,7 +343,7 @@ class ConfiguratorFootprint(object):
         vector representation), a list of configurations and the number of
         runs per configuration in a quantiled manner.
 
-        Sideeffect creates
+        Sideeffect creates as members
         conf_matrix: np.array
             matrix of configurations in vector representation
         conf_list: list
@@ -421,6 +427,17 @@ class ConfiguratorFootprint(object):
         return r_p_q_p_c
 
     def _get_size(self, r_p_c):
+        """
+        Parameters
+        ----------
+        r_p_c: list[int]
+            list with runs per config in order of self.conf_list
+
+        Returns
+        -------
+        sizes: list[int]
+            list with appropriate sizes for dots
+        """
         self.logger.debug("Min runs per conf: %d, Max runs per conf: %d",
                           self.min_runs_per_conf, self.max_runs_per_conf)
         normalization_factor = self.max_runs_per_conf - self.min_runs_per_conf
@@ -585,6 +602,19 @@ class ConfiguratorFootprint(object):
           - size
           - color
 
+        Parameters
+        ----------
+        conf_list: list[Configuration]
+            configurations
+        runs: list[int]
+            runs per configuration (same order as conf_list)
+        X: np.array
+            configuration-parameters as 2-dimensional array
+        inc_list: list[Configuration]
+            incumbents for this conf-run
+        hp_names: list[str]
+            names of hyperparameters
+
         Returns
         -------
         source: ColumnDataSource
@@ -617,23 +647,59 @@ class ConfiguratorFootprint(object):
 
         return source
 
-    def _plot_add_timeslider(self, time_slider, scatter_glyph_render_groups, source):
-        # TODO split up
-        self.logger.debug("Create time-slider \"%s\"!", time_slider)
+    def _plot_add_timeslider_online(self, source):
+        """Add an online timeslider. Difference to prerendered timeslider:
+        information for all quantiles is already contained in source, callback
+        updates the datasoure
 
-        # Since runhistory doesn't contain a timestamp, but are ordered,
-        # we use quantiles
-        # Some js-script that updates the bokeh-plot on callback
-        if time_slider == 'online':
-            code = """
+        +: smaller files, that are quicker to load in browser
+        -: updating data-source may take a long time
+
+        Parameters
+        ----------
+        source: ColumnDataSource
+            source contains runs1, runs2, runs3, ... and size1, size2, ... for
+            the corresponding quantiles
+
+        Returns
+        -------
+        time_slider: bokeh-Slider
+            slider-widget, ready to register with plot
+        """
+        self.logger.debug("Create online time-slider!")
+        code = """
 var data = source.data;
 var time = cb_obj.value;
 data['runs'] = data['runs'+(time-1).toString()]
 data['size'] = data['size'+(time-1).toString()]
 source.change.emit();
 """
-            # Create callback and slider itself
-            callback = CustomJS(args=dict(source=source), code=code)
+        # Create callback and slider itself
+        callback = CustomJS(args=dict(source=source), code=code)
+
+    def _plot_add_timeslider_prerendered(self, source):
+        """Add a prerendered timeslider. Difference to online timeslider:
+        information for all quantiles is plotted in advance and only the
+        relevant source is visible.
+
+        +: faster interaction, no changes in data-source
+        -: larger(!) files, that take longer to load into browser
+
+        Parameters
+        ----------
+        scatter_glyph_render_groups: List[List[bokeh-glyphs]]
+            list of lists, each sublist represents a quantile, a quantile is a
+            list of all relevant glyphs in that quantile
+
+        Returns
+        -------
+        time_slider: bokeh-Slider
+            slider-widget, ready to register with plot
+        """
+        self.logger.debug("Create prerendered time-slider!")
+
+        # Since runhistory doesn't contain a timestamp, but are ordered,
+        # we use quantiles
 
         elif time_slider == 'prerender':
             num_glyph_subgroups = sum([len(group) for group in scatter_glyph_render_groups])
@@ -670,9 +736,6 @@ for (i = 0; i < lab_len; i++) {
 """
             callback = CustomJS(args=args, code=code)
 
-        time_slider = Slider(start=1, end=len(scatter_glyph_render_groups),
-                             value=len(scatter_glyph_render_groups), step=1,
-                             callback=callback, title='Time')
         return time_slider
 
     def plot(self, X, conf_list: list, configurator_runs,
@@ -712,14 +775,15 @@ for (i = 0; i < lab_len; i++) {
             list with paths to the different quantiled timesteps of the
             configurator run (for static evaluation)
         """
-        if not time_slider in ['off', 'prerender', 'online']:
-            raise ValueError("time_slider has to be one of ['off', 'prerender', 'online']")
+        if not time_slider in ['off', 'prerender', 'online', 'static']:
+            raise ValueError("time_slider has to be one of ['off', 'prerender', 'online', 'static']")
         if not inc_list:
             inc_list = []
         over_time_paths = []  # developement of the search space over time
 
         hp_names = [k.name for k in  # Hyperparameter names
                     conf_list[0].configuration_space.get_hyperparameters()]
+        num_quantiles = configurator_runs[0]
 
         # Get individual sources for quantiles of best run (first in list)
         sources = [self._plot_get_source(conf_list, quantiled_run, X, inc_list, hp_names)
@@ -740,6 +804,7 @@ for (i = 0; i < lab_len; i++) {
         if contour_data is not None:
            p = self._plot_contour(p, contour_data, x_range, y_range)
         scatter_glyph_render_groups = []
+
         # If timeslider should update the data online, we need to add
         # information about each quantile to the "base"-source
         if time_slider == 'online':
@@ -748,8 +813,10 @@ for (i = 0; i < lab_len; i++) {
                 sizes = [s * 3 if sources[-1].data['type'][idx] == "Default" else s for idx, s
                          in enumerate(self._get_size(q))]
                 sources[-1].add(sizes, 'size' + str(idx))
+
         # If time_slider is not prerender, we don't want all the sources in
-        # the plot -> in that case we create a new plot
+        # the plot -> in that case we create a new plot for the individual
+        # quantile-png-exports.
         if not (time_slider == 'prerender'):
             p_quantiles = figure(plot_height=500, plot_width=600,
                                  tools=[hover], x_range=x_range, y_range=y_range)
@@ -757,30 +824,40 @@ for (i = 0; i < lab_len; i++) {
                p_quantiles = self._plot_contour(p_quantiles, contour_data, x_range, y_range)
         else:
             p_quantiles = p  # if prerender, save all sources in original plot
+
         for idx, source in enumerate(sources):
             if idx == len(sources) - 1:  # final view on original plot!!
                 p_quantiles = p
+            else:  # skip all others if slider is off
+                if time_slider == 'off':
+                    continue
             views, markers = self._plot_create_views(source)
             self.logger.debug("Plotting quantile %d!", idx)
             scatter_glyph_render_groups.append(self._plot_scatter(p_quantiles, source, views, markers))
             if self.output_dir:
-                path = os.path.join(self.output_dir,
-                        "configurator_footprint" + str(idx) + ".png")
-                self.logger.debug("Saving plot to %s", path)
-                over_time_paths.append(path)
-                export_bokeh(p_quantiles, path, self.logger)
+                file_path = "content/images/cfp_over_time/configurator_footprint" + str(idx) + ".png"))
+                over_time_paths.append(os.path.join(self.output_dir, file_path))
+                self.logger.debug("Saving plot to %s", over_time_paths[-1])
+                over_time_paths.append(over_time_paths[-1])
+                export_bokeh(p_quantiles, over_time_paths[-1], self.logger)
 
-        if time_slider == 'off':
+        if time_slider in ['off', 'static']:
             layout = column(p)
         else:
             # Slider below plot
-            layout = column(p, widgetbox(self._plot_add_timeslider(time_slider,
-                            scatter_glyph_render_groups, sources[-1])))
+            if time_slider == 'prerendered':
+                callback = self._plot_get_callback_prerendered(scatter_glyph_render_groups)
+            else:  # if time_slider == 'online':
+                callback = self._plot_get_callback_online(sources[-1])
+            slider = Slider(start=1, end=num_quantiles,
+                            value=num_quantiles, step=1,
+                            callback=callback, title='Time')
+            layout = column(p, widgetbox(slider))
 
         script, div = components(layout)
 
         if self.output_dir:
-            path = os.path.join(self.output_dir, "configurator_footprint.png")
+            path = os.path.join(self.output_dir, "content/images/configurator_footprint.png")
             export_bokeh(p, path, self.logger)
 
         return script, div, over_time_paths
