@@ -29,7 +29,7 @@ from sklearn.preprocessing import StandardScaler
 
 from bokeh.plotting import figure, ColumnDataSource, show
 from bokeh.embed import components
-from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider, RadioGroup
+from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider
 from bokeh.models.sources import CDSView
 from bokeh.models.filters import GroupFilter
 from bokeh.layouts import row, column, widgetbox
@@ -68,7 +68,7 @@ class ConfiguratorFootprint(object):
     def __init__(self, scenario: Scenario,
                  runhistories: typing.List[RunHistory],
                  incs: list=None,
-                 max_plot=None,
+                 max_plot: int=10000,
                  contour_step_size=0.2,
                  output_dir: str=None,
                  time_slider: str='off',
@@ -91,6 +91,14 @@ class ConfiguratorFootprint(object):
             step size of meshgrid to compute contour of fitness landscape
         output_dir: str
             output directory
+        time_slider: str
+            one of ["off", "static", "prerender", "online"]
+            prerender and online integrate a slider in the plot,
+            static only renders a number of png's
+            off only provides final interactive plot
+        num_quantiles: int
+            if time_slider is not off, defines the number of quantiles for the
+            slider/ number of static pictures
         '''
         self.logger = logging.getLogger(
             self.__module__ + '.' + self.__class__.__name__)
@@ -115,13 +123,11 @@ class ConfiguratorFootprint(object):
         self.conf_list = []
         self.conf_matrix = []
         self.incs = incs
-        self.max_plot = max_plot
+        self.max_plot = max_plot  # TODO why is this not implemented?
         self.max_rhs_to_plot = 1  # Maximum number of runhistories 2 b plotted
         self.time_slider = time_slider
 
-        self.num_quantiles = 10
-
-        # TODO docstrings, paths, num_quantiles as arg
+        self.num_quantiles = num_quantiles
 
         self.contour_step_size = contour_step_size
         self.output_dir = output_dir if output_dir else None
@@ -131,10 +137,6 @@ class ConfiguratorFootprint(object):
         Uses available Configurator-data to perform a MDS, estimate performance
         data and plot the configurator footprint.
 
-        Returns
-        -------
-        html_code: str
-            html-embedded plot-data
         """
 
         self.get_conf_matrix()
@@ -674,8 +676,8 @@ data['runs'] = data['runs'+(time-1).toString()]
 data['size'] = data['size'+(time-1).toString()]
 source.change.emit();
 """
-        # Create callback and slider itself
-        callback = CustomJS(args=dict(source=source), code=code)
+        # Create callback
+        return CustomJS(args=dict(source=source), code=code)
 
     def _plot_add_timeslider_prerendered(self, source):
         """Add a prerendered timeslider. Difference to online timeslider:
@@ -701,22 +703,21 @@ source.change.emit();
         # Since runhistory doesn't contain a timestamp, but are ordered,
         # we use quantiles
 
-        elif time_slider == 'prerender':
-            num_glyph_subgroups = sum([len(group) for group in scatter_glyph_render_groups])
-            glyph_renderers_flattened = ['glyph_renderer' + str(i) for i in range(num_glyph_subgroups)]
-            glyph_renderers = []
-            start = 0
-            for group in scatter_glyph_render_groups:
-                glyph_renderers.append(glyph_renderers_flattened[start : start+len(group)])
-                start += len(group)
-            self.logger.debug("%d, %d, %d", len(scatter_glyph_render_groups),
-                              len(glyph_renderers), num_glyph_subgroups)
-            num_quantiles = len(scatter_glyph_render_groups)
-            scatter_glyph_render_groups_flattened = [a for b in scatter_glyph_render_groups for a in b]
-            args = {name : glyph for name, glyph in zip(glyph_renderers_flattened,
-                                          scatter_glyph_render_groups_flattened)}
-            code = "glyph_renderers = [" + ','.join(['[' + ','.join(group) + ']' for
-                                        group in glyph_renderers]) + '];' + """
+        num_glyph_subgroups = sum([len(group) for group in scatter_glyph_render_groups])
+        glyph_renderers_flattened = ['glyph_renderer' + str(i) for i in range(num_glyph_subgroups)]
+        glyph_renderers = []
+        start = 0
+        for group in scatter_glyph_render_groups:
+            glyph_renderers.append(glyph_renderers_flattened[start : start+len(group)])
+            start += len(group)
+        self.logger.debug("%d, %d, %d", len(scatter_glyph_render_groups),
+                          len(glyph_renderers), num_glyph_subgroups)
+        num_quantiles = len(scatter_glyph_render_groups)
+        scatter_glyph_render_groups_flattened = [a for b in scatter_glyph_render_groups for a in b]
+        args = {name : glyph for name, glyph in zip(glyph_renderers_flattened,
+                                      scatter_glyph_render_groups_flattened)}
+        code = "glyph_renderers = [" + ','.join(['[' + ','.join(group) + ']' for
+                                    group in glyph_renderers]) + '];' + """
 lab_len = cb_obj.end;
 for (i = 0; i < lab_len; i++) {
     if (cb_obj.value == i + 1) {
@@ -734,9 +735,9 @@ for (i = 0; i < lab_len; i++) {
     }
 }
 """
-            callback = CustomJS(args=args, code=code)
+        callback = CustomJS(args=args, code=code)
 
-        return time_slider
+        return callback
 
     def plot(self, X, conf_list: list, configurator_runs,
              inc_list: list=None, contour_data=None, time_slider="off"):
@@ -835,7 +836,7 @@ for (i = 0; i < lab_len; i++) {
             self.logger.debug("Plotting quantile %d!", idx)
             scatter_glyph_render_groups.append(self._plot_scatter(p_quantiles, source, views, markers))
             if self.output_dir:
-                file_path = "content/images/cfp_over_time/configurator_footprint" + str(idx) + ".png"))
+                file_path = "content/images/cfp_over_time/configurator_footprint" + str(idx) + ".png"
                 over_time_paths.append(os.path.join(self.output_dir, file_path))
                 self.logger.debug("Saving plot to %s", over_time_paths[-1])
                 over_time_paths.append(over_time_paths[-1])

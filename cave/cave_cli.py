@@ -128,6 +128,10 @@ class CaveCLI(object):
                                    "generates the figures beforehand as .png's.",
                               default='static',
                               choices=['off', 'static', 'prerender', 'online'])
+        opt_opts.add_argument("--cfp_number_quantiles",
+                              help="number of quantiles if configurator "
+                                   "footprint is plotted over time",
+                              default=10, type=int)
         opt_opts.add_argument("--no_tabular_analysis",
                               action='store_false',
                               help="don't create performance table.",
@@ -238,6 +242,7 @@ class CaveCLI(object):
                      scatter=args_.scatter_plots,
                      confviz=args_.confviz,
                      cfp_time_slider_type=args_.cfp_time_slider_type,
+                     cfp_number_quantiles=args_.cfp_number_quantiles,
                      parallel_coordinates=args_.parallel_coordinates,
                      cost_over_time=args_.cost_over_time,
                      algo_footprint=args_.algorithm_footprints,
