@@ -255,7 +255,7 @@ class CAVE(object):
     @timing
     def analyze(self,
                 performance=True, cdf=True, scatter=True, confviz=True,
-                cfp_time_slider_type='off',
+                cfp_time_slider_type='off', cfp_number_quantiles=10,
                 param_importance=['forward_selection', 'ablation', 'fanova'],
                 feature_analysis=["box_violin", "correlation",
                     "feat_importance", "clustering", "feature_cdf"],
@@ -367,8 +367,9 @@ class CAVE(object):
         incumbents = list(map(lambda x: x['incumbent'], trajectories[0]))
         assert(incumbents[-1] == trajectories[0][-1]['incumbent'])
 
-        script, div, cfp_paths = self.analyzer.plot_confviz(incumbents,
-                runhistories, max_confs=5000, time_slider=cfp_time_slider_type)
+        script, div, cfp_paths = self.analyzer.plot_configurator_footprint(incumbents, runhistories, max_confs=5000,
+                                                                           time_slider=cfp_time_slider_type,
+                                                                           num_quantiles=cfp_number_quantiles)
         if cfp_time_slider_type == 'off':
             self.website["Configurator's behavior"]["Configurator Footprint"] = {
                     "bokeh" : (script, div)}

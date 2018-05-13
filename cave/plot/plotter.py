@@ -68,7 +68,7 @@ class Plotter(object):
         self.scenario = scenario
         self.train_test = len(self.scenario.train_insts) > 1 and len(self.scenario.test_insts) > 1
         self.output_dir = output_dir
-        self.vizrh = None
+        self.configurator_footprint_rh = None  # Can be initialized from extern
 
     def plot_scatter(self, default, incumbent, runhistory):
         """
@@ -209,8 +209,8 @@ class Plotter(object):
             return output_fn[0]
         return output_fn
 
-    def visualize_configs(self, scen, runhistories, incumbents=None,
-                          max_confs_plot=1000, time_slider='off'):
+    def configurator_footprint(self, scen, runhistories, incumbents=None,
+                               max_confs_plot=1000, time_slider='static', num_quantiles=10):
         """
         Parameters
         ----------
@@ -222,16 +222,34 @@ class Plotter(object):
             incumbents of all runs
         max_confs_plot: int
             # configurations to be plotted
+        time_slider: str
+            one of ["off", "static", "prerender", "online"]
+            prerender and online integrate a slider in the plot,
+            static only renders a number of png's
+            off only provides final interactive plot
+        num_quantiles: int
+            if time_slider is not off, defines the number of quantiles for the
+
+        Returns
+        -------
+        script: str
+            script part of bokeh plot
+        div: str
+            div part of bokeh plot
+        over_time_paths: List[str]
+            list with paths to the different quantiled timesteps of the
+            configurator run (for static evaluation)
         """
 
-        sz = ConfiguratorFootprint(
+        cfp = ConfiguratorFootprint(
                        scenario=scen,
                        runhistories=runhistories,
                        incs=incumbents, max_plot=max_confs_plot,
                        output_dir=self.output_dir,
-                       time_slider=time_slider)
-        r = sz.run()
-        self.vizrh = sz.relevant_rh
+                       time_slider=time_slider,
+                       num_quantiles=num_quantiles)
+        r = cfp.run()
+        self.configurator_footprint_rh = cfp.relevant_rh
         return r
 
     def plot_parallel_coordinates(self, rh, output, params, n_configs, validator):

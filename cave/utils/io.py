@@ -1,3 +1,4 @@
+import os
 import csv
 
 import numpy as np
@@ -8,7 +9,7 @@ from ConfigSpace.hyperparameters import UniformFloatHyperparameter, CategoricalH
 from bokeh.io import export_png
 
 def export_bokeh(plot, path, logger):
-    """Export bokeh-plot to png-file.
+    """Export bokeh-plot to png-file. Create directory if necessary
 
     Parameters
     ----------
@@ -22,7 +23,8 @@ def export_bokeh(plot, path, logger):
     logger.debug("Exporting to %s", path)
     plot.background_fill_color = None
     plot.border_fill_color = None
-    if not os.path.exists(os.path.basename(path))
+    if not os.path.exists(os.path.basename(path)):
+        logger.debug("%s does not exist. Creating...", os.path.basename(path))
         os.makedirs(os.path.basename(path))
     try:
         export_png(plot, filename=path)
