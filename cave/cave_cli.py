@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS
 import logging
 import glob
@@ -63,7 +64,8 @@ class CaveCLI(object):
                               default="INFO",
                               choices=[
                                   "INFO",
-                                  "DEBUG"
+                                  "DEBUG",
+                                  "DEV_DEBUG",
                               ],
                               help="verbose level ")
         opt_opts.add_argument("--validation",
@@ -206,18 +208,33 @@ class CaveCLI(object):
                args_.algorithm_footprints or param_imp or feature_analysis):
             raise Exception('At least one analysis method required to run CAVE')
 
+        output_dir = args_.output
+        # Log to stream (console)
+        logging.getLogger().setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
+        stdout_handler = logging.StreamHandler()
+        stdout_handler.setFormatter(formatter)
         if args_.verbose_level == "INFO":
-            logging.basicConfig(level=logging.INFO)
+            stdout_handler.setLevel(logging.INFO)
         else:
-            logging.basicConfig(level=logging.DEBUG)
-            disable_loggers = ["smac.scenario",
-                               "pimp.epm.unlogged_epar_x_rfwi.UnloggedEPARXrfi",
-                               "PIL.PngImagePlugin",
-                               "selenium.webdriver.remote.remote_connection"]
-            # TODO use different debug-levels
-            for logger in disable_loggers:
-                logging.debug("Setting logger \'%s\' on level INFO", logger)
-                logging.getLogger(logger).setLevel(logging.INFO)
+            stdout_handler.setLevel(logging.DEBUG)
+            if args_.verbose_level == "DEV_DEBUG":
+                # Disable annoying boilerplate-debug-logs from foreign modules
+                disable_loggers = ["smac.scenario",
+                                   "pimp.epm.unlogged_epar_x_rfwi.UnloggedEPARXrfi",
+                                   "PIL.PngImagePlugin",
+                                   "selenium.webdriver.remote.remote_connection"]
+                for logger in disable_loggers:
+                    logging.getLogger().debug("Setting logger \'%s\' on level INFO", logger)
+                    logging.getLogger(logger).setLevel(logging.INFO)
+        logging.getLogger().addHandler(stdout_handler)
+        # Log to file
+        if not os.path.exists(os.path.join(output_dir, "debug")):
+            os.makedirs(os.path.join(output_dir, "debug"))
+        fh = logging.FileHandler(os.path.join(output_dir, "debug/debug.log"), "w")
+        fh.setLevel(logging.DEBUG)
+        fh.setFormatter(formatter)
+        logging.getLogger().addHandler(fh)
 
         # SMAC results
         folders = []
