@@ -212,6 +212,7 @@ class CaveCLI(object):
             logging.basicConfig(level=logging.DEBUG)
             disable_loggers = ["smac.scenario",
                                "pimp.epm.unlogged_epar_x_rfwi.UnloggedEPARXrfi",
+                               "PIL.PngImagePlugin",
                                "selenium.webdriver.remote.remote_connection"]
             # TODO use different debug-levels
             for logger in disable_loggers:

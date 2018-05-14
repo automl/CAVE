@@ -574,7 +574,7 @@ class Analyzer(object):
 
         self.logger.info("    plotting %s parameters for (max) %s configurations",
                          len(params), n_configs)
-        rh = self.original_rh if self.plotter.configurator_footprint_rh is None else self.plotter.configuratior_foortprint_rh
+        rh = self.original_rh if self.plotter.configurator_footprint_rh is None else self.plotter.configurator_footprint_rh
         path = self.plotter.plot_parallel_coordinates(rh, self.output,
                                                       params, n_configs, self.validator)
 

@@ -548,8 +548,7 @@ class ConfiguratorFootprint(object):
                             GroupFilter(column_name='origin', group=o),
                             GroupFilter(column_name='zorder', group=z)]))
                     markers.append(_get_marker(t, o))
-        self.logger.debug("%d different glyph renderers", len(views))
-        self.logger.debug("%d different zorder-values", len(set(source.data['zorder'])))
+        self.logger.debug("%d different glyph renderers, %d different zorder-values", len(views), len(set(source.data['zorder'])))
         return (views, markers)
 
     @timing
@@ -649,7 +648,7 @@ class ConfiguratorFootprint(object):
 
         return source
 
-    def _plot_add_timeslider_online(self, source):
+    def _plot_get_callback_online(self, source):
         """Add an online timeslider. Difference to prerendered timeslider:
         information for all quantiles is already contained in source, callback
         updates the datasoure
@@ -679,7 +678,7 @@ source.change.emit();
         # Create callback
         return CustomJS(args=dict(source=source), code=code)
 
-    def _plot_add_timeslider_prerendered(self, source):
+    def _plot_get_callback_prerender(self, scatter_glyph_render_groups):
         """Add a prerendered timeslider. Difference to online timeslider:
         information for all quantiles is plotted in advance and only the
         relevant source is visible.
@@ -784,7 +783,7 @@ for (i = 0; i < lab_len; i++) {
 
         hp_names = [k.name for k in  # Hyperparameter names
                     conf_list[0].configuration_space.get_hyperparameters()]
-        num_quantiles = configurator_runs[0]
+        num_quantiles = len(configurator_runs[0])
 
         # Get individual sources for quantiles of best run (first in list)
         sources = [self._plot_get_source(conf_list, quantiled_run, X, inc_list, hp_names)
@@ -846,9 +845,9 @@ for (i = 0; i < lab_len; i++) {
             layout = column(p)
         else:
             # Slider below plot
-            if time_slider == 'prerendered':
-                callback = self._plot_get_callback_prerendered(scatter_glyph_render_groups)
-            else:  # if time_slider == 'online':
+            if time_slider == 'prerender':
+                callback = self._plot_get_callback_prerender(scatter_glyph_render_groups)
+            elif time_slider == 'online':
                 callback = self._plot_get_callback_online(sources[-1])
             slider = Slider(start=1, end=num_quantiles,
                             value=num_quantiles, step=1,
