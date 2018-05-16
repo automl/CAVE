@@ -68,7 +68,7 @@ class ConfiguratorFootprint(object):
     def __init__(self, scenario: Scenario,
                  runhistories: typing.List[RunHistory],
                  incs: list=None,
-                 max_plot: int=10000,
+                 max_plot: int=5000,
                  contour_step_size=0.2,
                  output_dir: str=None,
                  time_slider: str='off',
@@ -136,7 +136,6 @@ class ConfiguratorFootprint(object):
         """
         Uses available Configurator-data to perform a MDS, estimate performance
         data and plot the configurator footprint.
-
         """
 
         self.get_conf_matrix()
@@ -145,7 +144,7 @@ class ConfiguratorFootprint(object):
         red_dists = self.get_mds(dists)
 
         contour_data = self.get_pred_surface(
-                X_scaled=red_dists, conf_list=self.conf_list[:])
+                X_scaled=red_dists, conf_list=copy.deepcopy(self.conf_list))
 
         inc_list = self.incs
 
@@ -153,6 +152,7 @@ class ConfiguratorFootprint(object):
                          inc_list=inc_list, contour_data=contour_data,
                          time_slider=self.time_slider)
 
+    @timing
     def get_pred_surface(self, X_scaled, conf_list: list):
         """fit epm on the scaled input dimension and
         return data to plot a contour plot
@@ -320,6 +320,7 @@ class ConfiguratorFootprint(object):
                 else:
                     return d
 
+    @timing
     def get_mds(self, dists):
         """
         Compute multi-dimensional scaling (using sklearn MDS) -- nonlinear scaling
@@ -339,6 +340,7 @@ class ConfiguratorFootprint(object):
             n_components=2, dissimilarity="precomputed", random_state=12345)
         return mds.fit_transform(dists)
 
+    @timing
     def get_conf_matrix(self):
         """
         Iterates through runhistories to get a matrix of configurations (in
@@ -367,6 +369,7 @@ class ConfiguratorFootprint(object):
                 self.conf_matrix.append(inc.get_array())
                 self.conf_list.append(inc)
 
+
         # Get total runs per config per rh
         for rh in self.runhistories:
             # We want to visualize the development over time, so we take
@@ -375,6 +378,18 @@ class ConfiguratorFootprint(object):
             #   is full history!!
             r_p_q_p_c = self._get_runs_per_config_quantiled(rh, quantiles=self.num_quantiles)
             self.runs_per_rh.append(np.array(r_p_q_p_c))
+
+        # What configs to plot
+        default = self.scenario.cs.get_default_configuration()
+        self.logger.debug("Reducing number of configs from %d to %d, dropping from the fewest evaluations", len(self.conf_list), self.max_plot)
+        keep_always = [self.conf_list.index(c) for c in self.incs + [default] if c in self.conf_list]  # Always plot default and incumbents
+        keep_indices = sorted(range(len(self.runs_per_rh[0][-1])), key=lambda x: self.runs_per_rh[0][-1][x])[-self.max_plot:]
+        keep_indices = list(set(keep_always + keep_indices))
+        self.conf_list = np.array(self.conf_list)[keep_indices]
+        self.conf_matrix = np.array(self.conf_matrix)[keep_indices]
+        self.runs_per_rh = [[np.array(r_p_c)[keep_indices] for r_p_c in r_p_q_p_c]
+                            for r_p_q_p_c in self.runs_per_rh]
+
         # Get minimum and maximum for sizes of dots
         self.min_runs_per_conf = min([i for i in self.runs_per_rh[0][-1] if i > 0])
         self.max_runs_per_conf = max(self.runs_per_rh[0][-1])
@@ -781,13 +796,15 @@ for (i = 0; i < lab_len; i++) {
             inc_list = []
         over_time_paths = []  # developement of the search space over time
 
+        best_run = configurator_runs[0]
+
         hp_names = [k.name for k in  # Hyperparameter names
                     conf_list[0].configuration_space.get_hyperparameters()]
-        num_quantiles = len(configurator_runs[0])
+        num_quantiles = len(best_run)
 
         # Get individual sources for quantiles of best run (first in list)
         sources = [self._plot_get_source(conf_list, quantiled_run, X, inc_list, hp_names)
-                   for quantiled_run in configurator_runs[0]]
+                   for quantiled_run in best_run]
 
         # Define what appears in tooltips
         # TODO add only important parameters (needs to change order of exec pimp before conf-footprints)
@@ -808,7 +825,7 @@ for (i = 0; i < lab_len; i++) {
         # If timeslider should update the data online, we need to add
         # information about each quantile to the "base"-source
         if time_slider == 'online':
-            for idx, q in enumerate(configurator_runs[0]):
+            for idx, q in enumerate(best_run):
                 sources[-1].add(q, 'runs' + str(idx))
                 sizes = [s * 3 if sources[-1].data['type'][idx] == "Default" else s for idx, s
                          in enumerate(self._get_size(q))]

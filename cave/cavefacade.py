@@ -360,7 +360,8 @@ class CAVE(object):
         incumbents = list(map(lambda x: x['incumbent'], trajectories[0]))
         assert(incumbents[-1] == trajectories[0][-1]['incumbent'])
 
-        script, div, cfp_paths = self.analyzer.plot_configurator_footprint(incumbents, runhistories, max_confs=5000,
+        script, div, cfp_paths = self.analyzer.plot_configurator_footprint(incumbents, runhistories,
+                                                                           max_confs=1500,
                                                                            time_slider=cfp_time_slider_type,
                                                                            num_quantiles=cfp_number_quantiles)
         if cfp_time_slider_type == 'off':
