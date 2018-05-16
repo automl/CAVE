@@ -828,9 +828,8 @@ for (i = 0; i < lab_len; i++) {
         for idx, source in enumerate(sources):
             if idx == len(sources) - 1:  # final view on original plot!!
                 p_quantiles = p
-            else:  # skip all others if slider is off
-                if time_slider == 'off':
-                    continue
+            elif time_slider == 'off':  # skip all others if slider is off
+                continue
             views, markers = self._plot_create_views(source)
             self.logger.debug("Plotting quantile %d!", idx)
             scatter_glyph_render_groups.append(self._plot_scatter(p_quantiles, source, views, markers))
@@ -838,7 +837,6 @@ for (i = 0; i < lab_len; i++) {
                 file_path = "content/images/cfp_over_time/configurator_footprint" + str(idx) + ".png"
                 over_time_paths.append(os.path.join(self.output_dir, file_path))
                 self.logger.debug("Saving plot to %s", over_time_paths[-1])
-                over_time_paths.append(over_time_paths[-1])
                 export_bokeh(p_quantiles, over_time_paths[-1], self.logger)
 
         if time_slider in ['off', 'static']:

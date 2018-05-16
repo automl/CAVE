@@ -20,10 +20,10 @@ def export_bokeh(plot, path, logger):
     logger: Logger
         logger for debugging
     """
-    logger.debug("Exporting to %s", path)
+    base = os.path.split(path)[0]
+    logger.debug("Exporting to %s (base: %s)", path, base)
     plot.background_fill_color = None
     plot.border_fill_color = None
-    base = os.path.split(path)[0]
     if not os.path.exists(base):
         logger.debug("%s does not exist. Creating...", base)
         os.makedirs(base)
