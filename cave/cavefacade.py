@@ -371,8 +371,15 @@ class CAVE(object):
             self.website["Configurator's behavior"]["Configurator Footprint"] = {}
             self.website["Configurator's behavior"]["Configurator Footprint"]["Interactive"] = {
                     "bokeh" : (script, div)}
-            self.website["Configurator's behavior"]["Configurator Footprint"]["Static"] = {
-                    "figure" : cfp_paths}
+            if [True for p in cfp_paths if os.path.exists(p)]:  # If the plots were actually generated
+                self.website["Configurator's behavior"]["Configurator Footprint"]["Static"] = {
+                        "figure" : cfp_paths}
+            else:
+                self.website["Configurator's behavior"]["Configurator Footprint"]["Static"] = {
+                        "else" : "This plot is missing. Maybe it was not generated? "
+                                 "Check if you installed selenium and phantomjs "
+                                 "correctly to activate bokeh-exports. "
+                                 "(https://automl.github.io/CAVE/stable/faq.html)"}
 
         self.build_website()
 

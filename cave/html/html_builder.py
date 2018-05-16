@@ -241,6 +241,8 @@ for (i = 0; i < acc.length; i++) {
                     fn.write(js_code)
                 script += "<script src=\"" + path_script + "\"></script>\n"
                 div += "<div align=\"center\">\n{}\n</div>\n".format(v[1])
+            else:
+                div += v
 
         div += "</div>"
         return script, div
