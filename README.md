@@ -24,12 +24,18 @@ CAVE generates performance-values (e.g. PAR10), scatter- and cdf-plots to compar
 - SMAC3 and all its dependencies
 - ParameterImportance and all its dependencies
 - everything specified in requirements.txt
+Some of the plots in the report are generated using [bokeh](https://bokeh.pydata.org/en/latest/). To automagically export them as `.png`s, you need to also install [phantomjs-prebuilt](https://www.npmjs.com/package/phantomjs-prebuilt). CAVE will run without it, but you will need to manually export the plots if you wish to use them.
+- phatomjs-prebuilt
 
 # INSTALLATION
 Clone the repository and install requirements into your virtual environment.
 ```
 git clone https://github.com/automl/CAVE.git && cd CAVE
 pip install -r requirements.txt
+```
+To have some `.png`s automatically available, you also need phantomjs.
+```
+npm install phantomjs-prebuilt
 ```
 
 # USAGE
@@ -54,10 +60,14 @@ Optional:
 - `--feat_analysis`: analysis features is expensive, so you can specify which
   algorithm to run: `box_violin`, `clustering`, `importance` and/or `feature_cdf`.
   either provide a combination of those or use `all` or `none`
-- `--cost_over_time`: 'true' or 'false', toggles the cost-over-time plot
-- `--parallel_coordinates`: 'true' or 'false', toggles the parallel-coordinates plot
-- `--confviz`: 'true' or 'false', toggles the configurator-footprints
-- `--algorithm_footprints`: 'true' or 'false', toggles the algorithm-footprints
+- `--no_tabular_analysis`: toggles the tabular analysis
+- `--no_ecdf`, `--no_scatter_plots`: toggle ecdf- and scatter-plots
+- `--no_cost_over_time`: toggles the cost-over-time plot
+- `--no_parallel_coordinates`: toggles the parallel-coordinates plot
+- `--no_conf_foot`: toggles the configurator-footprints
+- `--no_algorithm_footprints`: toggles the algorithm-footprints
+- `--cfp_time_slider`: how to display the over-time development of the configurator footprint, choose from `off` (which yields only the final interactive plot), `static` (which yields a number of `.png`s to click through), `online` (which generates a time-slider-widget - might be slow interaction on big data) and `prerender` (which also generates time-slider, but large file with low interaction time)
+- `--cfp_number_quantiles`: if time-slider for configurator footprints is not `off`, determines the number of different quantiles to look at
 
 For further information on how to use CAVE, see:
 `python scripts/cave.py -h`
@@ -65,8 +75,8 @@ For further information on how to use CAVE, see:
 # EXAMPLE
 You can run the spear-qcp example like this:
 ```
-python scripts/cave.py --folders examples/smac3/example_output/* --verbose DEBUG --ta_exec examples/smac3/ --out CAVE_results/
+python scripts/cave.py --folders examples/smac3/example_output/* --verbose DEBUG --ta_exec examples/smac3/ --output CAVE_results/
 ```
 This will analyze the results located in `examples/smac3` in the dirs `example_output/run_1` and `example_output/run_2`.
 The report is located in `CAVE_results/report.html`.
-`--ta_exec` corresponds to the from which the optimizer was originally executed.
+`--ta_exec` corresponds to the folder from which the optimizer was originally executed (used to find the necessary files for loading the `scenario`).
