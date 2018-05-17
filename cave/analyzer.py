@@ -183,13 +183,15 @@ class Analyzer(object):
         else:
             return np.mean([c for i, c in runs])
 
+    @timing
     def _permutation_test(self, default, incumbent, num_permutations, par=1):
         cutoff = self.scenario.cutoff
         def_cost = get_cost_dict_for_config(self.validated_rh, default, par=par, cutoff=cutoff)
         inc_cost = get_cost_dict_for_config(self.validated_rh, incumbent, par=par, cutoff=cutoff)
         data1, data2 = zip(*[(def_cost[i], inc_cost[i]) for i in def_cost.keys()])
-        p = paired_permutation(data1, data2, self.rng, logger=self.logger)
-        self.logger.debug("p-value for def/inc-difference: %f (permutation test)", p)
+        p = paired_permutation(data1, data2, self.rng, num_permutations=num_permutations, logger=self.logger)
+        self.logger.debug("p-value for def/inc-difference: %f (permutation test "
+                          "with %d permutations and par %d)", p, num_permutations, par)
         return p
 
     def _paired_t_test(self, default, incumbent, num_permutations):
@@ -225,8 +227,6 @@ class Analyzer(object):
         num_feats = self.scenario.n_features
         dup_feats = DataFrame(self.scenario.feature_array)  # only contains train instances
         num_dup_feats = len(dup_feats[dup_feats.duplicated()])
-        p_value_perm = "%.5f" % self._permutation_test(self.default, self.incumbent, 10000)
-        p_value_t = "%.5f" % self._paired_t_test(self.default, self.incumbent, 10000)
         overview = OrderedDict([('Run with best incumbent', os.path.basename(best_folder)),
                                 # Constants for scenario
                                 ('# Train instances', len(self.scenario.train_insts)),
@@ -239,8 +239,6 @@ class Analyzer(object):
                                 ('# Default evaluations', ta_evals_d),
                                 ('# Incumbent evaluations', ta_evals_i),
                                 ('Budget spent evaluating configurations', ta_runtime),
-                                ('p-value of paired permutation test', p_value_perm),
-                                ('p-value of paired t-test', p_value_t),
                                 ('Cutoff', self.scenario.cutoff),
                                 ('Walltime budget', self.scenario.wallclock_limit),
                                 ('Runcount budget', self.scenario.ta_run_limit),
@@ -252,8 +250,6 @@ class Analyzer(object):
                                 ('# Runs per Config (mean)', mean_ta_evals),
                                 ('# Runs per Config (max)', max_ta_evals),
                                 ('Total number of configuration runs', ta_evals),
-                                ('empty4', 'empty4'),
-                                ('empty5', 'empty5'),
                                ])
         # Split into two columns
         overview_split = self._split_table(overview)
@@ -279,7 +275,7 @@ class Analyzer(object):
         def_timeouts = {k : int(b) for k, b in get_timeout(self.validated_rh, default, self.scenario.cutoff).items()}
         inc_timeouts = {k : int(b) for k, b in get_timeout(self.validated_rh, incumbent, self.scenario.cutoff).items()}
         data1, data2 = zip(*[(def_timeouts[i], inc_timeouts[i]) for i in def_timeouts.keys()])
-        p_value_timeouts = "%.5f" % paired_permutation(data1, data2, self.rng, logger=self.logger)
+        p_value_timeouts = "%.5f" % paired_permutation(data1, data2, self.rng, num_permutations=10000, logger=self.logger)
 
         dec_place = 3
         if self.train_test:
