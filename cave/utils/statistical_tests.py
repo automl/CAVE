@@ -1,7 +1,6 @@
 from scipy.stats import ttest_rel
 
-def paired_permutation(data1, data2, rng,
-        num_permutations=10000, logger=None):
+def paired_permutation(data1, data2, rng, num_permutations=10000, logger=None):
     """Test for significance using paired permutation.
 
     Parameters:
@@ -12,6 +11,8 @@ def paired_permutation(data1, data2, rng,
         random number generator
     num_permutations: int
         number of permutations performed
+    logger: Logger
+        logger-instance write debugs to
 
     Returns:
     --------
