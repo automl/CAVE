@@ -68,10 +68,10 @@ class ConfiguratorFootprint(object):
     def __init__(self, scenario: Scenario,
                  runhistory: RunHistory,
                  incs: list=None,
-                 max_plot: int=5000,
+                 max_plot: int=-1,
                  contour_step_size=0.2,
                  output_dir: str=None,
-                 time_slider: str='off',
+                 time_slider: bool=False,
                  num_quantiles: int=10,
                  ):
         '''
@@ -86,24 +86,21 @@ class ConfiguratorFootprint(object):
         incs: list
             incumbents of best configurator run, last entry is final incumbent
         max_plot: int
-            maximum number of configs to plot
+            maximum number of configs to plot, if -1 plot all
         contour_step_size: float
             step size of meshgrid to compute contour of fitness landscape
         output_dir: str
             output directory
-        time_slider: str
-            one of ["off", "static", "prerender", "online"]
-            prerender and online integrate a slider in the plot,
-            static only renders a number of png's
-            off only provides final interactive plot
+        time_slider: bool
+            whether or not to have a time_slider-widget on cfp-plot
+            INCREASES FILE-SIZE DRAMATICALLY
         num_quantiles: int
-            if time_slider is not off, defines the number of quantiles for the
-            slider/ number of static pictures
+            number of quantiles for the slider/ number of static pictures
         '''
         self.logger = logging.getLogger(
             self.__module__ + '.' + self.__class__.__name__)
 
-        self.scenario = copy.deepcopy(scenario)  # pca changes feats
+        self.scenario = scenario
         self.rh = runhistory
         # runs_per_quantile holds a list for every quantile
         # of configuration-evaluations in the order of `conf-list`
@@ -162,19 +159,20 @@ class ConfiguratorFootprint(object):
         """
 
         # use PCA to reduce features to also at most 2 dims
-        n_feats = self.scenario.feature_array.shape[1]
+        pca_scenario = copy.deepcopy(self.scenario)  # pca changes feats
+        n_feats = pca_scenario.feature_array.shape[1]
         if n_feats > 2:
-            self.logger.debug("Use PCA to reduce features to 2dim")
-            insts = self.scenario.feature_dict.keys()
-            feature_array = np.array([self.scenario.feature_dict[inst] for inst in insts])
+            self.logger.debug("Use PCA to reduce features to from %ddim to 2dim", n_feats)
+            insts = pca_scenario.feature_dict.keys()
+            feature_array = np.array([pca_scenario.feature_dict[inst] for inst in insts])
             ss = StandardScaler()
-            self.scenario.feature_array = ss.fit_transform(feature_array)
+            pca_scenario.feature_array = ss.fit_transform(feature_array)
             pca = PCA(n_components=2)
             feature_array = pca.fit_transform(feature_array)
             n_feats = feature_array.shape[1]
-            self.scenario.feature_array = feature_array
-            self.scenario.feature_dict = dict([(inst, feature_array[idx,:]) for idx, inst in enumerate(insts)])
-            self.scenario.n_features = 2
+            pca_scenario.feature_array = feature_array
+            pca_scenario.feature_dict = dict([(inst, feature_array[idx,:]) for idx, inst in enumerate(insts)])
+            pca_scenario.n_features = 2
 
         self.logger.debug("Create new rh with relevant configs")
         new_rh = RunHistory(average_cost)
@@ -185,16 +183,15 @@ class ConfiguratorFootprint(object):
                 cost, time, status, additional_info = value
                 new_rh.add(config, cost, time, status, instance_id=instance,
                            seed=seed, additional_info=additional_info)
-        self.relevant_rh = new_rh
 
         self.logger.debug("Convert data for epm.")
-        X, y, types = convert_data_for_epm(scenario=self.scenario,
+        X, y, types = convert_data_for_epm(scenario=pca_scenario,
                                            runhistory=new_rh,
                                            logger=self.logger)
 
         types = np.array(np.zeros((2+n_feats)), dtype=np.uint)
 
-        num_params = len(self.scenario.cs.get_hyperparameters())
+        num_params = len(pca_scenario.cs.get_hyperparameters())
 
         # impute missing values in configs
         conf_dict = {}
@@ -213,7 +210,7 @@ class ConfiguratorFootprint(object):
         self.logger.debug("Train random forest for contour-plot.")
         bounds = np.array([(0, np.nan), (0, np.nan)], dtype=object)
         model = RandomForestWithInstances(types=types, bounds=bounds,
-                                          instance_features=np.array(self.scenario.feature_array),
+                                          instance_features=np.array(pca_scenario.feature_array),
                                           ratio_features=1.0)
 
         model.train(X_trans, y)
@@ -230,8 +227,7 @@ class ConfiguratorFootprint(object):
         self.logger.debug("x_min: %f, x_max: %f, y_min: %f, y_max: %f" %(x_min, x_max, y_min, y_max))
 
         self.logger.debug("Predict on %d samples in grid to get surface" %(np.c_[xx.ravel(), yy.ravel()].shape[0]))
-        Z, _ = model.predict_marginalized_over_instances(
-            np.c_[xx.ravel(), yy.ravel()])
+        Z, _ = model.predict_marginalized_over_instances(np.c_[xx.ravel(), yy.ravel()])
 
         Z = Z.reshape(xx.shape)
 
@@ -266,8 +262,11 @@ class ConfiguratorFootprint(object):
             else:
                 is_cat.append(False)
             depth.append(self.get_depth(cs, param))
+        self.logger.debug("Determine is_cat...")
         is_cat = np.array(is_cat)
+        self.logger.debug("... done. Determine depth...")
         depth = np.array(depth)
+        self.logger.debug("... done.")
 
         for i in range(n_confs):
             for j in range(i + 1, n_confs):
@@ -648,37 +647,7 @@ class ConfiguratorFootprint(object):
 
         return source
 
-    def _plot_get_callback_online(self, source):
-        """Add an online timeslider. Difference to prerendered timeslider:
-        information for all quantiles is already contained in source, callback
-        updates the datasoure
-
-        +: smaller files, that are quicker to load in browser
-        -: updating data-source may take a long time
-
-        Parameters
-        ----------
-        source: ColumnDataSource
-            source contains runs1, runs2, runs3, ... and size1, size2, ... for
-            the corresponding quantiles
-
-        Returns
-        -------
-        time_slider: bokeh-Slider
-            slider-widget, ready to register with plot
-        """
-        self.logger.debug("Create online time-slider!")
-        code = """
-var data = source.data;
-var time = cb_obj.value;
-data['runs'] = data['runs'+(time-1).toString()]
-data['size'] = data['size'+(time-1).toString()]
-source.change.emit();
-"""
-        # Create callback
-        return CustomJS(args=dict(source=source), code=code)
-
-    def _plot_get_callback_prerender(self, scatter_glyph_render_groups):
+    def _plot_get_timeslider(self, scatter_glyph_render_groups):
         """Add a prerendered timeslider. Difference to online timeslider:
         information for all quantiles is plotted in advance and only the
         relevant source is visible.
@@ -735,8 +704,12 @@ for (i = 0; i < lab_len; i++) {
 }
 """
         callback = CustomJS(args=args, code=code)
+        num_quantiles = len(scatter_glyph_render_groups)
+        slider = Slider(start=1, end=num_quantiles,
+                        value=num_quantiles, step=1,
+                        callback=callback, title='Time')
 
-        return callback
+        return slider
 
     def plot(self, X, conf_list: list, configurator_run,
              inc_list: list=None, contour_data=None, time_slider="off"):
@@ -758,12 +731,9 @@ for (i = 0; i < lab_len; i++) {
             list of incumbents (Configuration)
         contour_data: list
             contour data (xx,yy,Z)
-        time_slider: str
-            option to toggle how to implement time_slider.
-            choose from: [off, prerender, online]
-            where prerender creates a large file that might take some time to
-            load and online creates a smaller file with long plot-updating times
-            for large data
+        time_slider: bool
+            whether or not to have a time_slider-widget on cfp-plot
+            INCREASES FILE-SIZE DRAMATICALLY
 
         Returns
         -------
@@ -775,11 +745,9 @@ for (i = 0; i < lab_len; i++) {
             list with paths to the different quantiled timesteps of the
             configurator run (for static evaluation)
         """
-        if not time_slider in ['off', 'prerender', 'online', 'static']:
-            raise ValueError("time_slider has to be one of ['off', 'prerender', 'online', 'static']")
         if not inc_list:
             inc_list = []
-        over_time_paths = []  # developement of the search space over time
+        over_time_paths = []  # development of the search space over time
 
         best_run = configurator_run
 
@@ -807,19 +775,10 @@ for (i = 0; i < lab_len; i++) {
            p = self._plot_contour(p, contour_data, x_range, y_range)
         scatter_glyph_render_groups = []
 
-        # If timeslider should update the data online, we need to add
-        # information about each quantile to the "base"-source
-        if time_slider == 'online':
-            for idx, q in enumerate(best_run):
-                sources[-1].add(q, 'runs' + str(idx))
-                sizes = [s * 3 if sources[-1].data['type'][idx] == "Default" else s for idx, s
-                         in enumerate(self._get_size(q))]
-                sources[-1].add(sizes, 'size' + str(idx))
-
-        # If time_slider is not prerender, we don't want all the sources in
+        # If time_slider is off, we don't want all the sources in
         # the plot -> in that case we create a new plot for the individual
         # quantile-png-exports.
-        if not (time_slider == 'prerender'):
+        if not time_slider:
             p_quantiles = figure(plot_height=500, plot_width=600,
                                  tools=[hover], x_range=x_range, y_range=y_range)
             if contour_data is not None:
@@ -830,8 +789,6 @@ for (i = 0; i < lab_len; i++) {
         for idx, source in enumerate(sources):
             if idx == len(sources) - 1:  # final view on original plot!!
                 p_quantiles = p
-            elif time_slider == 'off':  # skip all others if slider is off
-                continue
             views, markers = self._plot_create_views(source)
             self.logger.debug("Plotting quantile %d!", idx)
             scatter_glyph_render_groups.append(self._plot_scatter(p_quantiles, source, views, markers))
@@ -841,18 +798,13 @@ for (i = 0; i < lab_len; i++) {
                 self.logger.debug("Saving plot to %s", over_time_paths[-1])
                 export_bokeh(p_quantiles, over_time_paths[-1], self.logger)
 
-        if time_slider in ['off', 'static']:
-            layout = column(p)
-        else:
-            # Slider below plot
-            if time_slider == 'prerender':
-                callback = self._plot_get_callback_prerender(scatter_glyph_render_groups)
-            elif time_slider == 'online':
-                callback = self._plot_get_callback_online(sources[-1])
-            slider = Slider(start=1, end=num_quantiles,
-                            value=num_quantiles, step=1,
-                            callback=callback, title='Time')
+        if time_slider:
+            self.logger.debug("Adding timeslider")
+            slider = self._plot_get_timeslider(scatter_glyph_render_groups)
             layout = column(p, widgetbox(slider))
+        else:
+            self.logger.debug("Not adding timeslider")
+            layout = column(p)
 
         script, div = components(layout)
 

@@ -592,7 +592,7 @@ class Analyzer(object):
 
     @timing
     def plot_configurator_footprint(self, incumbents, runhistories, max_confs=1000,
-                                     time_slider='static', num_quantiles=10):
+                                     time_slider=False, num_quantiles=10):
         """Plot the visualization of configurations, highlighting the
         incumbents. Using original rh, so the explored configspace can be
         estimated.
@@ -605,11 +605,9 @@ class Analyzer(object):
             list of runhistories, so they can be marked in plot
         max_confs: int
             maximum number of data-points to plot
-        time_slider: str
-            one of ["off", "static", "prerender", "online"]
-            prerender and online integrate a slider in the plot,
-            static only renders a number of png's
-            off only provides final interactive plot
+        time_slider: bool
+            whether or not to have a time_slider-widget on cfp-plot
+            INCREASES FILE-SIZE DRAMATICALLY
         num_quantiles: int
             if time_slider is not off, defines the number of quantiles for the
             slider/ number of static pictures

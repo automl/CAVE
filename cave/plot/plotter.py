@@ -210,7 +210,7 @@ class Plotter(object):
         return output_fn
 
     def configurator_footprint(self, scen, runhistories, incumbents=None,
-                               max_confs_plot=1000, time_slider='static', num_quantiles=10):
+                               max_confs_plot=1000, time_slider=False, num_quantiles=10):
         """
         Parameters
         ----------
@@ -222,11 +222,9 @@ class Plotter(object):
             incumbents of all runs
         max_confs_plot: int
             # configurations to be plotted
-        time_slider: str
-            one of ["off", "static", "prerender", "online"]
-            prerender and online integrate a slider in the plot,
-            static only renders a number of png's
-            off only provides final interactive plot
+        time_slider: bool
+            whether or not to have a time_slider-widget on cfp-plot
+            INCREASES FILE-SIZE DRAMATICALLY
         num_quantiles: int
             if time_slider is not off, defines the number of quantiles for the
 
@@ -249,7 +247,6 @@ class Plotter(object):
                        time_slider=time_slider,
                        num_quantiles=num_quantiles)
         r = cfp.run()
-        self.configurator_footprint_rh = cfp.relevant_rh
         return r
 
     def plot_parallel_coordinates(self, rh, output, params, n_configs, validator):

@@ -123,13 +123,11 @@ class CaveCLI(object):
                                                                                                  "all/none",
                               choices=f_choices,
                               type=str.lower)
-        opt_opts.add_argument("--cfp_time_slider_type",
-                              help="prerender leads to long loading times and "
-                                   "short interaction, online means shorter loading, "
-                                   "but longer interaction and static only "
-                                   "generates the figures beforehand as .png's.",
-                              default='static',
-                              choices=['off', 'static', 'prerender', 'online'])
+        opt_opts.add_argument("--cfp_time_slider",
+                              help="whether or not to have a time_slider-widget on cfp-plot"
+                                   "INCREASES FILE-SIZE (and loading) DRAMATICALLY",
+                              choices=["on", "off"],
+                              default="off")
         opt_opts.add_argument("--cfp_number_quantiles",
                               help="number of quantiles if configurator "
                                    "footprint is plotted over time",
@@ -203,6 +201,8 @@ class CaveCLI(object):
         else:
             feature_analysis = args_.feat_analysis
 
+        cfp_time_slider = True if args_.cfp_time_slider == "on" else False
+
         if not(args_.tabular_analysis or args_.ecdf or args_.scatter_plots or args_.confviz or
                args_.parallel_coordinates or args_.parallel_coordinates or args_.cost_over_time or
                args_.algorithm_footprints or param_imp or feature_analysis):
@@ -259,7 +259,7 @@ class CaveCLI(object):
                      cdf=args_.ecdf,
                      scatter=args_.scatter_plots,
                      confviz=args_.confviz,
-                     cfp_time_slider_type=args_.cfp_time_slider_type,
+                     cfp_time_slider=cfp_time_slider,
                      cfp_number_quantiles=args_.cfp_number_quantiles,
                      parallel_coordinates=args_.parallel_coordinates,
                      cost_over_time=args_.cost_over_time,

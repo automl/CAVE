@@ -248,7 +248,7 @@ class CAVE(object):
     @timing
     def analyze(self,
                 performance=True, cdf=True, scatter=True, confviz=True,
-                cfp_time_slider_type='off', cfp_number_quantiles=10,
+                cfp_time_slider=False, cfp_number_quantiles=10,
                 param_importance=['forward_selection', 'ablation', 'fanova'],
                 feature_analysis=["box_violin", "correlation",
                     "feat_importance", "clustering", "feature_cdf"],
@@ -362,18 +362,15 @@ class CAVE(object):
 
         script, div, cfp_paths = self.analyzer.plot_configurator_footprint(incumbents, runhistories,
                                                                            max_confs=1500,
-                                                                           time_slider=cfp_time_slider_type,
+                                                                           time_slider=cfp_time_slider,
                                                                            num_quantiles=cfp_number_quantiles)
-        if cfp_time_slider_type == 'off':
-            self.website["Configurator's behavior"]["Configurator Footprint"] = {
-                    "bokeh" : (script, div)}
+        if cfp_number_quantiles == 1:  # Only one plot, no need for "Static"-field
+            self.website["Configurator's behavior"]["Configurator Footprint"] = {"bokeh" : (script, div)}
         else:
             self.website["Configurator's behavior"]["Configurator Footprint"] = {}
-            self.website["Configurator's behavior"]["Configurator Footprint"]["Interactive"] = {
-                    "bokeh" : (script, div)}
+            self.website["Configurator's behavior"]["Configurator Footprint"]["Interactive"] = {"bokeh" : (script, div)}
             if [True for p in cfp_paths if os.path.exists(p)]:  # If the plots were actually generated
-                self.website["Configurator's behavior"]["Configurator Footprint"]["Static"] = {
-                        "figure" : cfp_paths}
+                self.website["Configurator's behavior"]["Configurator Footprint"]["Static"] = {"figure" : cfp_paths}
             else:
                 self.website["Configurator's behavior"]["Configurator Footprint"]["Static"] = {
                         "else" : "This plot is missing. Maybe it was not generated? "
