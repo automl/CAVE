@@ -243,7 +243,7 @@ class Plotter(object):
 
         cfp = ConfiguratorFootprint(
                        scenario=scen,
-                       runhistories=runhistories,
+                       runhistory=runhistories[0],
                        incs=incumbents, max_plot=max_confs_plot,
                        output_dir=self.output_dir,
                        time_slider=time_slider,

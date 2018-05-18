@@ -66,7 +66,7 @@ from cave.utils.io import export_bokeh
 class ConfiguratorFootprint(object):
 
     def __init__(self, scenario: Scenario,
-                 runhistories: typing.List[RunHistory],
+                 runhistory: RunHistory,
                  incs: list=None,
                  max_plot: int=5000,
                  contour_step_size=0.2,
@@ -81,8 +81,8 @@ class ConfiguratorFootprint(object):
         ----------
         scenario: Scenario
             scenario
-        runhistories: List[RunHistory]
-            runhistories from configurator runs - first one assumed to be best
+        runhistory: List[RunHistory]
+            runhistory from configurator runs
         incs: list
             incumbents of best configurator run, last entry is final incumbent
         max_plot: int
@@ -104,33 +104,24 @@ class ConfiguratorFootprint(object):
             self.__module__ + '.' + self.__class__.__name__)
 
         self.scenario = copy.deepcopy(scenario)  # pca changes feats
-        self.runhistories = runhistories
-        # runs_per_rh holds a list for every rh in the order of self.runhistores
-        # each list holds a list in turn with the number of
-        #   configuration-evaluations in the order of conf-list
-        #   for that rh after the fraction of total runs in that
-        #   runhistory that corresponds to the index of the inner list, so for
-        #   two runhistories with three configs and four quantiles thats:
-        #     [
-        #      # runhistory 1
-        #      [[1, 2, 1], [3, 5, 2], [5, 6, 7], [9, 9, 8]],
-        #      # runhistory 2
-        #      [[2, 5, 10], [4, 6, 13], [7, 8, 14], [9, 9, 14]],
-        #     ]
+        self.rh = runhistory
+        # runs_per_quantile holds a list for every quantile
+        # of configuration-evaluations in the order of `conf-list`
+        # so three configs and four quantiles thats:
+        #   [[1, 2, 1], [3, 5, 2], [5, 6, 7], [9, 9, 8]]
         #   so to access the full # runs for the best configurator-run, just
-        #   go for self.runs_per_rh[0][-1]
-        self.runs_per_rh = []
+        #   go for self.runs_per_quantile[-1]
+        self.runs_per_quantile = []
         self.conf_list = []
         self.conf_matrix = []
         self.incs = incs
-        self.max_plot = max_plot  # TODO why is this not implemented?
-        self.max_rhs_to_plot = 1  # Maximum number of runhistories 2 b plotted
+        self.max_plot = max_plot
         self.time_slider = time_slider
 
         self.num_quantiles = num_quantiles
 
         self.contour_step_size = contour_step_size
-        self.output_dir = output_dir if output_dir else None
+        self.output_dir = output_dir
 
     def run(self):
         """
@@ -148,7 +139,7 @@ class ConfiguratorFootprint(object):
 
         inc_list = self.incs
 
-        return self.plot(red_dists, self.conf_list, self.runs_per_rh,
+        return self.plot(red_dists, self.conf_list, self.runs_per_quantile,
                          inc_list=inc_list, contour_data=contour_data,
                          time_slider=self.time_slider)
 
@@ -187,14 +178,13 @@ class ConfiguratorFootprint(object):
 
         self.logger.debug("Create new rh with relevant configs")
         new_rh = RunHistory(average_cost)
-        for rh in self.runhistories:
-            for key, value in rh.data.items():
-                config = rh.ids_config[key.config_id]
-                if config in conf_list:
-                    config_id, instance, seed = key
-                    cost, time, status, additional_info = value
-                    new_rh.add(config, cost, time, status, instance_id=instance,
-                               seed=seed, additional_info=additional_info)
+        for key, value in self.rh.data.items():
+            config = self.rh.ids_config[key.config_id]
+            if config in conf_list:
+                config_id, instance, seed = key
+                cost, time, status, additional_info = value
+                new_rh.add(config, cost, time, status, instance_id=instance,
+                           seed=seed, additional_info=additional_info)
         self.relevant_rh = new_rh
 
         self.logger.debug("Convert data for epm.")
@@ -335,15 +325,14 @@ class ConfiguratorFootprint(object):
         np.array
             scaled coordinates in 2-dim room
         """
-
-        mds = MDS(
-            n_components=2, dissimilarity="precomputed", random_state=12345)
+        # TODO n_jobs?
+        mds = MDS(n_components=2, dissimilarity="precomputed", random_state=12345)
         return mds.fit_transform(dists)
 
     @timing
     def get_conf_matrix(self):
         """
-        Iterates through runhistories to get a matrix of configurations (in
+        Iterates through runhistory to get a matrix of configurations (in
         vector representation), a list of configurations and the number of
         runs per configuration in a quantiled manner.
 
@@ -351,52 +340,48 @@ class ConfiguratorFootprint(object):
         conf_matrix: np.array
             matrix of configurations in vector representation
         conf_list: list
-            list of all Configuration objects that appeared in any runhistory
+            list of all Configuration objects that appeared in runhistory
             the order of this list is used to determine all kinds of properties
-            in the plotting
+            in the plotting (but is arbitrarily determined)
         runs_per_conf: np.array
             one-dim numpy array of runs per configuration
-            FOR BEST RUNHISTORY ONLY
         """
         # Get all configurations. Index of c in conf_list serves as identifier
-        for rh in self.runhistories:
-            for c in rh.get_all_configs():
-                if not c in self.conf_list:
-                    self.conf_matrix.append(c.get_array())
-                    self.conf_list.append(c)
+        for c in self.rh.get_all_configs():
+            if not c in self.conf_list:
+                self.conf_matrix.append(c.get_array())
+                self.conf_list.append(c)
         for inc in self.incs:
             if inc not in self.conf_list:
                 self.conf_matrix.append(inc.get_array())
                 self.conf_list.append(inc)
 
 
-        # Get total runs per config per rh
-        for rh in self.runhistories:
-            # We want to visualize the development over time, so we take
-            #   screenshots of the number of runs per config at different points
-            #   in (i.e. different quantiles of) the runhistory, LAST quantile
-            #   is full history!!
-            r_p_q_p_c = self._get_runs_per_config_quantiled(rh, quantiles=self.num_quantiles)
-            self.runs_per_rh.append(np.array(r_p_q_p_c))
+        # We want to visualize the development over time, so we take
+        # screenshots of the number of runs per config at different points
+        # in (i.e. different quantiles of) the runhistory, LAST quantile
+        # is full history!!
+        runs_per_quantile = self._get_runs_per_config_quantiled(self.rh, quantiles=self.num_quantiles)
 
         # What configs to plot
         default = self.scenario.cs.get_default_configuration()
         self.logger.debug("Reducing number of configs from %d to %d, dropping from the fewest evaluations", len(self.conf_list), self.max_plot)
         keep_always = [self.conf_list.index(c) for c in self.incs + [default] if c in self.conf_list]  # Always plot default and incumbents
-        keep_indices = sorted(range(len(self.runs_per_rh[0][-1])), key=lambda x: self.runs_per_rh[0][-1][x])[-self.max_plot:]
+        keep_indices = sorted(range(len(runs_per_quantile[-1])), key=lambda x: runs_per_quantile[-1][x])[-self.max_plot:]
         keep_indices = list(set(keep_always + keep_indices))
         self.conf_list = np.array(self.conf_list)[keep_indices]
         self.conf_matrix = np.array(self.conf_matrix)[keep_indices]
-        self.runs_per_rh = [[np.array(r_p_c)[keep_indices] for r_p_c in r_p_q_p_c]
-                            for r_p_q_p_c in self.runs_per_rh]
+        runs_per_quantile = [np.array(r_p_c)[keep_indices] for r_p_c in
+                            runs_per_quantile]
 
         # Get minimum and maximum for sizes of dots
-        self.min_runs_per_conf = min([i for i in self.runs_per_rh[0][-1] if i > 0])
-        self.max_runs_per_conf = max(self.runs_per_rh[0][-1])
+        self.min_runs_per_conf = min([i for i in runs_per_quantile[-1] if i > 0])
+        self.max_runs_per_conf = max(runs_per_quantile[-1])
 
-        self.logger.debug("Gathered %d configurations from %d runhistories." %
-                          (len(self.conf_list), len(self.runs_per_rh)))
+        self.logger.debug("Gathered %d configurations from 1 runhistories." % len(self.conf_list))
         self.conf_matrix = np.array(self.conf_matrix)
+
+        self.runs_per_quantile = runs_per_quantile
 
     @timing
     def _get_runs_per_config_quantiled(self, rh, quantiles=10):
@@ -753,7 +738,7 @@ for (i = 0; i < lab_len; i++) {
 
         return callback
 
-    def plot(self, X, conf_list: list, configurator_runs,
+    def plot(self, X, conf_list: list, configurator_run,
              inc_list: list=None, contour_data=None, time_slider="off"):
         """
         plots sampled configuration in 2d-space;
@@ -766,8 +751,8 @@ for (i = 0; i < lab_len; i++) {
             np.array with 2-d coordinates for each configuration
         conf_list: list
             list of ALL configurations in the same order as X
-        configurator_runs: list[np.array]
-            list of configurator-runs to be analyzed, each as a np.array with
+        configurator_run: list[np.array]
+            configurator-runs to be analyzed, as a np.array with
             the number of target-algorithm-runs per config per quantile.
         inc_list: list
             list of incumbents (Configuration)
@@ -796,7 +781,7 @@ for (i = 0; i < lab_len; i++) {
             inc_list = []
         over_time_paths = []  # developement of the search space over time
 
-        best_run = configurator_runs[0]
+        best_run = configurator_run
 
         hp_names = [k.name for k in  # Hyperparameter names
                     conf_list[0].configuration_space.get_hyperparameters()]
