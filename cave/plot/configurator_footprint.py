@@ -39,8 +39,6 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.animation import FuncAnimation
 
-import mpld3
-
 cmd_folder = os.path.realpath(
     os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
 cmd_folder = os.path.realpath(os.path.join(cmd_folder, ".."))
@@ -65,7 +63,8 @@ from cave.utils.io import export_bokeh
 
 class ConfiguratorFootprint(object):
 
-    def __init__(self, scenario: Scenario,
+    def __init__(self,
+                 scenario: Scenario,
                  runhistory: RunHistory,
                  incs: list=None,
                  max_plot: int=-1,
@@ -81,8 +80,8 @@ class ConfiguratorFootprint(object):
         ----------
         scenario: Scenario
             scenario
-        runhistory: List[RunHistory]
-            runhistory from configurator runs
+        runhistory: RunHistory
+            runhistory from configurator run
         incs: list
             incumbents of best configurator run, last entry is final incumbent
         max_plot: int
@@ -102,21 +101,10 @@ class ConfiguratorFootprint(object):
 
         self.scenario = scenario
         self.rh = runhistory
-        # runs_per_quantile holds a list for every quantile
-        # of configuration-evaluations in the order of `conf-list`
-        # so three configs and four quantiles thats:
-        #   [[1, 2, 1], [3, 5, 2], [5, 6, 7], [9, 9, 8]]
-        #   so to access the full # runs for the best configurator-run, just
-        #   go for self.runs_per_quantile[-1]
-        self.runs_per_quantile = []
-        self.conf_list = []
-        self.conf_matrix = []
         self.incs = incs
         self.max_plot = max_plot
         self.time_slider = time_slider
-
         self.num_quantiles = num_quantiles
-
         self.contour_step_size = contour_step_size
         self.output_dir = output_dir
 
@@ -125,28 +113,31 @@ class ConfiguratorFootprint(object):
         Uses available Configurator-data to perform a MDS, estimate performance
         data and plot the configurator footprint.
         """
-
-        self.get_conf_matrix()
-        self.logger.debug("Number of Configurations: %d", self.conf_matrix.shape[0])
-        dists = self.get_distance(self.conf_matrix, self.scenario.cs)
+        conf_matrix, conf_list, runs_per_quantile = self.get_conf_matrix(self.rh, self.incs)
+        self.logger.debug("Number of Configurations: %d", conf_matrix.shape[0])
+        dists = self.get_distance(conf_matrix, self.scenario.cs)
         red_dists = self.get_mds(dists)
 
-        contour_data = self.get_pred_surface(
-                X_scaled=red_dists, conf_list=copy.deepcopy(self.conf_list))
+        contour_data = self.get_pred_surface(self.rh, X_scaled=red_dists,
+                                             conf_list=copy.deepcopy(conf_list),
+                                             contour_step_size=self.contour_step_size)
 
-        inc_list = self.incs
-
-        return self.plot(red_dists, self.conf_list, self.runs_per_quantile,
-                         inc_list=inc_list, contour_data=contour_data,
+        return self.plot(red_dists,
+                         conf_list,
+                         runs_per_quantile,
+                         inc_list=self.incs,
+                         contour_data=contour_data,
                          time_slider=self.time_slider)
 
     @timing
-    def get_pred_surface(self, X_scaled, conf_list: list):
+    def get_pred_surface(self, rh, X_scaled, conf_list: list, contour_step_size):
         """fit epm on the scaled input dimension and
-        return data to plot a contour plot
+        return data to plot a contour plot of the empirical performance
 
         Parameters
         ----------
+        rh: RunHistory
+            runhistory
         X_scaled: np.array
             configurations in scaled 2dim
         conf_list: list
@@ -154,44 +145,27 @@ class ConfiguratorFootprint(object):
 
         Returns
         -------
-        np.array, np.array, np.array
-            x,y,Z for contour plots
+        contour_data: (np.array, np.array, np.array)
+            x, y, Z for contour plots
         """
-
         # use PCA to reduce features to also at most 2 dims
-        pca_scenario = copy.deepcopy(self.scenario)  # pca changes feats
-        n_feats = pca_scenario.feature_array.shape[1]
-        if n_feats > 2:
-            self.logger.debug("Use PCA to reduce features to from %ddim to 2dim", n_feats)
-            insts = pca_scenario.feature_dict.keys()
-            feature_array = np.array([pca_scenario.feature_dict[inst] for inst in insts])
-            ss = StandardScaler()
-            pca_scenario.feature_array = ss.fit_transform(feature_array)
-            pca = PCA(n_components=2)
-            feature_array = pca.fit_transform(feature_array)
-            n_feats = feature_array.shape[1]
-            pca_scenario.feature_array = feature_array
-            pca_scenario.feature_dict = dict([(inst, feature_array[idx,:]) for idx, inst in enumerate(insts)])
-            pca_scenario.n_features = 2
-
-        self.logger.debug("Create new rh with relevant configs")
-        new_rh = RunHistory(average_cost)
-        for key, value in self.rh.data.items():
-            config = self.rh.ids_config[key.config_id]
-            if config in conf_list:
-                config_id, instance, seed = key
-                cost, time, status, additional_info = value
-                new_rh.add(config, cost, time, status, instance_id=instance,
-                           seed=seed, additional_info=additional_info)
+        scen = copy.deepcopy(self.scenario)  # pca changes feats
+        if scen.feature_array.shape[1] > 2:
+            self.logger.debug("Use PCA to reduce features to from %d dim to 2 dim", scen.feature_array.shape[1])
+            # perform PCA
+            insts = scen.feature_dict.keys()
+            feature_array = np.array([scen.feature_dict[inst] for inst in insts])
+            feature_array = StandardScaler().fit_transform(feature_array)
+            feature_array = PCA(n_components=2).fit_transform(feature_array)
+            # remap to scenario-object
+            scen.feature_array = feature_array
+            scen.feature_dict = dict([(inst, feature_array[idx,:]) for idx, inst in enumerate(insts)])
+            scen.n_features = 2
 
         self.logger.debug("Convert data for epm.")
-        X, y, types = convert_data_for_epm(scenario=pca_scenario,
-                                           runhistory=new_rh,
-                                           logger=self.logger)
-
-        types = np.array(np.zeros((2+n_feats)), dtype=np.uint)
-
-        num_params = len(pca_scenario.cs.get_hyperparameters())
+        X, y, types = convert_data_for_epm(scenario=scen, runhistory=rh, logger=self.logger)
+        types = np.array(np.zeros((2 + scen.feature_array.shape[1])), dtype=np.uint)
+        num_params = len(scen.cs.get_hyperparameters())
 
         # impute missing values in configs
         conf_dict = {}
@@ -201,34 +175,35 @@ class ConfiguratorFootprint(object):
 
         X_trans = []
         for x in X:
-            x_scaled_conf = conf_dict[str(x[:num_params])]
-            x_new = np.concatenate(
-                        (x_scaled_conf, x[num_params:]), axis=0)
-            X_trans.append(x_new)
+            try:
+                x_scaled_conf = conf_dict[str(x[:num_params])]
+            except KeyError as err:
+                raise KeyError("Error in contour prediction. "
+                               "Maybe you provide too few configurations (detected %d)? "
+                               "Check the '--cfp_max_plot'-argument..." % self.max_plot)
+            X_trans.append(np.concatenate((x_scaled_conf, x[num_params:]), axis=0))
         X_trans = np.array(X_trans)
 
         self.logger.debug("Train random forest for contour-plot.")
         bounds = np.array([(0, np.nan), (0, np.nan)], dtype=object)
         model = RandomForestWithInstances(types=types, bounds=bounds,
-                                          instance_features=np.array(pca_scenario.feature_array),
+                                          instance_features=np.array(scen.feature_array),
                                           ratio_features=1.0)
 
         model.train(X_trans, y)
 
         self.logger.debug("RF fitted")
 
-        plot_step = self.contour_step_size
-
         x_min, x_max = X_scaled[:, 0].min() - 1, X_scaled[:, 0].max() + 1
         y_min, y_max = X_scaled[:, 1].min() - 1, X_scaled[:, 1].max() + 1
-        xx, yy = np.meshgrid(np.arange(x_min, x_max, plot_step),
-                             np.arange(y_min, y_max, plot_step))
+        xx, yy = np.meshgrid(np.arange(x_min, x_max, contour_step_size),
+                             np.arange(y_min, y_max, contour_step_size))
 
-        self.logger.debug("x_min: %f, x_max: %f, y_min: %f, y_max: %f" %(x_min, x_max, y_min, y_max))
+        self.logger.debug("x_min: %f, x_max: %f, y_min: %f, y_max: %f", x_min, x_max, y_min, y_max)
+        self.logger.debug("Predict on %d samples in grid to get surface (step-size: %f)",
+                          np.c_[xx.ravel(), yy.ravel()].shape[0], contour_step_size)
 
-        self.logger.debug("Predict on %d samples in grid to get surface" %(np.c_[xx.ravel(), yy.ravel()].shape[0]))
         Z, _ = model.predict_marginalized_over_instances(np.c_[xx.ravel(), yy.ravel()])
-
         Z = Z.reshape(xx.shape)
 
         return xx, yy, Z
@@ -262,11 +237,8 @@ class ConfiguratorFootprint(object):
             else:
                 is_cat.append(False)
             depth.append(self.get_depth(cs, param))
-        self.logger.debug("Determine is_cat...")
         is_cat = np.array(is_cat)
-        self.logger.debug("... done. Determine depth...")
         depth = np.array(depth)
-        self.logger.debug("... done.")
 
         for i in range(n_confs):
             for j in range(i + 1, n_confs):
@@ -329,106 +301,116 @@ class ConfiguratorFootprint(object):
         return mds.fit_transform(dists)
 
     @timing
-    def get_conf_matrix(self):
+    def get_conf_matrix(self, rh, incs):
         """
         Iterates through runhistory to get a matrix of configurations (in
         vector representation), a list of configurations and the number of
         runs per configuration in a quantiled manner.
 
-        Sideeffect creates as members
+        Parameters
+        ----------
+        rh: RunHistory
+            smac.runhistory
+        incs: List[Configuration]
+            incumbents of this configurator run, last entry is final incumbent
+
+        Returns
+        -------
         conf_matrix: np.array
             matrix of configurations in vector representation
-        conf_list: list
+        conf_list: np.array
             list of all Configuration objects that appeared in runhistory
             the order of this list is used to determine all kinds of properties
             in the plotting (but is arbitrarily determined)
-        runs_per_conf: np.array
-            one-dim numpy array of runs per configuration
+        runs_per_quantile: np.array
+            numpy array of runs per configuration per quantile
         """
         # Get all configurations. Index of c in conf_list serves as identifier
-        for c in self.rh.get_all_configs():
-            if not c in self.conf_list:
-                self.conf_matrix.append(c.get_array())
-                self.conf_list.append(c)
-        for inc in self.incs:
-            if inc not in self.conf_list:
-                self.conf_matrix.append(inc.get_array())
-                self.conf_list.append(inc)
-
+        conf_list = []
+        conf_matrix = []
+        for c in rh.get_all_configs():
+            if not c in conf_list:
+                conf_matrix.append(c.get_array())
+                conf_list.append(c)
+        for inc in incs:
+            if inc not in conf_list:
+                conf_matrix.append(inc.get_array())
+                conf_list.append(inc)
 
         # We want to visualize the development over time, so we take
         # screenshots of the number of runs per config at different points
         # in (i.e. different quantiles of) the runhistory, LAST quantile
         # is full history!!
-        runs_per_quantile = self._get_runs_per_config_quantiled(self.rh, quantiles=self.num_quantiles)
+        runs_per_quantile = self._get_runs_per_config_quantiled(rh, conf_list, quantiles=self.num_quantiles)
 
         # What configs to plot
         default = self.scenario.cs.get_default_configuration()
-        self.logger.debug("Reducing number of configs from %d to %d, dropping from the fewest evaluations", len(self.conf_list), self.max_plot)
-        keep_always = [self.conf_list.index(c) for c in self.incs + [default] if c in self.conf_list]  # Always plot default and incumbents
-        keep_indices = sorted(range(len(runs_per_quantile[-1])), key=lambda x: runs_per_quantile[-1][x])[-self.max_plot:]
+        self.logger.info("Reducing number of configs from %d to %d, dropping from the fewest evaluations", len(conf_list), self.max_plot)
+        keep_always = [conf_list.index(c) for c in incs + [default] if c in conf_list]  # Always plot default and incumbents
+        keep_indices = sorted(range(len(runs_per_quantile[-1])),
+                              key=lambda x: runs_per_quantile[-1][x])[-self.max_plot:]
+        if self.max_plot < 0:  # keep all
+            keep_indices = list(range(len(conf_list)))
         keep_indices = list(set(keep_always + keep_indices))
-        self.conf_list = np.array(self.conf_list)[keep_indices]
-        self.conf_matrix = np.array(self.conf_matrix)[keep_indices]
-        runs_per_quantile = [np.array(r_p_c)[keep_indices] for r_p_c in
-                            runs_per_quantile]
+        conf_list = np.array(conf_list)[keep_indices]
+        conf_matrix = np.array(conf_matrix)[keep_indices]
+        runs_per_quantile = [np.array(r_p_c)[keep_indices] for r_p_c in runs_per_quantile]
 
         # Get minimum and maximum for sizes of dots
         self.min_runs_per_conf = min([i for i in runs_per_quantile[-1] if i > 0])
         self.max_runs_per_conf = max(runs_per_quantile[-1])
+        self.logger.debug("Min runs per conf: %d, Max runs per conf: %d",
+                          self.min_runs_per_conf, self.max_runs_per_conf)
 
-        self.logger.debug("Gathered %d configurations from 1 runhistories." % len(self.conf_list))
-        self.conf_matrix = np.array(self.conf_matrix)
+        self.logger.debug("Gathered %d configurations from 1 runhistories." % len(conf_list))
 
-        self.runs_per_quantile = runs_per_quantile
+        return conf_matrix, conf_list, runs_per_quantile
 
     @timing
-    def _get_runs_per_config_quantiled(self, rh, quantiles=10):
-        """Creates a
-        list of configurator-runs to be analyzed, each as a np.array with
-        the number of target-algorithm-runs per config per quantile.
-        two runhistories with three configs and four quantiles thats:
-          [
-           # runhistory 1
-           [[1, 2, 1], [3, 5, 2], [5, 6, 7], [9, 9, 8]],
-           # runhistory 2
-           [[2, 5, 10], [4, 6, 13], [7, 8, 14], [9, 9, 14]],
-          ]
+    def _get_runs_per_config_quantiled(self, rh, conf_list, quantiles):
+        """Returns a list of lists, each sublist representing the current state
+        at that timestep (quantile). The current state means a list of times
+        each config was evaluated at that timestep.
 
         Parameters
         ----------
         rh: RunHistory
             rh to evaluate
+        conf_list: list
+            list of all Configuration objects that appeared in runhistory
         quantiles: int
             number of fractions to split rh into
 
         Returns:
         --------
-        runs_per_config: Dict[Configuration : int]
-            number of runs for config in rh up to given time
+        runs_per_quantile: np.array
+            numpy array of runs per configuration per quantile
         """
         runs_total = len(rh.data)
         step = int(runs_total / quantiles)
+        # Create LINEAR ranges. TODO do we want log? -> this line
+        ranges = [0] + list(range(step, runs_total-step, step)) + [runs_total]
         self.logger.debug("Creating %d quantiles with a step of %d and a total "
                           "runs of %d", quantiles, step, runs_total)
-        r_p_q_p_c = []  # runs per quantile per config
-        tmp_rh = RunHistory(average_cost)
-        as_list = list(rh.data.items())
-        ranges = [0] + list(range(step, runs_total-step, step)) + [runs_total]
+        self.logger.debug("Ranges: %s", str(ranges))
 
+        # Iterate over the runhistory's entries in ranges and creating each
+        # sublist from a "snapshot"-runhistory
+        r_p_q_p_c = []  # runs per quantile per config
+        as_list = list(rh.data.items())
+        tmp_rh = RunHistory(average_cost)
         for i, j in zip(ranges[:-1], ranges[1:]):
             for idx in range(i, j):
                 k, v = as_list[idx]
                 tmp_rh.add(config=rh.ids_config[k.config_id],
                            cost=v.cost, time=v.time, status=v.status,
                            instance_id=k.instance_id, seed=k.seed)
-            r_p_q_p_c.append([len(tmp_rh.get_runs_for_config(c)) for c in
-                self.conf_list])
-            #self.logger.debug("Using %d of %d runs", len(tmp_rh.data), len(rh.data))
+            r_p_q_p_c.append([len(tmp_rh.get_runs_for_config(c)) for c in conf_list])
         return r_p_q_p_c
 
     def _get_size(self, r_p_c):
-        """
+        """Returns size of scattered points in dependency of runs per config
+
         Parameters
         ----------
         r_p_c: list[int]
@@ -439,21 +421,21 @@ class ConfiguratorFootprint(object):
         sizes: list[int]
             list with appropriate sizes for dots
         """
-        self.logger.debug("Min runs per conf: %d, Max runs per conf: %d",
-                          self.min_runs_per_conf, self.max_runs_per_conf)
         normalization_factor = self.max_runs_per_conf - self.min_runs_per_conf
+        min_size, enlargement_factor = 5, 20
         if normalization_factor == 0:  # All configurations same size
             normalization_factor = 1
-        sizes = 5 + ((r_p_c - self.min_runs_per_conf) / normalization_factor) * 20
+        sizes = min_size + ((r_p_c - self.min_runs_per_conf) / normalization_factor) * enlargement_factor
         sizes *= np.array([0 if r == 0 else 1 for r in r_p_c])  # 0 size if 0 runs
         return sizes
 
-    def _get_color(self, cds):
-        """
+    def _get_color(self, types):
+        """Determine appropriate color for all configurations
+
         Parameters:
         -----------
-        cds: ColumnDataSource
-            data for bokeh plot
+        types: List[str]
+            type of configuration
 
         Returns:
         --------
@@ -461,7 +443,7 @@ class ConfiguratorFootprint(object):
             list of color per config
         """
         colors = []
-        for t in cds.data['type']:
+        for t in types:
             if t == "Default":
                 colors.append('orange')
             elif "Incumbent" in  t:
@@ -634,7 +616,7 @@ class ConfiguratorFootprint(object):
         sizes = self._get_size(runs)
         sizes = [s * 3 if conf_types[idx] == "Default" else s for idx, s in enumerate(sizes)]
         source.add(sizes, 'size')
-        source.add(self._get_color(source), 'color')
+        source.add(self._get_color(source.data['type']), 'color')
         source.add(runs, 'runs')
         # To enforce zorder, we categorize all entries according to their size
         # Since we plot all different zorder-levels sequentially, we use a
@@ -648,7 +630,7 @@ class ConfiguratorFootprint(object):
         return source
 
     def _plot_get_timeslider(self, scatter_glyph_render_groups):
-        """Add a prerendered timeslider. Difference to online timeslider:
+        """Add a prerendered timeslider.
         information for all quantiles is plotted in advance and only the
         relevant source is visible.
 
@@ -670,7 +652,6 @@ class ConfiguratorFootprint(object):
 
         # Since runhistory doesn't contain a timestamp, but are ordered,
         # we use quantiles
-
         num_glyph_subgroups = sum([len(group) for group in scatter_glyph_render_groups])
         glyph_renderers_flattened = ['glyph_renderer' + str(i) for i in range(num_glyph_subgroups)]
         glyph_renderers = []
@@ -680,7 +661,6 @@ class ConfiguratorFootprint(object):
             start += len(group)
         self.logger.debug("%d, %d, %d", len(scatter_glyph_render_groups),
                           len(glyph_renderers), num_glyph_subgroups)
-        num_quantiles = len(scatter_glyph_render_groups)
         scatter_glyph_render_groups_flattened = [a for b in scatter_glyph_render_groups for a in b]
         args = {name : glyph for name, glyph in zip(glyph_renderers_flattened,
                                       scatter_glyph_render_groups_flattened)}
@@ -708,11 +688,15 @@ for (i = 0; i < lab_len; i++) {
         slider = Slider(start=1, end=num_quantiles,
                         value=num_quantiles, step=1,
                         callback=callback, title='Time')
-
         return slider
 
-    def plot(self, X, conf_list: list, configurator_run,
-             inc_list: list=None, contour_data=None, time_slider="off"):
+    def plot(self,
+             X,
+             conf_list: list,
+             runs_per_quantile,
+             inc_list: list=None,
+             contour_data=None,
+             time_slider=False):
         """
         plots sampled configuration in 2d-space;
         uses bokeh for interactive plot
@@ -724,8 +708,8 @@ for (i = 0; i < lab_len; i++) {
             np.array with 2-d coordinates for each configuration
         conf_list: list
             list of ALL configurations in the same order as X
-        configurator_run: list[np.array]
-            configurator-runs to be analyzed, as a np.array with
+        runs_per_quantile: list[np.array]
+            configurator-run to be analyzed, as a np.array with
             the number of target-algorithm-runs per config per quantile.
         inc_list: list
             list of incumbents (Configuration)
@@ -749,15 +733,13 @@ for (i = 0; i < lab_len; i++) {
             inc_list = []
         over_time_paths = []  # development of the search space over time
 
-        best_run = configurator_run
-
         hp_names = [k.name for k in  # Hyperparameter names
                     conf_list[0].configuration_space.get_hyperparameters()]
-        num_quantiles = len(best_run)
+        num_quantiles = len(runs_per_quantile)
 
-        # Get individual sources for quantiles of best run (first in list)
+        # Get individual sources for quantiles
         sources = [self._plot_get_source(conf_list, quantiled_run, X, inc_list, hp_names)
-                   for quantiled_run in best_run]
+                   for quantiled_run in runs_per_quantile]
 
         # Define what appears in tooltips
         # TODO add only important parameters (needs to change order of exec pimp before conf-footprints)
@@ -773,10 +755,9 @@ for (i = 0; i < lab_len; i++) {
         # Plot contour
         if contour_data is not None:
            p = self._plot_contour(p, contour_data, x_range, y_range)
-        scatter_glyph_render_groups = []
 
         # If time_slider is off, we don't want all the sources in
-        # the plot -> in that case we create a new plot for the individual
+        # the plot -> in that case we create a new figure for the individual
         # quantile-png-exports.
         if not time_slider:
             p_quantiles = figure(plot_height=500, plot_width=600,
@@ -784,8 +765,9 @@ for (i = 0; i < lab_len; i++) {
             if contour_data is not None:
                p_quantiles = self._plot_contour(p_quantiles, contour_data, x_range, y_range)
         else:
-            p_quantiles = p  # if prerender, save all sources in original plot
+            p_quantiles = p  # if timeslider, save all sources in original plot
 
+        scatter_glyph_render_groups = []
         for idx, source in enumerate(sources):
             if idx == len(sources) - 1:  # final view on original plot!!
                 p_quantiles = p

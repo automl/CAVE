@@ -246,7 +246,13 @@ class Plotter(object):
                        output_dir=self.output_dir,
                        time_slider=time_slider,
                        num_quantiles=num_quantiles)
-        r = cfp.run()
+        try:
+            r = cfp.run()
+        except MemoryError as err:
+            self.logger.error(err)
+            raise MemoryError("Memory Error occured in configurator footprint. "
+                              "You may want to reduce the number of plotted "
+                              "configs (using the '--cfp_max_plot'-argument)")
         return r
 
     def plot_parallel_coordinates(self, rh, output, params, n_configs, validator):

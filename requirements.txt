@@ -2,10 +2,9 @@ tqdm
 Cython
 numpy
 pandas
-matplotlib==2.0.2
+matplotlib
 sphinx
 sphinx_rtd_theme
-mpld3
 bokeh==0.12.14
 pillow
 smac>=0.8.0

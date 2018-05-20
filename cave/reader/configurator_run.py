@@ -65,7 +65,7 @@ class ConfiguratorRun(SMAC):
         self.incumbent = self.traj[-1]['incumbent']
         self.train_inst = self.scen.train_insts
         self.test_inst = self.scen.test_insts
-
+        self._check_rh_for_inc_and_def(self.original_runhistory)
 
         # Check validated runhistory for completeness
         if (self.validated_runhistory and
@@ -114,10 +114,10 @@ class ConfiguratorRun(SMAC):
                               ("test", self.test_inst)]:
                 not_evaluated = set(i) - evaluated
                 if len(not_evaluated) > 0:
-                    self.logger.warning("RunHistory only evaluated on %d/%d %s-insts "
-                                        "for %s in folder %s",
-                                        len(i) - len(not_evaluated), len(i),
-                                        i_name, c_name, self.folder)
+                    self.logger.debug("RunHistory only evaluated on %d/%d %s-insts "
+                                      "for %s in folder %s",
+                                      len(i) - len(not_evaluated), len(i),
+                                      i_name, c_name, self.folder)
                     return_value = False
         return return_value
 

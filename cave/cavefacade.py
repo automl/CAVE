@@ -248,7 +248,7 @@ class CAVE(object):
     @timing
     def analyze(self,
                 performance=True, cdf=True, scatter=True, confviz=True,
-                cfp_time_slider=False, cfp_number_quantiles=10,
+                cfp_time_slider=False, cfp_max_plot=-1, cfp_number_quantiles=10,
                 param_importance=['forward_selection', 'ablation', 'fanova'],
                 feature_analysis=["box_violin", "correlation",
                     "feat_importance", "clustering", "feature_cdf"],
@@ -361,7 +361,7 @@ class CAVE(object):
         assert(incumbents[-1] == trajectories[0][-1]['incumbent'])
 
         script, div, cfp_paths = self.analyzer.plot_configurator_footprint(incumbents, runhistories,
-                                                                           max_confs=1500,
+                                                                           max_confs=cfp_max_plot,
                                                                            time_slider=cfp_time_slider,
                                                                            num_quantiles=cfp_number_quantiles)
         if cfp_number_quantiles == 1:  # Only one plot, no need for "Static"-field
