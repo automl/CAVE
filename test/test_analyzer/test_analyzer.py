@@ -39,10 +39,10 @@ class TestAnalyzer(unittest.TestCase):
         # Check all time_slider-options
         script, div, paths = self.analyzer.plot_configurator_footprint(runhistories=[self.analyzer.original_rh],
                                                                        incumbents=[self.analyzer.incumbent],
-                                                                       time_slider='off')
+                                                                       num_quantiles=1)
         self.assertEqual(len(paths), 1)  # Only the last one
 
-        for slider in ['static', 'online', 'prerender']:
+        for slider in [True, False]:
             script, div, paths = self.analyzer.plot_configurator_footprint(runhistories=[self.analyzer.original_rh],
                                                                            incumbents=[self.analyzer.incumbent],
                                                                            time_slider=slider, num_quantiles=3)
