@@ -15,6 +15,7 @@ import json
 import copy
 import typing
 import itertools
+import time
 from collections import OrderedDict
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
@@ -154,20 +155,21 @@ class ConfiguratorFootprint(object):
             self.logger.debug("Use PCA to reduce features to from %d dim to 2 dim", scen.feature_array.shape[1])
             # perform PCA
             insts = scen.feature_dict.keys()
-            feature_array = np.array([scen.feature_dict[inst] for inst in insts])
+            feature_array = np.array([scen.feature_dict[i] for i in insts])
             feature_array = StandardScaler().fit_transform(feature_array)
             feature_array = PCA(n_components=2).fit_transform(feature_array)
-            # remap to scenario-object
+            # inject in scenario-object
             scen.feature_array = feature_array
             scen.feature_dict = dict([(inst, feature_array[idx,:]) for idx, inst in enumerate(insts)])
             scen.n_features = 2
 
+        # convert the data to train EPM on 2-dim featurespace (for contour-data)
         self.logger.debug("Convert data for epm.")
         X, y, types = convert_data_for_epm(scenario=scen, runhistory=rh, logger=self.logger)
         types = np.array(np.zeros((2 + scen.feature_array.shape[1])), dtype=np.uint)
         num_params = len(scen.cs.get_hyperparameters())
 
-        # impute missing values in configs
+        # impute missing values in configs and insert MDS'ed (2dim) configs to the right positions
         conf_dict = {}
         for idx, c in enumerate(conf_list):
             conf_list[idx] = impute_inactive_values(c)
@@ -181,6 +183,7 @@ class ConfiguratorFootprint(object):
                 raise KeyError("Error in contour prediction. "
                                "Maybe you provide too few configurations (detected %d)? "
                                "Check the '--cfp_max_plot'-argument..." % self.max_plot)
+            # append scaled config + pca'ed features (total of 4 values) per config/feature-sample
             X_trans.append(np.concatenate((x_scaled_conf, x[num_params:]), axis=0))
         X_trans = np.array(X_trans)
 
@@ -190,9 +193,9 @@ class ConfiguratorFootprint(object):
                                           instance_features=np.array(scen.feature_array),
                                           ratio_features=1.0)
 
+        start = time.time()
         model.train(X_trans, y)
-
-        self.logger.debug("RF fitted")
+        self.logger.debug("Fitting random forest took %f time", time.time() - start)
 
         x_min, x_max = X_scaled[:, 0].min() - 1, X_scaled[:, 0].max() + 1
         y_min, y_max = X_scaled[:, 1].min() - 1, X_scaled[:, 1].max() + 1
@@ -203,8 +206,10 @@ class ConfiguratorFootprint(object):
         self.logger.debug("Predict on %d samples in grid to get surface (step-size: %f)",
                           np.c_[xx.ravel(), yy.ravel()].shape[0], contour_step_size)
 
+        start = time.time()
         Z, _ = model.predict_marginalized_over_instances(np.c_[xx.ravel(), yy.ravel()])
         Z = Z.reshape(xx.shape)
+        self.logger.debug("Predicting random forest took %f time", time.time() - start)
 
         return xx, yy, Z
 
@@ -296,9 +301,13 @@ class ConfiguratorFootprint(object):
         np.array
             scaled coordinates in 2-dim room
         """
-        # TODO n_jobs?
+        # TODO there are ways to extend MDS to provide a transform-method. if
+        #   available, train on randomly sampled configs and plot all
+        # TODO MDS provides 'n_jobs'-argument for parallel computing...
         mds = MDS(n_components=2, dissimilarity="precomputed", random_state=12345)
-        return mds.fit_transform(dists)
+        dists = mds.fit_transform(dists)
+        self.logger.debug("MDS-stress: %f", mds.stress_)
+        return dists
 
     @timing
     def get_conf_matrix(self, rh, incs):
@@ -343,14 +352,15 @@ class ConfiguratorFootprint(object):
         # is full history!!
         runs_per_quantile = self._get_runs_per_config_quantiled(rh, conf_list, quantiles=self.num_quantiles)
 
-        # What configs to plot
+        # Which configs to plot and which to drop
         default = self.scenario.cs.get_default_configuration()
-        self.logger.info("Reducing number of configs from %d to %d, dropping from the fewest evaluations", len(conf_list), self.max_plot)
         keep_always = [conf_list.index(c) for c in incs + [default] if c in conf_list]  # Always plot default and incumbents
-        keep_indices = sorted(range(len(runs_per_quantile[-1])),
-                              key=lambda x: runs_per_quantile[-1][x])[-self.max_plot:]
-        if self.max_plot < 0:  # keep all
+        if self.max_plot < 0 or self.max_plot > len(conf_list):  # keep all
             keep_indices = list(range(len(conf_list)))
+        else:
+            self.logger.info("Reducing number of configs from %d to %d, dropping from the fewest evaluations", len(conf_list), self.max_plot)
+            keep_indices = sorted(range(len(runs_per_quantile[-1])),
+                                  key=lambda x: runs_per_quantile[-1][x])[-self.max_plot:]
         keep_indices = list(set(keep_always + keep_indices))
         conf_list = np.array(conf_list)[keep_indices]
         conf_matrix = np.array(conf_matrix)[keep_indices]
@@ -493,7 +503,7 @@ class ConfiguratorFootprint(object):
           local > random
             num_runs (ascending, more evaluated -> more interesting)
         Individual views are necessary, since bokeh can only plot one
-        marker-type per 'scatter'-call
+        marker-typei (circle, triangle, ...) per 'scatter'-call
 
         Parameters
         ----------
@@ -650,8 +660,7 @@ class ConfiguratorFootprint(object):
         """
         self.logger.debug("Create prerendered time-slider!")
 
-        # Since runhistory doesn't contain a timestamp, but are ordered,
-        # we use quantiles
+        # Since runhistory doesn't contain a timestamp, but are ordered, we use quantiles
         num_glyph_subgroups = sum([len(group) for group in scatter_glyph_render_groups])
         glyph_renderers_flattened = ['glyph_renderer' + str(i) for i in range(num_glyph_subgroups)]
         glyph_renderers = []
@@ -749,36 +758,23 @@ for (i = 0; i < lab_len; i++) {
         # bokeh-figure
         x_range = [min(X[:, 0]) - 1, max(X[:, 0]) + 1]
         y_range = [min(X[:, 1]) - 1, max(X[:, 1]) + 1]
-        p = figure(plot_height=500, plot_width=600,
-                   tools=[hover], x_range=x_range, y_range=y_range)
-
-        # Plot contour
-        if contour_data is not None:
-           p = self._plot_contour(p, contour_data, x_range, y_range)
-
-        # If time_slider is off, we don't want all the sources in
-        # the plot -> in that case we create a new figure for the individual
-        # quantile-png-exports.
-        if not time_slider:
-            p_quantiles = figure(plot_height=500, plot_width=600,
-                                 tools=[hover], x_range=x_range, y_range=y_range)
-            if contour_data is not None:
-               p_quantiles = self._plot_contour(p_quantiles, contour_data, x_range, y_range)
-        else:
-            p_quantiles = p  # if timeslider, save all sources in original plot
 
         scatter_glyph_render_groups = []
         for idx, source in enumerate(sources):
-            if idx == len(sources) - 1:  # final view on original plot!!
-                p_quantiles = p
+            if not time_slider or idx == 0:
+                # Only plot all quantiles in one plot if timeslider is on
+                p = figure(plot_height=500, plot_width=600,
+                           tools=[hover], x_range=x_range, y_range=y_range)
+                if contour_data is not None:
+                   p = self._plot_contour(p, contour_data, x_range, y_range)
             views, markers = self._plot_create_views(source)
             self.logger.debug("Plotting quantile %d!", idx)
-            scatter_glyph_render_groups.append(self._plot_scatter(p_quantiles, source, views, markers))
+            scatter_glyph_render_groups.append(self._plot_scatter(p, source, views, markers))
             if self.output_dir:
                 file_path = "content/images/cfp_over_time/configurator_footprint" + str(idx) + ".png"
                 over_time_paths.append(os.path.join(self.output_dir, file_path))
                 self.logger.debug("Saving plot to %s", over_time_paths[-1])
-                export_bokeh(p_quantiles, over_time_paths[-1], self.logger)
+                export_bokeh(p, over_time_paths[-1], self.logger)
 
         if time_slider:
             self.logger.debug("Adding timeslider")

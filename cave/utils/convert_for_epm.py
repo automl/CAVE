@@ -30,11 +30,11 @@ def convert_data_for_epm(scenario:Scenario, runhistory:RunHistory, logger=None):
 
     Returns
     -------
-    np.array
+    X: np.array
         X matrix with configuartion x features for all observed samples
-    np.array
+    y: np.array
         y matrix with all observations
-    np.array
+    types: np.array
         types of X cols -- necessary to train our RF implementation
     """
     types, bounds = get_types(scenario.cs, scenario.feature_array)
