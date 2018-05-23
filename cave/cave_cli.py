@@ -123,6 +123,20 @@ class CaveCLI(object):
                                                                                                  "all/none",
                               choices=f_choices,
                               type=str.lower)
+        opt_opts.add_argument("--cfp_time_slider",
+                              help="whether or not to have a time_slider-widget on cfp-plot"
+                                   "INCREASES FILE-SIZE (and loading) DRAMATICALLY",
+                              choices=["on", "off"],
+                              default="off")
+        opt_opts.add_argument("--cfp_number_quantiles",
+                              help="number of quantiles if configurator "
+                                   "footprint is plotted over time",
+                              default=10, type=int)
+        opt_opts.add_argument("--cfp_max_plot",
+                              help="maximum number of configurations to be "
+                                   "plotted in configurator footprint (in case "
+                                   "you run into a MemoryError)",
+                              default=-1, type=int)
         opt_opts.add_argument("--no_tabular_analysis",
                               action='store_false',
                               help="don't create performance table.",
@@ -192,6 +206,8 @@ class CaveCLI(object):
         else:
             feature_analysis = args_.feat_analysis
 
+        cfp_time_slider = True if args_.cfp_time_slider == "on" else False
+
         if not(args_.tabular_analysis or args_.ecdf or args_.scatter_plots or args_.confviz or
                args_.parallel_coordinates or args_.parallel_coordinates or args_.cost_over_time or
                args_.algorithm_footprints or param_imp or feature_analysis):
@@ -248,6 +264,9 @@ class CaveCLI(object):
                      cdf=args_.ecdf,
                      scatter=args_.scatter_plots,
                      confviz=args_.confviz,
+                     cfp_time_slider=cfp_time_slider,
+                     cfp_max_plot=args_.cfp_max_plot,
+                     cfp_number_quantiles=args_.cfp_number_quantiles,
                      parallel_coordinates=args_.parallel_coordinates,
                      cost_over_time=args_.cost_over_time,
                      algo_footprint=args_.algorithm_footprints,

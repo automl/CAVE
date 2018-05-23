@@ -19,28 +19,43 @@ from cave.plot.plotter import Plotter
 
 class TestAnalyzer(unittest.TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(self):
         self.output = "test/test_files/test_output/"
-        shutil.rmtree(self.output, ignore_errors=True)
-        self.cave = CAVE(["examples/smac3/example_output/run_1",
-                          "examples/smac3/example_output/run_2",
-                          "examples/smac3/example_output/run_3"],
+        os.mkdir(self.output)
+        self.cave = CAVE(["test/example_output/example_output/run_1",
+                          "test/example_output/example_output/run_2"],
                          output=self.output,
                          missing_data_method="epm",
-                         ta_exec_dir="examples/smac3")
+                         ta_exec_dir="test/example_output")
         self.analyzer = self.cave.analyzer
 
-    def test_confviz(self):
-        """ testing configuration visualization """
-        self.analyzer.plot_confviz(runhistories=[self.analyzer.original_rh],
-                                   incumbents=[self.analyzer.incumbent])
+    @classmethod
+    def tearDownClass(self):
+        shutil.rmtree(self.output, ignore_errors=True)
 
-    @attr('slow')
+    def test_configurator_footprint(self):
+        """ testing configuration visualization """
+        # Check all time_slider-options
+        script, div, paths = self.analyzer.plot_configurator_footprint(runhistories=[self.analyzer.original_rh],
+                                                                       incumbents=[self.analyzer.incumbent],
+                                                                       num_quantiles=1)
+        self.assertEqual(len(paths), 1)  # Only the last one
+
+        for slider in [True, False]:
+            script, div, paths = self.analyzer.plot_configurator_footprint(runhistories=[self.analyzer.original_rh],
+                                                                           incumbents=[self.analyzer.incumbent],
+                                                                           time_slider=slider, num_quantiles=3)
+            self.assertEqual(len(paths), 3)
+            for p in paths:
+                self.assertTrue(os.path.exists(p))
+                os.remove(p)
+
+
     def test_fanova(self):
         """ testing configuration visualization """
         self.analyzer.fanova(incumbent=self.analyzer.incumbent)
 
-    @attr('slow')
     def test_feature_forward_selection(self):
         """ testing feature importance """
         self.analyzer.feature_importance()

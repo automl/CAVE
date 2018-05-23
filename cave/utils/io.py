@@ -1,14 +1,19 @@
+import os
 import csv
 
 import numpy as np
 import pandas as pd
+from bokeh.io import export_png
+
 from ConfigSpace import Configuration, c_util
 from ConfigSpace.util import deactivate_inactive_hyperparameters, fix_types
 from ConfigSpace.hyperparameters import UniformFloatHyperparameter, CategoricalHyperparameter
-from bokeh.io import export_png
 
+from cave.utils.timing import timing
+
+@timing
 def export_bokeh(plot, path, logger):
-    """Export bokeh-plot to png-file.
+    """Export bokeh-plot to png-file. Create directory if necessary
 
     Parameters
     ----------
@@ -19,9 +24,13 @@ def export_bokeh(plot, path, logger):
     logger: Logger
         logger for debugging
     """
-    logger.debug("Exporting to %s", path)
+    base = os.path.split(path)[0]
+    logger.debug("Exporting to %s (base: %s)", path, base)
     plot.background_fill_color = None
     plot.border_fill_color = None
+    if not os.path.exists(base):
+        logger.debug("%s does not exist. Creating...", base)
+        os.makedirs(base)
     try:
         export_png(plot, filename=path)
     except (RuntimeError, TypeError) as err:

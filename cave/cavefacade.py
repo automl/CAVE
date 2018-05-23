@@ -248,6 +248,7 @@ class CAVE(object):
     @timing
     def analyze(self,
                 performance=True, cdf=True, scatter=True, confviz=True,
+                cfp_time_slider=False, cfp_max_plot=-1, cfp_number_quantiles=10,
                 param_importance=['forward_selection', 'ablation', 'fanova'],
                 feature_analysis=["box_violin", "correlation",
                     "feat_importance", "clustering", "feature_cdf"],
@@ -346,26 +347,36 @@ class CAVE(object):
         ########### Configurator's behavior
         self.website["Configurator's behavior"] = OrderedDict()
 
-        if confviz:
-            if self.scenario.feature_array is None:
-                self.scenario.feature_array = np.array([[]])
-            # Sort runhistories and incs wrt cost
-            incumbents = [r.solver.incumbent for r in self.runs]
-            trajectories = [r.traj for r in self.runs]
-            runhistories = [r.original_runhistory for r in self.runs]
-            costs = [self.validated_rh.get_cost(i) for i in incumbents]
-            costs, incumbents, runhistories, trajectories = (list(t) for t in
-                    zip(*sorted(zip(costs, incumbents, runhistories, trajectories), key=lambda
-                        x: x[0])))
-            incumbents = list(map(lambda x: x['incumbent'], trajectories[0]))
-            assert(incumbents[-1] == trajectories[0][-1]['incumbent'])
+        if self.scenario.feature_array is None:
+            self.scenario.feature_array = np.array([[]])
+        # Sort runhistories and incs wrt cost
+        incumbents = [r.solver.incumbent for r in self.runs]
+        trajectories = [r.traj for r in self.runs]
+        runhistories = [r.original_runhistory for r in self.runs]
+        costs = [self.validated_rh.get_cost(i) for i in incumbents]
+        costs, incumbents, runhistories, trajectories = (list(t) for t in
+                zip(*sorted(zip(costs, incumbents, runhistories, trajectories), key=lambda
+                    x: x[0])))
+        incumbents = list(map(lambda x: x['incumbent'], trajectories[0]))
+        assert(incumbents[-1] == trajectories[0][-1]['incumbent'])
 
-            confviz_script = self.analyzer.plot_confviz(incumbents, runhistories, max_confs=5000)
-            self.website["Configurator's behavior"]["Configurator Footprint"] = {
-                    "bokeh" : confviz_script}
-        elif confviz:
-            self.logger.info("Configuration visualization desired, but no "
-                             "instance-features available.")
+        script, div, cfp_paths = self.analyzer.plot_configurator_footprint(incumbents, runhistories,
+                                                                           max_confs=cfp_max_plot,
+                                                                           time_slider=cfp_time_slider,
+                                                                           num_quantiles=cfp_number_quantiles)
+        if cfp_number_quantiles == 1:  # Only one plot, no need for "Static"-field
+            self.website["Configurator's behavior"]["Configurator Footprint"] = {"bokeh" : (script, div)}
+        else:
+            self.website["Configurator's behavior"]["Configurator Footprint"] = {}
+            self.website["Configurator's behavior"]["Configurator Footprint"]["Interactive"] = {"bokeh" : (script, div)}
+            if [True for p in cfp_paths if os.path.exists(p)]:  # If the plots were actually generated
+                self.website["Configurator's behavior"]["Configurator Footprint"]["Static"] = {"figure" : cfp_paths}
+            else:
+                self.website["Configurator's behavior"]["Configurator Footprint"]["Static"] = {
+                        "else" : "This plot is missing. Maybe it was not generated? "
+                                 "Check if you installed selenium and phantomjs "
+                                 "correctly to activate bokeh-exports. "
+                                 "(https://automl.github.io/CAVE/stable/faq.html)"}
 
         self.build_website()
 
@@ -511,8 +522,7 @@ class CAVE(object):
         if importance:
             self.website["Feature Analysis"]["Feature Importance"] = OrderedDict()
             imp, plots = self.analyzer.feature_importance()
-            imp = DataFrame(data=list(imp.values()), index=list(imp.keys()),
-                    columns=["Error"])
+            imp = DataFrame(data=list(imp.values()), index=list(imp.keys()), columns=["Error"])
             imp = imp.to_html()  # this is a table with the values in html
             self.website["Feature Analysis"]["Feature Importance"]["Table"] = {
                          "table": imp}

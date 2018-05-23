@@ -170,8 +170,7 @@ class Analyzer(object):
                         for k in runs]
         else:
             runs = [(k, runs[k]) for k in runs]
-            self.logger.info("Calculating penalized average runtime without "
-                             "cutoff...")
+            self.logger.info("Calculating penalized average runtime without cutoff...")
 
         # Average
         if self.train_test:
@@ -575,7 +574,7 @@ class Analyzer(object):
 
         self.logger.info("    plotting %s parameters for (max) %s configurations",
                          len(params), n_configs)
-        rh = self.original_rh if self.plotter.vizrh is None else self.plotter.vizrh
+        rh = self.original_rh if self.plotter.configurator_footprint_rh is None else self.plotter.configurator_footprint_rh
         path = self.plotter.plot_parallel_coordinates(rh, self.output,
                                                       params, n_configs, self.validator)
 
@@ -592,8 +591,9 @@ class Analyzer(object):
                 self.validated_rh)
 
     @timing
-    def plot_confviz(self, incumbents, runhistories, max_confs=1000):
-        """ Plot the visualization of configurations, highlightning the
+    def plot_configurator_footprint(self, incumbents, runhistories, max_confs=1000,
+                                     time_slider=False, num_quantiles=10):
+        """Plot the visualization of configurations, highlighting the
         incumbents. Using original rh, so the explored configspace can be
         estimated.
 
@@ -605,18 +605,31 @@ class Analyzer(object):
             list of runhistories, so they can be marked in plot
         max_confs: int
             maximum number of data-points to plot
+        time_slider: bool
+            whether or not to have a time_slider-widget on cfp-plot
+            INCREASES FILE-SIZE DRAMATICALLY
+        num_quantiles: int
+            if time_slider is not off, defines the number of quantiles for the
+            slider/ number of static pictures
 
         Returns
         -------
-        confviz: str
-            script to generate the interactive html
+        script: str
+            script part of bokeh plot
+        div: str
+            div part of bokeh plot
+        over_time_paths: List[str]
+            list with paths to the different quantiled timesteps of the
+            configurator run (for static evaluation)
         """
-        self.logger.info("... visualizing explored configspace")
-        confviz = self.plotter.visualize_configs(self.scenario,
-                    runhistories=runhistories, incumbents=incumbents,
-                    max_confs_plot=max_confs)
+        self.logger.info("... visualizing explored configspace (this may take "
+                         "some hours, if there is a lot of data)")
 
-        return confviz
+        cfp = self.plotter.configurator_footprint(self.scenario,
+                    runhistories=runhistories, incumbents=incumbents,
+                    max_confs_plot=max_confs, time_slider=time_slider,
+                    num_quantiles=num_quantiles)
+        return cfp
 
     @timing
     def plot_cost_over_time(self, runs, validator):

@@ -68,7 +68,7 @@ class Plotter(object):
         self.scenario = scenario
         self.train_test = len(self.scenario.train_insts) > 1 and len(self.scenario.test_insts) > 1
         self.output_dir = output_dir
-        self.vizrh = None
+        self.configurator_footprint_rh = None  # Can be initialized from extern
 
     def plot_scatter(self, default, incumbent, runhistory):
         """
@@ -209,7 +209,8 @@ class Plotter(object):
             return output_fn[0]
         return output_fn
 
-    def visualize_configs(self, scen, runhistories, incumbents=None, max_confs_plot=1000):
+    def configurator_footprint(self, scen, runhistories, incumbents=None,
+                               max_confs_plot=1000, time_slider=False, num_quantiles=10):
         """
         Parameters
         ----------
@@ -221,15 +222,37 @@ class Plotter(object):
             incumbents of all runs
         max_confs_plot: int
             # configurations to be plotted
+        time_slider: bool
+            whether or not to have a time_slider-widget on cfp-plot
+            INCREASES FILE-SIZE DRAMATICALLY
+        num_quantiles: int
+            if time_slider is not off, defines the number of quantiles for the
+
+        Returns
+        -------
+        script: str
+            script part of bokeh plot
+        div: str
+            div part of bokeh plot
+        over_time_paths: List[str]
+            list with paths to the different quantiled timesteps of the
+            configurator run (for static evaluation)
         """
 
-        sz = ConfiguratorFootprint(
+        cfp = ConfiguratorFootprint(
                        scenario=scen,
-                       runhistories=runhistories,
+                       runhistory=runhistories[0],
                        incs=incumbents, max_plot=max_confs_plot,
-                       output_dir=self.output_dir)
-        r = sz.run()
-        self.vizrh = sz.relevant_rh
+                       output_dir=self.output_dir,
+                       time_slider=time_slider,
+                       num_quantiles=num_quantiles)
+        try:
+            r = cfp.run()
+        except MemoryError as err:
+            self.logger.error(err)
+            raise MemoryError("Memory Error occured in configurator footprint. "
+                              "You may want to reduce the number of plotted "
+                              "configs (using the '--cfp_max_plot'-argument)")
         return r
 
     def plot_parallel_coordinates(self, rh, output, params, n_configs, validator):
