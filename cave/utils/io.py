@@ -3,11 +3,15 @@ import csv
 
 import numpy as np
 import pandas as pd
+from bokeh.io import export_png
+
 from ConfigSpace import Configuration, c_util
 from ConfigSpace.util import deactivate_inactive_hyperparameters, fix_types
 from ConfigSpace.hyperparameters import UniformFloatHyperparameter, CategoricalHyperparameter
-from bokeh.io import export_png
 
+from cave.utils.timing import timing
+
+@timing
 def export_bokeh(plot, path, logger):
     """Export bokeh-plot to png-file. Create directory if necessary
 

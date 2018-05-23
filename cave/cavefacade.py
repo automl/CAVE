@@ -522,8 +522,7 @@ class CAVE(object):
         if importance:
             self.website["Feature Analysis"]["Feature Importance"] = OrderedDict()
             imp, plots = self.analyzer.feature_importance()
-            imp = DataFrame(data=list(imp.values()), index=list(imp.keys()),
-                    columns=["Error"])
+            imp = DataFrame(data=list(imp.values()), index=list(imp.keys()), columns=["Error"])
             imp = imp.to_html()  # this is a table with the values in html
             self.website["Feature Analysis"]["Feature Importance"]["Table"] = {
                          "table": imp}

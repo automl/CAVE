@@ -114,6 +114,8 @@ class ConfiguratorFootprint(object):
         Uses available Configurator-data to perform a MDS, estimate performance
         data and plot the configurator footprint.
         """
+        default = self.scenario.cs.get_default_configuration()
+        self.rh = self.reduce_runhistory(self.rh, self.max_plot, keep=self.incs+[default])
         conf_matrix, conf_list, runs_per_quantile = self.get_conf_matrix(self.rh, self.incs)
         self.logger.debug("Number of Configurations: %d", conf_matrix.shape[0])
         dists = self.get_distance(conf_matrix, self.scenario.cs)
@@ -177,12 +179,7 @@ class ConfiguratorFootprint(object):
 
         X_trans = []
         for x in X:
-            try:
-                x_scaled_conf = conf_dict[str(x[:num_params])]
-            except KeyError as err:
-                raise KeyError("Error in contour prediction. "
-                               "Maybe you provide too few configurations (detected %d)? "
-                               "Check the '--cfp_max_plot'-argument..." % self.max_plot)
+            x_scaled_conf = conf_dict[str(x[:num_params])]
             # append scaled config + pca'ed features (total of 4 values) per config/feature-sample
             X_trans.append(np.concatenate((x_scaled_conf, x[num_params:]), axis=0))
         X_trans = np.array(X_trans)
@@ -309,6 +306,49 @@ class ConfiguratorFootprint(object):
         self.logger.debug("MDS-stress: %f", mds.stress_)
         return dists
 
+    def reduce_runhistory(self,
+                          rh: RunHistory,
+                          max_configs: int,
+                          keep=None):
+        """
+        Reduce configs to desired number, by default just drop the configs with the
+        fewest runs.
+
+        Parameters
+        ----------
+        rh: RunHistory
+            runhistory that is to be reduced
+        max_configs: int
+            if > -1 reduce runhistory to at most max_configs
+        keep: List[Configuration]
+            list of configs that should be kept for sure (e.g. default,
+            incumbents)
+
+        Returns
+        -------
+        rh: RunHistory
+            reduced runhistory
+        """
+        configs = rh.get_all_configs()
+        if max_configs <= 0 or max_configs > len(configs):  # keep all
+            return rh
+
+        runs = [(c, len(rh.get_runs_for_config(c))) for c in configs]
+        if not keep: keep = []
+        runs = sorted(runs, key=lambda x: x[1])[-self.max_plot:]
+        keep = [r[0] for r in runs] + keep
+        self.logger.info("Reducing number of configs from %d to %d, dropping from the fewest evaluations",
+                         len(configs), len(keep))
+
+        new_rh = RunHistory(average_cost)
+        for k, v in list(rh.data.items()):
+            c = rh.ids_config[k.config_id]
+            if c in keep:
+                new_rh.add(config=rh.ids_config[k.config_id],
+                           cost=v.cost, time=v.time, status=v.status,
+                           instance_id=k.instance_id, seed=k.seed)
+        return new_rh
+
     @timing
     def get_conf_matrix(self, rh, incs):
         """
@@ -351,20 +391,7 @@ class ConfiguratorFootprint(object):
         # in (i.e. different quantiles of) the runhistory, LAST quantile
         # is full history!!
         runs_per_quantile = self._get_runs_per_config_quantiled(rh, conf_list, quantiles=self.num_quantiles)
-
-        # Which configs to plot and which to drop
-        default = self.scenario.cs.get_default_configuration()
-        keep_always = [conf_list.index(c) for c in incs + [default] if c in conf_list]  # Always plot default and incumbents
-        if self.max_plot < 0 or self.max_plot > len(conf_list):  # keep all
-            keep_indices = list(range(len(conf_list)))
-        else:
-            self.logger.info("Reducing number of configs from %d to %d, dropping from the fewest evaluations", len(conf_list), self.max_plot)
-            keep_indices = sorted(range(len(runs_per_quantile[-1])),
-                                  key=lambda x: runs_per_quantile[-1][x])[-self.max_plot:]
-        keep_indices = list(set(keep_always + keep_indices))
-        conf_list = np.array(conf_list)[keep_indices]
-        conf_matrix = np.array(conf_matrix)[keep_indices]
-        runs_per_quantile = [np.array(r_p_c)[keep_indices] for r_p_c in runs_per_quantile]
+        assert(len(runs_per_quantile) == self.num_quantiles)
 
         # Get minimum and maximum for sizes of dots
         self.min_runs_per_conf = min([i for i in runs_per_quantile[-1] if i > 0])
@@ -374,7 +401,8 @@ class ConfiguratorFootprint(object):
 
         self.logger.debug("Gathered %d configurations from 1 runhistories." % len(conf_list))
 
-        return conf_matrix, conf_list, runs_per_quantile
+        runs_per_quantile = np.array([np.array(run) for run in runs_per_quantile])
+        return np.array(conf_matrix), np.array(conf_list), runs_per_quantile
 
     @timing
     def _get_runs_per_config_quantiled(self, rh, conf_list, quantiles):
@@ -397,11 +425,10 @@ class ConfiguratorFootprint(object):
             numpy array of runs per configuration per quantile
         """
         runs_total = len(rh.data)
-        step = int(runs_total / quantiles)
         # Create LINEAR ranges. TODO do we want log? -> this line
-        ranges = [0] + list(range(step, runs_total-step, step)) + [runs_total]
-        self.logger.debug("Creating %d quantiles with a step of %d and a total "
-                          "runs of %d", quantiles, step, runs_total)
+        ranges = [int(r) for r in np.linspace(0, runs_total, quantiles + 1)]
+        self.logger.debug("Creating %d quantiles with a step of %.2f and a total "
+                          "runs of %d", quantiles, runs_total/quantiles, runs_total)
         self.logger.debug("Ranges: %s", str(ranges))
 
         # Iterate over the runhistory's entries in ranges and creating each
@@ -612,6 +639,12 @@ class ConfiguratorFootprint(object):
         source: ColumnDataSource
             source with attributes as requested
         """
+        # Remove all configurations without any runs
+        keep = [i for i in range(len(runs)) if runs[i] > 0]
+        runs = np.array(runs)[keep]
+        conf_list = np.array(conf_list)[keep]
+        X = X[keep]
+
         source = ColumnDataSource(data=dict(x=X[:, 0], y=X[:, 1]))
         for k in hp_names:  # Add parameters for each config
             source.add([c[k] if c[k] else "None" for c in conf_list],
@@ -678,16 +711,16 @@ class ConfiguratorFootprint(object):
 lab_len = cb_obj.end;
 for (i = 0; i < lab_len; i++) {
     if (cb_obj.value == i + 1) {
-        console.log('Setting to true: ' + i + '(' + glyph_renderers[i].length + ')')
+        // console.log('Setting to true: ' + i + '(' + glyph_renderers[i].length + ')')
         for (j = 0; j < glyph_renderers[i].length; j++) {
             glyph_renderers[i][j].visible = true;
-            console.log('Setting to true: ' + i + ' : ' + j)
+            // console.log('Setting to true: ' + i + ' : ' + j)
         }
     } else {
-        console.log('Setting to false: ' + i + '(' + glyph_renderers[i].length + ')')
+        // console.log('Setting to false: ' + i + '(' + glyph_renderers[i].length + ')')
         for (j = 0; j < glyph_renderers[i].length; j++) {
             glyph_renderers[i][j].visible = false;
-            console.log('Setting to false: ' + i + ' : ' + j)
+            // console.log('Setting to false: ' + i + ' : ' + j)
         }
     }
 }
