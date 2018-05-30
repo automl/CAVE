@@ -68,7 +68,28 @@ def get_cost_dict_for_config(rh: RunHistory,
     cost: dict(instance->cost)
         cost per instance (aggregated or as list per seed)
     """
-    instance_costs = rh.get_instance_costs_for_config(conf)
+    # Check if config is in runhistory
+    conf_id = rh.config_ids[conf]
+
+    # Map instances to seeds in dict
+    runs = rh.get_runs_for_config(conf)
+    instance_to_seeds = dict()
+    for run in runs:
+        inst, seed = run
+        if inst in instance_to_seeds:
+            instance_to_seeds[inst].append(seed)
+        else:
+            instance_to_seeds[inst] = [seed]
+
+    # Get loss per instance
+    instance_costs = {i: [rh.data[RunKey(conf_id, i, s)].cost for s in
+                           instance_to_seeds[i]] for i in instance_to_seeds}
+
+    # Aggregate:
+    instance_costs = {i: np.mean(instance_costs[i]) for i in instance_costs}
+
+    # TODO: uncomment next line and delete all above after next SMAC dev->master
+    #instance_costs = rh.get_instance_costs_for_config(conf)
 
     if par != 1:
         if cutoff:
