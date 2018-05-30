@@ -226,6 +226,8 @@ class Analyzer(object):
         num_feats = self.scenario.n_features
         dup_feats = DataFrame(self.scenario.feature_array)  # only contains train instances
         num_dup_feats = len(dup_feats[dup_feats.duplicated()])
+        num_changed_params = len([p for p in self.scenario.cs.get_hyperparameter_names()
+                                  if self.default[p] != self.incumbent[p]])
         overview = OrderedDict([('Run with best incumbent', os.path.basename(best_folder)),
                                 # Constants for scenario
                                 ('# Train instances', len(self.scenario.train_insts)),
@@ -238,6 +240,8 @@ class Analyzer(object):
                                 ('# Default evaluations', ta_evals_d),
                                 ('# Incumbent evaluations', ta_evals_i),
                                 ('Budget spent evaluating configurations', ta_runtime),
+                                ('# Changed parameters', num_changed_params),
+                                # BREAK
                                 ('Cutoff', self.scenario.cutoff),
                                 ('Walltime budget', self.scenario.wallclock_limit),
                                 ('Runcount budget', self.scenario.ta_run_limit),
@@ -249,6 +253,7 @@ class Analyzer(object):
                                 ('# Runs per Config (mean)', mean_ta_evals),
                                 ('# Runs per Config (max)', max_ta_evals),
                                 ('Total number of configuration runs', ta_evals),
+                                ('empty4', 'empty4'),
                                ])
         # Split into two columns
         overview_split = self._split_table(overview)
