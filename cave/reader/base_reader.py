@@ -27,8 +27,11 @@ class BaseReader(object):
         raise NotImplemented()
 
     def get_runhistory(self):
-        """Create RunHistory-object. Returns (original_runhistory,
-        validated_runhistory) where validated_runhistory can be None."""
+        """Create RunHistory-object from files."""
+        raise NotImplemented()
+
+    def get_validated_runhistory(self):
+        """Create validated runhistory from files, if available."""
         raise NotImplemented()
 
     def get_trajectory(self):
