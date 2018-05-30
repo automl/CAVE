@@ -26,7 +26,6 @@ from cave.html.html_builder import HTMLBuilder
 from cave.plot.plotter import Plotter
 from cave.reader.configurator_run import ConfiguratorRun
 from cave.analyzer import Analyzer
-from cave.utils.helpers import get_cost_dict_for_config
 from cave.utils.tooltips import get_tooltip
 from cave.utils.timing import timing
 

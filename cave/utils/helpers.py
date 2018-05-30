@@ -1,6 +1,8 @@
+import typing
 import numpy as np
 
-from smac.runhistory.runhistory import RunKey
+from ConfigSpace.configuration_space import Configuration
+from smac.runhistory.runhistory import RunHistory, RunKey
 from smac.tae.execute_ta_run import StatusType
 
 # TODO Possibly inconsistent: median over timeouts is timeout, but mean over
@@ -43,7 +45,10 @@ def get_timeout(rh, conf, cutoff):
     timeouts = {i : np.floor(np.median(timeouts[i])) for i in timeouts.keys()}
     return timeouts
 
-def get_cost_dict_for_config(rh, conf, aggregate=np.median):
+def get_cost_dict_for_config(rh: RunHistory,
+                             conf: Configuration,
+                             par: int=1,
+                             cutoff: typing.Union[float, None]=None):
     """
     Aggregates loss for configuration on evaluated instances over seeds.
 
@@ -53,15 +58,15 @@ def get_cost_dict_for_config(rh, conf, aggregate=np.median):
         runhistory with data
     conf: Configuration
         configuration to evaluate
-    aggregate: function or None
-        used to aggregate loss over different seeds, function must take list as
-        argument, if None no aggregation happens (individual values per seed
-        returned, but seeds not)
+    par: int
+        par-factor with which to multiply timeouts
+    cutoff: float
+        cutoff of scenario - used to penalize costs if par != 1
 
     Returns:
     --------
-    loss: dict(instance->loss)
-        loss per instance (aggregated or as list per seed)
+    cost: dict(instance->cost)
+        cost per instance (aggregated or as list per seed)
     """
     # Check if config is in runhistory
     conf_id = rh.config_ids[conf]
@@ -77,14 +82,22 @@ def get_cost_dict_for_config(rh, conf, aggregate=np.median):
             instance_to_seeds[inst] = [seed]
 
     # Get loss per instance
-    instance_losses = {i: [rh.data[RunKey(conf_id, i, s)].cost for s in
+    instance_costs = {i: [rh.data[RunKey(conf_id, i, s)].cost for s in
                            instance_to_seeds[i]] for i in instance_to_seeds}
 
     # Aggregate:
-    if aggregate:
-        instance_losses = {i: aggregate(instance_losses[i]) for i in instance_losses}
+    instance_costs = {i: np.mean(instance_costs[i]) for i in instance_costs}
 
-    return instance_losses
+    # TODO: uncomment next line and delete all above after next SMAC dev->master
+    #instance_costs = rh.get_instance_costs_for_config(conf)
+
+    if par != 1:
+        if cutoff:
+            instance_costs = {k : v if v < cutoff else v * par for k, v in instance_costs.items()}
+        else:
+            raise ValueError("To apply penalization of costs, a cutoff needs to be provided.")
+
+    return instance_costs
 
 def escape_parameter_name(p):
     """Necessary because:
