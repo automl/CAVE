@@ -166,7 +166,7 @@ class Analyzer(object):
         # Penalize
         if self.scenario.cutoff:
             runs = [(k, runs[k]) if runs[k] < self.scenario.cutoff
-                        else (k, self.scenario.cutoff*par)
+                        else (k, self.scenario.cutoff * par)
                         for k in runs]
         else:
             runs = [(k, runs[k]) for k in runs]
@@ -182,11 +182,15 @@ class Analyzer(object):
         else:
             return np.mean([c for i, c in runs])
 
-    def _permutation_test(self, default, incumbent, num_permutations):
-        def_cost, inc_cost = get_cost_dict_for_config(self.validated_rh, default), get_cost_dict_for_config(self.validated_rh, incumbent)
+    @timing
+    def _permutation_test(self, default, incumbent, num_permutations, par=1):
+        cutoff = self.scenario.cutoff
+        def_cost = get_cost_dict_for_config(self.validated_rh, default, par=par, cutoff=cutoff)
+        inc_cost = get_cost_dict_for_config(self.validated_rh, incumbent, par=par, cutoff=cutoff)
         data1, data2 = zip(*[(def_cost[i], inc_cost[i]) for i in def_cost.keys()])
-        p = paired_permutation(data1, data2, self.rng, logger=self.logger)
-        self.logger.debug("p-value for def/inc-difference: %f (permutation test)", p)
+        p = paired_permutation(data1, data2, self.rng, num_permutations=num_permutations, logger=self.logger)
+        self.logger.debug("p-value for def/inc-difference: %f (permutation test "
+                          "with %d permutations and par %d)", p, num_permutations, par)
         return p
 
     def _paired_t_test(self, default, incumbent, num_permutations):
@@ -222,8 +226,8 @@ class Analyzer(object):
         num_feats = self.scenario.n_features
         dup_feats = DataFrame(self.scenario.feature_array)  # only contains train instances
         num_dup_feats = len(dup_feats[dup_feats.duplicated()])
-        p_value_perm = "%.5f" % self._permutation_test(self.default, self.incumbent, 10000)
-        p_value_t = "%.5f" % self._paired_t_test(self.default, self.incumbent, 10000)
+        num_changed_params = len([p for p in self.scenario.cs.get_hyperparameter_names()
+                                  if self.default[p] != self.incumbent[p]])
         overview = OrderedDict([('Run with best incumbent', os.path.basename(best_folder)),
                                 # Constants for scenario
                                 ('# Train instances', len(self.scenario.train_insts)),
@@ -236,8 +240,8 @@ class Analyzer(object):
                                 ('# Default evaluations', ta_evals_d),
                                 ('# Incumbent evaluations', ta_evals_i),
                                 ('Budget spent evaluating configurations', ta_runtime),
-                                ('p-value of paired permutation test', p_value_perm),
-                                ('p-value of paired t-test', p_value_t),
+                                ('# Changed parameters', num_changed_params),
+                                # BREAK
                                 ('Cutoff', self.scenario.cutoff),
                                 ('Walltime budget', self.scenario.wallclock_limit),
                                 ('Runcount budget', self.scenario.ta_run_limit),
@@ -250,7 +254,6 @@ class Analyzer(object):
                                 ('# Runs per Config (max)', max_ta_evals),
                                 ('Total number of configuration runs', ta_evals),
                                 ('empty4', 'empty4'),
-                                ('empty5', 'empty5'),
                                ])
         # Split into two columns
         overview_split = self._split_table(overview)
@@ -270,6 +273,14 @@ class Analyzer(object):
         def_timeout, inc_timeout = self.get_timeouts(default), self.get_timeouts(incumbent)
         def_par10, inc_par10 = self.get_parX(default, 10), self.get_parX(incumbent, 10)
         def_par1, inc_par1 = self.get_parX(default, 1), self.get_parX(incumbent, 1)
+        # p-values (paired permutation)
+        p_value_par10 = "%.5f" % self._permutation_test(self.default, self.incumbent, 10000, 10)
+        p_value_par1 = "%.5f" % self._permutation_test(self.default, self.incumbent, 10000, 1)
+        def_timeouts = {k : int(b) for k, b in get_timeout(self.validated_rh, default, self.scenario.cutoff).items()}
+        inc_timeouts = {k : int(b) for k, b in get_timeout(self.validated_rh, incumbent, self.scenario.cutoff).items()}
+        data1, data2 = zip(*[(def_timeouts[i], inc_timeouts[i]) for i in def_timeouts.keys()])
+        p_value_timeouts = "%.5f" % paired_permutation(data1, data2, self.rng, num_permutations=10000, logger=self.logger)
+
         dec_place = 3
         if self.train_test:
             # Distinction between train and test
@@ -277,18 +288,21 @@ class Analyzer(object):
             array = np.array([[round(def_par10[0], dec_place),
                                round(inc_par10[0], dec_place),
                                round(def_par10[1], dec_place),
-                               round(inc_par10[1], dec_place)],
+                               round(inc_par10[1], dec_place),
+                               p_value_par10],
                               [round(def_par1[0], dec_place),
                                round(inc_par1[0], dec_place),
                                round(def_par1[1], dec_place),
-                               round(inc_par1[1], dec_place)],
+                               round(inc_par1[1], dec_place),
+                               p_value_par1],
                               ["{}/{}".format(def_timeout[0][0], def_timeout[0][1]),
                                "{}/{}".format(inc_timeout[0][0], inc_timeout[0][1]),
                                "{}/{}".format(def_timeout[1][0], def_timeout[1][1]),
-                               "{}/{}".format(inc_timeout[1][0], inc_timeout[1][1])
+                               "{}/{}".format(inc_timeout[1][0], inc_timeout[1][1]),
+                               p_value_timeouts
                                ]])
             df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
-                           columns=['Default', 'Incumbent', 'Default', 'Incumbent'])
+                           columns=['Default', 'Incumbent', 'Default', 'Incumbent', 'p-value'])
             table = df.to_html()
             # Insert two-column-header
             table = table.split(sep='</thead>', maxsplit=1)[1]
@@ -301,6 +315,7 @@ class Analyzer(object):
                         "      <td rowspan=\"2\"></td>\n"\
                         "      <th colspan=\"2\" scope=\"colgroup\">Train</th>\n"\
                         "      <th colspan=\"2\" scope=\"colgroup\">Test</th>\n"\
+                        "      <th colspan=\"1\" scope=\"colgroup\">p-value</th>\n"\
                         "    </tr>\n"\
                         "    <tr>\n"\
                         "      <th scope=\"col\">Default</th>\n"\
@@ -313,13 +328,16 @@ class Analyzer(object):
         else:
             # No distinction between train and test
             array = np.array([[round(def_par10, dec_place),
-                               round(inc_par10, dec_place)],
+                               round(inc_par10, dec_place),
+                               p_value_par10],
                               [round(def_par1, dec_place),
-                               round(inc_par1, dec_place)],
+                               round(inc_par1, dec_place),
+                               p_value_par1],
                               ["{}/{}".format(def_timeout[0], def_timeout[1]),
-                               "{}/{}".format(inc_timeout[0], inc_timeout[1])]])
+                               "{}/{}".format(inc_timeout[0], inc_timeout[1]),
+                               p_value_timeouts]])
             df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
-                           columns=['Default', 'Incumbent'])
+                           columns=['Default', 'Incumbent', 'p-value'])
             table = df.to_html()
         self.performance_table = table
         return table
