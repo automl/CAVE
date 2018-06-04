@@ -6,7 +6,7 @@ import shutil
 import inspect
 import re
 from traceback import print_exc
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 
 import numpy as np
 
@@ -109,7 +109,7 @@ for (i = 0; i < acc.length; i++) {
 </html>
 '''
 
-    def generate_html(self, data_dict:dict):
+    def generate_html(self, data_dict: OrderedDict):
         '''
         Arguments
         ---------
@@ -154,7 +154,7 @@ for (i = 0; i < acc.length; i++) {
                 print_exc()
 
 
-    def add_layer(self, layer_name, data_dict:dict):
+    def add_layer(self, layer_name, data_dict: OrderedDict):
         '''
         add a further layer of top data_dict keys
 
