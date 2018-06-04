@@ -179,13 +179,13 @@ class SMAC2Reader(BaseReader):
             for column in csv_data.columns[2:]:
                 config_id = int(re.match(r'^Run result line of validation config #(\d*)$', column).group(1))
                 result = [e.strip() for e in row[column].split(',')]
-                data.append({"config_id" : config_id,
-                             "instance_id" : instance,
-                             "seed" : seed,
-                             "time" : result[1],
-                             "cost" : result[1] if self.scen.run_obj == 'runtime' else result[3],
-                             "status" : result[0]},
-                             ignore_index=True)
+                data = data.append({"config_id" : config_id,
+                                    "instance_id" : instance,
+                                    "seed" : seed,
+                                    "time" : result[1],
+                                    "cost" : result[1] if self.scen.run_obj == 'runtime' else result[3],
+                                    "status" : result[0]},
+                                    ignore_index=True)
 
         rh = CSV2RH().read_csv_to_rh(data,
                                      cs=cs,
@@ -193,6 +193,9 @@ class SMAC2Reader(BaseReader):
                                      train_inst=self.scen.train_insts,
                                      test_inst=self.scen.test_insts,
                                      instance_features=feats)
+
+        self.logger.debug("%d datapoints for %d configurations found in validated rh.",
+                          len(rh.data), len(rh.get_all_configs()))
 
         return rh
 

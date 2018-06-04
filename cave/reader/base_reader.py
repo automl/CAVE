@@ -20,6 +20,8 @@ class BaseReader(object):
         self.folder = folder
         self.ta_exec_dir = ta_exec_dir
 
+        self.scen = None
+
     def get_scenario(self):
         """Expects `self.folder/scenario.txt` with appropriately formatted
         scenario-information (

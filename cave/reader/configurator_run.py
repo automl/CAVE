@@ -52,6 +52,8 @@ class ConfiguratorRun(SMAC):
         self.ta_exec_dir = ta_exec_dir
         self.logger.debug("Loading from \'%s\' with ta_exec_dir \'%s\'.",
                           folder, ta_exec_dir)
+        if validation_format == 'NONE':
+            validation_format = None
 
         def get_reader(name):
             if file_format == 'SMAC3':
@@ -67,8 +69,10 @@ class ConfiguratorRun(SMAC):
         self.scen = self.reader.get_scenario()
         self.original_runhistory = self.reader.get_runhistory(self.scen.cs)
         self.validated_runhistory = None
-        if validation_format != 'NONE':
-            self.validated_runhistory = get_reader(validation_format).get_validated_runhistory(self.scen.cs)
+        if validation_format:
+            reader = get_reader(validation_format)
+            reader.scen = self.scen
+            self.validated_runhistory = reader.get_validated_runhistory(self.scen.cs)
         self.traj = self.reader.get_trajectory(cs=self.scen.cs)
         self.default = self.scen.cs.get_default_configuration()
         self.incumbent = self.traj[-1]['incumbent']
