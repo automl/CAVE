@@ -128,7 +128,7 @@ for (i = 0; i < acc.length; i++) {
         '''
         html_head, html_body = "", ""
         html_head += self.header_part_1
-        html_dict = {}
+        html_dict = OrderedDict()
         # Get components (script, div) for each entry in report
         for k, v in data_dict.items():
             script, div = self.add_layer(layer_name=k, data_dict=v)

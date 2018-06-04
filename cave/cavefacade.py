@@ -367,7 +367,7 @@ class CAVE(object):
         if cfp_number_quantiles == 1:  # Only one plot, no need for "Static"-field
             self.website["Configurator's behavior"]["Configurator Footprint"] = {"bokeh" : (script, div)}
         else:
-            self.website["Configurator's behavior"]["Configurator Footprint"] = {}
+            self.website["Configurator's behavior"]["Configurator Footprint"] = OrderedDict()
             self.website["Configurator's behavior"]["Configurator Footprint"]["Interactive"] = {"bokeh" : (script, div)}
             if [True for p in cfp_paths if os.path.exists(p)]:  # If the plots were actually generated
                 self.website["Configurator's behavior"]["Configurator Footprint"]["Static"] = {"figure" : cfp_paths}
@@ -433,12 +433,12 @@ class CAVE(object):
             self.website["Parameter Importance"]["fANOVA"]["Importance"] = {
                          "table": table}
             # Insert plots (the received plots is a dict, mapping param -> path)
-            self.website["Parameter Importance"]["fANOVA"]["Marginals"] = OrderedDict([])
+            self.website["Parameter Importance"]["fANOVA"]["Marginals"] = OrderedDict()
             for param, plot in plots.items():
                 self.website["Parameter Importance"]["fANOVA"]["Marginals"][param] = {
                         "figure": plot}
             if pair_plots:
-                self.website["Parameter Importance"]["fANOVA"]["PairwiseMarginals"] = OrderedDict([])
+                self.website["Parameter Importance"]["fANOVA"]["PairwiseMarginals"] = OrderedDict()
                 for param, plot in pair_plots.items():
                     self.website["Parameter Importance"]["fANOVA"]["PairwiseMarginals"][param] = {
                         "figure": plot}
@@ -468,7 +468,7 @@ class CAVE(object):
             sum_ += 1
             self.logger.info("Local EPM-predictions around incumbent...")
             plots = self.analyzer.local_epm_plots()
-            self.website["Parameter Importance"]["Local Parameter Importance (LPI)"] = OrderedDict([])
+            self.website["Parameter Importance"]["Local Parameter Importance (LPI)"] = OrderedDict()
             for param, plot in plots.items():
                 self.website["Parameter Importance"]["Local Parameter Importance (LPI)"][param] = {
                     "figure": plot}
@@ -506,9 +506,9 @@ class CAVE(object):
             with changedir(self.ta_exec_dir if self.ta_exec_dir else '.'):
                 if not feat_fn or not os.path.exists(feat_fn):
                     self.logger.warning("Feature Analysis needs valid feature "
-                                        "file! Either {} is not a valid "
+                                        "file! Either %s is not a valid "
                                         "filename or features are not saved in "
-                                        "the scenario.")
+                                        "the scenario." % s)
                     self.logger.error("Skipping Feature Analysis.")
                     return
                 else:
@@ -516,7 +516,7 @@ class CAVE(object):
         else:
             feat_names = copy.deepcopy(self.scenario.feature_names)
 
-        self.website["Feature Analysis"] = OrderedDict([])
+        self.website["Feature Analysis"] = OrderedDict()
 
         # feature importance using forward selection
         if importance:
