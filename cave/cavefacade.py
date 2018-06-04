@@ -321,7 +321,8 @@ class CAVE(object):
         self.build_website()
 
         if algo_footprint and self.scenario.feature_dict:
-            algorithms = {self.default: "default", self.incumbent: "incumbent"}
+            algorithms = OrderedDict([(self.default, "default"),
+                                      (self.incumbent, "incumbent")])
             # Add all available incumbents to test portfolio strategy
             #for r in self.runs:
             #    if not r.get_incumbent() in algorithms:
