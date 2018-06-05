@@ -428,7 +428,7 @@ class Plotter(object):
                 ("performance", "@epm_perf"),
                 ("at-time", "@x")])
 
-        p = figure(plot_width=700, plot_height=500, tools=[hover],
+        p = figure(plot_width=700, plot_height=500, tools=[hover, 'save'],
                    x_range=Range1d(max(min(time), 1), max(time)),
                    x_axis_type='log',
                    y_axis_type='log' if self.scenario.run_obj=='runtime' else 'linear',

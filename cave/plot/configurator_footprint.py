@@ -797,7 +797,7 @@ for (i = 0; i < lab_len; i++) {
             if not time_slider or idx == 0:
                 # Only plot all quantiles in one plot if timeslider is on
                 p = figure(plot_height=500, plot_width=600,
-                           tools=[hover], x_range=x_range, y_range=y_range)
+                           tools=[hover, 'save'], x_range=x_range, y_range=y_range)
                 if contour_data is not None:
                    p = self._plot_contour(p, contour_data, x_range, y_range)
             views, markers = self._plot_create_views(source)
