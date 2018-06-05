@@ -56,20 +56,21 @@ class ConfiguratorRun(SMAC):
             validation_format = None
 
         def get_reader(name):
-            if file_format == 'SMAC3':
+            if name == 'SMAC3':
                 return SMAC3Reader(folder, ta_exec_dir)
-            elif file_format == 'SMAC2':
+            elif name == 'SMAC2':
                 return SMAC2Reader(folder, ta_exec_dir)
-            elif file_format == 'CSV':
+            elif name == 'CSV':
                 return CSVReader(folder, ta_exec_dir)
             else:
-                raise ValueError("%s not supported as file-format" % file_format)
+                raise ValueError("%s not supported as file-format" % name)
         self.reader = get_reader(file_format)
 
         self.scen = self.reader.get_scenario()
         self.original_runhistory = self.reader.get_runhistory(self.scen.cs)
         self.validated_runhistory = None
         if validation_format:
+            self.logger.debug('Using format %s for validation', validation_format)
             reader = get_reader(validation_format)
             reader.scen = self.scen
             self.validated_runhistory = reader.get_validated_runhistory(self.scen.cs)
