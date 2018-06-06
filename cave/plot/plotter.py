@@ -288,5 +288,5 @@ class Plotter(object):
                 path to output-png
             validator: TODO description
         """
-        cost_over_time = CostOverTime()
+        cost_over_time = CostOverTime(scenario=self.scenario, output_dir=self.output_dir)
         return cost_over_time.plot(rh, runs, output_fn, validator)

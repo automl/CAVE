@@ -22,8 +22,11 @@ from bokeh.models import HoverTool, Range1d
 
 class CostOverTime(object):
 
-    def __init__(self):
+    def __init__(self, scenario, output_dir):
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
+
+        self.scenario = scenario
+        self.output_dir = output_dir
 
     def _get_mean_var_time(self, validator, traj, pred, rh):
         # TODO kinda important: docstrings, what is this function doing?
