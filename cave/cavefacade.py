@@ -360,25 +360,27 @@ class CAVE(object):
         incumbents = list(map(lambda x: x['incumbent'], trajectories[0]))
         assert(incumbents[-1] == trajectories[0][-1]['incumbent'])
 
-        script, div, cfp_paths = self.analyzer.plot_configurator_footprint(incumbents, runhistories,
-                                                                           max_confs=cfp_max_plot,
-                                                                           time_slider=cfp_time_slider,
-                                                                           num_quantiles=cfp_number_quantiles)
-        if cfp_number_quantiles == 1:  # Only one plot, no need for "Static"-field
-            self.website["Configurator's behavior"]["Configurator Footprint"] = {"bokeh" : (script, div)}
-        else:
-            self.website["Configurator's behavior"]["Configurator Footprint"] = OrderedDict()
-            self.website["Configurator's behavior"]["Configurator Footprint"]["Interactive"] = {"bokeh" : (script, div)}
-            if [True for p in cfp_paths if os.path.exists(p)]:  # If the plots were actually generated
-                self.website["Configurator's behavior"]["Configurator Footprint"]["Static"] = {"figure" : cfp_paths}
+        if confviz:
+            script, div, cfp_paths = self.analyzer.plot_configurator_footprint(incumbents, runhistories,
+                                                                               max_confs=cfp_max_plot,
+                                                                               time_slider=(cfp_time_slider and
+                                                                                            (cfp_number_quantiles > 1)),
+                                                                               num_quantiles=cfp_number_quantiles)
+            if cfp_number_quantiles == 1:  # Only one plot, no need for "Static"-field
+                self.website["Configurator's behavior"]["Configurator Footprint"] = {"bokeh" : (script, div)}
             else:
-                self.website["Configurator's behavior"]["Configurator Footprint"]["Static"] = {
-                        "else" : "This plot is missing. Maybe it was not generated? "
-                                 "Check if you installed selenium and phantomjs "
-                                 "correctly to activate bokeh-exports. "
-                                 "(https://automl.github.io/CAVE/stable/faq.html)"}
+                self.website["Configurator's behavior"]["Configurator Footprint"] = OrderedDict()
+                self.website["Configurator's behavior"]["Configurator Footprint"]["Interactive"] = {"bokeh" : (script, div)}
+                if [True for p in cfp_paths if os.path.exists(p)]:  # If the plots were actually generated
+                    self.website["Configurator's behavior"]["Configurator Footprint"]["Static"] = {"figure" : cfp_paths}
+                else:
+                    self.website["Configurator's behavior"]["Configurator Footprint"]["Static"] = {
+                            "else" : "This plot is missing. Maybe it was not generated? "
+                                     "Check if you installed selenium and phantomjs "
+                                     "correctly to activate bokeh-exports. "
+                                     "(https://automl.github.io/CAVE/stable/faq.html)"}
 
-        self.build_website()
+            self.build_website()
 
         if cost_over_time:
             cost_over_time_script = self.analyzer.plot_cost_over_time(self.runs, self.validator)
