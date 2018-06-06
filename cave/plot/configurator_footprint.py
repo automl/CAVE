@@ -97,8 +97,7 @@ class ConfiguratorFootprint(object):
         num_quantiles: int
             number of quantiles for the slider/ number of static pictures
         '''
-        self.logger = logging.getLogger(
-            self.__module__ + '.' + self.__class__.__name__)
+        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
 
         self.scenario = scenario
         self.rh = runhistory
