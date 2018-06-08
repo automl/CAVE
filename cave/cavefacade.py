@@ -332,9 +332,12 @@ class CAVE(object):
             self.website["Performance Analysis"]["Algorithm Footprints"] = OrderedDict()
             p_2d = algo_footprint_plots[0]
             p_3d = algo_footprint_plots[1]
+            script, div = algo_footprint_plots[2]
             header = "Default vs Incumbent 2d"
             self.website["Performance Analysis"]["Algorithm Footprints"][header] = {
                 "figure" : p_2d}
+            self.website["Performance Analysis"]["Algorithm Footprints"]["Interactive Algorithm Footprint"] = {
+                "bokeh" : (script, div)}
             for plots in p_3d:
                 header = os.path.splitext(os.path.split(plots[0])[1])[0][10:-2]
                 header = header[0].upper() + header[1:].replace('_', ' ')

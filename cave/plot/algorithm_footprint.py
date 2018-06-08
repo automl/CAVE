@@ -16,10 +16,17 @@ from sklearn.metrics import silhouette_score
 from scipy import spatial
 import pandas as pd
 
+from bokeh.plotting import figure, ColumnDataSource, show
+from bokeh.embed import components
+from bokeh.models import HoverTool, CustomJS
+from bokeh.models.widgets import RadioButtonGroup
+from bokeh.layouts import row, column, widgetbox
+
 from smac.configspace import Configuration
 from smac.runhistory.runhistory import RunHistory
 
 from cave.utils.helpers import get_cost_dict_for_config, get_timeout
+from cave.utils.io import export_bokeh
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -31,8 +38,6 @@ class AlgorithmFootprint(object):
     """ Class that provides the algorithmic footprints after
      "Measuring algorithm footprints in instance space"
      (Kate Smith-Miles, Kate Smith-Miles)
-     ...
-     TODO
 
      General procedure:
          - label for each algorithm each instance with the same metric
@@ -54,8 +59,7 @@ class AlgorithmFootprint(object):
         output_dir: str
             output directory
         """
-        self.logger = logging.getLogger(
-            self.__module__ + '.' + self.__class__.__name__)
+        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
         self.output_dir = output_dir
         self.rng = rng
         if not self.rng:
@@ -99,14 +103,10 @@ class AlgorithmFootprint(object):
         """
         if n not in [2, 3]:
             raise ValueError("Only 2 and 3 supported as target dimension!")
-        # Perform PCA to reduce features to n
-        n_feats = feature_array.shape[1]
-        if n_feats > n:
+        if feature_array.shape[1] > n:
             self.logger.debug("Use PCA to reduce features to %d dimensions", n)
-            ss = StandardScaler()
-            feature_array = ss.fit_transform(feature_array)
-            pca = PCA(n_components=n)
-            feature_array = pca.fit_transform(feature_array)
+            feature_array = StandardScaler().fit_transform(feature_array)
+            feature_array = PCA(n_components=n).fit_transform(feature_array)
         return feature_array
 
     def _get_performance(self, algorithm, instance):
@@ -371,6 +371,67 @@ class AlgorithmFootprint(object):
         self.logger.debug("for config %s good: %d, bad: %d",
                           self.algo_names[conf], len(good_idx), len(bad_idx))
         return (good_idx, bad_idx)
+
+    def plot_interactive_footprint(self):
+        """Use bokeh to create an interactive algorithm footprint with zoom and
+        hover tooltips. Should avoid problems with overplotting (since we can
+        zoom) and provide better information about instances."""
+        features = np.array(self.features_2d)
+        instances = self.insts
+        runhistory = self.rh
+        algo = {v : k for k, v in self.algo_names.items()}
+        incumbent = algo['incumbent']
+        default = algo['default']
+        source = ColumnDataSource(data=dict(x=features[:, 0], y=features[:, 1]))
+        # Add all necessary information for incumbent and default
+        source.add(instances, 'instance_name')
+        for config, name in [(incumbent, 'incumbent'), (default, 'default')]:
+            cost = get_cost_dict_for_config(runhistory, config)
+            source.add([cost[i] for i in instances], '{}_cost'.format(name))
+            # TODO should be in function
+            good, bad = self._get_good_bad(config)
+            color = [1 if idx in good else 0 for idx, i in enumerate(instances)]
+            # TODO end
+            color = ['blue' if c else 'red' for c in color]
+            self.logger.debug("%s colors: %s", name, str(color))
+            source.add(color, '{}_color'.format(name))
+        source.add(source.data['default_color'], 'color')
+
+        # Define what appears in tooltips
+        hover = HoverTool(tooltips=[('instance name', '@instance_name'),
+                                    ('def cost', '@default_cost'),
+                                    ('inc_cost', '@incumbent_cost')])
+
+        # Add radio-button
+        callback = CustomJS(args=dict(source=source), code="""
+            var data = source.data;
+            if (cb_obj.active == 0) {
+                data['color'] = data['default_color'];
+            } else {
+                data['color'] = data['incumbent_color'];
+            }
+            source.change.emit();
+            """)
+
+        radio_button_group = RadioButtonGroup(
+                labels=["default", "incumbent"], active=0,
+                callback=callback)
+
+        # Plot
+        x_range = [min(features[:, 0]) - 1, max(features[:, 0]) + 1]
+        y_range = [min(features[:, 1]) - 1, max(features[:, 1]) + 1]
+        p = figure(plot_height=500, plot_width=600,
+                   tools=[hover, 'save', 'box_zoom', 'pan'], x_range=x_range, y_range=y_range)
+        p.scatter(x='x', y='y', source=source, color='color')
+
+        # Export and return
+        if self.output_dir:
+            path = os.path.join(self.output_dir, "content/images/algorithm_footprint.png")
+            export_bokeh(p, path, self.logger)
+
+        layout = column(p, widgetbox(radio_button_group))
+        script, div = components(layout)
+        return script, div
 
     def plot2d(self):
         """ Plot shaded 2d-version of the algorithm footprint. """

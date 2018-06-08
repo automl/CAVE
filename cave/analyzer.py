@@ -680,7 +680,8 @@ class Analyzer(object):
         # Plot footprints
         plots2d = footprint.plot2d()
         plots3d = footprint.plot3d()
-        return (plots2d, plots3d)
+        bokeh = footprint.plot_interactive_footprint()
+        return (plots2d, plots3d, bokeh)
 
 ####################################### FEATURE ANALYSIS #######################################
 
