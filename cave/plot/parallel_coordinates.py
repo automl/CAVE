@@ -23,7 +23,7 @@ __maintainer__ = "Joshua Marben"
 __email__ = "joshua.marben@neptun.uni-freiburg.de"
 
 class ParallelCoordinatesPlotter(object):
-    def __init__(self, rh, output_dir, validator, cs, runtime=True):
+    def __init__(self, original_rh, validated_rh, output_dir, cs, runtime=True):
         """ Plotting a parallel coordinates plot, visualizing the explored PCS.
         Inspired by: http://benalexkeen.com/parallel-coordinates-in-matplotlib/
 
@@ -36,9 +36,9 @@ class ParallelCoordinatesPlotter(object):
         """
         self.logger = logging.getLogger(
             self.__module__ + "." + self.__class__.__name__)
-        self.original_rh = rh
+        self.original_rh = original_rh
+        self.validated_rh = validated_rh
         self.output_dir = output_dir
-        self.validator = validator
         self.cs = cs  # type ConfigSpace.configuration_space.ConfigurationSpace
         self.runtime = runtime
 
@@ -61,6 +61,12 @@ class ParallelCoordinatesPlotter(object):
         # we should consider log performance
         # alpha = 1 - ((x - min_) / (max_ - min_))
         alpha = 1 - np.log((x - min_) + 1) / (1 + np.log((max_ - min_) + 1))  # logarithmic alpha
+        if alpha < 0:
+            self.logger.debug("Negative alpha?")
+            alpha = 0
+        if alpha > 1:
+            self.logger.debug("alpha > 1?")
+            alpha = 1
         return alpha
 
     def _get_log_spaced_ids(self, all_configs, num_configs):
@@ -111,9 +117,6 @@ class ParallelCoordinatesPlotter(object):
             num_configs = len(all_configs)
         self.logger.debug("Plotting %d configs.", min(num_configs,
                                                       len(all_configs)))
-        self.validated_rh = self.validator.validate_epm(all_configs,
-                                                        'train+test', 1,
-                                                        runhistory=self.original_rh)
 
         for logy in [False, True]:
             configs_to_plot = sorted(all_configs, key=lambda x: self._fun(self.validated_rh.get_cost(x), logy))
@@ -257,6 +260,7 @@ class ParallelCoordinatesPlotter(object):
                 cval = (cval[2], cval[0], cval[1])
                 zorder = idx - 5 if idx > len(data) // 2 else len(data) - idx  # -5 to have the best on top of the worst
                 alpha = (zorder / len(data)) - 0.25
+                alpha = np.clip(alpha, 0, 1)
                 path_effects = [path_efx.Normal()]
                 if idx in [0, 1, 2, 3, 4, len(data) - 1, len(data) - 2, len(data) - 3, len(data) - 4, len(data) - 5]:
                     alpha = 1

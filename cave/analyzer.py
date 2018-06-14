@@ -215,6 +215,7 @@ class Analyzer(object):
         table: str
             overview table in HTML
         """
+        # General
         all_confs = self.best_run.original_runhistory.get_all_configs()
         num_configs = len(all_confs)
         ta_runtime = np.sum([self.original_rh.get_cost(conf) for conf in all_confs])
@@ -223,15 +224,23 @@ class Analyzer(object):
         ta_evals_i = len(self.original_rh.get_runs_for_config(self.incumbent))
         min_ta_evals, max_ta_evals, = np.min(ta_evals), np.max(ta_evals)
         mean_ta_evals, ta_evals = np.mean(ta_evals), np.sum(ta_evals)
-        num_feats = self.scenario.n_features
-        dup_feats = DataFrame(self.scenario.feature_array)  # only contains train instances
-        num_dup_feats = len(dup_feats[dup_feats.duplicated()])
         num_changed_params = len([p for p in self.scenario.cs.get_hyperparameter_names()
                                   if self.default[p] != self.incumbent[p]])
+        # Instances
+        num_train = len([i for i in self.scenario.train_insts if i])
+        num_test = len([i for i in self.scenario.test_insts if i])
+        # Features
+        num_feats = self.scenario.n_features if self.scenario.feature_dict else 0
+        if self.scenario.feature_dict:
+            dup_feats = DataFrame(self.scenario.feature_array)
+            num_dup_feats = len(dup_feats[dup_feats.duplicated()])  # only contains train instances
+        else:
+            num_dup_feats = 0
+
         overview = OrderedDict([('Run with best incumbent', os.path.basename(best_folder)),
                                 # Constants for scenario
-                                ('# Train instances', len(self.scenario.train_insts)),
-                                ('# Test instances', len(self.scenario.test_insts)),
+                                ('# Train instances', num_train),
+                                ('# Test instances', num_test),
                                 ('# Parameters', len(self.scenario.cs.get_hyperparameters())),
                                 ('# Features', num_feats),
                                 ('# Duplicate Feature vectors', num_dup_feats),
@@ -593,8 +602,9 @@ class Analyzer(object):
         self.logger.info("    plotting %s parameters for (max) %s configurations",
                          len(params), n_configs)
         rh = self.original_rh if self.plotter.configurator_footprint_rh is None else self.plotter.configurator_footprint_rh
-        path = self.plotter.plot_parallel_coordinates(rh, self.output,
-                                                      params, n_configs, self.validator)
+        path = self.plotter.plot_parallel_coordinates(rh, self.validated_rh, self.output,
+                                                      params, n_configs,
+                                                      self.validator)
 
         return path
 

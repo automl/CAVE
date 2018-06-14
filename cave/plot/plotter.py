@@ -237,7 +237,8 @@ class Plotter(object):
                               "configs (using the '--cfp_max_plot'-argument)")
         return r
 
-    def plot_parallel_coordinates(self, rh, output, params, n_configs, validator):
+    def plot_parallel_coordinates(self, original_rh, combined_rh, output,
+                                  params, n_configs, validator):
         """ Plot parallel coordinates (visualize higher dimensions), here used
         to visualize pcs. This function prepares the data from a SMAC-related
         format (using runhistories and parameters) to a more general format
@@ -249,8 +250,12 @@ class Plotter(object):
 
         Parameters
         ----------
-        rh: RunHistory
-            rundata to take configs from
+        original_rh: RunHistory
+            rundata to take configs from (no validation data - we want to
+            visualize optimization process)
+        combined_rh: RunHistory
+            rundata to estimate costs of configs from (can contain validation
+            data but no empirical estimations)
         output: str
             where to save plot
         params: list[str]
@@ -265,8 +270,16 @@ class Plotter(object):
         output: str
             path to plot
         """
-        parallel_coordinates_plotter = ParallelCoordinatesPlotter(rh, self.output_dir,
-                                                                  validator, self.scenario.cs,
+        all_configs = original_rh.get_all_configs()
+        if self.scenario.feature_dict:
+            validated_rh = validator.validate_epm(all_configs,
+                                                  'train+test', 1,
+                                                  runhistory=combined_rh)
+        else:
+            validated_rh = combined_rh
+        parallel_coordinates_plotter = ParallelCoordinatesPlotter(original_rh, validated_rh,
+                                                                  self.output_dir,
+                                                                  self.scenario.cs,
                                                                   runtime=self.scenario.run_obj == 'runtime')
         output = parallel_coordinates_plotter.plot_n_configs(n_configs, params)
         return output

@@ -237,7 +237,19 @@ class CAVE(object):
                     new_rh = self.validator.validate('def+inc', 'train+test', 1, -1,
                                                      runhistory=self.original_rh)
                 elif method == "epm":
-                    new_rh = self.validator.validate_epm('def+inc', 'train+test', 1,
+                    # Only do test if features for test are available
+                    instance_mode = 'train+test'
+                    if (any([i not in self.scenario.feature_dict for i in self.scenario.test_insts]) and
+                        any([i in self.scenario.feature_dict for i in self.scenario.train_insts])):
+                        self.logger.debug("No features provided for test-instances (but for train!). "
+                                          "Cannot validate on \"epm\", treating "
+                                          "scenario as if no test-insts are present.")
+                        self.logger.warning("Features detected for "
+                                            "train-instances, but not for test-instances. This is "
+                                            "unintended usage and may lead to errors for some analysis-methods.")
+                        instance_mode = 'train'
+
+                    new_rh = self.validator.validate_epm('def+inc', instance_mode, 1,
                                                          runhistory=self.original_rh)
                 else:
                     raise ValueError("Missing data method illegal (%s)", method)
@@ -250,7 +262,7 @@ class CAVE(object):
                 cfp_time_slider=False, cfp_max_plot=-1, cfp_number_quantiles=10,
                 param_importance=['forward_selection', 'ablation', 'fanova'],
                 feature_analysis=["box_violin", "correlation",
-                    "feat_importance", "clustering", "feature_cdf"],
+                                  "importance", "clustering", "feature_cdf"],
                 parallel_coordinates=True, cost_over_time=True,
                 algo_footprint=True):
         """Analyze the available data and build HTML-webpage as dict.
@@ -284,11 +296,11 @@ class CAVE(object):
         for p in param_importance:
             if p not in ['forward_selection', 'ablation', 'fanova', 'lpi']:
                 raise ValueError("%s not a valid option for parameter "
-                                 "importance!", p)
+                                 "importance!" % p)
         for f in feature_analysis:
             if f not in ["box_violin", "correlation", "importance",
                          "clustering", "feature_cdf"]:
-                raise ValueError("%s not a valid option for feature analysis!", f)
+                raise ValueError("%s not a valid option for feature analysis!" % f)
 
         # Start analysis
         overview = self.analyzer.create_overview_table(self.best_run.folder)
@@ -305,12 +317,14 @@ class CAVE(object):
                                 self.default, self.incumbent)
             self.website["Performance Analysis"]["Performance Table"] = {"table": performance_table}
 
-        if cdf:
+        if cdf and (self.scenario.train_insts != [None]):
             cdf_path = self.analyzer.plot_cdf()
             self.website["Performance Analysis"]["empirical Cumulative Distribution Function (eCDF)"] = {
                      "figure": cdf_path}
+        elif cdf:
+            self.logger.info("eCDF plot desired, but no instances available.")
 
-        if scatter and (self.scenario.train_insts != [[None]]):
+        if scatter and (self.scenario.train_insts != [None]):
             scatter_path = self.analyzer.plot_scatter()
             self.website["Performance Analysis"]["Scatterplot"] = {
                      "figure" : scatter_path}
