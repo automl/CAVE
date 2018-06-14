@@ -128,6 +128,8 @@ class Analyzer(object):
         """
         cutoff = self.scenario.cutoff
         timeouts = get_timeout(self.validated_rh, config, cutoff)
+        num_train = len(self.scenario.train_insts)
+        num_test = len(self.scenario.test_insts)
         if self.train_test:
             if not cutoff:
                 return (("N","A"),("N","A"))
@@ -135,14 +137,14 @@ class Analyzer(object):
                                   and i in self.scenario.train_insts)])
             test_timeout = len([i for i in timeouts if (timeouts[i] == False
                                   and i in self.scenario.test_insts)])
-            return ((train_timeout, len(self.scenario.train_insts)),
-                    (test_timeout, len(self.scenario.test_insts)))
+            return ((train_timeout, num_train),
+                    (test_timeout, num_test))
         else:
             if not cutoff:
                 return ("N","A")
             timeout = len([i for i in timeouts if timeouts[i] == False])
             no_timeout = len([i for i in timeouts if timeouts[i] == True])
-            return (timeout, no_timeout)
+            return (timeout, num_train)
 
     def get_parX(self, config, par=10):
         """Calculate parX-values of default and incumbent configs.
