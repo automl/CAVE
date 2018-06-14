@@ -414,8 +414,9 @@ class CAVE(object):
             # Should be after parameter importance, if performed.
             n_params = 6
             parallel_path = self.analyzer.plot_parallel_coordinates(n_params)
-            self.website["Configurator's behavior"]["Parallel Coordinates"] = {
-                         "figure" : parallel_path}
+            if parallel_path:
+                self.website["Configurator's behavior"]["Parallel Coordinates"] = {
+                             "figure" : parallel_path}
 
         self.build_website()
 
@@ -477,7 +478,7 @@ class CAVE(object):
                                                self.output)
             f_s_barplot_path = os.path.join(self.output, "forward-selection-barplot.png")
             f_s_chng_path = os.path.join(self.output, "forward-selection-chng.png")
-            self.website["Parameter Importance"]["Forward-Selection"] = {
+            self.website["Parameter Importance"]["Forward Selection"] = {
                         "figure": [f_s_barplot_path, f_s_chng_path]}
 
         if lpi:
