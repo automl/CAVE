@@ -321,23 +321,20 @@ class CAVE(object):
         self.build_website()
 
         if algo_footprint and self.scenario.feature_dict:
-            algorithms = OrderedDict([(self.default, "default"),
-                                      (self.incumbent, "incumbent")])
-            # Add all available incumbents to test portfolio strategy
-            #for r in self.runs:
-            #    if not r.get_incumbent() in algorithms:
-            #        algorithms[r.get_incumbent()] = str(self.runs.index(r))
+            algorithms = [(self.default, "default"), (self.incumbent, "incumbent")]
 
             algo_footprint_plots = self.analyzer.plot_algorithm_footprint(algorithms)
             self.website["Performance Analysis"]["Algorithm Footprints"] = OrderedDict()
-            p_2d = algo_footprint_plots[0]
+
+            # Interactive bokeh-plot
+            self.website["Performance Analysis"]["Algorithm Footprints"]["Interactive Algorithm Footprint"] = {
+                "bokeh" : (script, div)}
+
             p_3d = algo_footprint_plots[1]
             script, div = algo_footprint_plots[2]
             header = "Default vs Incumbent 2d"
             self.website["Performance Analysis"]["Algorithm Footprints"][header] = {
                 "figure" : p_2d}
-            self.website["Performance Analysis"]["Algorithm Footprints"]["Interactive Algorithm Footprint"] = {
-                "bokeh" : (script, div)}
             for plots in p_3d:
                 header = os.path.splitext(os.path.split(plots[0])[1])[0][10:-2]
                 header = header[0].upper() + header[1:].replace('_', ' ')

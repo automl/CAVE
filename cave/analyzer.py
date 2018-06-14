@@ -659,28 +659,27 @@ class Analyzer(object):
     @timing
     def plot_algorithm_footprint(self, algorithms=None, density=200, purity=0.95):
         if not algorithms:
-            algorithms = OrderedDict([(self.default, "default"),
-                                      (self.incumbent, "incumbent")])
+            algorithms = [(self.default, "default"), (self.incumbent, "incumbent")]
         # filter instance features
-        instances = self.scenario.train_insts
-        if not self.scenario.test_insts == [None]:
-            instances.extend(self.scenario.test_insts)
-        features = {k : v for k, v in self.scenario.feature_dict.items() if k in instances}
+        train = self.scenario.train_insts
+        test = self.scenario.test_insts
+        train_feats = {k : v for k, v in self.scenario.feature_dict.items() if k in train}
+        test_feats = {k : v for k, v in self.scenario.feature_dict.items() if k in test}
+        if not (train_feats or test_feats):
+            self.logger.warning("No instance-features could be detected. "
+                                "No algorithm footprints available.")
+            raise MissingInstancesException("Could not detect any instances.")
 
-        self.logger.info("... algorithm footprints for: {}".format(", ".join(algorithms.values())))
+        self.logger.info("... algorithm footprints for: {}".format(",".join([a[1] for a in algorithms])))
         footprint = AlgorithmFootprint(self.validated_rh,
-                                       features, algorithms,
-                                       self.scenario.cutoff, self.output,
+                                       train_feats, test_feats,
+                                       algorithms,
+                                       self.scenario.cutoff,
+                                       self.output,
                                        rng=self.rng)
-        # Calculate footprints
-        #for i in range(100):
-        #    for a in algorithms:
-        #        footprint.footprint(a, 20, 0.95)
-
         # Plot footprints
-        plots2d = footprint.plot2d()
-        plots3d = footprint.plot3d()
         bokeh = footprint.plot_interactive_footprint()
+        plots3d = footprint.plot3d()
         return (plots2d, plots3d, bokeh)
 
 ####################################### FEATURE ANALYSIS #######################################

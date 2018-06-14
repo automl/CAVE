@@ -5,16 +5,16 @@ from collections import OrderedDict
 import itertools
 
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 plt.style.use(os.path.join(os.path.dirname(__file__), 'mpl_style'))
 import matplotlib.lines as mlines
 from mpl_toolkits.mplot3d import Axes3D
+from scipy import spatial
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
-from scipy import spatial
-import pandas as pd
 
 from bokeh.plotting import figure, ColumnDataSource, show
 from bokeh.embed import components
@@ -32,28 +32,38 @@ __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
 __license__ = "3-clause BSD"
 __maintainer__ = "Joshua Marben"
-__email__ = "joshua.marben@neptun.uni-freiburg.de"
+__email__ = "jo.ma@posteo.de"
 
 class AlgorithmFootprint(object):
     """ Class that provides the algorithmic footprints after
-     "Measuring algorithm footprints in instance space"
-     (Kate Smith-Miles, Kate Smith-Miles)
+    "Measuring algorithm footprints in instance space"
+    (Kate Smith-Miles, Kate Smith-Miles)
 
-     General procedure:
-         - label for each algorithm each instance with the same metric
-         - map the instances onto a plane using pca
+    General procedure:
+        - label for each algorithm each instance with the same metric
+        - map the instances onto a plane using pca
+
+    NOTE:
+    The terms 'algorithm' and 'config/configuration' will be used synonymous
+    throughout the class.
     """
-    def __init__(self, rh: RunHistory, inst_feat, algorithms, cutoff=np.inf,
-                 output_dir="", rng=None):
+    def __init__(self,
+                 rh: RunHistory,
+                 train_inst_feat,
+                 test_inst_feat,
+                 algorithms,
+                 cutoff=np.inf,
+                 output_dir=None,
+                 rng=None):
         """
         Parameters
         ----------
         rh: RunHistory
-            runhistory to take performance from
-        inst_feat: dict[str->np.array]
+            runhistory to take cost from
+        train_inst_feat, test_inst_feat: dict[str->np.array]
             instances names mapped to features
-        algorithms: Dict[Configuration->str]
-            mapping configs to names (here just: default, incumbent)
+        algorithms: List[Tuple(Configuration, str)]
+            list with configs and descriptive names
         cutoff: int
             cutoff (if available)
         output_dir: str
@@ -63,31 +73,34 @@ class AlgorithmFootprint(object):
         self.output_dir = output_dir
         self.rng = rng
         if not self.rng:
-            self.logger.info("No randomstate passed. Generate deterministic "
-                             "random state.")
+            self.logger.debug("No randomstate passed. Generate deterministic random state.")
             self.rng = np.random.RandomState(42)
 
         self.rh = rh
-        self.insts = list(inst_feat.keys())  # This is the order of instances!
+        self.inst_to_feat = {**train_inst_feat, **test_inst_feat}
+        # This is the order of instances:
+        self.insts = list(train_inst_feat.keys()) + list(test_inst_feat.keys())
         if self.output_dir and not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 
-        self.algorithms = algorithms.keys()  # Configs
-        self.algo_names = algorithms         # Maps config -> name
-        self.algo_performance = {}           # Maps instance -> performance
-        self.algo_labels = {}                # Maps config -> label
+        self.algorithms = [config for config, name in algorithms]
+        self.algo_name = {algo : name for algo, name in algorithms}
+        self.name_algo = {name : algo for algo, name in algorithms}
+        self.__algo_cost = {}  # Use function self._get_cost!! Maps algo -> {instance -> cost}
 
-        self.features = np.array([inst_feat[k] for k in self.insts])
+        self.algo_labels = {}  # Maps algo -> label
+
+        self.features = np.array([self.inst_to_feat[k] for k in self.insts])
         self.features_2d = self._reduce_dim(self.features, 2)
         self.features_3d = self._reduce_dim(self.features, 3)
-        self.clusters, self.cluster_dict = self.get_clusters(self.features_2d)
+        #self.clusters, self.cluster_dict = self.get_clusters(self.features_2d)
 
         self.cutoff = cutoff
 
         self._label_instances()
 
     def _reduce_dim(self, feature_array, n=2):
-        """ Expects feature-array (not dict!)
+        """ Expects feature-array (not dict!), performs a PCA
 
         Parameters
         ----------
@@ -109,13 +122,21 @@ class AlgorithmFootprint(object):
             feature_array = PCA(n_components=n).fit_transform(feature_array)
         return feature_array
 
-    def _get_performance(self, algorithm, instance):
+    def _get_cost(self, algorithm, instance):
         """
-        Return performance according to (possibly EPM-)validated runhistory.
+        Return cost according to (possibly EPM-)validated runhistory.
+
+        Parameters
+        ----------
+        algorithm: Configuration
+            config
+        instance: str
+            instance name
         """
-        if not algorithm in self.algo_performance:
-            self.algo_performance[algorithm] = get_cost_dict_for_config(self.rh, algorithm)
-        return self.algo_performance[algorithm][instance]
+        if not algorithm in self.__algo_cost:
+            self.logger.debug("Getting cost for %s, using PAR1-score", self.algo_name[algorithm])
+            self.__algo_cost[algorithm] = get_cost_dict_for_config(self.rh, algorithm)
+        return self.__algo_cost[algorithm][instance]
 
     def _label_instances(self, epsilon=0.95):
         """
@@ -129,19 +150,18 @@ class AlgorithmFootprint(object):
         start = time.time()
         if len(self.algo_labels) > 0:
             return
-        self.algo_labels = {a:{} for a in self.algorithms}
+        self.algo_labels = {a:{} for a in self.algo_name.keys()}
         for i in self.insts:
-            performances = [self._get_performance(a, i) for a in self.algorithms]
-            best_performance = min(performances)
-            for a in self.algorithms:
-                performance = self._get_performance(a, i)
+            best_cost = min([self._get_cost(a, i) for a in self.algo_name.keys()])
+            for a in self.algo_name.keys():
+                cost = self._get_cost(a, i)
                 #self.logger.debug("%s on \'%s\': best/this (%f/%f=%f)",
                 #                  self.algo_names[a], i,
-                #                  best_performance, performance,
-                #                  best_performance / performance)
-                if (performance == 0 or
-                    (best_performance/performance >= epsilon and
-                     not performance >= self.cutoff)):
+                #                  best_cost, cost,
+                #                  best_cost / cost)
+                if (cost == 0 or
+                    (best_cost/cost >= epsilon and
+                     not cost >= self.cutoff)):
                     # Algorithm for instance is in threshhold epsilon and no timeout
                     label = 1
                 else:
@@ -356,7 +376,7 @@ class AlgorithmFootprint(object):
             insts = self.insts
 
         good_idx, bad_idx = [], []
-        for k, v in self.algo_performance[conf].items():
+        for k, v in self.__algo_cost[conf].items():
             # Only consider passed insts
             if not k in insts:
                 continue
@@ -379,7 +399,7 @@ class AlgorithmFootprint(object):
         features = np.array(self.features_2d)
         instances = self.insts
         runhistory = self.rh
-        algo = {v : k for k, v in self.algo_names.items()}
+        algo = {v : k for k, v in self.algo_name.items()}
         incumbent = algo['incumbent']
         default = algo['default']
         source = ColumnDataSource(data=dict(x=features[:, 0], y=features[:, 1]))
