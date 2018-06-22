@@ -89,6 +89,11 @@ class CaveCLI(object):
                               help="what format the configurator-files are in",
                               choices=['SMAC2', 'SMAC3', 'CSV'],
                               type=str.upper)
+        opt_opts.add_argument("--validation_format",
+                              default='NONE',
+                              help="what format the validation-files are in",
+                              choices=['SMAC2', 'SMAC3', 'CSV', 'NONE'],
+                              type=str.upper)
         opt_opts.add_argument("--ta_exec_dir",
                               default=None,
                               help="path to the execution-directory of the "
@@ -180,8 +185,7 @@ class CaveCLI(object):
 
         # Expand configs
         if "all" in args_.param_importance:
-            param_imp = ["ablation", "forward_selection", "fanova",
-                         "lpi"]
+            param_imp = ["ablation", "forward_selection", "fanova", "lpi"]
             if not fanova_ready:
                 raise ImportError('fANOVA is not installed! To install it please run '
                                   '"git+http://github.com/automl/fanova.git@master"')
@@ -253,6 +257,7 @@ class CaveCLI(object):
 
         cave = CAVE(folders, args_.output, ta_exec_dir,
                     file_format=args_.file_format,
+                    validation_format=args_.validation_format,
                     missing_data_method=args_.validation,
                     max_pimp_samples=args_.max_pimp_samples,
                     fanova_pairwise=args_.fanova_pairwise,

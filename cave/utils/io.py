@@ -39,7 +39,7 @@ def export_bokeh(plot, path, logger):
                        "instructions on CAVE's GitHub (install "
                        "selenium and phantomjs-prebuilt).")
 
-def load_csv_to_pandaframe(csv_path, logger, apply_numeric=True):
+def load_csv_to_pandaframe(csv_path, logger, apply_numeric=True, delimiter=','):
     """Load csv-file and return pd.DataFrame. First line of file is expected to
     be the header.
 
@@ -50,8 +50,9 @@ def load_csv_to_pandaframe(csv_path, logger, apply_numeric=True):
     logger: logging.Logger
         logger, for debugging
     apply_numeric: boolean
-        whether to an attempt should be taken to turn columns into numeric
-        values.
+        whether to an attempt should be taken to turn columns into numeric values.
+    delimiter: str
+        can be used to determine custom delimiter
 
     Returns
     -------
@@ -59,7 +60,8 @@ def load_csv_to_pandaframe(csv_path, logger, apply_numeric=True):
         csv-dataframe
     """
     with open(csv_path, 'r') as csv_file:
-        csv_data = list(csv.reader(csv_file, delimiter=',', skipinitialspace=True))
+        lines = csv_file.readlines()
+        csv_data = [[e.strip('" \n') for e in l.split(delimiter)] for l in lines]
     header, csv_data = csv_data[0], np.array([csv_data[1:]])[0]
     data = pd.DataFrame(csv_data, columns=header)
     if apply_numeric:

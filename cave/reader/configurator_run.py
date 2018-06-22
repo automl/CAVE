@@ -25,7 +25,11 @@ class ConfiguratorRun(SMAC):
     This class is responsible for providing a scenario, a runhistory and a
     trajectory and handling original/validated data appropriately.
     """
-    def __init__(self, folder: str, ta_exec_dir: str, file_format: str='SMAC3'):
+    def __init__(self,
+                 folder: str,
+                 ta_exec_dir: str,
+                 file_format: str='SMAC3',
+                 validation_format: str='NONE'):
         """Initialize scenario, runhistory and incumbent from folder, execute
         init-method of SMAC facade (so you could simply use SMAC-instances instead)
 
@@ -40,36 +44,46 @@ class ConfiguratorRun(SMAC):
             specify the path to the execution-dir of SMAC here
         file_format: string
             from [SMAC2, SMAC3, CSV]
+        validation_format: string
+            from [SMAC2, SMAC3, CSV, NONE], in which format to look for validated data
         """
         self.logger = logging.getLogger("cave.ConfiguratorRun.{}".format(folder))
         self.folder = folder
         self.ta_exec_dir = ta_exec_dir
         self.logger.debug("Loading from \'%s\' with ta_exec_dir \'%s\'.",
                           folder, ta_exec_dir)
+        if validation_format == 'NONE':
+            validation_format = None
 
-        if file_format == 'SMAC3':
-            self.reader = SMAC3Reader(folder, ta_exec_dir)
-        elif file_format == 'SMAC2':
-            self.reader = SMAC2Reader(folder, ta_exec_dir)
-        elif file_format == 'CSV':
-            self.reader = CSVReader(folder, ta_exec_dir)
-        else:
-            raise ValueError("%s not supported as file-format" % file_format)
+        def get_reader(name):
+            if name == 'SMAC3':
+                return SMAC3Reader(folder, ta_exec_dir)
+            elif name == 'SMAC2':
+                return SMAC2Reader(folder, ta_exec_dir)
+            elif name == 'CSV':
+                return CSVReader(folder, ta_exec_dir)
+            else:
+                raise ValueError("%s not supported as file-format" % name)
+        self.reader = get_reader(file_format)
 
         self.scen = self.reader.get_scenario()
-        runhistories = self.reader.get_runhistory(self.scen.cs)
-        self.original_runhistory = runhistories[0]
-        self.validated_runhistory = runhistories[1]
+        self.original_runhistory = self.reader.get_runhistory(self.scen.cs)
+        self.validated_runhistory = None
+        if validation_format:
+            self.logger.debug('Using format %s for validation', validation_format)
+            reader = get_reader(validation_format)
+            reader.scen = self.scen
+            self.validated_runhistory = reader.get_validated_runhistory(self.scen.cs)
         self.traj = self.reader.get_trajectory(cs=self.scen.cs)
         self.default = self.scen.cs.get_default_configuration()
         self.incumbent = self.traj[-1]['incumbent']
         self.train_inst = self.scen.train_insts
         self.test_inst = self.scen.test_insts
-        self._check_rh_for_inc_and_def(self.original_runhistory)
+        self._check_rh_for_inc_and_def(self.original_runhistory, 'original runhistory')
 
         # Check validated runhistory for completeness
-        if (self.validated_runhistory and
-            self._check_rh_for_inc_and_def(self.validated_runhistory)):
+        if self.validated_runhistory:
+            self._check_rh_for_inc_and_def(self.validated_runhistory, 'validated runhistory')
             self.logger.info("Found validated runhistory for \"%s\" and using "
                              "it for evaluation. #configs in validated rh: %d",
                              self.folder, len(self.validated_runhistory.config_ids))
@@ -96,9 +110,16 @@ class ConfiguratorRun(SMAC):
     def get_incumbent(self):
         return self.solver.incumbent
 
-    def _check_rh_for_inc_and_def(self, rh):
+    def _check_rh_for_inc_and_def(self, rh, name=''):
         """
         Check if default and incumbent are evaluated on all instances in this rh
+
+        Parameters
+        ----------
+        rh: RunHistory
+            runhistory to be checked
+        name: str
+            name for logging-purposes
 
         Returns
         -------
@@ -114,9 +135,9 @@ class ConfiguratorRun(SMAC):
                               ("test", self.test_inst)]:
                 not_evaluated = set(i) - evaluated
                 if len(not_evaluated) > 0:
-                    self.logger.debug("RunHistory only evaluated on %d/%d %s-insts "
+                    self.logger.debug("RunHistory %s only evaluated on %d/%d %s-insts "
                                       "for %s in folder %s",
-                                      len(i) - len(not_evaluated), len(i),
+                                      name, len(i) - len(not_evaluated), len(i),
                                       i_name, c_name, self.folder)
                     return_value = False
         return return_value

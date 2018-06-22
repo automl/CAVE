@@ -7,7 +7,7 @@ sphinx
 sphinx_rtd_theme
 bokeh==0.12.14
 pillow
-smac>=0.8.0
+smac==0.8.0
 configspace>=0.4.6
 fanova
 pyimp>=1.0.1
