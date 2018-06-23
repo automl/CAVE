@@ -5,11 +5,10 @@ import numpy as np
 import pandas as pd
 from bokeh.io import export_png
 
-from ConfigSpace import Configuration, c_util
 from ConfigSpace.util import deactivate_inactive_hyperparameters, fix_types
-from ConfigSpace.hyperparameters import UniformFloatHyperparameter, CategoricalHyperparameter
 
 from cave.utils.timing import timing
+
 
 @timing
 def export_bokeh(plot, path, logger):
@@ -38,6 +37,7 @@ def export_bokeh(plot, path, logger):
         logger.warning("To activate png-export, please follow "
                        "instructions on CAVE's GitHub (install "
                        "selenium and phantomjs-prebuilt).")
+
 
 def load_csv_to_pandaframe(csv_path, logger, apply_numeric=True):
     """Load csv-file and return pd.DataFrame. First line of file is expected to
@@ -69,6 +69,7 @@ def load_csv_to_pandaframe(csv_path, logger, apply_numeric=True):
         raise ValueError("Detected a duplicate in the columns of the "
                          "csv-file \"%s\"." % csv_path)
     return data
+
 
 def load_config_csv(path, cs, logger):
     """ Load configurations.csv in the following format:
@@ -107,6 +108,6 @@ def load_config_csv(path, cs, logger):
         raise ValueError("Provided pcs does not match configuration-file "
                          "\'%s\' (check parameters %s)" % (path, diff))
     for index, row in config_data.iterrows():
-        values = {name : row[name] for name in config_data.columns if row[name]}
+        values = {name: row[name] for name in config_data.columns if row[name]}
         id_to_config[index] = deactivate_inactive_hyperparameters(fix_types(values, cs), cs)
     return config_data.columns, id_to_config

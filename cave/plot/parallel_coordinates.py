@@ -1,19 +1,17 @@
 import os
-import math
 import logging
 import random
 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-plt.style.use(os.path.join(os.path.dirname(__file__), 'mpl_style'))
+plt.style.use(os.path.join(os.path.dirname(__file__), 'mpl_style'))  # noqa
 from matplotlib import ticker
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import matplotlib.patheffects as path_efx
 from matplotlib.pyplot import setp
 
-from ConfigSpace.util import impute_inactive_values
 from ConfigSpace.hyperparameters import CategoricalHyperparameter, IntegerHyperparameter, FloatHyperparameter
 
 __author__ = "Joshua Marben"
@@ -22,60 +20,44 @@ __license__ = "3-clause BSD"
 __maintainer__ = "Joshua Marben"
 __email__ = "joshua.marben@neptun.uni-freiburg.de"
 
+
 class ParallelCoordinatesPlotter(object):
-    def __init__(self, original_rh, validated_rh, output_dir, cs, runtime=True):
+    def __init__(self, original_rh, epm_rh, output_dir, cs, runtime=True):
         """ Plotting a parallel coordinates plot, visualizing the explored PCS.
         Inspired by: http://benalexkeen.com/parallel-coordinates-in-matplotlib/
 
         Parameters
         ----------
-        rh: RunHistory
+        original_rh: RunHistory
             unvalidated(!) runhistory
+        epm_rh: RunHistory
+            validated and epm'ed runhistory (with best estimates for all configurations)
         output_dir: str
             output-filepath
+        cs: ConfigurationSpace
+            configspace of this scenario
+        runtime: bool
+            if True, the run_objective of this configurator run is runtime-optimization, if false it's quality
         """
         self.logger = logging.getLogger(
             self.__module__ + "." + self.__class__.__name__)
         self.original_rh = original_rh
-        self.validated_rh = validated_rh
+        self.epm_rh = epm_rh
         self.output_dir = output_dir
         self.cs = cs  # type ConfigSpace.configuration_space.ConfigurationSpace
         self.runtime = runtime
-
-    def get_alpha(self, conf, n=1):
-        """ Return alpha-value. The further the conf-performance is from best
-        performance, the smaller the alpha-value.
-        Parameters
-        ----------
-        conf: Configuration
-            config to compare against
-        n: int
-            the higher n, the more visible are "bad" configs
-        """
-
-        x = self.validated_rh.get_cost(conf)
-        min_ = self.best_config_performance
-        # add 10% to have visbility of the worst config
-        max_ = self.worst_config_performance  # * 1.1
-        # TODO: if we have runtime scenario
-        # we should consider log performance
-        # alpha = 1 - ((x - min_) / (max_ - min_))
-        alpha = 1 - np.log((x - min_) + 1) / (1 + np.log((max_ - min_) + 1))  # logarithmic alpha
-        if alpha < 0:
-            self.logger.debug("Negative alpha?")
-            alpha = 0
-        if alpha > 1:
-            self.logger.debug("alpha > 1?")
-            alpha = 1
-        return alpha
 
     def _get_log_spaced_ids(self, all_configs, num_configs):
         """
         Method that produces integer indices in the logspace.
         Useful to visualize all of the best and the worst
-        :param all_configs:
-        :param num_configs:
-        :return:
+
+        Parameters
+        ----------
+        all_configs: List[Configuration]
+            list with all configs
+        num_configs: int
+            number of configs
         """
         # Calculate the constant between values in log-space
         ratio = np.e**(np.log(len(all_configs)) / (num_configs - 1))
@@ -115,15 +97,14 @@ class ParallelCoordinatesPlotter(object):
         # Get n most run configs
         if num_configs == -1:
             num_configs = len(all_configs)
-        self.logger.debug("Plotting %d configs.", min(num_configs,
-                                                      len(all_configs)))
+        self.logger.debug("Plotting %d configs.", min(num_configs, len(all_configs)))
 
         for logy in [False, True]:
-            configs_to_plot = sorted(all_configs, key=lambda x: self._fun(self.validated_rh.get_cost(x), logy))
+            configs_to_plot = sorted(all_configs, key=lambda x: self._fun(self.epm_rh.get_cost(x), logy))
             # What about scenarios where quality is the value to optimize? shouldn't min and max be switched then?
-            self.best_config_performance = self._fun(min([self.validated_rh.get_cost(c) for c
+            self.best_config_performance = self._fun(min([self.epm_rh.get_cost(c) for c
                                                           in all_configs]), logy)
-            self.worst_config_performance = self._fun(max([self.validated_rh.get_cost(c) for c
+            self.worst_config_performance = self._fun(max([self.epm_rh.get_cost(c) for c
                                                            in all_configs]), logy)
             if num_configs < len(configs_to_plot):
                 ids = list(sorted(random.sample(range(len(configs_to_plot)), num_configs)))
@@ -135,9 +116,7 @@ class ParallelCoordinatesPlotter(object):
             ids[-5:] = list(range(len(configs_to_plot) - 6, len(configs_to_plot) - 1))
             self._plot(np.array(configs_to_plot)[ids], params,
                        fn=os.path.join(self.output_dir, "parallel_coordinates_uniform_{:s}".format(
-                           'log_cost' if logy else ''
-                       ) + str(len(ids)) + '.png'),
-                       logy=logy)
+                           'log_cost' if logy else '') + str(len(ids)) + '.png'), logy=logy)
             if num_configs < len(configs_to_plot):  # Only sample on the logscale if not all configs are plotted.
                 ids = self._get_log_spaced_ids(configs_to_plot, num_configs)
             else:
@@ -146,7 +125,7 @@ class ParallelCoordinatesPlotter(object):
             ids[-5:] = list(range(len(configs_to_plot) - 6, len(configs_to_plot) - 1))
             configs_to_plot = np.array(configs_to_plot)[ids]
             res = self._plot(configs_to_plot, params,
-                             fn = os.path.join(self.output_dir, "parallel_coordinates_{:s}".format(
+                             fn=os.path.join(self.output_dir, "parallel_coordinates_{:s}".format(
                                  'log_cost' if logy else ''
                              ) + str(len(ids)) + '.png'), logy=logy)
         return res
@@ -173,9 +152,7 @@ class ParallelCoordinatesPlotter(object):
             self.logger.info("Only two parameters, skipping parallel coordinates.")
             return
 
-        # Get ALL parameter names and metrics
-        parameter_names = impute_inactive_values(self.validated_rh.get_all_configs()[0]).keys()
-        # configs = self.validated_rh.get_all_configs()
+        # configs = self.epm_rh.get_all_configs()
         configspace = configs[0].configuration_space
 
         # Create dataframe with configs
@@ -189,7 +166,7 @@ class ParallelCoordinatesPlotter(object):
             conf_dict = conf.get_dictionary()
             new_entry = {}
             # Add cost-column
-            new_entry[cost_str] = self._fun(self.validated_rh.get_cost(conf), logy)
+            new_entry[cost_str] = self._fun(self.epm_rh.get_cost(conf), logy)
             # Add parameters
             for p in params:
                 # Catch key-errors (implicate unused hyperparameter)
@@ -256,7 +233,7 @@ class ParallelCoordinatesPlotter(object):
         # Plot data
         for i, ax in enumerate(axes):  # Iterate over params
             for idx in data.index[::-1]:  # Iterate over configs
-                cval = scale.to_rgba(self._fun(self.validated_rh.get_cost(configs[idx]), logy))
+                cval = scale.to_rgba(self._fun(self.epm_rh.get_cost(configs[idx]), logy))
                 cval = (cval[2], cval[0], cval[1])
                 zorder = idx - 5 if idx > len(data) // 2 else len(data) - idx  # -5 to have the best on top of the worst
                 alpha = (zorder / len(data)) - 0.25

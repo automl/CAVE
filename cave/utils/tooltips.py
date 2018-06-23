@@ -5,7 +5,7 @@ def get_tooltip(header):
                      "Statistics apply to the best run, if multiple "
                      "configurator runs are compared.",
 
-        "Best configuration": "Comparing parameters of default and incumbent. "
+        "Best Configuration": "Comparing parameters of default and incumbent. "
                               "Parameters that differ from default to "
                               "incumbent are presented first.",
 
@@ -61,16 +61,16 @@ def get_tooltip(header):
                                 "well on specific types or clusters of "
                                 "instances. Inspired by Smith-Miles.",
 
-        "Default vs Incumbent 2d" : "Comparing footprints of default (left) and "
-                                    "incumbent (right) in two-dimensional "
-                                    "feature space.",
+        "Default vs Incumbent 2d": "Comparing footprints of default (left) and "
+                                   "incumbent (right) in two-dimensional "
+                                   "feature space.",
 
-        "Default 3d" : "Projection of feature space into three dimensions, "
-                       "different viewpoints for enhanced explanation.",
-        "Incumbent 3d" : "Projection of feature space into three dimensions, "
-                         "different viewpoints for enhanced explanation.",
+        "Default 3d": "Projection of feature space into three dimensions, "
+                      "different viewpoints for enhanced explanation.",
+        "Incumbent 3d": "Projection of feature space into three dimensions, "
+                        "different viewpoints for enhanced explanation.",
 
-        "Configurator's behavior": "Analysis of the trajectory and the "
+        "Configurator's Behavior": "Analysis of the trajectory and the "
                                    "runhistory returned by a configurator "
                                    "to gain insights into how the configurator "
                                    "tried to find a well-performing "
@@ -97,7 +97,7 @@ def get_tooltip(header):
                                   "performance in that part of the search "
                                   "space.",
 
-        "Cost over time": "Depicts the average cost of the best so far "
+        "Cost Over Time": "Depicts the average cost of the best so far "
                           "found configuration (using all trajectory data) "
                           "over the time spent by the configurator "
                           "(including target algorithm runs and the overhead "

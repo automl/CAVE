@@ -1,5 +1,6 @@
 from scipy.stats import ttest_rel
 
+
 def paired_permutation(data1, data2, rng, num_permutations=10000, logger=None):
     """Test for significance using paired permutation.
 
@@ -20,13 +21,13 @@ def paired_permutation(data1, data2, rng, num_permutations=10000, logger=None):
         p-value for statistical test
     """
     assert(len(data1) == len(data2))
+
     def test(x, y):
         """Mean of difference between two lists of results"""
         return abs((sum(x) / float(len(x))) - (sum(y) / float(len(y))))
     # Original order
     t = test(data1, data2)
     # Test-statistics for 10000 permutations of data in s
-    pool = zip(data1, data2)
     s = [t]
     for count in range(num_permutations):
         # Shuffle data
@@ -41,6 +42,7 @@ def paired_permutation(data1, data2, rng, num_permutations=10000, logger=None):
                      "the real data (%f), yielding a p-value of %f",
                      larger, len(s), t, p)
     return p
+
 
 def paired_t_student(data1, data2, logger=None):
     """Test for significance using paired t-test.
@@ -62,4 +64,3 @@ def paired_t_student(data1, data2, logger=None):
         logger.debug("Paired t-test with %d samples yields t-value of %f and "
                      "p-value of %f", len(data1), t, p)
     return p
-

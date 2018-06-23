@@ -2,6 +2,7 @@ import os
 from contextlib import contextmanager
 import logging
 
+
 @contextmanager
 def changedir(newdir):
     olddir = os.getcwd()
@@ -10,6 +11,7 @@ def changedir(newdir):
         yield
     finally:
         os.chdir(olddir)
+
 
 class BaseReader(object):
     """Abstract base class to inherit reader from. Reader load necessary objects

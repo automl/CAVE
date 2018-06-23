@@ -6,9 +6,7 @@ import itertools
 
 import numpy as np
 import matplotlib.pyplot as plt
-plt.style.use(os.path.join(os.path.dirname(__file__), 'mpl_style'))
-import matplotlib.lines as mlines
-from mpl_toolkits.mplot3d import Axes3D
+plt.style.use(os.path.join(os.path.dirname(__file__), 'mpl_style'))  # noqa
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
@@ -16,16 +14,16 @@ from sklearn.metrics import silhouette_score
 from scipy import spatial
 import pandas as pd
 
-from smac.configspace import Configuration
 from smac.runhistory.runhistory import RunHistory
 
-from cave.utils.helpers import get_cost_dict_for_config, get_timeout
+from cave.utils.helpers import get_cost_dict_for_config
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
 __license__ = "3-clause BSD"
 __maintainer__ = "Joshua Marben"
 __email__ = "joshua.marben@neptun.uni-freiburg.de"
+
 
 class AlgorithmFootprint(object):
     """ Class that provides the algorithmic footprints after
@@ -113,7 +111,7 @@ class AlgorithmFootprint(object):
         """
         Return performance according to (possibly EPM-)validated runhistory.
         """
-        if not algorithm in self.algo_performance:
+        if algorithm not in self.algo_performance:
             self.algo_performance[algorithm] = get_cost_dict_for_config(self.rh, algorithm)
         return self.algo_performance[algorithm][instance]
 
@@ -129,16 +127,16 @@ class AlgorithmFootprint(object):
         start = time.time()
         if len(self.algo_labels) > 0:
             return
-        self.algo_labels = {a:{} for a in self.algorithms}
+        self.algo_labels = {a: {} for a in self.algorithms}
         for i in self.insts:
             performances = [self._get_performance(a, i) for a in self.algorithms]
             best_performance = min(performances)
             for a in self.algorithms:
                 performance = self._get_performance(a, i)
-                #self.logger.debug("%s on \'%s\': best/this (%f/%f=%f)",
-                #                  self.algo_names[a], i,
-                #                  best_performance, performance,
-                #                  best_performance / performance)
+                # self.logger.debug("%s on \'%s\': best/this (%f/%f=%f)",
+                #                   self.algo_names[a], i,
+                #                   best_performance, performance,
+                #                   best_performance / performance)
                 if (performance == 0 or
                     (best_performance/performance >= epsilon and
                      not performance >= self.cutoff)):
@@ -149,7 +147,7 @@ class AlgorithmFootprint(object):
                 self.algo_labels[a][i] = label
         self.logger.debug("Labeling instances in %.2f secs.", time.time() - start)
 
-####### FOOTPRINT
+# -~-~-~-~ FOOTPRINT
 
     def footprint(self, a, density_threshold, purity_threshold):
         """
@@ -188,10 +186,10 @@ class AlgorithmFootprint(object):
 
         count_exceptions = 0
 
-        ### Initialise Stage
+        # -~-~ Initialise Stage
         # Map inst-names to feat2d (np.array) and tup (tuple)
-        inst_feat2d = {i:self.features_2d[idx] for idx, i in enumerate(self.insts)}
-        inst_tup = {i:tuple(pos) for i, pos in inst_feat2d.items()}
+        inst_feat2d = {i: self.features_2d[idx] for idx, i in enumerate(self.insts)}
+        inst_tup = {i: tuple(pos) for i, pos in inst_feat2d.items()}  # noqa
 
         # regions maps tuple(centroid) of region to inst-names in region
         regions = OrderedDict()
@@ -210,8 +208,10 @@ class AlgorithmFootprint(object):
         while (len(not_in_region) >= 3):
             # Select random good instance TODO also from in_regions?!?!
             rand_good = self.rng.choice(good)
-            try: not_in_region.remove(rand_good)  # Remove here so it's not its own nearest neighbor
-            except ValueError: pass
+            try:
+                not_in_region.remove(rand_good)  # Remove here so it's not its own nearest neighbor
+            except ValueError:
+                pass
 
             # Form a closed region (triangle) with the two closest (smallest
             #        Euclidean distance in feature space) instances to
@@ -224,10 +224,12 @@ class AlgorithmFootprint(object):
             centroid = np.sum(np.array(triangle_feat), axis=0)/len(triangle)
             regions[tuple(centroid)] = triangle
             for p in triangle:
-                try: not_in_region.remove(p)
-                except ValueError: pass
+                try:
+                    not_in_region.remove(p)
+                except ValueError:
+                    pass
 
-        ### Merge Stage
+        # -~-~ Merge Stage
         # Repeat the Merge Stage until there are no more pairs to consider.
         # If we iterated over whole list once, we are done.
         stop = False
@@ -242,15 +244,14 @@ class AlgorithmFootprint(object):
 
                 # Find the closest closed region (minimum Euclidean
                 #   centroid distance);
-                remaining_centroids = [np.array(c) for c in regions.keys() if
-                                        not c == cent]
+                remaining_centroids = [np.array(c) for c in regions.keys() if not c == cent]
                 idx = get_2NN(cent_array, remaining_centroids)[0]
                 nearest_cent = tuple(remaining_centroids[idx])
                 nearest_reg = regions[nearest_cent]  # inst-names!
 
                 # Check purity and density
                 new_reg = tuple(set(reg) | set(nearest_reg))  # names
-                new_reg_array = np.array([inst_feat2d[i] for i in new_reg]) # array
+                new_reg_array = np.array([inst_feat2d[i] for i in new_reg])  # array
                 try:
                     combined_hull = spatial.ConvexHull(new_reg_array)
                 except spatial.qhull.QhullError:
@@ -283,7 +284,7 @@ class AlgorithmFootprint(object):
                           len(self.insts), len(regions))
         return area
 
-####### PLOTS
+# -~-~-~ PLOTS
 
     def _get_rgba(self, all, good, bad):
         """ Calculates the red and green parts of the individual dots.
@@ -310,10 +311,12 @@ class AlgorithmFootprint(object):
         len_longest = min(len(good), len(bad))
         colors, alpha, zorder = [], [], []
         counts = all.groupby(all.columns.tolist(), as_index=False).size()  # count the occurance of values
-        if len(good) > 0: counts_g = good.groupby(good.columns.tolist(),
-                as_index=False).size()#.unstack()  # in good
-        if len(bad) > 0: counts_b = bad.groupby(bad.columns.tolist(),
-                as_index=False).size()#.unstack()  # and bad
+        if len(good) > 0:
+            counts_g = good.groupby(good.columns.tolist(),
+                                    as_index=False).size()  # .unstack()  # in good
+        if len(bad) > 0:
+            counts_b = bad.groupby(bad.columns.tolist(),
+                                   as_index=False).size()  # .unstack()  # and bad
         for idx, coords in enumerate(all.values):  # individually plot the points
             self.logger.debug(counts)
             r, g, b = 0, 0, 0
@@ -358,7 +361,7 @@ class AlgorithmFootprint(object):
         good_idx, bad_idx = [], []
         for k, v in self.algo_performance[conf].items():
             # Only consider passed insts
-            if not k in insts:
+            if k not in insts:
                 continue
             # Append inst-idx either to good or to bad
             if self.algo_labels[conf][k] == 0:
@@ -382,9 +385,10 @@ class AlgorithmFootprint(object):
             self.logger.debug("Plot saved to '%s'", out_fn)
             fig, ax = plt.subplots()
             good_idx, bad_idx = self._get_good_bad(a)
-            # As we don't have such a high resolution when plotting, i.e. we don't see differences between 0.001 and 0.00001
-            # all points that lie close by might overlap completely. To easily spot these, squash everything down to one
-            # decimal
+            # As we don't have such a high resolution when plotting, i.e. we
+            # don't see differences between 0.001 and 0.00001 all points that
+            # lie close by might overlap completely. To easily spot these,
+            # squash everything down to one decimal
             good = np.array([self.features_2d[idx] for idx in good_idx])
             bad = np.array([self.features_2d[idx] for idx in bad_idx])
             good, bad = np.around(np.array(good), decimals=1), np.around(np.array(bad), decimals=1)
@@ -392,27 +396,30 @@ class AlgorithmFootprint(object):
             # working with dataframes to get easy counts to use for plotting
             good = pd.DataFrame(good)
             bad = pd.DataFrame(bad)
-            if len(good) < len(bad):  # decide which to plot first. (short list unlikely to shadow many points in long list)
+            # decide which to plot first. (short list unlikely to shadow many points in long list)
+            if len(good) < len(bad):
                 all = pd.concat([bad, good])
             else:
                 all = pd.concat([good, bad])
             len_longest = min(len(good), len(bad))
             counts = all.groupby(all.columns.tolist(), as_index=False).size()  # count the occurance of values
-            if len(good) > 0: counts_g = good.groupby(good.columns.tolist(), as_index=False).size().unstack()  # in good
-            if len(bad) > 0: counts_b = bad.groupby(bad.columns.tolist(), as_index=False).size().unstack()  # and bad
+            if len(good) > 0:
+                counts_g = good.groupby(good.columns.tolist(), as_index=False).size().unstack()  # in good
+            if len(bad) > 0:
+                counts_b = bad.groupby(bad.columns.tolist(), as_index=False).size().unstack()  # and bad
             for idx, coords in enumerate(all.values):  # individually plot the points
                 r, g, b = 0, 0, 0
                 if len(bad) > 0 and coords[0] in counts_b.index and coords[1] in counts_b.columns:  # determine red part
                     # red part is the number of points on the same coordinate belonging to the bad group
                     # divided by the number of all points on the same coordinate
                     r = counts_b[coords[1]][coords[0]] / counts[coords[0]][coords[1]]
-                if len(good) > 0 and coords[0] in counts_g.index and coords[1] in counts_g.columns: # similar for green
+                if len(good) > 0 and coords[0] in counts_g.index and coords[1] in counts_g.columns:  # similar for green
                     g = counts_g[coords[1]][coords[0]] / counts[coords[0]][coords[1]]
                 zorder = 1
                 alpha = 1
                 if len_longest < idx:  # if we plot points from the shorter list, increase zorder and use small alpha
                     alpha = 0.375
-                    zorder=9999
+                    zorder = 9999
                 plt.scatter(coords[0], coords[1], color=(r, g, b), s=15, zorder=zorder, alpha=alpha)
             ax.set_ylabel('principal component 1')
             ax.set_xlabel('principal component 2')
@@ -429,37 +436,36 @@ class AlgorithmFootprint(object):
         for a in self.algorithms:
             # Plot without clustering (for all insts)
             out_fns = [os.path.join(self.output_dir, 'footprint_' +
-                      self.algo_names[a] + '_3d_{}.png'.format(i)) for i in range(4)]
+                       self.algo_names[a] + '_3d_{}.png'.format(i)) for i in range(4)]
             self.logger.debug("Plot saved to '%s'", out_fns)
             fig, ax = plt.subplots()
             good_idx, bad_idx = self._get_good_bad(a)
             good = np.array([self.features_3d[idx] for idx in good_idx])
             bad = np.array([self.features_3d[idx] for idx in bad_idx])
-            axes = {0 : 'principal component 1',
-                    1 : 'principal component 2',
-                    2 : 'principal component 3'}
-            for out_fn, axes_ordered in zip(out_fns,
-                    list(itertools.permutations([0, 1, 2]))[:len(out_fns)]):
+            axes = {0: 'principal component 1',
+                    1: 'principal component 2',
+                    2: 'principal component 3'}
+            for out_fn, axes_ordered in zip(out_fns, list(itertools.permutations([0, 1, 2]))[:len(out_fns)]):
                 # Plot 3d
                 fig = plt.figure()
                 ax = fig.add_subplot(111, projection='3d')
                 x, y, z = axes_ordered
-                if len(good) > 0: ax.scatter(xs=good[:, x], ys=good[:, y],
-                                             zs=good[:, z], color="green")
-                if len(bad) > 0: ax.scatter(xs=bad[:, x], ys=bad[:, y],
-                                            zs=bad[:, z], color="red")
+                if len(good) > 0:
+                    ax.scatter(xs=good[:, x], ys=good[:, y], zs=good[:, z], color="green")
+                if len(bad) > 0:
+                    ax.scatter(xs=bad[:, x], ys=bad[:, y], zs=bad[:, z], color="red")
                 ax.set_xlabel(axes[x], fontsize=12)
                 ax.set_ylabel(axes[y], fontsize=12)
                 ax.set_zlabel(axes[z], fontsize=12)
                 plt.tight_layout()
-                #for out_fn, angle in zip(out_fns, range(20, 381, 90)):
-                #    ax.view_init(30, angle)
+                # for out_fn, angle in zip(out_fns, range(20, 381, 90)):
+                #     ax.view_init(30, angle)
                 fig.savefig(out_fn)
                 plt.close(fig)
             plots.append(out_fns)
         return plots
 
-####### CLUSTER
+# -~-~- CLUSTER
 
     def plot_points_per_cluster(self):
         """ Plot good versus bad for passed config per cluster.
@@ -522,11 +528,11 @@ class AlgorithmFootprint(object):
         self.logger.debug("%d clusters detected using silhouette scores",
                           best_n_clusters)
 
-        cluster_dict = {n:[] for n in range(best_n_clusters)}
+        cluster_dict = {n: [] for n in range(best_n_clusters)}
         for i, c in enumerate(clusters):
             cluster_dict[c].append(self.insts[i])
 
         self.logger.debug("Distribution over clusters: %s",
-                          str({k:len(v) for k, v in cluster_dict.items()}))
+                          str({k: len(v) for k, v in cluster_dict.items()}))
 
         return clusters, cluster_dict

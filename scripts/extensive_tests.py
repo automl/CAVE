@@ -112,9 +112,8 @@ if __name__ == '__main__':
         for scen in get_scenarios():
             cave = CAVE([os.path.join(scen['output_dir'], 'run_1')],
                         os.path.join(scen['output_dir'], 'CAVE_RESULT'),
-                        ta_exec_dir='.', missing_data_method='validation')
-            cave.analyze(param_importance=['ablation', 'forward_selection', 'lpi'],
-                         cfp_number_quantiles=2)
+                        ta_exec_dir='.', validation_method='validation')
+            cave.analyze(param_importance=['ablation', 'forward_selection', 'lpi'], cfp_number_quantiles=2)
     elif sys.argv[1] == 'firefox':
         import webbrowser
         firefox = webbrowser.get('firefox')

@@ -1,21 +1,12 @@
-import os
 import logging
-import shutil
-from typing import Union
 
 from smac.facade.smac_facade import SMAC
 from smac.optimizer.objective import average_cost
-from smac.utils.io.input_reader import InputReader
-from smac.runhistory.runhistory import RunKey, RunValue, RunHistory, DataOrigin
-from smac.scenario.scenario import Scenario
-from smac.utils.io.traj_logging import TrajLogger
-from smac.utils.validate import Validator
-from smac.optimizer.objective import _cost
+from smac.runhistory.runhistory import RunHistory, DataOrigin
 
 from cave.reader.smac3_reader import SMAC3Reader
 from cave.reader.smac2_reader import SMAC2Reader
 from cave.reader.csv_reader import CSVReader
-from cave.reader.csv2rh import CSV2RH
 
 
 class ConfiguratorRun(SMAC):
@@ -68,8 +59,7 @@ class ConfiguratorRun(SMAC):
         self._check_rh_for_inc_and_def(self.original_runhistory)
 
         # Check validated runhistory for completeness
-        if (self.validated_runhistory and
-            self._check_rh_for_inc_and_def(self.validated_runhistory)):
+        if (self.validated_runhistory and self._check_rh_for_inc_and_def(self.validated_runhistory)):
             self.logger.info("Found validated runhistory for \"%s\" and using "
                              "it for evaluation. #configs in validated rh: %d",
                              self.folder, len(self.validated_runhistory.config_ids))
@@ -86,10 +76,8 @@ class ConfiguratorRun(SMAC):
             self.combined_runhistory.update(self.validated_runhistory,
                                             origin=DataOrigin.EXTERNAL_SAME_INSTANCES)
 
-
         # Initialize SMAC-object
-        super().__init__(scenario=self.scen, runhistory=self.combined_runhistory)
-                #restore_incumbent=incumbent)
+        super().__init__(scenario=self.scen, runhistory=self.combined_runhistory)  # restore_incumbent=incumbent)
         # TODO use restore, delete next line
         self.solver.incumbent = self.incumbent
 
@@ -120,4 +108,3 @@ class ConfiguratorRun(SMAC):
                                       i_name, c_name, self.folder)
                     return_value = False
         return return_value
-

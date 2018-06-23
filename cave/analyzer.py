@@ -1,41 +1,34 @@
 import os
 import logging
 from collections import OrderedDict
-import typing
-import json
-import time
+from typing import Union, List
 import operator
-import copy
 
 import numpy as np
 from pandas import DataFrame
 
 from smac.configspace import Configuration
-from smac.epm.rf_with_instances import RandomForestWithInstances
-from smac.optimizer.objective import average_cost
-from smac.runhistory.runhistory import RunKey, RunValue, RunHistory
-from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
-from smac.scenario.scenario import Scenario
-from smac.utils.io.traj_logging import TrajLogger
+from smac.runhistory.runhistory import RunHistory
 from smac.utils.validate import Validator
 
-from pimp.importance.importance import Importance
-
 from cave.feature_analysis.feature_analysis import FeatureAnalysis
-from cave.feature_analysis.feature_imp import FeatureForwardSelector
-from cave.html.html_builder import HTMLBuilder
-from cave.plot.plotter import Plotter
 from cave.plot.algorithm_footprint import AlgorithmFootprint
+from cave.plot.cdf import plot_cdf
+from cave.plot.configurator_footprint import ConfiguratorFootprint
+from cave.plot.scatter import plot_scatter_plot
+from cave.plot.parallel_coordinates import ParallelCoordinatesPlotter
 from cave.reader.configurator_run import ConfiguratorRun
-from cave.utils.helpers import get_cost_dict_for_config, get_timeout
+from cave.utils.helpers import get_cost_dict_for_config, get_timeout, NotApplicableError
 from cave.utils.timing import timing
 from cave.utils.statistical_tests import paired_permutation, paired_t_student
+from cave.plot.cost_over_time import CostOverTime
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
 __license__ = "3-clause BSD"
 __maintainer__ = "Joshua Marben"
 __email__ = "joshua.marben@neptun.uni-freiburg.de"
+
 
 class Analyzer(object):
     """
@@ -46,80 +39,55 @@ class Analyzer(object):
     """
 
     def __init__(self,
-                 original_rh,
-                 validated_rh,
-                 best_run,
-                 train_test,
+                 default,
+                 incumbent,
                  scenario,
-                 validator,
-                 pimp,
-                 model,
-                 output,
-                 max_pimp_samples,
+                 output_dir,
+                 pimp_max_samples,
                  fanova_pairwise=True,
                  rng=None):
         """
         Parameters
         ----------
-        original_rh: RunHistory
-            runhistory containing all runs that have actually been run
-        validated_rh: RunHistory
-            runhistory containing all runs from original_rh + estimates for
-            default and all incumbents for all instances
         default, incumbent: Configuration
             default and overall incumbent
-        train_test: bool
-            whether is distinction is made (in cdf and scatter)
         scenario: Scenario
             the scenario object
-        validator: Validator
-            validator object (to estimate using EPM)
-        pimp: Importance
-            parameter importance object with trained model
-        model: RandomForest
-            random forest trained on original (combinated) runhistory
-        output: string
-            output-directory
+        output_dir: string
+            output_dir-directory
+        pimp_max_sample: int
+            to configure pimp-run
+        fanova_pairwise: bool
+            whether to do pairwise importance
         """
-        self.logger = logging.getLogger("cave.analyzer")
+        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
         self.rng = rng
         if not self.rng:
-            self.logger.info("No randomstate passed. Generate deterministic "
-                             "random state.")
+            self.logger.info("No randomstate passed. Generate deterministic random state.")
             self.rng = np.random.RandomState(42)
 
         # Important objects for analysis
-        self.original_rh = original_rh
-        self.validated_rh = validated_rh
-        self.best_run = best_run
-        self.train_test = train_test
         self.scenario = scenario
-        self.default = self.scenario.cs.get_default_configuration()
-        self.incumbent = self.best_run.solver.incumbent
-        self.validator = validator
-        self.pimp = pimp
-        self.model = model
-        self.feat_analysis = None  # feat_analysis object for reuse
+        self.default = default
+        self.incumbent = incumbent
         self.evaluators = []
-        self.output = output
+        self.output_dir = output_dir
 
         # Save parameter importances evaluated as dictionaries
         # {method : {parameter : importance}}
         self.param_imp = OrderedDict()
         self.feat_importance = None  # Used to store dictionary for feat_imp
 
-        self.plotter = Plotter(self.scenario, output_dir=self.output)
-        self.max_pimp_samples = max_pimp_samples
+        self.pimp_max_samples = pimp_max_samples
         self.fanova_pairwise = fanova_pairwise
 
-    def get_timeouts(self, config):
-        """ Get number of timeouts in config per runs in total (not per
-        instance)
+    def timeouts_to_tuple(self, timeouts):
+        """ Get number of timeouts in config
 
         Parameters
         ----------
-        config: Configuration
-            configuration from which to calculate the timeouts
+        timeouts: dict[i -> bool]
+            mapping instances to whether timeout was on that instance
 
         Returns
         -------
@@ -127,32 +95,30 @@ class Analyzer(object):
             tuple (timeouts, total runs)
         """
         cutoff = self.scenario.cutoff
-        timeouts = get_timeout(self.validated_rh, config, cutoff)
-        num_train = len(self.scenario.train_insts)
-        num_test = len(self.scenario.test_insts)
-        if self.train_test:
+        train = self.scenario.train_insts
+        test = self.scenario.test_insts
+        if len(train) > 1 and len(test) > 1:
             if not cutoff:
-                return (("N","A"),("N","A"))
-            train_timeout = len([i for i in timeouts if (timeouts[i] == False
-                                  and i in self.scenario.train_insts)])
-            test_timeout = len([i for i in timeouts if (timeouts[i] == False
-                                  and i in self.scenario.test_insts)])
-            return ((train_timeout, num_train),
-                    (test_timeout, num_test))
+                return (("N", "A"), ("N", "A"))
+            train_timeout = len([i for i in timeouts if (timeouts[i] is False and i in self.scenario.train_insts)])
+            test_timeout = len([i for i in timeouts if (timeouts[i] is False and i in self.scenario.test_insts)])
+            return ((train_timeout, len(train)),
+                    (test_timeout, len(test)))
         else:
             if not cutoff:
-                return ("N","A")
-            timeout = len([i for i in timeouts if timeouts[i] == False])
-            no_timeout = len([i for i in timeouts if timeouts[i] == True])
-            return (timeout, num_train)
+                return ("N", "A")
+            timeout = len([i for i in timeouts if timeouts[i] is False])
+            return (timeout, len(train))
 
-    def get_parX(self, config, par=10):
+    def get_parX(self, epm_rh, config, par=10):
         """Calculate parX-values of default and incumbent configs.
         First determine PAR-timeouts for each run on each instances,
         Second average over train/test if available, else just average.
 
         Parameters
         ----------
+        epm_rh: RunHistory
+            validated and estimated runhistory to take cost from
         config: Configuration
             config to be calculated
         par: int
@@ -164,53 +130,50 @@ class Analyzer(object):
             PAR10 values for train- and test-instances, if available as tuple
             else the general average
         """
-        runs = get_cost_dict_for_config(self.validated_rh, config)
+        runs = get_cost_dict_for_config(epm_rh, config)
         # Penalize
-        if self.scenario.cutoff:
-            runs = [(k, runs[k]) if runs[k] < self.scenario.cutoff
-                        else (k, self.scenario.cutoff * par)
-                        for k in runs]
+        if self.scenario.cutoff and self.scenario.run_obj == 'runtime':
+            runs = [(k, runs[k]) if runs[k] < self.scenario.cutoff else (k, self.scenario.cutoff * par) for k in runs]
         else:
             runs = [(k, runs[k]) for k in runs]
             self.logger.info("Calculating penalized average runtime without cutoff...")
 
         # Average
-        if self.train_test:
-            train = np.mean([c for i, c in runs if i in
-                             self.scenario.train_insts])
-            test = np.mean([c for i, c in runs if i in
-                            self.scenario.test_insts])
+        if len(self.scenario.train_insts) > 1 and len(self.scenario.test_insts) > 1:
+            train = np.mean([c for i, c in runs if i in self.scenario.train_insts])
+            test = np.mean([c for i, c in runs if i in self.scenario.test_insts])
             return (train, test)
         else:
             return np.mean([c for i, c in runs])
 
     @timing
-    def _permutation_test(self, default, incumbent, num_permutations, par=1):
+    def _permutation_test(self, epm_rh, default, incumbent, num_permutations, par=1):
         cutoff = self.scenario.cutoff
-        def_cost = get_cost_dict_for_config(self.validated_rh, default, par=par, cutoff=cutoff)
-        inc_cost = get_cost_dict_for_config(self.validated_rh, incumbent, par=par, cutoff=cutoff)
+        def_cost = get_cost_dict_for_config(epm_rh, default, par=par, cutoff=cutoff)
+        inc_cost = get_cost_dict_for_config(epm_rh, incumbent, par=par, cutoff=cutoff)
         data1, data2 = zip(*[(def_cost[i], inc_cost[i]) for i in def_cost.keys()])
         p = paired_permutation(data1, data2, self.rng, num_permutations=num_permutations, logger=self.logger)
         self.logger.debug("p-value for def/inc-difference: %f (permutation test "
                           "with %d permutations and par %d)", p, num_permutations, par)
         return p
 
-    def _paired_t_test(self, default, incumbent, num_permutations):
-        def_cost, inc_cost = get_cost_dict_for_config(self.validated_rh, default), get_cost_dict_for_config(self.validated_rh, incumbent)
+    def _paired_t_test(self, epm_rh, default, incumbent, num_permutations):
+        def_cost, inc_cost = get_cost_dict_for_config(epm_rh, default), get_cost_dict_for_config(epm_rh, incumbent)
         data1, data2 = zip(*[(def_cost[i], inc_cost[i]) for i in def_cost.keys()])
         p = paired_t_student(data1, data2, logger=self.logger)
         self.logger.debug("p-value for def/inc-difference: %f (paired t-test)", p)
         return p
 
-####################################### TABLES #######################################
-
-    def create_overview_table(self, best_folder):
+#  TABLES #####################################################################
+    def create_overview_table(self, orig_rh, best_run):
         """ Create overview-table.
 
         Parameters
         ----------
-        best_folder: str
-            path to folder/run with best incumbent
+        orig_rh: RunHistory
+            runhistory to take stats from
+        best_run: ConfiguratorRun
+            configurator run object with best incumbent
 
         Returns
         -------
@@ -218,16 +181,16 @@ class Analyzer(object):
             overview table in HTML
         """
         # General
-        all_confs = self.best_run.original_runhistory.get_all_configs()
+        all_confs = best_run.original_runhistory.get_all_configs()
         num_configs = len(all_confs)
-        ta_runtime = np.sum([self.original_rh.get_cost(conf) for conf in all_confs])
-        ta_evals = [len(self.original_rh.get_runs_for_config(conf)) for conf in all_confs]
-        ta_evals_d = len(self.original_rh.get_runs_for_config(self.default))
-        ta_evals_i = len(self.original_rh.get_runs_for_config(self.incumbent))
+        ta_runtime = np.sum([orig_rh.get_cost(conf) for conf in all_confs])
+        ta_evals = [len(orig_rh.get_runs_for_config(conf)) for conf in all_confs]
+        ta_evals_d = len(orig_rh.get_runs_for_config(self.default))
+        ta_evals_i = len(orig_rh.get_runs_for_config(self.incumbent))
         min_ta_evals, max_ta_evals, = np.min(ta_evals), np.max(ta_evals)
         mean_ta_evals, ta_evals = np.mean(ta_evals), np.sum(ta_evals)
         num_changed_params = len([p for p in self.scenario.cs.get_hyperparameter_names()
-                                  if self.default[p] != self.incumbent[p]])
+                                  if best_run.default[p] != best_run.incumbent[p]])
         # Instances
         num_train = len([i for i in self.scenario.train_insts if i])
         num_test = len([i for i in self.scenario.test_insts if i])
@@ -239,7 +202,7 @@ class Analyzer(object):
         else:
             num_dup_feats = 0
 
-        overview = OrderedDict([('Run with best incumbent', os.path.basename(best_folder)),
+        overview = OrderedDict([('Run with best incumbent', os.path.basename(best_run.folder)),
                                 # Constants for scenario
                                 ('# Train instances', num_train),
                                 ('# Test instances', num_test),
@@ -265,7 +228,7 @@ class Analyzer(object):
                                 ('# Runs per Config (max)', max_ta_evals),
                                 ('Total number of configuration runs', ta_evals),
                                 ('empty4', 'empty4'),
-                               ])
+                                ])
         # Split into two columns
         overview_split = self._split_table(overview)
         # Convert to HTML
@@ -276,24 +239,26 @@ class Analyzer(object):
             table = table.replace('empty'+str(i), '&nbsp')
         return table
 
-    def create_performance_table(self, default, incumbent):
+    def create_performance_table(self, default, incumbent, epm_rh):
         """Create table, compare default against incumbent on train-,
         test- and combined instances. Listing PAR10, PAR1 and timeouts.
         Distinguishes between train and test, if available."""
         self.logger.info("... create performance table")
-        def_timeout, inc_timeout = self.get_timeouts(default), self.get_timeouts(incumbent)
-        def_par10, inc_par10 = self.get_parX(default, 10), self.get_parX(incumbent, 10)
-        def_par1, inc_par1 = self.get_parX(default, 1), self.get_parX(incumbent, 1)
+        def_par10, inc_par10 = self.get_parX(epm_rh, default, 10), self.get_parX(epm_rh, incumbent, 10)
+        def_par1, inc_par1 = self.get_parX(epm_rh, default, 1), self.get_parX(epm_rh, incumbent, 1)
         # p-values (paired permutation)
-        p_value_par10 = "%.5f" % self._permutation_test(self.default, self.incumbent, 10000, 10)
-        p_value_par1 = "%.5f" % self._permutation_test(self.default, self.incumbent, 10000, 1)
-        def_timeouts = {k : int(b) for k, b in get_timeout(self.validated_rh, default, self.scenario.cutoff).items()}
-        inc_timeouts = {k : int(b) for k, b in get_timeout(self.validated_rh, incumbent, self.scenario.cutoff).items()}
-        data1, data2 = zip(*[(def_timeouts[i], inc_timeouts[i]) for i in def_timeouts.keys()])
-        p_value_timeouts = "%.5f" % paired_permutation(data1, data2, self.rng, num_permutations=10000, logger=self.logger)
+        p_value_par10 = "%.5f" % self._permutation_test(epm_rh, self.default, self.incumbent, 10000, 10)
+        p_value_par1 = "%.5f" % self._permutation_test(epm_rh, self.default, self.incumbent, 10000, 1)
+        def_timeouts = get_timeout(epm_rh, default, self.scenario.cutoff)
+        inc_timeouts = get_timeout(epm_rh, incumbent, self.scenario.cutoff)
+        def_timeouts_tuple = self.timeouts_to_tuple(def_timeouts)
+        inc_timeouts_tuple = self.timeouts_to_tuple(inc_timeouts)
+        data1, data2 = zip(*[(int(def_timeouts[i]), int(inc_timeouts[i])) for i in def_timeouts.keys()])
+        p_value_timeouts = "%.5f" % paired_permutation(data1, data2, self.rng,
+                                                       num_permutations=10000, logger=self.logger)
 
         dec_place = 3
-        if self.train_test:
+        if len(self.scenario.train_insts) > 1 and len(self.scenario.test_insts) > 1:
             # Distinction between train and test
             # Create table
             array = np.array([[round(def_par10[0], dec_place),
@@ -306,10 +271,10 @@ class Analyzer(object):
                                round(def_par1[1], dec_place),
                                round(inc_par1[1], dec_place),
                                p_value_par1],
-                              ["{}/{}".format(def_timeout[0][0], def_timeout[0][1]),
-                               "{}/{}".format(inc_timeout[0][0], inc_timeout[0][1]),
-                               "{}/{}".format(def_timeout[1][0], def_timeout[1][1]),
-                               "{}/{}".format(inc_timeout[1][0], inc_timeout[1][1]),
+                              ["{}/{}".format(def_timeouts_tuple[0][0], def_timeouts_tuple[0][1]),
+                               "{}/{}".format(inc_timeouts_tuple[0][0], inc_timeouts_tuple[0][1]),
+                               "{}/{}".format(def_timeouts_tuple[1][0], def_timeouts_tuple[1][1]),
+                               "{}/{}".format(inc_timeouts_tuple[1][0], inc_timeouts_tuple[1][1]),
                                p_value_timeouts
                                ]])
             df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
@@ -344,49 +309,12 @@ class Analyzer(object):
                               [round(def_par1, dec_place),
                                round(inc_par1, dec_place),
                                p_value_par1],
-                              ["{}/{}".format(def_timeout[0], def_timeout[1]),
-                               "{}/{}".format(inc_timeout[0], inc_timeout[1]),
+                              ["{}/{}".format(def_timeouts_tuple[0], def_timeouts_tuple[1]),
+                               "{}/{}".format(inc_timeouts_tuple[0], inc_timeouts_tuple[1]),
                                p_value_timeouts]])
             df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
                            columns=['Default', 'Incumbent', 'p-value'])
             table = df.to_html()
-        self.performance_table = table
-        return table
-
-    def config_to_html(self, default: Configuration, incumbent: Configuration):
-        """Create HTML-table to compare Configurations.
-        Removes unused parameters.
-
-        Parameters
-        ----------
-        default, incumbent: Configurations
-            configurations to be converted
-
-        Returns
-        -------
-        table: str
-            HTML-table comparing default and incumbent
-        """
-        # Remove unused parameters
-        keys = [k for k in default.keys() if default[k] or incumbent[k]]
-        default = [default[k] if default[k] != None else "inactive" for k in keys]
-        incumbent = [incumbent[k] if incumbent[k] != None else "inactive" for k in keys]
-        table = list(zip(keys, default, incumbent))
-        # Show first parameters that changed
-        same = [x for x in table if x[1] == x[2]]
-        diff = [x for x in table if x[1] != x[2]]
-        table = []
-        if len(diff) > 0:
-            table.extend([("-------------- Changed parameters: "\
-                           "--------------", "-----", "-----")])
-            table.extend(diff)
-        if len(same) > 0:
-            table.extend([("-------------- Unchanged parameters: "\
-                           "--------------", "-----", "-----")])
-            table.extend(same)
-        keys, table = [k[0] for k in table], [k[1:] for k in table]
-        df = DataFrame(data=table, columns=["Default", "Incumbent"], index=keys)
-        table = df.to_html()
         return table
 
     def _split_table(self, table: OrderedDict):
@@ -415,14 +343,16 @@ class Analyzer(object):
             table_split.append(("<b>"+keys[-1]+"</b>", table[keys[-1]], '', ''))
         return table_split
 
-####################################### PARAMETER IMPORTANCE #######################################
-    def fanova(self, incumbent, marginal_threshold=0.05):
+#  PARAMETER IMPORTANCE ############################################################
+    def fanova(self, pimp, incumbent, marginal_threshold=0.05):
         """Wrapper for parameter_importance to save the importance-object/
         extract the results. We want to show the top X most important
         parameter-fanova-plots.
 
         Parameters
         ----------
+        pimp: Importance
+            parameter importance object
         incumbent: Configuration
             incumbent configuration
         marginal_threshold: float
@@ -435,10 +365,10 @@ class Analyzer(object):
         plots: Dict[str: st]
             dictionary mapping single parameters to their plots
         """
-        self.parameter_importance("fanova", incumbent, self.output)
-        parameter_imp = self.pimp.evaluator.evaluated_parameter_importance
+        pimp = self.parameter_importance(pimp, "fanova", incumbent, self.output_dir)
+        parameter_imp = pimp.evaluator.evaluated_parameter_importance
         # Split single and pairwise (pairwise are string: "['p1','p2']")
-        pairwise_imp = {k:v for k,v in parameter_imp.items() if k.startswith("[")}
+        pairwise_imp = {k: v for k, v in parameter_imp.items() if k.startswith("[")}
         for k in pairwise_imp.keys():
             parameter_imp.pop(k)
 
@@ -450,9 +380,9 @@ class Analyzer(object):
         # Dicts to lists of tuples, sorted descending after importance and only
         #   including marginals > 0.05
         parameter_imp = [(k, v * 100) for k, v in sorted(parameter_imp.items(),
-                                key=operator.itemgetter(1), reverse=True) if v > 0.05]
+                                                         key=operator.itemgetter(1), reverse=True) if v > 0.05]
         pairwise_imp = [(k, v * 100) for k, v in sorted(pairwise_imp.items(),
-                                key=operator.itemgetter(1), reverse=True) if v > 0.05]
+                                                        key=operator.itemgetter(1), reverse=True) if v > 0.05]
         # Create table
         table = []
         if len(parameter_imp) > 0:
@@ -463,7 +393,7 @@ class Analyzer(object):
             # TODO assuming (current) form of "['param1','param2']", but not
             #       expecting it stays this way (on PIMPs side)
             table.extend([(' & '.join([tmp.strip('\' ') for tmp in k.strip('[]').split(',')]), v)
-                            for k, v in pairwise_imp])
+                          for k, v in pairwise_imp])
 
         keys, fanova_table = [k[0] for k in table], [k[1:] for k in table]
         df = DataFrame(data=fanova_table, index=keys)
@@ -471,32 +401,34 @@ class Analyzer(object):
 
         single_plots = {}
         for p, v in parameter_imp:
-            single_plots[p] = os.path.join(self.output, "fanova", p+'.png')
+            single_plots[p] = os.path.join(self.output_dir, "fanova", p+'.png')
         # Check for pairwise plots
         # Right now no way to access paths of the plots -> file issue
         pairwise_plots = {}
         for p, v in pairwise_imp:
             p_new = p.replace('\'', '')
-            potential_path = os.path.join(self.output, 'fanova', p_new + '.png')
+            potential_path = os.path.join(self.output_dir, 'fanova', p_new + '.png')
             self.logger.debug("Check for %s", potential_path)
             if os.path.exists(potential_path):
                 pairwise_plots[p] = potential_path
         return fanova_table, single_plots, pairwise_plots
 
-    def local_epm_plots(self):
+    def local_epm_plots(self, pimp):
         plots = OrderedDict([])
-        self.parameter_importance("lpi", self.incumbent, self.output)
+        self.parameter_importance(pimp, "lpi", self.incumbent, self.output_dir)
         for p, i in [(k, v) for k, v in sorted(self.param_imp['lpi'].items(),
-                            key=operator.itemgetter(1), reverse=True) if v > 0.05]:
-            plots[p] = os.path.join(self.output, 'lpi', p + '.png')
+                     key=operator.itemgetter(1), reverse=True) if v > 0.05]:
+            plots[p] = os.path.join(self.output_dir, 'lpi', p + '.png')
         return plots
 
-    def parameter_importance(self, modus, incumbent, output):
+    def parameter_importance(self, pimp, modus, incumbent, output_dir):
         """Calculate parameter-importance using the PIMP-package.
         Currently ablation, forward-selection and fanova are used.
 
         Parameters
         ----------
+        pimp: Importance
+            parameter importance object for fanova, ablation, etc
         modus: str
             modus for parameter importance, from
             [forward-selection, ablation, fanova, lpi]
@@ -508,10 +440,10 @@ class Analyzer(object):
         """
         self.logger.info("... parameter importance {}".format(modus))
         # Evaluate parameter importance
-        result = self.pimp.evaluate_scenario([modus], output)
-        self.evaluators.append(self.pimp.evaluator)
-        self.param_imp[modus] = self.pimp.evaluator.evaluated_parameter_importance
-        return self.pimp
+        pimp.evaluate_scenario([modus], output_dir)
+        self.evaluators.append(pimp.evaluator)
+        self.param_imp[modus] = pimp.evaluator.evaluated_parameter_importance
+        return pimp
 
     def importance_table(self, pimp_sort_table_by, threshold=0.0):
         """Create a html-table over all evaluated parameter-importance-methods.
@@ -523,17 +455,15 @@ class Analyzer(object):
         self.logger.debug("Sort pimp-table by %s" % pimp_sort_table_by)
         if pimp_sort_table_by == "average":
             # Sort parameters after average importance
-            p_avg = {p : np.mean([e.evaluated_parameter_importance[p] for e in self.evaluators
-                        if p in e.evaluated_parameter_importance]) for p in parameters}
-            p_avg = {p : 0 if np.isnan(v) else v for p, v in p_avg.items()}
+            p_avg = {p: np.mean([e.evaluated_parameter_importance[p] for e in self.evaluators
+                                 if p in e.evaluated_parameter_importance]) for p in parameters}
+            p_avg = {p: 0 if np.isnan(v) else v for p, v in p_avg.items()}
             p_order = sorted(parameters, key=lambda p: p_avg[p], reverse=True)
         elif pimp_sort_table_by in columns_lower:
             def __get_key(p):
                 imp = self.evaluators[columns_lower.index(pimp_sort_table_by)].evaluated_parameter_importance
                 return imp[p] if p in imp else 0
-            p_order = sorted(parameters,
-                             key=__get_key,
-                             reverse=True)
+            p_order = sorted(parameters, key=__get_key, reverse=True)
         else:
             raise ValueError("Trying to sort importance table after {}, which "
                              "was not evaluated.".format(pimp_sort_table_by))
@@ -544,8 +474,7 @@ class Analyzer(object):
             add_parameter = False
             for e in self.evaluators:
                 if p in e.evaluated_parameter_importance:
-                    value_percent = format(e.evaluated_parameter_importance[p] *
-                                           100, '.2f')
+                    value_percent = format(e.evaluated_parameter_importance[p] * 100, '.2f')
                     values_for_p.append(value_percent)
                     if float(value_percent) > threshold:
                         add_parameter = True
@@ -558,18 +487,18 @@ class Analyzer(object):
         comp_table = DataFrame(values, columns=columns, index=index)
         return comp_table.to_html()
 
-####################################### FEATURE IMPORTANCE #######################################
-    def feature_importance(self):
+#  FEATURE IMPORTANCE ##########################################################
+    def feature_importance(self, pimp):
         self.logger.info("... plotting feature importance")
         # forward_selector = FeatureForwardSelector(self.scenario,
         #         self.original_rh)
-        self.pimp.forwardsel_feat_imp = True
-        self.pimp._parameters_to_evaluate = -1
-        self.pimp.forwardsel_cv = False
-        dir_ = os.path.join(self.output, 'feature_plots/importance')
+        pimp.forwardsel_feat_imp = True
+        pimp._parameters_to_evaluate = -1
+        pimp.forwardsel_cv = False
+        dir_ = os.path.join(self.output_dir, 'feature_plots/importance')
         if not os.path.exists(dir_):
             os.makedirs(dir_)
-        res = self.pimp.evaluate_scenario(['forward-selection'], dir_)
+        res = pimp.evaluate_scenario(['forward-selection'], dir_)
         imp = res[0]['forward-selection']['imp']
         self.logger.debug("FEAT IMP %s", imp)
         self.feat_importance = imp
@@ -577,11 +506,38 @@ class Analyzer(object):
                  os.path.join(dir_, 'forward-selection-chng.png'))
         return (imp, plots)
 
-####################################### PLOTS #######################################
+#  PLOTS #########################################################################
 
-    def plot_parallel_coordinates(self, n_param=10, n_configs=500):
-        """ Creates a parallel coordinates plot visualizing the explored
-        parameter configuration space. """
+    def plot_parallel_coordinates(self, original_rh, validated_rh, validator, n_param=10, n_configs=500):
+        """ Plot parallel coordinates (visualize higher dimensions), here used
+        to visualize pcs. This function prepares the data from a SMAC-related
+        format (using runhistories and parameters) to a more general format
+        (using a dataframe). The resulting dataframe is passed to the
+        parallel_coordinates-routine.
+
+        NOTE: the given runhistory should contain only optimization and no
+        validation to analyze the explored parameter-space.
+
+        Parameters
+        ----------
+        original_rh: RunHistory
+            rundata to take configs from (no validation data - we want to
+            visualize optimization process)
+        validate_rh: RunHistory
+            rundata to estimate costs of configs from (can contain validation
+            data but no empirical estimations, since it's used to train an epm)
+        validator: Validator
+            to calculate alpha values
+        n_param: int
+            parameters to be plotted
+        n_configs: int
+            max # configs
+
+        Returns
+        -------
+        output: str
+            path to plot
+        """
         self.logger.info("... plotting parallel coordinates")
         # If a parameter importance has been performed in this analyzer-object,
         # only plot the n_param most important parameters.
@@ -589,14 +545,12 @@ class Analyzer(object):
             # Use the first applied parameter importance analysis to choose
             method, importance = list(self.param_imp.items())[0]
             self.logger.debug("Choosing used parameters in parallel coordinates "
-                              "according to parameter importance method %s" %
-                              method)
-            n_param = min(n_param, max(3, len([x for x in importance.values()
-                                               if x > 0.05])))
+                              "according to parameter importance method %s" % method)
+            n_param = min(n_param, max(3, len([x for x in importance.values() if x > 0.05])))
             # Some importance methods add "--source--" or similar to the parameter names -> filter them in next line
             params = [p for p in importance.keys() if p in self.scenario.cs.get_hyperparameter_names()][:n_param]
         else:
-            # TODO what if no parameter importance has been performed?
+            # what if no parameter importance has been performed?
             # plot all? random subset? -> atm: random
             self.logger.info("No parameter importance performed. Plotting random "
                              "parameters in parallel coordinates plot.")
@@ -604,36 +558,133 @@ class Analyzer(object):
 
         self.logger.info("    plotting %s parameters for (max) %s configurations",
                          len(params), n_configs)
-        rh = self.original_rh if self.plotter.configurator_footprint_rh is None else self.plotter.configurator_footprint_rh
-        path = self.plotter.plot_parallel_coordinates(rh, self.validated_rh, self.output,
-                                                      params, n_configs,
-                                                      self.validator)
 
-        return path
+        all_configs = original_rh.get_all_configs()
+        if self.scenario.feature_dict:
+            epm_rh = validator.validate_epm(all_configs, 'train+test', 1, runhistory=validated_rh)
+        else:
+            epm_rh = validated_rh
+        pcp = ParallelCoordinatesPlotter(original_rh, epm_rh, self.output_dir,
+                                         self.scenario.cs, runtime=self.scenario.run_obj == 'runtime')
+        output = pcp.plot_n_configs(n_configs, params)
+        return output
 
-    def plot_cdf(self):
+    def plot_cdf_compare(self, default: Configuration, incumbent: Configuration, rh: RunHistory):
+        """
+        Plot the cumulated distribution functions for given configurations,
+        plots will share y-axis and if desired x-axis.
+        Saves plot to file.
+
+        Parameters
+        ----------
+        default, incumbent: Configuration
+            configurations to be compared
+        rh: RunHistory
+            runhistory to use for cost-estimations
+
+        Returns
+        -------
+        output_fns: List[str]
+            list with paths to generated plots
+        """
+        out_fn = os.path.join(self.output_dir, 'cdf')
         self.logger.info("... plotting eCDF")
-        return self.plotter.plot_cdf_compare(self.default, self.incumbent,
-                self.validated_rh)
+        self.logger.debug("Plot CDF to %s_[train|test].png", out_fn)
 
-    def plot_scatter(self):
+        timeout = self.scenario.cutoff
+
+        def prepare_data(x_data):
+            """ Helper function to keep things easy, generates y_data and manages x_data-timeouts """
+            x_data = sorted(x_data)
+            y_data = np.array(range(len(x_data))) / (len(x_data) - 1)
+            for idx in range(len(x_data)):
+                if (timeout is not None) and (x_data[idx] >= timeout):
+                    x_data[idx] = timeout
+                    y_data[idx] = y_data[idx - 1]
+            return (x_data, y_data)
+
+        # Generate y_data
+        def_costs = get_cost_dict_for_config(rh, default).items()
+        inc_costs = get_cost_dict_for_config(rh, incumbent).items()
+        train, test = self.scenario.train_insts, self.scenario.test_insts
+
+        output_fns = []
+
+        for insts, name in [(train, 'train'), (test, 'test')]:
+            if insts == [None]:
+                self.logger.debug("No %s instances, skipping cdf", name)
+                continue
+            data = [prepare_data(np.array([v for k, v in costs if k in insts])) for costs in [def_costs, inc_costs]]
+            x, y = (data[0][0], data[1][0]), (data[0][1], data[1][1])
+            labels = ['default ' + name, 'incumbent ' + name]
+            output_fns.append(plot_cdf(x, y, labels, timeout=self.scenario.cutoff,
+                                       out_fn=out_fn + '_{}.png'.format(name)))
+
+        return output_fns
+
+    def plot_scatter(self, default: Configuration, incumbent: Configuration, rh: RunHistory):
+        """
+        Creates a scatterplot of the two configurations on the given set of
+        instances.
+        Saves plot to file.
+
+        Parameters
+        ----------
+        default, incumbent: Configuration
+            configurations to be compared
+        rh: RunHistory
+            runhistory to use for cost-estimations
+
+        Returns
+        -------
+        output_fns: List[str]
+            list with paths to generated plots
+        """
+        out_fn_base = os.path.join(self.output_dir, 'scatter_')
         self.logger.info("... plotting scatter")
-        return self.plotter.plot_scatter(self.default, self.incumbent,
-                self.validated_rh)
+        self.logger.debug("Plot scatter to %s[train|test].png", out_fn_base)
+
+        metric = self.scenario.run_obj
+        timeout = self.scenario.cutoff
+        labels = ["default {}".format(self.scenario.run_obj), "incumbent {}".format(self.scenario.run_obj)]
+
+        def_costs = get_cost_dict_for_config(rh, default).items()
+        inc_costs = get_cost_dict_for_config(rh, incumbent).items()
+        train, test = self.scenario.train_insts, self.scenario.test_insts
+
+        out_fns = []
+        for insts, name in [(train, 'train'), (test, 'test')]:
+            if insts == [None]:
+                self.logger.debug("No %s instances, skipping scatter", name)
+                continue
+            default = np.array([v for k, v in def_costs if k in insts])
+            incumbent = np.array([v for k, v in inc_costs if k in insts])
+            min_val = min(min(default), min(incumbent))
+            out_fn = out_fn_base + name + '.png'
+            out_fns.append(plot_scatter_plot((default,), (incumbent,), labels, metric=metric,
+                                             min_val=min_val, max_val=timeout, out_fn=out_fn))
+        return out_fns
 
     @timing
-    def plot_configurator_footprint(self, incumbents, runhistories, max_confs=1000,
-                                     time_slider=False, num_quantiles=10):
+    def plot_configurator_footprint(self,
+                                    scenario,
+                                    runs,
+                                    runhistory,
+                                    max_confs=1000,
+                                    time_slider=False,
+                                    num_quantiles=10):
         """Plot the visualization of configurations, highlighting the
         incumbents. Using original rh, so the explored configspace can be
         estimated.
 
         Parameters
         ----------
-        incumbents: List[Configuration]
-            list with incumbents, so they can be marked in plot
-        runhistories: List[RunHistory]
-            list of runhistories, so they can be marked in plot
+        scenario: Scenario
+            deepcopy of scenario-object
+        runs: List[ConfiguratorRun]
+            holding information about original runhistories, trajectories, incumbents, etc.
+        runhistory: RunHistory
+            with maximum number of real (not estimated) runs to train best-possible epm
         max_confs: int
             maximum number of data-points to plot
         time_slider: bool
@@ -654,23 +705,58 @@ class Analyzer(object):
             configurator run (for static evaluation)
         """
         self.logger.info("... visualizing explored configspace (this may take "
-                         "some hours, if there is a lot of data)")
+                         "a long time, if there is a lot of data - deactive with --no_configurator_footprint)")
 
-        cfp = self.plotter.configurator_footprint(self.scenario,
-                    runhistories=runhistories, incumbents=incumbents,
-                    max_confs_plot=max_confs, time_slider=time_slider,
-                    num_quantiles=num_quantiles)
-        return cfp
+        if scenario.feature_array is None:
+            scenario.feature_array = np.array([[]])
+
+        # Sort runhistories and incs wrt cost
+        incumbents = list(map(lambda x: x['incumbent'], runs[0].traj))
+        assert(incumbents[-1] == runs[0].traj[-1]['incumbent'])
+
+        cfp = ConfiguratorFootprint(
+                       scenario=scenario,
+                       rh=runs[0].original_runhistory,
+                       incs=incumbents,
+                       max_plot=max_confs,
+                       time_slider=time_slider,
+                       num_quantiles=num_quantiles,
+                       output_dir=self.output_dir)
+        try:
+            return cfp.run()
+        except MemoryError as err:
+            self.logger.error(err)
+            raise MemoryError("Memory Error occured in configurator footprint. "
+                              "You may want to reduce the number of plotted "
+                              "configs (using the '--cfp_max_plot'-argument)")
 
     @timing
-    def plot_cost_over_time(self, runs, validator):
+    def plot_cost_over_time(self, rh: RunHistory, runs: List[ConfiguratorRun],
+                            validator: Union[None, Validator]=None):
+        """ Plot performance over time, using all trajectory entries
+            with max_time = wallclock_limit or (if inf) the highest
+            recorded time
+
+            Parameters
+            ----------
+            rh: RunHistory
+                runhistory to use
+            runs: List[SMACrun]
+                list of configurator-runs
+            output_fn: str
+                path to output-png
+            validator: TODO description
+        """
         self.logger.info("... cost over time")
-        script, div = self.plotter.plot_cost_over_time(self.validated_rh, runs,
-                                                       validator=validator)
-        return script, div
+        output_fn = os.path.join(self.output_dir, "performance_over_time.png")
+        cost_over_time = CostOverTime(scenario=self.scenario, output_dir=self.output_dir)
+        return cost_over_time.plot(rh, runs, output_fn, validator)
 
     @timing
-    def plot_algorithm_footprint(self, algorithms=None, density=200, purity=0.95):
+    def plot_algorithm_footprint(self, epm_rh, algorithms=None, density=200, purity=0.95):
+        if self.scenario.feature_array is None:
+            raise NotApplicableError("Features needed for algorithm footprints!")
+
         if not algorithms:
             algorithms = OrderedDict([(self.default, "default"),
                                       (self.incumbent, "incumbent")])
@@ -678,24 +764,24 @@ class Analyzer(object):
         instances = self.scenario.train_insts
         if not self.scenario.test_insts == [None]:
             instances.extend(self.scenario.test_insts)
-        features = {k : v for k, v in self.scenario.feature_dict.items() if k in instances}
+        features = {k: v for k, v in self.scenario.feature_dict.items() if k in instances}
 
         self.logger.info("... algorithm footprints for: {}".format(", ".join(algorithms.values())))
-        footprint = AlgorithmFootprint(self.validated_rh,
+        footprint = AlgorithmFootprint(epm_rh,
                                        features, algorithms,
-                                       self.scenario.cutoff, self.output,
+                                       self.scenario.cutoff, self.output_dir,
                                        rng=self.rng)
         # Calculate footprints
-        #for i in range(100):
-        #    for a in algorithms:
-        #        footprint.footprint(a, 20, 0.95)
+        # for i in range(100):
+        #     for a in algorithms:
+        #         footprint.footprint(a, 20, 0.95)
 
         # Plot footprints
         plots2d = footprint.plot2d()
         plots3d = footprint.plot3d()
         return (plots2d, plots3d)
 
-####################################### FEATURE ANALYSIS #######################################
+#  FEATURE ANALYSIS ################################################################
 
     def feature_analysis(self,
                          mode,
@@ -707,16 +793,18 @@ class Analyzer(object):
         ----------
         mode: str
             from [box_violin, correlation, clustering]
+        feat_names: List[str]
+            list with feature names
 
         Returns
         -------
         Corresponding plot paths
         """
         self.logger.info("... feature analysis: %s", mode)
-        self.feat_analysis = FeatureAnalysis(output_dn=self.output,
-                                 scenario=self.scenario,
-                                 feat_names=feat_names,
-                                 feat_importance=self.feat_importance)
+        self.feat_analysis = FeatureAnalysis(output_dn=self.output_dir,
+                                             scenario=self.scenario,
+                                             feat_names=feat_names,
+                                             feat_importance=self.feat_importance)
 
         if mode == 'box_violin':
             return self.feat_analysis.get_box_violin_plots()

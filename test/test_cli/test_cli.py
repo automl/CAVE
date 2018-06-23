@@ -17,7 +17,6 @@ from smac.utils.validate import Validator
 from cave.cave_cli import CaveCLI
 from cave.analyzer import Analyzer
 from cave.cavefacade import CAVE
-from cave.plot.plotter import Plotter
 
 @contextmanager
 def changedir(newdir):
@@ -39,10 +38,10 @@ class TestCLI(unittest.TestCase):
 
         self.cavecli = CaveCLI()
         self.cave_output_dir = "test/test_files/output_tmp"
-        self.def_args_off = ["--param_importance", "none", "--feat_analysis", "none",
+        self.def_args_off = ["--parameter_importance", "none", "--feature_analysis", "none",
                              #"--no_tabular_analysis",
                              "--no_ecdf", "--no_scatter_plots", "--no_cost_over_time",
-                             "--no_conf_foot", "--no_parallel_coordinates", "--no_algorithm_footprints",
+                             "--no_configurator_footprint", "--no_parallel_coordinates", "--no_algorithm_footprints",
                              "--output", self.cave_output_dir]
 
         self.output_dirs = [self.cave_output_dir]
@@ -66,8 +65,7 @@ class TestCLI(unittest.TestCase):
 
         for folders in test_folders:
             # Run from base-path
-            testargs = ["python", "scripts/cave",
-                        "--folders"]
+            testargs = ["python", "scripts/cave", "--folders"]
             testargs.extend(folders)
             testargs.extend(self.def_args_off)
             # No ta_exec -> scenario cannot be loaded
@@ -93,8 +91,7 @@ class TestCLI(unittest.TestCase):
         with changedir("test/example_output"):
             for folders in test_folders:
                 # Run from base-path
-                testargs = ["python", "../../scripts/cave",
-                            "--folders"]
+                testargs = ["python", "../../scripts/cave", "--folders"]
                 testargs.extend(folders)
                 testargs.extend(self.def_args_off)
                 with mock.patch.object(sys, 'argv', testargs):
@@ -113,6 +110,6 @@ class TestCLI(unittest.TestCase):
                     "--folders", test_folder,
                     "--ta_exec", "test/example_output",
                     "--pimp_sort_table_by", "fanova",
-                    "--param_importance", "ablation"]
+                    "--parameter_importance", "ablation"]
         with mock.patch.object(sys, 'argv', testargs):
             self.assertRaises(ValueError, self.cavecli.main_cli)
