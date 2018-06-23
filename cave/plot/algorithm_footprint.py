@@ -83,12 +83,11 @@ class AlgorithmFootprint(object):
         if self.output_dir and not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 
-        self.algorithms = [config for config, name in algorithms]
-        self.algo_name = {algo : name for algo, name in algorithms}
-        self.name_algo = {name : algo for algo, name in algorithms}
-        self.__algo_cost = {}  # Use function self._get_cost!! Maps algo -> {instance -> cost}
+        self.algorithms = [config for config, name in algorithms]    # Configuration-objects
+        self.algo_name = {algo : name for algo, name in algorithms}  # Mapping config to name
+        self.name_algo = {name : algo for algo, name in algorithms}  # and vice versa
 
-        self.algo_labels = {}  # Maps algo -> label
+        self.algo_labels = {}  # Maps algo -> label (good and bad)
 
         self.features = np.array([self.inst_to_feat[k] for k in self.insts])
         self.features_2d = self._reduce_dim(self.features, 2)
@@ -122,7 +121,7 @@ class AlgorithmFootprint(object):
             feature_array = PCA(n_components=n).fit_transform(feature_array)
         return feature_array
 
-    def _get_cost(self, algorithm, instance):
+    def _get_cost(self, algorithm, instance=None):
         """
         Return cost according to (possibly EPM-)validated runhistory.
 
@@ -133,10 +132,15 @@ class AlgorithmFootprint(object):
         instance: str
             instance name
         """
+        if not hasattr(self, '__algo_cost'):
+            self.__algo_cost = {}  # Use function self._get_cost!! Maps algo -> {instance -> cost}
         if not algorithm in self.__algo_cost:
             self.logger.debug("Getting cost for %s, using PAR1-score", self.algo_name[algorithm])
             self.__algo_cost[algorithm] = get_cost_dict_for_config(self.rh, algorithm)
-        return self.__algo_cost[algorithm][instance]
+        if instance:
+            return self.__algo_cost[algorithm][instance]
+        else:
+            return self.__algo_cost[algorithm]
 
     def _label_instances(self, epsilon=0.95):
         """
@@ -156,7 +160,7 @@ class AlgorithmFootprint(object):
             for a in self.algo_name.keys():
                 cost = self._get_cost(a, i)
                 #self.logger.debug("%s on \'%s\': best/this (%f/%f=%f)",
-                #                  self.algo_names[a], i,
+                #                  self.algo_name[a], i,
                 #                  best_cost, cost,
                 #                  best_cost / cost)
                 if (cost == 0 or
@@ -223,7 +227,7 @@ class AlgorithmFootprint(object):
         good = [i for i in self.insts if self.algo_labels[a][i] == 1]
         if len(good) < 3:
             self.logger.debug("Less than 3 good instances found in %s, footprint"
-                              " not calculated.", self.algo_names[a])
+                              " not calculated.", self.algo_name[a])
             return 0
 
         # Repeat until no more triangles can be formed (at least 3 points left).
@@ -299,62 +303,11 @@ class AlgorithmFootprint(object):
                 pass
         self.logger.debug("Area for %s is %f (%d Qhull-exceptions, %d/%d good "
                           "insts, %d regions)",
-                          self.algo_names[a], area, count_exceptions, len(good),
+                          self.algo_name[a], area, count_exceptions, len(good),
                           len(self.insts), len(regions))
         return area
 
 ####### PLOTS
-
-    def _get_rgba(self, all, good, bad):
-        """ Calculates the red and green parts of the individual dots.
-        The red part is the number of points on the same coordinate belonging to the bad group
-        divided by the number of all points on the same coordinate, same for
-        green part.
-
-        Parameters:
-        -----------
-        all: list
-            list of features of all instances
-        good: list
-            instances labeled good
-        bad: list
-            instances labeled bad
-
-        Returns:
-        --------
-        r_g_b_a: list
-            list of tuples with rgba-values
-        zorder: list
-            zorder values
-        """
-        len_longest = min(len(good), len(bad))
-        colors, alpha, zorder = [], [], []
-        counts = all.groupby(all.columns.tolist(), as_index=False).size()  # count the occurance of values
-        if len(good) > 0: counts_g = good.groupby(good.columns.tolist(),
-                as_index=False).size()#.unstack()  # in good
-        if len(bad) > 0: counts_b = bad.groupby(bad.columns.tolist(),
-                as_index=False).size()#.unstack()  # and bad
-        for idx, coords in enumerate(all.values):  # individually plot the points
-            self.logger.debug(counts)
-            r, g, b = 0, 0, 0
-            if len(bad) > 0 and len(coords) == 3:
-                try:
-                    r = counts_b[coords[0]][coords[1]][coords[2]] / counts[coords[0]][coords[1]][coords[2]]
-                except KeyError:
-                    pass
-            if len(good) > 0 and len(coords) == 3:
-                try:
-                    g = counts_g[coords[0]][coords[1]][coords[2]] / counts[coords[0]][coords[1]][coords[2]]
-                except KeyError:
-                    pass
-            if len_longest < idx:  # if we plot points from the shorter list, increase zorder and use small alpha
-                alpha = 0.375
-                zorder.append(9999)
-            else:
-                zorder.append(1)
-                alpha = 1
-            colors.append((r, g, b, alpha))
-        return np.array(colors), zorder
 
     def _get_good_bad(self, conf, insts=[]):
         """ Creates a list of indices for good and bad instances for a
@@ -376,7 +329,7 @@ class AlgorithmFootprint(object):
             insts = self.insts
 
         good_idx, bad_idx = [], []
-        for k, v in self.__algo_cost[conf].items():
+        for k, v in self._get_cost(conf).items():
             # Only consider passed insts
             if not k in insts:
                 continue
@@ -389,7 +342,7 @@ class AlgorithmFootprint(object):
         assert(len(bad_idx) == len(set(bad_idx)))
         good_idx, bad_idx = np.array(good_idx), np.array(bad_idx)
         self.logger.debug("for config %s good: %d, bad: %d",
-                          self.algo_names[conf], len(good_idx), len(bad_idx))
+                          self.algo_name[conf], len(good_idx), len(bad_idx))
         return (good_idx, bad_idx)
 
     def plot_interactive_footprint(self):
@@ -441,8 +394,10 @@ class AlgorithmFootprint(object):
         x_range = [min(features[:, 0]) - 1, max(features[:, 0]) + 1]
         y_range = [min(features[:, 1]) - 1, max(features[:, 1]) + 1]
         p = figure(plot_height=500, plot_width=600,
-                   tools=[hover, 'save', 'box_zoom', 'pan'], x_range=x_range, y_range=y_range)
+                   tools=[hover, 'save', 'box_zoom', 'pan', 'reset'], x_range=x_range, y_range=y_range)
         p.scatter(x='x', y='y', source=source, color='color')
+        p.xaxis.axis_label, p.yaxis.axis_label = 'principal component 1', 'principal component 2'
+        p.xaxis.axis_label_text_font_size = p.yaxis.axis_label_text_font_size = "15pt"
 
         # Export and return
         if self.output_dir:
@@ -453,56 +408,6 @@ class AlgorithmFootprint(object):
         script, div = components(layout)
         return script, div
 
-    def plot2d(self):
-        """ Plot shaded 2d-version of the algorithm footprint. """
-        plots = []
-        for a in self.algorithms:
-            # Plot without clustering (for all insts)
-            out_fn = os.path.join(self.output_dir, 'footprint_' +
-                                  self.algo_names[a] + '_2d.png')
-            self.logger.debug("Plot saved to '%s'", out_fn)
-            fig, ax = plt.subplots()
-            good_idx, bad_idx = self._get_good_bad(a)
-            # As we don't have such a high resolution when plotting, i.e. we don't see differences between 0.001 and 0.00001
-            # all points that lie close by might overlap completely. To easily spot these, squash everything down to one
-            # decimal
-            good = np.array([self.features_2d[idx] for idx in good_idx])
-            bad = np.array([self.features_2d[idx] for idx in bad_idx])
-            good, bad = np.around(np.array(good), decimals=1), np.around(np.array(bad), decimals=1)
-
-            # working with dataframes to get easy counts to use for plotting
-            good = pd.DataFrame(good)
-            bad = pd.DataFrame(bad)
-            if len(good) < len(bad):  # decide which to plot first. (short list unlikely to shadow many points in long list)
-                all = pd.concat([bad, good])
-            else:
-                all = pd.concat([good, bad])
-            len_longest = min(len(good), len(bad))
-            counts = all.groupby(all.columns.tolist(), as_index=False).size()  # count the occurance of values
-            if len(good) > 0: counts_g = good.groupby(good.columns.tolist(), as_index=False).size().unstack()  # in good
-            if len(bad) > 0: counts_b = bad.groupby(bad.columns.tolist(), as_index=False).size().unstack()  # and bad
-            for idx, coords in enumerate(all.values):  # individually plot the points
-                r, g, b = 0, 0, 0
-                if len(bad) > 0 and coords[0] in counts_b.index and coords[1] in counts_b.columns:  # determine red part
-                    # red part is the number of points on the same coordinate belonging to the bad group
-                    # divided by the number of all points on the same coordinate
-                    r = counts_b[coords[1]][coords[0]] / counts[coords[0]][coords[1]]
-                if len(good) > 0 and coords[0] in counts_g.index and coords[1] in counts_g.columns: # similar for green
-                    g = counts_g[coords[1]][coords[0]] / counts[coords[0]][coords[1]]
-                zorder = 1
-                alpha = 1
-                if len_longest < idx:  # if we plot points from the shorter list, increase zorder and use small alpha
-                    alpha = 0.375
-                    zorder=9999
-                plt.scatter(coords[0], coords[1], color=(r, g, b), s=15, zorder=zorder, alpha=alpha)
-            ax.set_ylabel('principal component 1')
-            ax.set_xlabel('principal component 2')
-            plt.tight_layout()
-            fig.savefig(out_fn)
-            plt.close(fig)
-            plots.append(out_fn)
-        return plots
-
     def plot3d(self):
         """ Plot 3d-version of the algorithm footprint from four different
         angles. """
@@ -510,7 +415,7 @@ class AlgorithmFootprint(object):
         for a in self.algorithms:
             # Plot without clustering (for all insts)
             out_fns = [os.path.join(self.output_dir, 'footprint_' +
-                      self.algo_names[a] + '_3d_{}.png'.format(i)) for i in range(4)]
+                      self.algo_name[a] + '_3d_{}.png'.format(i)) for i in range(4)]
             self.logger.debug("Plot saved to '%s'", out_fns)
             fig, ax = plt.subplots()
             good_idx, bad_idx = self._get_good_bad(a)
@@ -526,7 +431,7 @@ class AlgorithmFootprint(object):
                 ax = fig.add_subplot(111, projection='3d')
                 x, y, z = axes_ordered
                 if len(good) > 0: ax.scatter(xs=good[:, x], ys=good[:, y],
-                                             zs=good[:, z], color="green")
+                                             zs=good[:, z], color="blue")
                 if len(bad) > 0: ax.scatter(xs=bad[:, x], ys=bad[:, y],
                                             zs=bad[:, z], color="red")
                 ax.set_xlabel(axes[x], fontsize=12)
@@ -567,14 +472,14 @@ class AlgorithmFootprint(object):
                 # Plot without clustering (for all insts)
                 suffix = 'all_{:4.3f}.png'.format(e)
                 path = os.path.join(algo_fp_debug,
-                                    '_'.join([self.algo_names[a], suffix]))
+                                    '_'.join([self.algo_name[a], suffix]))
                 path = self.plot2d(a, path)
                 self.logger.debug("Plot saved to '%s'", path)
         self._label_instances()
         for c in self.cluster_dict.keys():
             # Plot per cluster
             path = os.path.join(algo_fp_debug, 'cluster_' + str(c) + '_fp_' +
-                                               self.algo_names[a] + '_0.95.png')
+                                               self.algo_name[a] + '_0.95.png')
             path = self.plot2d(a, path, self.cluster_dict[c])
 
     def get_clusters(self, features_2d):
