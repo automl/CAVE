@@ -96,6 +96,11 @@ class CaveCLI(object):
                               help="specify the format of the configurator-files. ",
                               choices=['SMAC2', 'SMAC3', 'CSV'],
                               type=str.upper)
+        opt_opts.add_argument("--validation_format",
+                              default='NONE',
+                              help="what format the validation-files are in",
+                              choices=['SMAC2', 'SMAC3', 'CSV', 'NONE'],
+                              type=str.upper)
         opt_opts.add_argument("--ta_exec_dir",
                               default='.',
                               help="path to the execution-directory of the configurator run. this is the path from "
@@ -264,6 +269,7 @@ class CaveCLI(object):
                     args_.output,
                     ta_exec_dir,
                     file_format=args_.file_format,
+                    validation_format=args_.validation_format,
                     validation_method=args_.validation,
                     pimp_max_samples=args_.pimp_max_samples,
                     fanova_pairwise=args_.fanova_pairwise,

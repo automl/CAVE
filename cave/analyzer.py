@@ -18,7 +18,7 @@ from cave.plot.configurator_footprint import ConfiguratorFootprint
 from cave.plot.scatter import plot_scatter_plot
 from cave.plot.parallel_coordinates import ParallelCoordinatesPlotter
 from cave.reader.configurator_run import ConfiguratorRun
-from cave.utils.helpers import get_cost_dict_for_config, get_timeout, NotApplicableError
+from cave.utils.helpers import get_cost_dict_for_config, get_timeout, NotApplicableError, MissingInstancesError
 from cave.utils.timing import timing
 from cave.utils.statistical_tests import paired_permutation, paired_t_student
 from cave.plot.cost_over_time import CostOverTime
@@ -81,6 +81,36 @@ class Analyzer(object):
         self.pimp_max_samples = pimp_max_samples
         self.fanova_pairwise = fanova_pairwise
 
+    @timing
+    def get_oracle(self, runhistories, instances, validated_rh):
+        """Estimation of oracle performance. Collects best performance seen for each instance in any run.
+
+        Parameters
+        ----------
+        runhistories: List[RunHistory]
+            list of runhistories
+        instances: List[str]
+            list of instances in question
+        validated_rh: RunHistory
+            runhistory
+
+        Results
+        -------
+        oracle: dict[str->float]
+            best seen performance per instance
+        """
+        self.logger.debug("Calculating oracle performance")
+        oracle = {}
+        for rh in runhistories:
+            for c in rh.get_all_configs():
+                costs = get_cost_dict_for_config(validated_rh, c)
+                for i in costs.keys():
+                    if i not in oracle:
+                        oracle[i] = costs[i]
+                    elif oracle[i] > costs[i]:
+                        oracle[i] = costs[i]
+        return oracle
+
     def timeouts_to_tuple(self, timeouts):
         """ Get number of timeouts in config
 
@@ -100,23 +130,25 @@ class Analyzer(object):
         if len(train) > 1 and len(test) > 1:
             if not cutoff:
                 return (("N", "A"), ("N", "A"))
-            train_timeout = len([i for i in timeouts if (timeouts[i] is False and i in self.scenario.train_insts)])
-            test_timeout = len([i for i in timeouts if (timeouts[i] is False and i in self.scenario.test_insts)])
-            return ((train_timeout, len(train)),
-                    (test_timeout, len(test)))
+            train_timeout = len([i for i in timeouts if (timeouts[i] is False and i in train)])
+            test_timeout = len([i for i in timeouts if (timeouts[i] is False and i in test)])
+            return ((train_timeout, len([i for i in timeouts if i in train])),
+                    (test_timeout, len([i for i in timeouts if i in test])))
         else:
             if not cutoff:
                 return ("N", "A")
             timeout = len([i for i in timeouts if timeouts[i] is False])
-            return (timeout, len(train))
+            return (timeout, len([i for i in timeouts if i in train]))
 
-    def get_parX(self, epm_rh, config, par=10):
-        """Calculate parX-values of default and incumbent configs.
+    def get_parX(self, cost_dict, par=10):
+        """Calculate parX-values from given cost_dict.
         First determine PAR-timeouts for each run on each instances,
         Second average over train/test if available, else just average.
 
         Parameters
         ----------
+        cost_dict: Dict[inst->cost]
+            mapping instances to costs
         epm_rh: RunHistory
             validated and estimated runhistory to take cost from
         config: Configuration
@@ -130,21 +162,25 @@ class Analyzer(object):
             PAR10 values for train- and test-instances, if available as tuple
             else the general average
         """
-        runs = get_cost_dict_for_config(epm_rh, config)
+        insts = [i for i in self.scenario.train_insts + self.scenario.test_insts if i]
+        missing = set(insts) - set(cost_dict.keys())
+        if missing:
+            self.logger.debug("Missing instances: %s", str(missing))
         # Penalize
         if self.scenario.cutoff and self.scenario.run_obj == 'runtime':
-            runs = [(k, runs[k]) if runs[k] < self.scenario.cutoff else (k, self.scenario.cutoff * par) for k in runs]
+            cost_dict = [(k, cost_dict[k]) if cost_dict[k] < self.scenario.cutoff else
+                         (k, self.scenario.cutoff * par) for k in cost_dict]
         else:
-            runs = [(k, runs[k]) for k in runs]
+            cost_dict = [(k, cost_dict[k]) for k in cost_dict]
             self.logger.info("Calculating penalized average runtime without cutoff...")
 
         # Average
         if len(self.scenario.train_insts) > 1 and len(self.scenario.test_insts) > 1:
-            train = np.mean([c for i, c in runs if i in self.scenario.train_insts])
-            test = np.mean([c for i, c in runs if i in self.scenario.test_insts])
+            train = np.mean([c for i, c in cost_dict if i in self.scenario.train_insts])
+            test = np.mean([c for i, c in cost_dict if i in self.scenario.test_insts])
             return (train, test)
         else:
-            return np.mean([c for i, c in runs])
+            return np.mean([c for i, c in cost_dict])
 
     @timing
     def _permutation_test(self, epm_rh, default, incumbent, num_permutations, par=1):
@@ -239,16 +275,24 @@ class Analyzer(object):
             table = table.replace('empty'+str(i), '&nbsp')
         return table
 
-    def create_performance_table(self, default, incumbent, epm_rh):
+    def create_performance_table(self, default, incumbent, epm_rh, oracle):
         """Create table, compare default against incumbent on train-,
         test- and combined instances. Listing PAR10, PAR1 and timeouts.
         Distinguishes between train and test, if available."""
         self.logger.info("... create performance table")
-        def_par10, inc_par10 = self.get_parX(epm_rh, default, 10), self.get_parX(epm_rh, incumbent, 10)
-        def_par1, inc_par1 = self.get_parX(epm_rh, default, 1), self.get_parX(epm_rh, incumbent, 1)
+        cost_dict_def = get_cost_dict_for_config(epm_rh, default)
+        cost_dict_inc = get_cost_dict_for_config(epm_rh, incumbent)
+        def_par10, inc_par10 = self.get_parX(cost_dict_def, 10), self.get_parX(cost_dict_inc, 10)
+        def_par1, inc_par1 = self.get_parX(cost_dict_def, 1), self.get_parX(cost_dict_inc, 1)
+        # oracle
+        ora_par1, ora_par10 = self.get_parX(oracle, 1), self.get_parX(oracle, 10)
+        if self.scenario.cutoff:
+            ora_timeout = self.timeouts_to_tuple({i: c < self.scenario.cutoff for i, c in oracle.items()})
+        else:
+            ora_timeout = self.timeouts_to_tuple({})
         # p-values (paired permutation)
-        p_value_par10 = "%.5f" % self._permutation_test(epm_rh, self.default, self.incumbent, 10000, 10)
-        p_value_par1 = "%.5f" % self._permutation_test(epm_rh, self.default, self.incumbent, 10000, 1)
+        p_value_par10 = "%.5f" % self._permutation_test(epm_rh, default, incumbent, 10000, 10)
+        p_value_par1 = "%.5f" % self._permutation_test(epm_rh, default, incumbent, 10000, 1)
         def_timeouts = get_timeout(epm_rh, default, self.scenario.cutoff)
         inc_timeouts = get_timeout(epm_rh, incumbent, self.scenario.cutoff)
         def_timeouts_tuple = self.timeouts_to_tuple(def_timeouts)
@@ -263,22 +307,28 @@ class Analyzer(object):
             # Create table
             array = np.array([[round(def_par10[0], dec_place),
                                round(inc_par10[0], dec_place),
+                               round(ora_par10[0], dec_place),
                                round(def_par10[1], dec_place),
                                round(inc_par10[1], dec_place),
+                               round(ora_par10[1], dec_place) if np.isfinite(ora_par10[1]) else 'N/A',
                                p_value_par10],
                               [round(def_par1[0], dec_place),
                                round(inc_par1[0], dec_place),
+                               round(ora_par1[0], dec_place),
                                round(def_par1[1], dec_place),
                                round(inc_par1[1], dec_place),
+                               round(ora_par1[1], dec_place) if np.isfinite(ora_par1[1]) else 'N/A',
                                p_value_par1],
                               ["{}/{}".format(def_timeouts_tuple[0][0], def_timeouts_tuple[0][1]),
                                "{}/{}".format(inc_timeouts_tuple[0][0], inc_timeouts_tuple[0][1]),
+                               "{}/{}".format(ora_timeout[0][0], ora_timeout[0][1]),
                                "{}/{}".format(def_timeouts_tuple[1][0], def_timeouts_tuple[1][1]),
                                "{}/{}".format(inc_timeouts_tuple[1][0], inc_timeouts_tuple[1][1]),
+                               "{}/{}".format(ora_timeout[1][0], ora_timeout[1][1]),
                                p_value_timeouts
                                ]])
             df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
-                           columns=['Default', 'Incumbent', 'Default', 'Incumbent', 'p-value'])
+                           columns=['Default', 'Incumbent', 'Oracle', 'Default', 'Incumbent', 'Oracle', 'p-value'])
             table = df.to_html()
             # Insert two-column-header
             table = table.split(sep='</thead>', maxsplit=1)[1]
@@ -289,15 +339,17 @@ class Analyzer(object):
                         "  <thead>\n"\
                         "    <tr>\n"\
                         "      <td rowspan=\"2\"></td>\n"\
-                        "      <th colspan=\"2\" scope=\"colgroup\">Train</th>\n"\
-                        "      <th colspan=\"2\" scope=\"colgroup\">Test</th>\n"\
+                        "      <th colspan=\"3\" scope=\"colgroup\">Train</th>\n"\
+                        "      <th colspan=\"3\" scope=\"colgroup\">Test</th>\n"\
                         "      <th colspan=\"1\" scope=\"colgroup\">p-value</th>\n"\
                         "    </tr>\n"\
                         "    <tr>\n"\
                         "      <th scope=\"col\">Default</th>\n"\
                         "      <th scope=\"col\">Incumbent</th>\n"\
+                        "      <th scope=\"col\">Oracle</th>\n"\
                         "      <th scope=\"col\">Default</th>\n"\
                         "      <th scope=\"col\">Incumbent</th>\n"\
+                        "      <th scope=\"col\">Oracle</th>\n"\
                         "    </tr>\n"\
                         "</thead>\n"
             table = new_table + table
@@ -305,15 +357,18 @@ class Analyzer(object):
             # No distinction between train and test
             array = np.array([[round(def_par10, dec_place),
                                round(inc_par10, dec_place),
+                               round(ora_par10, dec_place),
                                p_value_par10],
                               [round(def_par1, dec_place),
                                round(inc_par1, dec_place),
+                               round(ora_par1, dec_place) if np.isfinite(ora_par1) else 'N/A',
                                p_value_par1],
                               ["{}/{}".format(def_timeouts_tuple[0], def_timeouts_tuple[1]),
                                "{}/{}".format(inc_timeouts_tuple[0], inc_timeouts_tuple[1]),
+                               "{}/{}".format(ora_timeout[0], ora_timeout[1]),
                                p_value_timeouts]])
             df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
-                           columns=['Default', 'Incumbent', 'p-value'])
+                           columns=['Default', 'Incumbent', 'Oracle', 'p-value'])
             table = df.to_html()
         return table
 
@@ -758,28 +813,28 @@ class Analyzer(object):
             raise NotApplicableError("Features needed for algorithm footprints!")
 
         if not algorithms:
-            algorithms = OrderedDict([(self.default, "default"),
-                                      (self.incumbent, "incumbent")])
+            algorithms = [(self.default, "default"), (self.incumbent, "incumbent")]
         # filter instance features
-        instances = self.scenario.train_insts
-        if not self.scenario.test_insts == [None]:
-            instances.extend(self.scenario.test_insts)
-        features = {k: v for k, v in self.scenario.feature_dict.items() if k in instances}
+        train = self.scenario.train_insts
+        test = self.scenario.test_insts
+        train_feats = {k: v for k, v in self.scenario.feature_dict.items() if k in train}
+        test_feats = {k: v for k, v in self.scenario.feature_dict.items() if k in test}
+        if not (train_feats or test_feats):
+            self.logger.warning("No instance-features could be detected. "
+                                "No algorithm footprints available.")
+            raise MissingInstancesError("Could not detect any instances.")
 
-        self.logger.info("... algorithm footprints for: {}".format(", ".join(algorithms.values())))
+        self.logger.info("... algorithm footprints for: {}".format(",".join([a[1] for a in algorithms])))
         footprint = AlgorithmFootprint(epm_rh,
-                                       features, algorithms,
-                                       self.scenario.cutoff, self.output_dir,
+                                       train_feats, test_feats,
+                                       algorithms,
+                                       self.scenario.cutoff,
+                                       self.output_dir,
                                        rng=self.rng)
-        # Calculate footprints
-        # for i in range(100):
-        #     for a in algorithms:
-        #         footprint.footprint(a, 20, 0.95)
-
         # Plot footprints
-        plots2d = footprint.plot2d()
+        bokeh = footprint.plot_interactive_footprint()
         plots3d = footprint.plot3d()
-        return (plots2d, plots3d)
+        return (bokeh, plots3d)
 
 #  FEATURE ANALYSIS ################################################################
 

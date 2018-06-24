@@ -13,7 +13,7 @@ please call:
 
 .. code-block:: bash
 
-    sudo apt-get install build-essential swig
+    sudo apt-get install build-essential swig python3-dev
 
 And to activate static `.png`-exports for interactive plots, you will currently
 also need phantomjs-prebuilt:

@@ -167,7 +167,8 @@ class CSV2RH(object):
                      "MEMOUT" : StatusType.MEMOUT,
                      "STATUSTYPE.MEMOUT" : StatusType.MEMOUT,
                      "ABORT" : StatusType.ABORT,
-                     "STATUSTYPE.ABORT" : StatusType.ABORT,}
+                     "STATUSTYPE.ABORT" : StatusType.ABORT,
+                     }
 
         status = status.strip().upper()
         if status in types:

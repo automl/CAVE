@@ -30,8 +30,8 @@ class SMAC3Reader(BaseReader):
         """
         Returns:
         --------
-        (rh, validated_rh): RunHistory, Union[False, RunHistory]
-            runhistory and (if available) validated runhistory
+        rh: RunHistory
+            runhistory
         """
         rh_fn = os.path.join(self.folder, 'runhistory.json')
         validated_rh_fn = os.path.join(self.folder, 'validated_runhistory.json')
@@ -41,17 +41,27 @@ class SMAC3Reader(BaseReader):
         except FileNotFoundError:
             self.logger.warning("%s not found. trying to read SMAC3-output, "
                                 "if that's not correct, change it with the "
-                                "--file_format option!", rh_fn)
+                                "--format option!", rh_fn)
             raise
-        try:
-            validated_rh = RunHistory(average_cost)
-            validated_rh.load_json(validated_rh_fn, cs)
-        except FileNotFoundError:
-            self.logger.debug("No validated runhistory for \"%s\" found "
-                              "(probably ok)" % self.folder)
-            validated_rh = False
+        return rh
 
-        return (rh, validated_rh)
+    def get_validated_runhistory(self, cs):
+        """
+        Returns:
+        --------
+        validated_rh: RunHistory
+            runhistory with validation-data, if available
+        """
+        rh_fn = os.path.join(self.folder, 'validated_runhistory.json')
+        rh = RunHistory(average_cost)
+        try:
+            rh.load_json(rh_fn, cs)
+        except FileNotFoundError:
+            self.logger.warning("%s not found. trying to read SMAC3-validation-output, "
+                                "if that's not correct, change it with the "
+                                "--validation_format option!", rh_fn)
+            raise
+        rh
 
     def get_trajectory(self, cs):
         traj_fn = os.path.join(self.folder, 'traj_aclib2.json')

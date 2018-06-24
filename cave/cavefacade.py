@@ -44,12 +44,12 @@ def changedir(newdir):
 
 
 class CAVE(object):
-
     def __init__(self,
                  folders: typing.List[str],
                  output_dir: str,
-                 ta_exec_dir: str='.',
+                 ta_exec_dir: typing.List[str],
                  file_format: str='SMAC3',
+                 validation_format='NONE',
                  validation_method: str='epm',
                  pimp_max_samples: int=-1,
                  fanova_pairwise: bool=True,
@@ -122,7 +122,8 @@ class CAVE(object):
         for ta_exec_dir, folder in zip(ta_exec_dir, folders):
             try:
                 self.logger.debug("Collecting data from %s.", folder)
-                self.runs.append(ConfiguratorRun(folder, ta_exec_dir, file_format=file_format))
+                self.runs.append(ConfiguratorRun(folder, ta_exec_dir, file_format=file_format,
+                                                 validation_format=validation_format))
             except Exception as err:
                 self.logger.warning("Folder %s could with ta_exec_dir %s not be loaded, failed with error message: %s",
                                     folder, ta_exec_dir, err)
@@ -316,7 +317,10 @@ class CAVE(object):
         d = self.website["Performance Analysis"] = OrderedDict()
 
         if performance:
-            performance_table = self.analyzer.create_performance_table(self.default, self.incumbent, self.epm_rh)
+            instances = [i for i in self.scenario.train_insts + self.scenario.test_insts if i]
+            oracle = self.analyzer.get_oracle([r.original_runhistory for r in self.runs], instances, self.validated_rh)
+            performance_table = self.analyzer.create_performance_table(self.default, self.incumbent,
+                                                                       self.epm_rh, oracle)
             d["Performance Table"] = {"table": performance_table}
 
         if cdf:
@@ -330,16 +334,17 @@ class CAVE(object):
                 d["Scatterplot"] = {"figure": scatter_paths}
             self.build_website()
 
-        if algo_footprint and self.scenario.feature_array is not None:
-            # TODO replace by exception: and self.scenario.feature_dict:
-            algorithms = OrderedDict([(self.default, "default"), (self.incumbent, "incumbent")])
+        if algo_footprint and self.scenario.feature_dict:
+            algorithms = [(self.default, "default"), (self.incumbent, "incumbent")]
 
             algo_footprint_plots = self.analyzer.plot_algorithm_footprint(self.epm_rh, algorithms)
             d["Algorithm Footprints"] = OrderedDict()
-            p_2d = algo_footprint_plots[0]
+
+            # Interactive bokeh-plot
+            script, div = algo_footprint_plots[0]
+            d["Algorithm Footprints"]["Interactive Algorithm Footprint"] = {"bokeh" : (script, div)}
+
             p_3d = algo_footprint_plots[1]
-            header = "Default vs Incumbent 2d"
-            d["Algorithm Footprints"][header] = {"figure": p_2d}
             for plots in p_3d:
                 header = os.path.splitext(os.path.split(plots[0])[1])[0][10:-2]
                 header = header[0].upper() + header[1:].replace('_', ' ')

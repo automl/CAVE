@@ -22,6 +22,8 @@ class BaseReader(object):
         self.folder = folder
         self.ta_exec_dir = ta_exec_dir
 
+        self.scen = None
+
     def get_scenario(self):
         """Expects `self.folder/scenario.txt` with appropriately formatted
         scenario-information (
@@ -29,8 +31,11 @@ class BaseReader(object):
         raise NotImplemented()
 
     def get_runhistory(self):
-        """Create RunHistory-object. Returns (original_runhistory,
-        validated_runhistory) where validated_runhistory can be None."""
+        """Create RunHistory-object from files."""
+        raise NotImplemented()
+
+    def get_validated_runhistory(self):
+        """Create validated runhistory from files, if available."""
         raise NotImplemented()
 
     def get_trajectory(self):
