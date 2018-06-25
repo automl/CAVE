@@ -130,14 +130,14 @@ class Analyzer(object):
         if len(train) > 1 and len(test) > 1:
             if not cutoff:
                 return (("N", "A"), ("N", "A"))
-            train_timeout = len([i for i in timeouts if (timeouts[i] is False and i in train)])
-            test_timeout = len([i for i in timeouts if (timeouts[i] is False and i in test)])
+            train_timeout = len([i for i in timeouts if (not timeouts[i] and i in train)])
+            test_timeout = len([i for i in timeouts if (not timeouts[i] and i in test)])
             return ((train_timeout, len([i for i in timeouts if i in train])),
                     (test_timeout, len([i for i in timeouts if i in test])))
         else:
             if not cutoff:
                 return ("N", "A")
-            timeout = len([i for i in timeouts if timeouts[i] is False])
+            timeout = len([i for i in timeouts if not timeouts[i]])
             return (timeout, len([i for i in timeouts if i in train]))
 
     def get_parX(self, cost_dict, par=10):
@@ -149,10 +149,6 @@ class Analyzer(object):
         ----------
         cost_dict: Dict[inst->cost]
             mapping instances to costs
-        epm_rh: RunHistory
-            validated and estimated runhistory to take cost from
-        config: Configuration
-            config to be calculated
         par: int
             par-factor to use
 
@@ -165,7 +161,15 @@ class Analyzer(object):
         insts = [i for i in self.scenario.train_insts + self.scenario.test_insts if i]
         missing = set(insts) - set(cost_dict.keys())
         if missing:
-            self.logger.debug("Missing instances: %s", str(missing))
+            self.logger.debug("Missing instances in cost_dict for parX: %s", str(missing))
+        # Catch wrong config
+        if par != 1 and not self.scenario.cutoff:
+            self.logger.debug("No par%d possible, since scenario has not specified cutoff-time", par)
+            if len(self.scenario.train_insts) > 1 and len(self.scenario.test_insts) > 1:
+                return (np.nan, np.nan)
+            else:
+                return np.nan
+
         # Penalize
         if self.scenario.cutoff and self.scenario.run_obj == 'runtime':
             cost_dict = [(k, cost_dict[k]) if cost_dict[k] < self.scenario.cutoff else
@@ -184,6 +188,8 @@ class Analyzer(object):
 
     @timing
     def _permutation_test(self, epm_rh, default, incumbent, num_permutations, par=1):
+        if par != 1 and not self.scenario.cutoff:
+            return np.nan
         cutoff = self.scenario.cutoff
         def_cost = get_cost_dict_for_config(epm_rh, default, par=par, cutoff=cutoff)
         inc_cost = get_cost_dict_for_config(epm_rh, incumbent, par=par, cutoff=cutoff)
@@ -282,41 +288,45 @@ class Analyzer(object):
         self.logger.info("... create performance table")
         cost_dict_def = get_cost_dict_for_config(epm_rh, default)
         cost_dict_inc = get_cost_dict_for_config(epm_rh, incumbent)
-        def_par10, inc_par10 = self.get_parX(cost_dict_def, 10), self.get_parX(cost_dict_inc, 10)
+
         def_par1, inc_par1 = self.get_parX(cost_dict_def, 1), self.get_parX(cost_dict_inc, 1)
-        # oracle
+        def_par10, inc_par10 = self.get_parX(cost_dict_def, 10), self.get_parX(cost_dict_inc, 10)
         ora_par1, ora_par10 = self.get_parX(oracle, 1), self.get_parX(oracle, 10)
-        if self.scenario.cutoff:
-            ora_timeout = self.timeouts_to_tuple({i: c < self.scenario.cutoff for i, c in oracle.items()})
-        else:
-            ora_timeout = self.timeouts_to_tuple({})
-        # p-values (paired permutation)
-        p_value_par10 = "%.5f" % self._permutation_test(epm_rh, default, incumbent, 10000, 10)
-        p_value_par1 = "%.5f" % self._permutation_test(epm_rh, default, incumbent, 10000, 1)
+
         def_timeouts = get_timeout(epm_rh, default, self.scenario.cutoff)
         inc_timeouts = get_timeout(epm_rh, incumbent, self.scenario.cutoff)
         def_timeouts_tuple = self.timeouts_to_tuple(def_timeouts)
         inc_timeouts_tuple = self.timeouts_to_tuple(inc_timeouts)
-        data1, data2 = zip(*[(int(def_timeouts[i]), int(inc_timeouts[i])) for i in def_timeouts.keys()])
-        p_value_timeouts = "%.5f" % paired_permutation(data1, data2, self.rng,
-                                                       num_permutations=10000, logger=self.logger)
+        if self.scenario.cutoff:
+            ora_timeout = self.timeouts_to_tuple({i: c < self.scenario.cutoff for i, c in oracle.items()})
+            data1, data2 = zip(*[(int(def_timeouts[i]), int(inc_timeouts[i])) for i in def_timeouts.keys()])
+            p_value_timeouts = "%.5f" % paired_permutation(data1, data2, self.rng,
+                                                           num_permutations=10000, logger=self.logger)
+        else:
+            ora_timeout = self.timeouts_to_tuple({})
+            p_value_timeouts = "N/A"
+        # p-values (paired permutation)
+        p_value_par10 = self._permutation_test(epm_rh, default, incumbent, 10000, 10)
+        p_value_par10 = "%.5f" % p_value_par10 if np.isfinite(p_value_par10) else 'N/A'
+        p_value_par1 = self._permutation_test(epm_rh, default, incumbent, 10000, 1)
+        p_value_par1 = "%.5f" % p_value_par1 if np.isfinite(p_value_par1) else 'N/A'
 
         dec_place = 3
         if len(self.scenario.train_insts) > 1 and len(self.scenario.test_insts) > 1:
             # Distinction between train and test
             # Create table
-            array = np.array([[round(def_par10[0], dec_place),
-                               round(inc_par10[0], dec_place),
-                               round(ora_par10[0], dec_place),
-                               round(def_par10[1], dec_place),
-                               round(inc_par10[1], dec_place),
+            array = np.array([[round(def_par10[0], dec_place) if np.isfinite(def_par10[0]) else 'N/A',
+                               round(inc_par10[0], dec_place) if np.isfinite(inc_par10[0]) else 'N/A',
+                               round(ora_par10[0], dec_place) if np.isfinite(ora_par10[0]) else 'N/A',
+                               round(def_par10[1], dec_place) if np.isfinite(def_par10[1]) else 'N/A',
+                               round(inc_par10[1], dec_place) if np.isfinite(inc_par10[1]) else 'N/A',
                                round(ora_par10[1], dec_place) if np.isfinite(ora_par10[1]) else 'N/A',
                                p_value_par10],
-                              [round(def_par1[0], dec_place),
-                               round(inc_par1[0], dec_place),
-                               round(ora_par1[0], dec_place),
-                               round(def_par1[1], dec_place),
-                               round(inc_par1[1], dec_place),
+                              [round(def_par1[0], dec_place) if np.isfinite(def_par1[0]) else 'N/A',
+                               round(inc_par1[0], dec_place) if np.isfinite(inc_par1[0]) else 'N/A',
+                               round(ora_par1[0], dec_place) if np.isfinite(ora_par1[0]) else 'N/A',
+                               round(def_par1[1], dec_place) if np.isfinite(def_par1[1]) else 'N/A',
+                               round(inc_par1[1], dec_place) if np.isfinite(inc_par1[1]) else 'N/A',
                                round(ora_par1[1], dec_place) if np.isfinite(ora_par1[1]) else 'N/A',
                                p_value_par1],
                               ["{}/{}".format(def_timeouts_tuple[0][0], def_timeouts_tuple[0][1]),
@@ -355,12 +365,12 @@ class Analyzer(object):
             table = new_table + table
         else:
             # No distinction between train and test
-            array = np.array([[round(def_par10, dec_place),
-                               round(inc_par10, dec_place),
-                               round(ora_par10, dec_place),
+            array = np.array([[round(def_par10, dec_place) if np.isfinite(def_par10) else 'N/A',
+                               round(inc_par10, dec_place) if np.isfinite(inc_par10) else 'N/A',
+                               round(ora_par10, dec_place) if np.isfinite(ora_par10) else 'N/A',
                                p_value_par10],
-                              [round(def_par1, dec_place),
-                               round(inc_par1, dec_place),
+                              [round(def_par1, dec_place) if np.isfinite(def_par1) else 'N/A',
+                               round(inc_par1, dec_place) if np.isfinite(inc_par1) else 'N/A',
                                round(ora_par1, dec_place) if np.isfinite(ora_par1) else 'N/A',
                                p_value_par1],
                               ["{}/{}".format(def_timeouts_tuple[0], def_timeouts_tuple[1]),
