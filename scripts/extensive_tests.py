@@ -19,47 +19,54 @@ get_scenarios(). Use your output_dir as an identifier. """
 def get_scenarios():
     scen_dict = {'algo' : 'python test/general_example/target_algorithm.py',
                  'paramfile' : 'test/general_example/param.pcs',
-                 'runcount_limit' : 100,
+                 'runcount_limit' : 300,
                  'cutoff_time' : 500,
                  }
 
     scens = []
 
     scens.append({
+            **scen_dict,
             **{'run_obj' : 'quality',
                'deterministic' : 1,
+               'cutoff_time' : None,
                'output_dir' : 'test/general_example/results/scen_qual_det_notrain_notest_nofeat'},
-            **scen_dict})
+            })
 
     scens.append({
+            **scen_dict,
             **{'run_obj' : 'runtime',
                'deterministic' : 1,
                'output_dir' : 'test/general_example/results/scen_runt_det_notrain_notest_nofeat'},
-            **scen_dict})
+            })
 
     scens.append({
+            **scen_dict,
             **{'run_obj' : 'runtime',
                'deterministic' : 0,
                'output_dir' : 'test/general_example/results/scen_runt_nondet_notrain_notest_nofeat'},
-            **scen_dict})
+            })
 
     scens.append({
+            **scen_dict,
             **{'run_obj' : 'runtime',
                'deterministic' : 0,
                'instance_file' : 'test/general_example/train.txt',
                'output_dir' : 'test/general_example/results/scen_runt_det_train_notest_nofeat'},
-            **scen_dict})
+            })
 
     scens.append({
+            **scen_dict,
             **{'run_obj' : 'runtime',
                'deterministic' : 0,
                'instance_file' : 'test/general_example/train.txt',
                'test_instance_file' : 'test/general_example/test.txt',
                'output_dir' : 'test/general_example/results/scen_runt_det_train_test_nofeat'},
-            **scen_dict})
+            })
 
     # NOT APPLICABLE
     #scens.append({
+    #        **scen_dict,
     #        **{'run_obj' : 'runtime',
     #           'deterministic' : 0,
     #           'instance_file' : 'test/general_example/train.txt',
@@ -67,9 +74,10 @@ def get_scenarios():
     #           'feature_file' : 'test/general_example/train_feat.csv',
     #           'output_dir' :
     #           'test/general_example/results/scen_runt_det_train_test_feattrain'},
-    #        **scen_dict})
+    #        })
 
     #scens.append({
+    #        **scen_dict,
     #        **{'run_obj' : 'runtime',
     #           'deterministic' : 0,
     #           'instance_file' : 'test/general_example/train.txt',
@@ -77,9 +85,10 @@ def get_scenarios():
     #           'feature_file' : 'test/general_example/test_feat.csv',
     #           'output_dir' :
     #           'test/general_example/results/scen_runt_det_train_test_feattest'},
-    #        **scen_dict})
+    #        })
 
     scens.append({
+            **scen_dict,
             **{'run_obj' : 'runtime',
                'deterministic' : 0,
                'instance_file' : 'test/general_example/train.txt',
@@ -87,7 +96,7 @@ def get_scenarios():
                'feature_file' : 'test/general_example/train_and_test_feat.csv',
                'output_dir' :
                'test/general_example/results/scen_runt_det_train_test_featboth'},
-            **scen_dict})
+            })
     return scens
 
 def print_help():
@@ -110,7 +119,8 @@ if __name__ == '__main__':
             smac.optimize()
     elif sys.argv[1] == 'cave':
         for scen in get_scenarios():
-            cave = CAVE([os.path.join(scen['output_dir'], 'run_1')],
+            folder = os.listdir(scen['output_dir'])[0]
+            cave = CAVE([os.path.join(scen['output_dir'], folder)],
                         os.path.join(scen['output_dir'], 'CAVE_RESULT'),
                         ta_exec_dir='.', validation_method='validation')
             cave.analyze(param_importance=['ablation', 'forward_selection', 'lpi'], cfp_number_quantiles=2)

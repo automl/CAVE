@@ -1,20 +1,5 @@
-import os
-import numpy as np
-import logging
-import shutil
-
-from nose.plugins.attrib import attr
 import unittest
 
-from smac.optimizer.objective import average_cost
-from smac.scenario.scenario import Scenario
-from smac.runhistory.runhistory import RunHistory
-from smac.utils.io.traj_logging import TrajLogger
-from smac.utils.validate import Validator
-
-from cave.analyzer import Analyzer
-from cave.cavefacade import CAVE
-from cave.plot.plotter import Plotter
 from cave.reader.configurator_run import ConfiguratorRun
 
 
