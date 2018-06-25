@@ -123,3 +123,8 @@ def scenario_sanity_check(s, logger):
 class NotApplicableError(Exception):
     """Exception indicating that this analysis-method cannot be performed."""
     pass
+
+class MissingInstancesError(Exception):
+    """Exception indicating that instances are missing."""
+    pass
+
