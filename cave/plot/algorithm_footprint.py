@@ -400,7 +400,7 @@ class AlgorithmFootprint(object):
         x_range = DataRange1d(bounds='auto', start=min(features[:, 0]) - 1, end=max(features[:, 0]) + 1)
         y_range = DataRange1d(bounds='auto', start=min(features[:, 1]) - 1, end=max(features[:, 1]) + 1)
         p = figure(plot_height=500, plot_width=600,
-                   tools=[hover, 'save', 'box_zoom', 'zoom_out', 'pan', 'reset'], active_drag='box_zoom',
+                   tools=[hover, 'save', 'wheel_zoom', 'box_zoom', 'pan', 'reset'], active_drag='box_zoom',
                    x_range=x_range, y_range=y_range)
         # Scatter train and test individually to toggle them
         train_view = CDSView(source=source, filters=[GroupFilter(column_name='instance_set', group='train')])
