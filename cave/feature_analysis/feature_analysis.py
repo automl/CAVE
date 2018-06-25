@@ -157,7 +157,7 @@ class FeatureAnalysis(object):
         data = data[:, indx_list]
 
         fig, ax = plt.subplots()
-        heatmap = ax.pcolor(data, cmap=plt.cm.Blues)
+        heatmap = ax.pcolor(data, cmap=plt.cm.seismic, vmin=-1, vmax=1)
 
         # put the major ticks at the middle of each cell
         ax.set_xticks(np.arange(data.shape[0]) + 0.5, minor=False)
