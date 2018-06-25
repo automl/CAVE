@@ -15,8 +15,8 @@ please call:
 
     sudo apt-get install build-essential swig python3-dev
 
-And to activate static `.png`-exports for interactive plots, you will currently
-also need phantomjs-prebuilt:
+And to activate automatic `.png`-exports for interactive plots, you will currently
+also need to install phantomjs-prebuilt:
 
 .. code-block:: bash
 
