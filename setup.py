@@ -22,7 +22,7 @@ WEB_FILES_LOCATION = os.path.join(os.path.dirname(__file__), 'cave/html/web_file
 setuptools.setup(
     name="cave",
     version=version,
-    packages=['cave', 'cave.feature_analysis', 'cave.html', 'cave.plot', 'cave.utils'],
+    packages=['cave', 'cave.feature_analysis', 'cave.reader', 'cave.html', 'cave.plot', 'cave.utils'],
     package_data={
         'cave/plot': [
             'cave/plot/mpl_style'
@@ -31,6 +31,8 @@ setuptools.setup(
             'cave/html/web_files/css/accordion.css',
             'cave/html/web_files/css/back-to-top.css',
             'cave/html/web_files/css/bokeh-0.12.13.min.css',
+            'cave/html/web_files/css/bokeh-tables-0.12.13.min.css',
+            'cave/html/web_files/css/bokeh-widgets-0.12.13.min.css',
             'cave/html/web_files/css/global.css',
             'cave/html/web_files/css/help-tip.css',
             'cave/html/web_files/css/lightbox.min.css',
@@ -62,7 +64,7 @@ setuptools.setup(
     description=("CAVE, an analyzing tool for configuration optimizers"),
     license="3-clause BSD",
     keywords="machine learning algorithm configuration hyperparameter "
-             "optimization tuning analyzing",
+             "optimization tuning analyzing analysis visualization",
     url="",
     entry_points={'console_scripts': ['explore-cave=cave.cave_cli:entry_point',
                                       'cave=cave.cave_cli:entry_point']},
