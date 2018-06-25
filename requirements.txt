@@ -7,7 +7,7 @@ sphinx
 sphinx_rtd_theme
 bokeh==0.12.14
 pillow
--e git+git://github.com/automl/SMAC3.git@de58c39c81221be02f62ec7edc4c99671ef75821#egg=smac
+smac>=0.8.0
 configspace>=0.4.6
 fanova
 pyimp>=1.0.1
