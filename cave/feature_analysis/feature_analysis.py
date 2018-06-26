@@ -6,7 +6,6 @@ import numpy as np
 from numpy import corrcoef
 
 from scipy.cluster.hierarchy import linkage
-from scipy.misc import comb
 
 from pandas import DataFrame
 
@@ -16,7 +15,6 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
 import matplotlib
-from sklearn.tree.tests.test_tree import y_random
 import matplotlib.pyplot as plt
 
 __author__ = "Marius Lindauer"
@@ -159,7 +157,7 @@ class FeatureAnalysis(object):
         data = data[:, indx_list]
 
         fig, ax = plt.subplots()
-        heatmap = ax.pcolor(data, cmap=plt.cm.Blues)
+        heatmap = ax.pcolor(data, cmap=plt.cm.seismic, vmin=-1, vmax=1)
 
         # put the major ticks at the middle of each cell
         ax.set_xticks(np.arange(data.shape[0]) + 0.5, minor=False)

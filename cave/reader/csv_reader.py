@@ -35,32 +35,12 @@ class CSVReader(BaseReader):
         self.scen = scen
         return scen
 
-    def get_runhistory(self, cs):
-        """Reads runhistory in csv-format:
-
-        +--------------------+--------------------+------+------+------+--------+
-        |      config_id     |  instance_id       | cost | time | seed | status |
-        +====================+====================+======+======+======+========+
-        | name of config 1   | name of instance 1 | ...  |  ... | ...  |  ...   |
-        +--------------------+--------------------+------+------+------+--------+
-        |         ...        |          ...       | ...  |  ... | ...  |  ...   |
-        +--------------------+--------------------+------+------+------+--------+
-
-        where config_id and instance_id can also be replaced by columns for the
-        individual parameters/instance features
-
-        Returns:
-        --------
-        (rh, validated_rh): RunHistory, Union[False, RunHistory]
-            runhistory and (if available) validated runhistory
-        """
-
-        validated_rh = False
-        rh_fn = os.path.join(self.folder, 'runhistory.csv')
+    def _get_runhistory(self, cs, filename='runhistory.csv'):
+        rh_fn = os.path.join(self.folder, filename)
         if not os.path.exists(rh_fn):
             raise FileNotFoundError("Specified format is \'CSV\', but no "
-                                    "\'runhistory.csv\'-file could be found "
-                                    "in %s" % self.folder)
+                                    "\'%s\'-file could be found "
+                                    "in %s" % (filename, self.folder))
         self.logger.debug("Runhistory loaded as csv from %s", rh_fn)
         configs_fn = os.path.join(self.folder, 'configurations.csv')
         if os.path.exists(configs_fn):
@@ -80,7 +60,49 @@ class CSVReader(BaseReader):
         if not self.id_to_config:
             self.id_to_config = rh.ids_config
 
-        return (rh, validated_rh)
+        return rh
+
+    def get_runhistory(self, cs):
+        """Reads runhistory in csv-format:
+
+        +--------------------+--------------------+------+------+------+--------+
+        |      config_id     |  instance_id       | cost | time | seed | status |
+        +====================+====================+======+======+======+========+
+        | name of config 1   | name of instance 1 | ...  |  ... | ...  |  ...   |
+        +--------------------+--------------------+------+------+------+--------+
+        |         ...        |          ...       | ...  |  ... | ...  |  ...   |
+        +--------------------+--------------------+------+------+------+--------+
+
+        where config_id and instance_id can also be replaced by columns for the
+        individual parameters/instance features
+
+        Returns
+        -------
+        rh: RunHistory
+            runhistory
+        """
+        self._get_runhistory(cs, 'runhistory.csv')
+
+    def get_validated_runhistory(self, cs):
+        """Reads runhistory in csv-format:
+
+        +--------------------+--------------------+------+------+------+--------+
+        |      config_id     |  instance_id       | cost | time | seed | status |
+        +====================+====================+======+======+======+========+
+        | name of config 1   | name of instance 1 | ...  |  ... | ...  |  ...   |
+        +--------------------+--------------------+------+------+------+--------+
+        |         ...        |          ...       | ...  |  ... | ...  |  ...   |
+        +--------------------+--------------------+------+------+------+--------+
+
+        where config_id and instance_id can also be replaced by columns for the
+        individual parameters/instance features
+
+        Returns
+        -------
+        rh: RunHistory
+            validated runhistory
+        """
+        self._get_runhistory(cs, 'validated_runhistory.csv')
 
     def get_trajectory(self, cs):
         """Reads `self.folder/trajectory.csv`, expected format:

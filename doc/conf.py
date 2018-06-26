@@ -17,6 +17,8 @@ import sys
 import os
 import shlex
 import sphinx_rtd_theme
+import matplotlib
+matplotlib.use('agg')
 
 sys.path.insert(0, '..')
 import cave

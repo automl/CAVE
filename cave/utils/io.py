@@ -1,14 +1,18 @@
+import os
 import csv
 
 import numpy as np
 import pandas as pd
-from ConfigSpace import Configuration, c_util
-from ConfigSpace.util import deactivate_inactive_hyperparameters, fix_types
-from ConfigSpace.hyperparameters import UniformFloatHyperparameter, CategoricalHyperparameter
 from bokeh.io import export_png
 
+from ConfigSpace.util import deactivate_inactive_hyperparameters, fix_types
+
+from cave.utils.timing import timing
+
+
+@timing
 def export_bokeh(plot, path, logger):
-    """Export bokeh-plot to png-file.
+    """Export bokeh-plot to png-file. Create directory if necessary
 
     Parameters
     ----------
@@ -19,9 +23,13 @@ def export_bokeh(plot, path, logger):
     logger: Logger
         logger for debugging
     """
-    logger.debug("Exporting to %s", path)
+    base = os.path.split(path)[0]
+    logger.debug("Exporting to %s (base: %s)", path, base)
     plot.background_fill_color = None
     plot.border_fill_color = None
+    if not os.path.exists(base):
+        logger.debug("%s does not exist. Creating...", base)
+        os.makedirs(base)
     try:
         export_png(plot, filename=path)
     except (RuntimeError, TypeError) as err:
@@ -30,7 +38,8 @@ def export_bokeh(plot, path, logger):
                        "instructions on CAVE's GitHub (install "
                        "selenium and phantomjs-prebuilt).")
 
-def load_csv_to_pandaframe(csv_path, logger, apply_numeric=True):
+
+def load_csv_to_pandaframe(csv_path, logger, apply_numeric=True, delimiter=','):
     """Load csv-file and return pd.DataFrame. First line of file is expected to
     be the header.
 
@@ -41,8 +50,9 @@ def load_csv_to_pandaframe(csv_path, logger, apply_numeric=True):
     logger: logging.Logger
         logger, for debugging
     apply_numeric: boolean
-        whether to an attempt should be taken to turn columns into numeric
-        values.
+        whether to an attempt should be taken to turn columns into numeric values.
+    delimiter: str
+        can be used to determine custom delimiter
 
     Returns
     -------
@@ -50,7 +60,8 @@ def load_csv_to_pandaframe(csv_path, logger, apply_numeric=True):
         csv-dataframe
     """
     with open(csv_path, 'r') as csv_file:
-        csv_data = list(csv.reader(csv_file, delimiter=',', skipinitialspace=True))
+        lines = csv_file.readlines()
+        csv_data = [[e.strip('" \n') for e in l.split(delimiter)] for l in lines]
     header, csv_data = csv_data[0], np.array([csv_data[1:]])[0]
     data = pd.DataFrame(csv_data, columns=header)
     if apply_numeric:
@@ -60,6 +71,7 @@ def load_csv_to_pandaframe(csv_path, logger, apply_numeric=True):
         raise ValueError("Detected a duplicate in the columns of the "
                          "csv-file \"%s\"." % csv_path)
     return data
+
 
 def load_config_csv(path, cs, logger):
     """ Load configurations.csv in the following format:
@@ -98,6 +110,6 @@ def load_config_csv(path, cs, logger):
         raise ValueError("Provided pcs does not match configuration-file "
                          "\'%s\' (check parameters %s)" % (path, diff))
     for index, row in config_data.iterrows():
-        values = {name : row[name] for name in config_data.columns if row[name]}
+        values = {name: row[name] for name in config_data.columns if row[name]}
         id_to_config[index] = deactivate_inactive_hyperparameters(fix_types(values, cs), cs)
     return config_data.columns, id_to_config

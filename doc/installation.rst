@@ -13,14 +13,21 @@ please call:
 
 .. code-block:: bash
 
-    sudo apt-get install build-essential swig
+    sudo apt-get install build-essential swig python3-dev
+
+And to activate automatic `.png`-exports for interactive plots, you will currently
+also need to install phantomjs-prebuilt:
+
+.. code-block:: bash
+
+   npm install -g phantomjs-prebuilt
 
 If you use Anaconda, you have to install both gcc and SWIG from Anaconda to
 prevent compilation errors:
 
 .. code-block:: bash
 
-    conda install gxx_linux-64 gcc_linux-64 swig
+    conda install gxx_linux-64 gcc_linux-64 swig phantomjs
 
 .. _installation_pypi:
 

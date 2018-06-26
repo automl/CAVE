@@ -12,6 +12,7 @@ from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.utils.util_funcs import get_types
 from smac.tae.execute_ta_run import StatusType
 
+
 class FeatureForwardSelector():
     """ Inspired by forward selection of ParameterImportance-package. """
 
@@ -50,11 +51,10 @@ class FeatureForwardSelector():
         self.logger.debug("Parameters: %s", parameters)
 
         rh2epm = RunHistory2EPM4Cost(scenario=self.scenario, num_params=len(parameters),
-                                             success_states=[
-                                                 StatusType.SUCCESS,
-                                                 StatusType.CAPPED,
-                                                 StatusType.CRASHED],
-                                             impute_censored_data=False, impute_state=None)
+                                     success_states=[StatusType.SUCCESS,
+                                                     StatusType.CAPPED,
+                                                     StatusType.CRASHED],
+                                     impute_censored_data=False, impute_state=None)
 
         X, y = rh2epm.transform(self.rh)
 
@@ -72,8 +72,8 @@ class FeatureForwardSelector():
         self.logger.debug("Features: %s", names)
 
         used = list(range(0, len(parameters)))
-        feat_ids = {f:i for i, f in enumerate(names, len(used))}
-        ids_feat = {i:f for f, i in feat_ids.items()}
+        feat_ids = {f: i for i, f in enumerate(names, len(used))}
+        ids_feat = {i: f for f, i in feat_ids.items()}
         self.logger.debug("Used: %s", used)
         evaluated_feature_importance = OrderedDict()
 
