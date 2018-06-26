@@ -76,8 +76,8 @@ class CSVReader(BaseReader):
         where config_id and instance_id can also be replaced by columns for the
         individual parameters/instance features
 
-        Returns:
-        --------
+        Returns
+        -------
         rh: RunHistory
             runhistory
         """
@@ -97,8 +97,8 @@ class CSVReader(BaseReader):
         where config_id and instance_id can also be replaced by columns for the
         individual parameters/instance features
 
-        Returns:
-        --------
+        Returns
+        -------
         rh: RunHistory
             validated runhistory
         """

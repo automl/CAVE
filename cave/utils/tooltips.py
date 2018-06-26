@@ -67,14 +67,11 @@ which of the two configurations performs
 well on specific types or clusters of
 instances. Inspired by Smith-Miles.""",
 
-        "Default vs Incumbent 2d" : """
-Comparing footprints of default (left) and incumbent (right) in two-dimensional feature space.""",
-
-        "Default 3d" : """
+        "Default 3d": """
 Projection of feature space into three dimensions, different viewpoints for
 enhanced explanation.""",
 
-        "Incumbent 3d" : """
+        "Incumbent 3d": """
 Projection of feature space into three dimensions,
 different viewpoints for enhanced explanation.""",
 
@@ -230,7 +227,7 @@ space. As pre-processing, we use standard scaling and
 a PCA to 2 dimensions. To guess the number of
 clusters, we use the silhouette score on the
 range of 2 to 12 in the number of clusters""",
-    }
+                }
 
     if header in tooltips:
         return tooltips[header]

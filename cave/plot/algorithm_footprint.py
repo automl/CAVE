@@ -5,27 +5,24 @@ from collections import OrderedDict
 import itertools
 
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
-plt.style.use(os.path.join(os.path.dirname(__file__), 'mpl_style'))
-import matplotlib.lines as mlines
-from mpl_toolkits.mplot3d import Axes3D
+plt.style.use(os.path.join(os.path.dirname(__file__), 'mpl_style'))  # noqa
 from scipy import spatial
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
-from bokeh.plotting import figure, ColumnDataSource, show
+from bokeh.plotting import figure, ColumnDataSource
 from bokeh.embed import components
-from bokeh.models import HoverTool, CustomJS
+from bokeh.models import HoverTool, CustomJS, CDSView, GroupFilter
 from bokeh.models.widgets import RadioButtonGroup
+from bokeh.models.ranges import DataRange1d
 from bokeh.layouts import row, column, widgetbox
 
-from smac.configspace import Configuration
 from smac.runhistory.runhistory import RunHistory
 
-from cave.utils.helpers import get_cost_dict_for_config, get_timeout
+from cave.utils.helpers import get_cost_dict_for_config
 from cave.utils.io import export_bokeh
 
 __author__ = "Joshua Marben"
@@ -33,6 +30,7 @@ __copyright__ = "Copyright 2017, ML4AAD"
 __license__ = "3-clause BSD"
 __maintainer__ = "Joshua Marben"
 __email__ = "jo.ma@posteo.de"
+
 
 class AlgorithmFootprint(object):
     """ Class that provides the algorithmic footprints after
@@ -77,6 +75,8 @@ class AlgorithmFootprint(object):
             self.rng = np.random.RandomState(42)
 
         self.rh = rh
+        self.train_feats = train_inst_feat
+        self.test_feats = test_inst_feat
         self.inst_to_feat = {**train_inst_feat, **test_inst_feat}
         # This is the order of instances:
         self.insts = list(train_inst_feat.keys()) + list(test_inst_feat.keys())
@@ -84,15 +84,15 @@ class AlgorithmFootprint(object):
             os.makedirs(self.output_dir)
 
         self.algorithms = [config for config, name in algorithms]    # Configuration-objects
-        self.algo_name = {algo : name for algo, name in algorithms}  # Mapping config to name
-        self.name_algo = {name : algo for algo, name in algorithms}  # and vice versa
+        self.algo_name = {algo: name for algo, name in algorithms}  # Mapping config to name
+        self.name_algo = {name: algo for algo, name in algorithms}  # and vice versa
 
         self.algo_labels = {}  # Maps algo -> label (good and bad)
 
         self.features = np.array([self.inst_to_feat[k] for k in self.insts])
         self.features_2d = self._reduce_dim(self.features, 2)
         self.features_3d = self._reduce_dim(self.features, 3)
-        #self.clusters, self.cluster_dict = self.get_clusters(self.features_2d)
+        # self.clusters, self.cluster_dict = self.get_clusters(self.features_2d)
 
         self.cutoff = cutoff
 
@@ -134,7 +134,7 @@ class AlgorithmFootprint(object):
         """
         if not hasattr(self, '__algo_cost'):
             self.__algo_cost = {}  # Use function self._get_cost!! Maps algo -> {instance -> cost}
-        if not algorithm in self.__algo_cost:
+        if algorithm not in self.__algo_cost:
             self.logger.debug("Getting cost for %s, using PAR1-score", self.algo_name[algorithm])
             self.__algo_cost[algorithm] = get_cost_dict_for_config(self.rh, algorithm)
         if instance:
@@ -154,12 +154,12 @@ class AlgorithmFootprint(object):
         start = time.time()
         if len(self.algo_labels) > 0:
             return
-        self.algo_labels = {a:{} for a in self.algo_name.keys()}
+        self.algo_labels = {a: {} for a in self.algo_name.keys()}
         for i in self.insts:
             best_cost = min([self._get_cost(a, i) for a in self.algo_name.keys()])
             for a in self.algo_name.keys():
                 cost = self._get_cost(a, i)
-                #self.logger.debug("%s on \'%s\': best/this (%f/%f=%f)",
+                # self.logger.debug("%s on \'%s\': best/this (%f/%f=%f)",
                 #                  self.algo_name[a], i,
                 #                  best_cost, cost,
                 #                  best_cost / cost)
@@ -173,7 +173,7 @@ class AlgorithmFootprint(object):
                 self.algo_labels[a][i] = label
         self.logger.debug("Labeling instances in %.2f secs.", time.time() - start)
 
-####### FOOTPRINT
+# -~-~-~-~ FOOTPRINT
 
     def footprint(self, a, density_threshold, purity_threshold):
         """
@@ -212,10 +212,10 @@ class AlgorithmFootprint(object):
 
         count_exceptions = 0
 
-        ### Initialise Stage
+        # -~-~ Initialise Stage
         # Map inst-names to feat2d (np.array) and tup (tuple)
-        inst_feat2d = {i:self.features_2d[idx] for idx, i in enumerate(self.insts)}
-        inst_tup = {i:tuple(pos) for i, pos in inst_feat2d.items()}
+        inst_feat2d = {i: self.features_2d[idx] for idx, i in enumerate(self.insts)}
+        inst_tup = {i: tuple(pos) for i, pos in inst_feat2d.items()}  # noqa
 
         # regions maps tuple(centroid) of region to inst-names in region
         regions = OrderedDict()
@@ -234,8 +234,10 @@ class AlgorithmFootprint(object):
         while (len(not_in_region) >= 3):
             # Select random good instance TODO also from in_regions?!?!
             rand_good = self.rng.choice(good)
-            try: not_in_region.remove(rand_good)  # Remove here so it's not its own nearest neighbor
-            except ValueError: pass
+            try:
+                not_in_region.remove(rand_good)  # Remove here so it's not its own nearest neighbor
+            except ValueError:
+                pass
 
             # Form a closed region (triangle) with the two closest (smallest
             #        Euclidean distance in feature space) instances to
@@ -248,10 +250,12 @@ class AlgorithmFootprint(object):
             centroid = np.sum(np.array(triangle_feat), axis=0)/len(triangle)
             regions[tuple(centroid)] = triangle
             for p in triangle:
-                try: not_in_region.remove(p)
-                except ValueError: pass
+                try:
+                    not_in_region.remove(p)
+                except ValueError:
+                    pass
 
-        ### Merge Stage
+        # -~-~ Merge Stage
         # Repeat the Merge Stage until there are no more pairs to consider.
         # If we iterated over whole list once, we are done.
         stop = False
@@ -266,15 +270,14 @@ class AlgorithmFootprint(object):
 
                 # Find the closest closed region (minimum Euclidean
                 #   centroid distance);
-                remaining_centroids = [np.array(c) for c in regions.keys() if
-                                        not c == cent]
+                remaining_centroids = [np.array(c) for c in regions.keys() if not c == cent]
                 idx = get_2NN(cent_array, remaining_centroids)[0]
                 nearest_cent = tuple(remaining_centroids[idx])
                 nearest_reg = regions[nearest_cent]  # inst-names!
 
                 # Check purity and density
                 new_reg = tuple(set(reg) | set(nearest_reg))  # names
-                new_reg_array = np.array([inst_feat2d[i] for i in new_reg]) # array
+                new_reg_array = np.array([inst_feat2d[i] for i in new_reg])  # array
                 try:
                     combined_hull = spatial.ConvexHull(new_reg_array)
                 except spatial.qhull.QhullError:
@@ -307,8 +310,7 @@ class AlgorithmFootprint(object):
                           len(self.insts), len(regions))
         return area
 
-####### PLOTS
-
+# -~-~-~ PLOTS
     def _get_good_bad(self, conf, insts=[]):
         """ Creates a list of indices for good and bad instances for a
         configuration.
@@ -331,7 +333,7 @@ class AlgorithmFootprint(object):
         good_idx, bad_idx = [], []
         for k, v in self._get_cost(conf).items():
             # Only consider passed insts
-            if not k in insts:
+            if k not in insts:
                 continue
             # Append inst-idx either to good or to bad
             if self.algo_labels[conf][k] == 0:
@@ -352,12 +354,14 @@ class AlgorithmFootprint(object):
         features = np.array(self.features_2d)
         instances = self.insts
         runhistory = self.rh
-        algo = {v : k for k, v in self.algo_name.items()}
+        algo = {v: k for k, v in self.algo_name.items()}
         incumbent = algo['incumbent']
         default = algo['default']
         source = ColumnDataSource(data=dict(x=features[:, 0], y=features[:, 1]))
         # Add all necessary information for incumbent and default
         source.add(instances, 'instance_name')
+        instance_set = ['train' if i in self.train_feats.keys() else 'test' for i in instances]
+        source.add(instance_set, 'instance_set')  # train or test
         for config, name in [(incumbent, 'incumbent'), (default, 'default')]:
             cost = get_cost_dict_for_config(runhistory, config)
             source.add([cost[i] for i in instances], '{}_cost'.format(name))
@@ -373,10 +377,12 @@ class AlgorithmFootprint(object):
         # Define what appears in tooltips
         hover = HoverTool(tooltips=[('instance name', '@instance_name'),
                                     ('def cost', '@default_cost'),
-                                    ('inc_cost', '@incumbent_cost')])
+                                    ('inc_cost', '@incumbent_cost'),
+                                    ('set', '@instance_set'),
+                                    ])
 
         # Add radio-button
-        callback = CustomJS(args=dict(source=source), code="""
+        def_inc_callback = CustomJS(args=dict(source=source), code="""
             var data = source.data;
             if (cb_obj.active == 0) {
                 data['color'] = data['default_color'];
@@ -386,25 +392,47 @@ class AlgorithmFootprint(object):
             source.change.emit();
             """)
 
-        radio_button_group = RadioButtonGroup(
+        def_inc_radio_button = RadioButtonGroup(
                 labels=["default", "incumbent"], active=0,
-                callback=callback)
+                callback=def_inc_callback)
 
         # Plot
-        x_range = [min(features[:, 0]) - 1, max(features[:, 0]) + 1]
-        y_range = [min(features[:, 1]) - 1, max(features[:, 1]) + 1]
+        x_range = DataRange1d(bounds='auto', start=min(features[:, 0]) - 1, end=max(features[:, 0]) + 1)
+        y_range = DataRange1d(bounds='auto', start=min(features[:, 1]) - 1, end=max(features[:, 1]) + 1)
         p = figure(plot_height=500, plot_width=600,
-                   tools=[hover, 'save', 'box_zoom', 'pan', 'reset'], x_range=x_range, y_range=y_range)
-        p.scatter(x='x', y='y', source=source, color='color')
+                   tools=[hover, 'save', 'wheel_zoom', 'box_zoom', 'pan', 'reset'], active_drag='box_zoom',
+                   x_range=x_range, y_range=y_range)
+        # Scatter train and test individually to toggle them
+        train_view = CDSView(source=source, filters=[GroupFilter(column_name='instance_set', group='train')])
+        test_view = CDSView(source=source, filters=[GroupFilter(column_name='instance_set', group='test')])
+        train = p.scatter(x='x', y='y', source=source, view=train_view, color='color')
+        test = p.scatter(x='x', y='y', source=source, view=test_view, color='color')
         p.xaxis.axis_label, p.yaxis.axis_label = 'principal component 1', 'principal component 2'
         p.xaxis.axis_label_text_font_size = p.yaxis.axis_label_text_font_size = "15pt"
+
+        train_test_callback = CustomJS(args=dict(source=source, train_view=train, test_view=test), code="""
+            var data = source.data;
+            if (cb_obj.active == 0) {
+                train_view.visible = true;
+                test_view.visible = true;
+            } else if (cb_obj.active == 1) {
+                train_view.visible = true;
+                test_view.visible = false;
+            } else {
+                train_view.visible = false;
+                test_view.visible = true;
+            }
+            """)
+        train_test_radio_button = RadioButtonGroup(
+                labels=["all", "train", "test"], active=0,
+                callback=train_test_callback)
 
         # Export and return
         if self.output_dir:
             path = os.path.join(self.output_dir, "content/images/algorithm_footprint.png")
             export_bokeh(p, path, self.logger)
 
-        layout = column(p, widgetbox(radio_button_group))
+        layout = column(p, row(widgetbox(def_inc_radio_button), widgetbox(train_test_radio_button)))
         script, div = components(layout)
         return script, div
 
@@ -415,37 +443,36 @@ class AlgorithmFootprint(object):
         for a in self.algorithms:
             # Plot without clustering (for all insts)
             out_fns = [os.path.join(self.output_dir, 'footprint_' +
-                      self.algo_name[a] + '_3d_{}.png'.format(i)) for i in range(4)]
+                       self.algo_name[a] + '_3d_{}.png'.format(i)) for i in range(4)]
             self.logger.debug("Plot saved to '%s'", out_fns)
             fig, ax = plt.subplots()
             good_idx, bad_idx = self._get_good_bad(a)
             good = np.array([self.features_3d[idx] for idx in good_idx])
             bad = np.array([self.features_3d[idx] for idx in bad_idx])
-            axes = {0 : 'principal component 1',
-                    1 : 'principal component 2',
-                    2 : 'principal component 3'}
-            for out_fn, axes_ordered in zip(out_fns,
-                    list(itertools.permutations([0, 1, 2]))[:len(out_fns)]):
+            axes = {0: 'principal component 1',
+                    1: 'principal component 2',
+                    2: 'principal component 3'}
+            for out_fn, axes_ordered in zip(out_fns, list(itertools.permutations([0, 1, 2]))[:len(out_fns)]):
                 # Plot 3d
                 fig = plt.figure()
                 ax = fig.add_subplot(111, projection='3d')
                 x, y, z = axes_ordered
-                if len(good) > 0: ax.scatter(xs=good[:, x], ys=good[:, y],
-                                             zs=good[:, z], color="blue")
-                if len(bad) > 0: ax.scatter(xs=bad[:, x], ys=bad[:, y],
-                                            zs=bad[:, z], color="red")
+                if len(good) > 0:
+                    ax.scatter(xs=good[:, x], ys=good[:, y], zs=good[:, z], color="blue")
+                if len(bad) > 0:
+                    ax.scatter(xs=bad[:, x], ys=bad[:, y], zs=bad[:, z], color="red")
                 ax.set_xlabel(axes[x], fontsize=12)
                 ax.set_ylabel(axes[y], fontsize=12)
                 ax.set_zlabel(axes[z], fontsize=12)
                 plt.tight_layout()
-                #for out_fn, angle in zip(out_fns, range(20, 381, 90)):
-                #    ax.view_init(30, angle)
+                # for out_fn, angle in zip(out_fns, range(20, 381, 90)):
+                #     ax.view_init(30, angle)
                 fig.savefig(out_fn)
                 plt.close(fig)
             plots.append(out_fns)
         return plots
 
-####### CLUSTER
+# -~-~- CLUSTER
 
     def plot_points_per_cluster(self):
         """ Plot good versus bad for passed config per cluster.
@@ -508,11 +535,11 @@ class AlgorithmFootprint(object):
         self.logger.debug("%d clusters detected using silhouette scores",
                           best_n_clusters)
 
-        cluster_dict = {n:[] for n in range(best_n_clusters)}
+        cluster_dict = {n: [] for n in range(best_n_clusters)}
         for i, c in enumerate(clusters):
             cluster_dict[c].append(self.insts[i])
 
         self.logger.debug("Distribution over clusters: %s",
-                          str({k:len(v) for k, v in cluster_dict.items()}))
+                          str({k: len(v) for k, v in cluster_dict.items()}))
 
         return clusters, cluster_dict

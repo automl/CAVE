@@ -21,20 +21,20 @@ from cave.utils.io import load_csv_to_pandaframe
 class SMAC2Reader(BaseReader):
     """Reader for SMAC2-output.
     The expected output-structure in the specified folder is:
-        self.folder/
-        |-: smac-output/
-        | |-: aclib/
-        |   |-: state-run1/
-        |     |-: scenario.txt                # scenario
-        |     |-: runs_and_results(...).csv   # runhistory
-        |     |-: paramstrings(...).csv       # runhistory
-        |     |-: traj-run-(...)              # trajectory
-        |-: validate-time-train/              # optional, if validation has been beformed
-        | |-: validationCallStrings(...).csv
-        | |-: validationRunResultLineMatrix(...).csv
-        |-: validate-time-test/               # optional, if validation has been beformed
-        | |-: validationCallStrings(...).csv
-        | |-: validationRunResultLineMatrix(...).csv
+     self.folder/
+      smac-output/
+       aclib/
+         state-run1/
+           - scenario.txt                # scenario
+           - runs_and_results(...).csv   # runhistory
+           - paramstrings(...).csv       # runhistory
+           - traj-run-(...)              # trajectory
+      validate-time-train/              # optional, if validation has been beformed
+       - validationCallStrings(...).csv
+       - validationRunResultLineMatrix(...).csv
+      validate-time-test/               # optional, if validation has been beformed
+       - validationCallStrings(...).csv
+       - validationRunResultLineMatrix(...).csv
     """
 
     def get_scenario(self):
@@ -124,10 +124,10 @@ class SMAC2Reader(BaseReader):
         """
         Expects the following files:
 
-        - `self.folder/validate-time-train/validationCallStrings(...).csv `
-        - `self.folder/validate-time-train/validationRunResultLineMatrix(...).csv `
-        - `self.folder/validate-time-test/validationCallStrings(...).csv `
-        - `self.folder/validate-time-test/validationRunResultLineMatrix(...).csv `
+        - `self.folder/validate-time-train/validationCallStrings(...).csv`
+        - `self.folder/validate-time-train/validationRunResultLineMatrix(...).csv`
+        - `self.folder/validate-time-test/validationCallStrings(...).csv`
+        - `self.folder/validate-time-test/validationRunResultLineMatrix(...).csv`
 
         Returns
         -------

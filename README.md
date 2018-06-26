@@ -10,9 +10,20 @@ Status for development branch
 CAVE is a versatile analysis tool for automatic algorithm configurators. It generates comprehensive reports (e.g. http://ml.informatik.uni-freiburg.de/~biedenka/cave.html) that
 give you insights into the configured algorithm, the used instance set and also the configuration tool itself.
 The current version works out-of-the-box with [SMAC3](https://github.com/automl/SMAC3), but can be easily adapted to other configurators, as long as they use the same output-structure.
+You can also find a [talk on CAVE](https://drive.google.com/file/d/1lNu6sZGB3lcr6fYI1tzLOJzILISO9WE1/view) online.
 
 # LICENSE 
 Please refer to [LICENSE](https://github.com/automl/CAVE/blob/master/LICENSE)
+
+If you use out tool, please cite us:
+
+        @InProceedings{biedenkapp-lion18a,
+            author = {A. Biedenkapp and J. Marben and M. Lindauer and F. Hutter},
+            title = {{CAVE}: Configuration Assessment, Visualization and Evaluation},
+            booktitle = {Proceedings of the International Conference on Learning and Intelligent Optimization (LION'18)},
+            year = {2018},
+            month = jun}
+
 
 # OVERVIEW 
 CAVE is an analysis tool.

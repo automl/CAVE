@@ -11,50 +11,33 @@ import os
 import sys
 import inspect
 import logging
-import json
 import copy
-import typing
-import itertools
 import time
-from collections import OrderedDict
 
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import numpy as np
-import scipy as sp
-import pandas as pd
-import sklearn
-from scipy.spatial.distance import hamming
 from sklearn.manifold.mds import MDS
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-from bokeh.plotting import figure, ColumnDataSource, show
+from bokeh.plotting import figure, ColumnDataSource
 from bokeh.embed import components
 from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider
 from bokeh.models.sources import CDSView
 from bokeh.models.filters import GroupFilter
-from bokeh.layouts import row, column, widgetbox
+from bokeh.layouts import column, widgetbox
 
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from matplotlib.animation import FuncAnimation
-
-cmd_folder = os.path.realpath(
-    os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
-cmd_folder = os.path.realpath(os.path.join(cmd_folder, ".."))
-if cmd_folder not in sys.path:
-    sys.path.append(cmd_folder)
+cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))  # noqa
+cmd_folder = os.path.realpath(os.path.join(cmd_folder, ".."))  # noqa
+if cmd_folder not in sys.path:  # noqa
+    sys.path.append(cmd_folder)  # noqa
 
 from smac.scenario.scenario import Scenario
-from smac.runhistory.runhistory import RunHistory, DataOrigin
+from smac.runhistory.runhistory import RunHistory
 from smac.optimizer.objective import average_cost
 from smac.epm.rf_with_instances import RandomForestWithInstances
-from smac.configspace import ConfigurationSpace, Configuration
-from smac.utils.util_funcs import get_types
+from smac.configspace import ConfigurationSpace
 from ConfigSpace.util import impute_inactive_values
-from ConfigSpace.hyperparameters import FloatHyperparameter, IntegerHyperparameter
-from ConfigSpace import CategoricalHyperparameter, UniformFloatHyperparameter, UniformIntegerHyperparameter
+from ConfigSpace import CategoricalHyperparameter
 
 from cave.utils.convert_for_epm import convert_data_for_epm
 from cave.utils.helpers import escape_parameter_name
@@ -66,7 +49,7 @@ class ConfiguratorFootprint(object):
 
     def __init__(self,
                  scenario: Scenario,
-                 runhistory: RunHistory,
+                 rh: RunHistory,
                  incs: list=None,
                  max_plot: int=-1,
                  contour_step_size=0.2,
@@ -81,8 +64,8 @@ class ConfiguratorFootprint(object):
         ----------
         scenario: Scenario
             scenario
-        runhistory: RunHistory
-            runhistory from configurator run
+        rh: RunHistory
+            runhistory from configurator run, only runs during optimization
         incs: list
             incumbents of best configurator run, last entry is final incumbent
         max_plot: int
@@ -100,7 +83,7 @@ class ConfiguratorFootprint(object):
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
 
         self.scenario = scenario
-        self.rh = runhistory
+        self.orig_rh = rh
         self.incs = incs
         self.max_plot = max_plot
         self.time_slider = time_slider
@@ -114,13 +97,13 @@ class ConfiguratorFootprint(object):
         data and plot the configurator footprint.
         """
         default = self.scenario.cs.get_default_configuration()
-        self.rh = self.reduce_runhistory(self.rh, self.max_plot, keep=self.incs+[default])
-        conf_matrix, conf_list, runs_per_quantile = self.get_conf_matrix(self.rh, self.incs)
+        self.orig_rh = self.reduce_runhistory(self.orig_rh, self.max_plot, keep=self.incs+[default])
+        conf_matrix, conf_list, runs_per_quantile = self.get_conf_matrix(self.orig_rh, self.incs)
         self.logger.debug("Number of Configurations: %d", conf_matrix.shape[0])
         dists = self.get_distance(conf_matrix, self.scenario.cs)
         red_dists = self.get_mds(dists)
 
-        contour_data = self.get_pred_surface(self.rh, X_scaled=red_dists,
+        contour_data = self.get_pred_surface(self.orig_rh, X_scaled=red_dists,
                                              conf_list=copy.deepcopy(conf_list),
                                              contour_step_size=self.contour_step_size)
 
@@ -161,7 +144,7 @@ class ConfiguratorFootprint(object):
             feature_array = PCA(n_components=2).fit_transform(feature_array)
             # inject in scenario-object
             scen.feature_array = feature_array
-            scen.feature_dict = dict([(inst, feature_array[idx,:]) for idx, inst in enumerate(insts)])
+            scen.feature_dict = dict([(inst, feature_array[idx, :]) for idx, inst in enumerate(insts)])
             scen.n_features = 2
 
         # convert the data to train EPM on 2-dim featurespace (for contour-data)
@@ -333,7 +316,8 @@ class ConfiguratorFootprint(object):
             return rh
 
         runs = [(c, len(rh.get_runs_for_config(c))) for c in configs]
-        if not keep: keep = []
+        if not keep:
+            keep = []
         runs = sorted(runs, key=lambda x: x[1])[-self.max_plot:]
         keep = [r[0] for r in runs] + keep
         self.logger.info("Reducing number of configs from %d to %d, dropping from the fewest evaluations",
@@ -377,7 +361,7 @@ class ConfiguratorFootprint(object):
         conf_list = []
         conf_matrix = []
         for c in rh.get_all_configs():
-            if not c in conf_list:
+            if c not in conf_list:
                 conf_matrix.append(c.get_array())
                 conf_list.append(c)
         for inc in incs:
@@ -482,7 +466,7 @@ class ConfiguratorFootprint(object):
         for t in types:
             if t == "Default":
                 colors.append('orange')
-            elif "Incumbent" in  t:
+            elif "Incumbent" in t:
                 colors.append('red')
             else:
                 colors.append('white')
@@ -517,7 +501,7 @@ class ConfiguratorFootprint(object):
         color_bar = ColorBar(color_mapper=color_mapper,
                              ticker=BasicTicker(desired_num_ticks=15),
                              label_standoff=12,
-                             border_line_color=None, location=(0,0))
+                             border_line_color=None, location=(0, 0))
         color_bar.major_label_text_font_size = '12pt'
         p.add_layout(color_bar, 'right')
         return p
@@ -565,7 +549,8 @@ class ConfiguratorFootprint(object):
                             GroupFilter(column_name='origin', group=o),
                             GroupFilter(column_name='zorder', group=z)]))
                     markers.append(_get_marker(t, o))
-        self.logger.debug("%d different glyph renderers, %d different zorder-values", len(views), len(set(source.data['zorder'])))
+        self.logger.debug("%d different glyph renderers, %d different zorder-values",
+                          len(views), len(set(source.data['zorder'])))
         return (views, markers)
 
     @timing
@@ -590,12 +575,12 @@ class ConfiguratorFootprint(object):
         scatter_handles = []
         for view, marker in zip(views, markers):
             scatter_handles.append(p.scatter(x='x', y='y',
-                                   source=source,
-                                   view=view,
-                                   color='color', line_color='black',
-                                   size='size',
-                                   marker=marker,
-                                   ))
+                                             source=source,
+                                             view=view,
+                                             color='color', line_color='black',
+                                             size='size',
+                                             marker=marker,
+                                             ))
 
         p.xaxis.axis_label = "MDS-X"
         p.yaxis.axis_label = "MDS-Y"
@@ -698,15 +683,15 @@ class ConfiguratorFootprint(object):
         glyph_renderers = []
         start = 0
         for group in scatter_glyph_render_groups:
-            glyph_renderers.append(glyph_renderers_flattened[start : start+len(group)])
+            glyph_renderers.append(glyph_renderers_flattened[start: start+len(group)])
             start += len(group)
         self.logger.debug("%d, %d, %d", len(scatter_glyph_render_groups),
                           len(glyph_renderers), num_glyph_subgroups)
         scatter_glyph_render_groups_flattened = [a for b in scatter_glyph_render_groups for a in b]
-        args = {name : glyph for name, glyph in zip(glyph_renderers_flattened,
-                                      scatter_glyph_render_groups_flattened)}
+        args = {name: glyph for name, glyph in zip(glyph_renderers_flattened,
+                                                   scatter_glyph_render_groups_flattened)}
         code = "glyph_renderers = [" + ','.join(['[' + ','.join(group) + ']' for
-                                    group in glyph_renderers]) + '];' + """
+                                                 group in glyph_renderers]) + '];' + """
 lab_len = cb_obj.end;
 for (i = 0; i < lab_len; i++) {
     if (cb_obj.value == i + 1) {
@@ -762,10 +747,8 @@ for (i = 0; i < lab_len; i++) {
 
         Returns
         -------
-        script: str
-            script part of bokeh plot
-        div: str
-            div part of bokeh plot
+        (script, div): str
+            script and div of the bokeh-figure
         over_time_paths: List[str]
             list with paths to the different quantiled timesteps of the
             configurator run (for static evaluation)
@@ -776,7 +759,6 @@ for (i = 0; i < lab_len; i++) {
 
         hp_names = [k.name for k in  # Hyperparameter names
                     conf_list[0].configuration_space.get_hyperparameters()]
-        num_quantiles = len(runs_per_quantile)
 
         # Get individual sources for quantiles
         sources = [self._plot_get_source(conf_list, quantiled_run, X, inc_list, hp_names)
@@ -798,7 +780,7 @@ for (i = 0; i < lab_len; i++) {
                 p = figure(plot_height=500, plot_width=600,
                            tools=[hover, 'save'], x_range=x_range, y_range=y_range)
                 if contour_data is not None:
-                   p = self._plot_contour(p, contour_data, x_range, y_range)
+                    p = self._plot_contour(p, contour_data, x_range, y_range)
             views, markers = self._plot_create_views(source)
             self.logger.debug("Plotting quantile %d!", idx)
             scatter_glyph_render_groups.append(self._plot_scatter(p, source, views, markers))
@@ -822,7 +804,7 @@ for (i = 0; i < lab_len; i++) {
             path = os.path.join(self.output_dir, "content/images/configurator_footprint.png")
             export_bokeh(p, path, self.logger)
 
-        return script, div, over_time_paths
+        return (script, div), over_time_paths
 
     def _get_config_origin(self, c):
         """Return appropriate configuration origin

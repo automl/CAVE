@@ -12,12 +12,8 @@ from smac.utils.util_funcs import get_types
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.epm.rfr_imputator import RFRImputator
 
-from ConfigSpace.read_and_write import pcs
-from ConfigSpace.hyperparameters import CategoricalHyperparameter, \
-    UniformFloatHyperparameter, UniformIntegerHyperparameter, Constant
 
-
-def convert_data_for_epm(scenario:Scenario, runhistory:RunHistory, logger=None):
+def convert_data_for_epm(scenario: Scenario, runhistory: RunHistory, logger=None):
     """
     converts data from runhistory into EPM format
 
