@@ -407,20 +407,26 @@ class CAVE(object):
         if fanova:
             sum_ += 1
             self.logger.info("fANOVA...")
-            table, plots, pair_plots = self.analyzer.fanova(self.pimp, self.incumbent)
-
             d["fANOVA"] = OrderedDict()
 
-            d["fANOVA"]["Importance"] = {"table": table}
+            try:
+                table, plots, pair_plots = self.analyzer.fanova(self.pimp, self.incumbent)
 
-            # Insert plots (the received plots is a dict, mapping param -> path)
-            d["fANOVA"]["Marginals"] = OrderedDict()
-            for param, plot in plots.items():
-                d["fANOVA"]["Marginals"][param] = {"figure": plot}
-            if pair_plots:
-                d["fANOVA"]["Pairwise Marginals"] = OrderedDict()
-                for param, plot in pair_plots.items():
-                    d["fANOVA"]["Pairwise Marginals"][param] = {"figure": plot}
+                d["fANOVA"]["Importance"] = {"table": table}
+
+                # Insert plots (the received plots is a dict, mapping param -> path)
+                d["fANOVA"]["Marginals"] = OrderedDict()
+                for param, plot in plots.items():
+                    d["fANOVA"]["Marginals"][param] = {"figure": plot}
+                if pair_plots:
+                    d["fANOVA"]["Pairwise Marginals"] = OrderedDict()
+                    for param, plot in pair_plots.items():
+                        d["fANOVA"]["Pairwise Marginals"][param] = {"figure": plot}
+            except RuntimeError as e:
+                self.logger.error("Encountered error '%s' in fANOVA, this can e.g. happen with too few data-points.", e)
+                d["fANOVA"] = {"else": "Encountered error:\n'%s'\nin fANOVA, this can e.g. happen with too few "
+                                       "data-points." % e}
+
             self.build_website()
 
         if ablation:
