@@ -12,7 +12,9 @@ import matplotlib
 matplotlib.use('agg')  # noqa
 
 from pimp.utils.io.cmd_reader import SmartArgsDefHelpFormatter
+
 from cave.cavefacade import CAVE
+from cave.utils.converter.hpbandster2smac import HpBandSter2SMAC
 from cave.__version__ import __version__ as v
 
 __author__ = "Joshua Marben"
@@ -94,7 +96,7 @@ class CaveCLI(object):
         opt_opts.add_argument("--file_format",
                               default='SMAC3',
                               help="specify the format of the configurator-files. ",
-                              choices=['SMAC2', 'SMAC3', 'CSV'],
+                              choices=['SMAC2', 'SMAC3', 'CSV', 'BOHB'],
                               type=str.upper)
         opt_opts.add_argument("--validation_format",
                               default='NONE',
@@ -265,30 +267,64 @@ class CaveCLI(object):
             else:
                 ta_exec_dir.append(t)
 
-        cave = CAVE(folders,
-                    args_.output,
-                    ta_exec_dir,
-                    file_format=args_.file_format,
-                    validation_format=args_.validation_format,
-                    validation_method=args_.validation,
-                    pimp_max_samples=args_.pimp_max_samples,
-                    fanova_pairwise=args_.fanova_pairwise,
-                    seed=args_.seed)
+        if args_.file_format == 'BOHB':
+            logging.getLogger().info("File format is BOHB, performing special nested analysis for budget-based optimizer!")
+            if len(folders) != 1:
+                raise ValueError("For file format BOHB you can only specify one folder.")
+            folders = HpBandSter2SMAC().convert(folders[0])
 
-        # Analyze
-        cave.analyze(performance=args_.tabular_analysis,
-                     cdf=args_.ecdf,
-                     scatter=args_.scatter_plots,
-                     cfp=args_.cfp,
-                     cfp_time_slider=cfp_time_slider,
-                     cfp_max_plot=args_.cfp_max_plot,
-                     cfp_number_quantiles=args_.cfp_number_quantiles,
-                     parallel_coordinates=args_.parallel_coordinates,
-                     cost_over_time=args_.cost_over_time,
-                     algo_footprint=args_.algorithm_footprints,
-                     param_importance=param_imp,
-                     pimp_sort_table_by=args_.pimp_sort_table_by,
-                     feature_analysis=feature_analysis)
+            # os.makedirs(output_dir)
+            for path in folders:
+                base = os.path.basename(path) if os.path.basename(path) else os.path.basename(path[:-1])
+                cave = CAVE(folders=[path],
+                            output_dir=os.path.join(output_dir, base),
+                            ta_exec_dir=ta_exec_dir,
+                            file_format='SMAC3',
+                            validation_format='NONE',
+                            validation_method='epm',
+                            pimp_max_samples=args_.pimp_max_samples,
+                            fanova_pairwise=args_.fanova_pairwise,
+                            seed=args_.seed)
+
+                cave.analyze(performance=args_.tabular_analysis,
+                             cdf=False,
+                             scatter=False,
+                             cfp=args_.cfp,
+                             cfp_time_slider=cfp_time_slider,
+                             cfp_max_plot=args_.cfp_max_plot,
+                             cfp_number_quantiles=args_.cfp_number_quantiles,
+                             parallel_coordinates=args_.parallel_coordinates,
+                             cost_over_time=args_.cost_over_time,
+                             algo_footprint=False,
+                             param_importance=param_imp,
+                             pimp_sort_table_by=args_.pimp_sort_table_by,
+                             feature_analysis=[])
+
+        else:
+            cave = CAVE(folders,
+                        output_dir,
+                        ta_exec_dir,
+                        file_format=args_.file_format,
+                        validation_format=args_.validation_format,
+                        validation_method=args_.validation,
+                        pimp_max_samples=args_.pimp_max_samples,
+                        fanova_pairwise=args_.fanova_pairwise,
+                        seed=args_.seed)
+
+            # Analyze
+            cave.analyze(performance=args_.tabular_analysis,
+                         cdf=args_.ecdf,
+                         scatter=args_.scatter_plots,
+                         cfp=args_.cfp,
+                         cfp_time_slider=cfp_time_slider,
+                         cfp_max_plot=args_.cfp_max_plot,
+                         cfp_number_quantiles=args_.cfp_number_quantiles,
+                         parallel_coordinates=args_.parallel_coordinates,
+                         cost_over_time=args_.cost_over_time,
+                         algo_footprint=args_.algorithm_footprints,
+                         param_importance=param_imp,
+                         pimp_sort_table_by=args_.pimp_sort_table_by,
+                         feature_analysis=feature_analysis)
 
 
 def entry_point():
