@@ -482,7 +482,7 @@ class Analyzer(object):
         plots = OrderedDict([])
         self.parameter_importance(pimp, "lpi", self.incumbent, self.output_dir)
         for p, i in [(k, v) for k, v in sorted(self.param_imp['lpi'].items(),
-                     key=operator.itemgetter(1), reverse=True) if v > 0.05]:
+                     key=operator.itemgetter(1), reverse=True)]:
             plots[p] = os.path.join(self.output_dir, 'lpi', p + '.png')
         return plots
 
