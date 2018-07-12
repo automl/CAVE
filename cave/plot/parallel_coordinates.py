@@ -94,6 +94,9 @@ class ParallelCoordinatesPlotter(object):
             parameters to be plotted
         """
         all_configs = self.original_rh.get_all_configs()
+        if len(all_configs) < 5:
+            self.logger.info("At least five configurations necessary for parallel coordinates!")
+            return
         # Get n most run configs
         if num_configs == -1:
             num_configs = len(all_configs)
