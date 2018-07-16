@@ -102,36 +102,35 @@ class ParallelCoordinatesPlotter(object):
             num_configs = len(all_configs)
         self.logger.debug("Plotting %d configs.", min(num_configs, len(all_configs)))
 
-        for logy in [False, True]:
-            configs_to_plot = sorted(all_configs, key=lambda x: self._fun(self.epm_rh.get_cost(x), logy))
-            # What about scenarios where quality is the value to optimize? shouldn't min and max be switched then?
-            self.best_config_performance = self._fun(min([self.epm_rh.get_cost(c) for c
-                                                          in all_configs]), logy)
-            self.worst_config_performance = self._fun(max([self.epm_rh.get_cost(c) for c
-                                                           in all_configs]), logy)
-            if num_configs < len(configs_to_plot):
-                ids = list(sorted(random.sample(range(len(configs_to_plot)), num_configs)))
-                ids[0] = 0
-                ids[-1] = len(configs_to_plot) - 1
-            else:
-                ids = list(range(len(configs_to_plot)))
-            ids[0:5] = list(range(0, 5))
-            ids[-5:] = list(range(len(configs_to_plot) - 6, len(configs_to_plot) - 1))
-            self._plot(np.array(configs_to_plot)[ids], params,
-                       fn=os.path.join(self.output_dir, "parallel_coordinates_uniform_{:s}".format(
-                           'log_cost' if logy else '') + str(len(ids)) + '.png'), logy=logy)
-            if num_configs < len(configs_to_plot):  # Only sample on the logscale if not all configs are plotted.
-                ids = self._get_log_spaced_ids(configs_to_plot, num_configs)
-            else:
-                ids = list(range(len(all_configs)))
-            ids[0:5] = list(range(0, 5))
-            ids[-5:] = list(range(len(configs_to_plot) - 6, len(configs_to_plot) - 1))
-            configs_to_plot = np.array(configs_to_plot)[ids]
-            res = self._plot(configs_to_plot, params,
-                             fn=os.path.join(self.output_dir, "parallel_coordinates_{:s}".format(
-                                 'log_cost' if logy else ''
-                             ) + str(len(ids)) + '.png'), logy=logy)
-        return res
+        config_to_cost = {c : self.epm_rh.get_cost(c) for c in all_configs}
+        pngs = []
+        for log_cost in [False, True]:
+            for log_sample in [False, True]:
+                configs_to_plot = list(sorted(all_configs, key=lambda x: self._fun(config_to_cost[x], log_cost)))
+                self.best_config_performance = self._fun(min(config_to_cost.values()), log_cost)
+                self.worst_config_performance = self._fun(max(config_to_cost.values()), log_cost)
+
+                # Determine configs to be plotted
+                if num_configs < len(configs_to_plot):
+                    if log_sample:
+                        ids = self._get_log_spaced_ids(configs_to_plot, num_configs)
+                    else:
+                        ids = list(sorted(random.sample(range(len(configs_to_plot)), num_configs)))
+                else:
+                    ids = list(range(len(configs_to_plot)))
+                # Best five and worst five always plotted
+                ids[0:5] = list(range(0, 5))
+                ids[-5:] = list(range(len(configs_to_plot) - 6, len(configs_to_plot) - 1))
+                configs_to_plot = np.array(configs_to_plot)[ids]
+
+                out_base = os.path.join(self.output_dir, "content/images/parallel_coordinates")
+                out_ext = "_{:s}_{:s}".format('log_cost' if log_cost else 'linear_cost',
+                                              'log_sampling' if log_sample else 'uniform_sampling') + str(len(ids)) + '.png'
+                out_fn = out_base + out_ext
+                self.logger.debug("Saving to %s", out_fn)
+
+                pngs.append(self._plot(configs_to_plot, params, fn=out_fn, logy=log_cost))
+        return pngs[3] if self.runtime else pngs[1]
 
     def _plot(self, configs, params, fn=None, log_c=False, logy=False):
         """
@@ -146,17 +145,13 @@ class ParallelCoordinatesPlotter(object):
         output: str
         """
         if fn is None:
-            filename = os.path.join(self.output_dir,
-                                    "parallel_coordinates_" + str(len(configs)) + '.png')
+            filename = os.path.join(self.output_dir, "parallel_coordinates_" + str(len(configs)) + '.png')
         else:
             filename = fn
 
         if len(params) < 3:
             self.logger.info("Only two parameters, skipping parallel coordinates.")
             return
-
-        # configs = self.epm_rh.get_all_configs()
-        configspace = configs[0].configuration_space
 
         # Create dataframe with configs
         cost_str = ''
@@ -204,12 +199,12 @@ class ParallelCoordinatesPlotter(object):
         min_max_diff = {}
         for p in params:
             # TODO enable full parameter scale
-            # hyper = configspace.get_hyperparameter(p)
+            # hyper = self.cs.get_hyperparameter(p)
             # if isinstance(hyper, CategoricalHyperparameter):
             #    lower = 0
             #    upper = len(hyper.choices)-1
             # else:
-            #    lower, upper = configspace.get_hyperparameter(p).lower, configspace.get_hyperparameter(p).upper
+            #    lower, upper = self.cs.get_hyperparameter(p).lower, self.cs.get_hyperparameter(p).upper
             # min_max_diff[p] = [lower, upper, upper - lower]
             # data[p] = np.true_divide(data[p] - lower, upper - lower)
             min_max_diff[p] = [data[p].min(), data[p].max(), np.ptp(data[p])]
@@ -225,13 +220,6 @@ class ParallelCoordinatesPlotter(object):
             normedC = scaler(vmax=self.worst_config_performance,
                              vmin=self.best_config_performance)
         scale = cmx.ScalarMappable(norm=normedC, cmap=cm)
-        # font.size: 16
-        # axes.titlesize: 24
-        # axes.labelsize: 22
-        # lines.linewidth: 3
-        # lines.markersize: 10
-        # xtick.labelsize: 20
-        # ytick.labelsize: 20
 
         # Plot data
         for i, ax in enumerate(axes):  # Iterate over params
@@ -254,7 +242,7 @@ class ParallelCoordinatesPlotter(object):
             hyper = p
             if p > 0:
                 # First column not a parameter, but cost...
-                hyper = configspace.get_hyperparameter(params[p])
+                hyper = self.cs.get_hyperparameter(params[p])
             if isinstance(hyper, CategoricalHyperparameter):
                 num_ticks = len(hyper.choices)
                 step = 1
@@ -280,7 +268,7 @@ class ParallelCoordinatesPlotter(object):
             ax.yaxis.set_ticks(ticks)
             ax.set_yticklabels(tick_labels)
 
-        # TODO adjust tick-labels to unused and maybe even log?
+        # TODO adjust tick-labels to unused ranges of parameters and maybe even log?
         for p, ax in enumerate(axes):
             ax.xaxis.set_major_locator(ticker.FixedLocator([p]))
             set_ticks_for_axis(p, ax, num_ticks=6)
