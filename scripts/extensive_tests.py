@@ -119,7 +119,7 @@ if __name__ == '__main__':
             smac.optimize()
     elif sys.argv[1] == 'cave':
         for scen in get_scenarios():
-            folder = os.listdir(scen['output_dir'])[0]
+            folder = [f for f in os.listdir(scen['output_dir']) if f.startswith('run')][0]
             cave = CAVE([os.path.join(scen['output_dir'], folder)],
                         os.path.join(scen['output_dir'], 'CAVE_RESULT'),
                         ta_exec_dir='.', validation_method='validation')
