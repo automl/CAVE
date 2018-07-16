@@ -625,22 +625,28 @@ class Analyzer(object):
         if self.param_imp:
             # Use the first applied parameter importance analysis to choose
             method, importance = list(self.param_imp.items())[0]
-            self.logger.debug("Choosing used parameters in parallel coordinates "
+            self.logger.debug("Choosing visualized parameters in parallel coordinates "
                               "according to parameter importance method %s" % method)
             n_param = min(n_param, max(3, len([x for x in importance.values() if x > 0.05])))
             # Some importance methods add "--source--" or similar to the parameter names -> filter them in next line
             params = [p for p in importance.keys() if p in self.scenario.cs.get_hyperparameter_names()][:n_param]
         else:
-            # what if no parameter importance has been performed?
-            # plot all? random subset? -> atm: random
-            self.logger.info("No parameter importance performed. Plotting random "
-                             "parameters in parallel coordinates plot.")
+            self.logger.info("No parameter importance performed. Plotting random parameters in parallel coordinates.")
             params = list(self.default.keys())[:n_param]
 
         self.logger.info("    plotting %s parameters for (max) %s configurations",
                          len(params), n_configs)
 
         all_configs = original_rh.get_all_configs()
+        max_train = 5000
+        if len(all_configs) > max_train:
+            self.logger.debug("Limiting number of configs to train epm from %d to %d and choosing "
+                              "the ones with the most runs", len(all_configs), max_train)
+            all_configs = sorted(all_configs, key=lambda c: len(original_rh.get_runs_for_config(c)))[:max_train]
+            if not self.default in all_configs:
+                all_configs = [self.default] + all_configs
+            if not self.incumbent in all_configs:
+                all_configs.append(self.incumbent)
         if self.scenario.feature_dict:
             epm_rh = validator.validate_epm(all_configs, 'train+test', 1, runhistory=validated_rh)
         else:
