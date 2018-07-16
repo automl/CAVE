@@ -423,9 +423,9 @@ class CAVE(object):
                     for param, plot in pair_plots.items():
                         d["fANOVA"]["Pairwise Marginals"][param] = {"figure": plot}
             except RuntimeError as e:
-                self.logger.error("Encountered error '%s' in fANOVA, this can e.g. happen with too few data-points.", e)
-                d["fANOVA"] = {"else": "Encountered error:\n'%s'\nin fANOVA, this can e.g. happen with too few "
-                                       "data-points." % e}
+                err = "Encountered error '%s' in fANOVA, this can e.g. happen with too few data-points." % e
+                self.logger.exception(err)
+                d["fANOVA"] = {"else": err + " Check 'debug/debug.log' for more information."}
 
             self.build_website()
 
