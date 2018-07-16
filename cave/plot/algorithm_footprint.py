@@ -165,7 +165,7 @@ class AlgorithmFootprint(object):
                 #                  best_cost / cost)
                 if (cost == 0 or
                     (best_cost/cost >= epsilon and
-                     not cost >= self.cutoff)):
+                     (not self.cutoff or not cost >= self.cutoff))):
                     # Algorithm for instance is in threshhold epsilon and no timeout
                     label = 1
                 else:
