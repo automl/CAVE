@@ -60,15 +60,17 @@ Commandline arguments:
 
 Optional:
 - `--output`: where to save the CAVE-output
+- `--file_format`: of results to be analyzed, choose from [SMAC3](https://github.com/automl/SMAC3), [SMAC2](https://www.cs.ubc.ca/labs/beta/Projects/SMAC), [CSV](https://automl.github.io/CAVE/stable/quickstart.html#csv) or [BOHB](https://github.com/automl/HpBandSter)
+- `--validation_format`: of (optional) validation data (to enhance epm-quality where appropriate), choose from [SMAC3](https://github.com/automl/SMAC3), [SMAC2](https://www.cs.ubc.ca/labs/beta/Projects/SMAC), [CSV](https://automl.github.io/CAVE/stable/quickstart.html#csv) or NONE
 - `--ta_exec_dir`: target algorithm execution directory, this should be a path to
   the directory from which SMAC was run initially. used to find instance-files and
   if necessary execute the `algo`-parameter of the SMAC-scenario (DEFAULT:
   current working directory)
-- `--param_importance`: calculating parameter importance is expensive, so you can
+- `--parameter_importance`: calculating parameter importance is expensive, so you can
   specify which plots you desire: `ablation`, `forward_selection`, `fanova`
   and/or `lpi`.
   either provide a combination of those or use `all` or `none`
-- `--feat_analysis`: analysis features is expensive, so you can specify which
+- `--feature_analysis`: analysis features is expensive, so you can specify which
   algorithm to run: `box_violin`, `clustering`, `importance` and/or `feature_cdf`.
   either provide a combination of those or use `all` or `none`
 - `--no_tabular_analysis`: toggles the tabular analysis
