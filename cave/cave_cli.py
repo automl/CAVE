@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import sys
 from argparse import ArgumentParser, SUPPRESS
 import logging
 import glob
@@ -186,7 +187,7 @@ class CaveCLI(object):
                               version='%(prog)s ' + str(v), help="show program's version number and exit.")
         spe_opts.add_argument('-h', '--help', action="help", help="show this help message and exit")
 
-        args_, misc = parser.parse_known_args()
+        args_= parser.parse_args(sys.argv[2:])
 
         # Expand configs
         if "all" in args_.parameter_importance:
