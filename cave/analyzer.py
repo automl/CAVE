@@ -312,32 +312,44 @@ class Analyzer(object):
         p_value_par1 = "%.5f" % p_value_par1 if np.isfinite(p_value_par1) else 'N/A'
 
         dec_place = 3
+
+        metrics = []
+        if self.scenario.run_obj == 'runtime':
+            metrics.append('PAR10')
+        metrics.append('PAR1')
+        if self.scenario.cutoff:
+            metrics.append('Timeouts')
+
         if len(self.scenario.train_insts) > 1 and len(self.scenario.test_insts) > 1:
             # Distinction between train and test
             # Create table
-            array = np.array([[round(def_par10[0], dec_place) if np.isfinite(def_par10[0]) else 'N/A',
+            array = []
+            if 'PAR10' in metrics:
+                array.append([round(def_par10[0], dec_place) if np.isfinite(def_par10[0]) else 'N/A',
                                round(inc_par10[0], dec_place) if np.isfinite(inc_par10[0]) else 'N/A',
                                round(ora_par10[0], dec_place) if np.isfinite(ora_par10[0]) else 'N/A',
                                round(def_par10[1], dec_place) if np.isfinite(def_par10[1]) else 'N/A',
                                round(inc_par10[1], dec_place) if np.isfinite(inc_par10[1]) else 'N/A',
                                round(ora_par10[1], dec_place) if np.isfinite(ora_par10[1]) else 'N/A',
-                               p_value_par10],
-                              [round(def_par1[0], dec_place) if np.isfinite(def_par1[0]) else 'N/A',
+                               p_value_par10])
+            array.append([round(def_par1[0], dec_place) if np.isfinite(def_par1[0]) else 'N/A',
                                round(inc_par1[0], dec_place) if np.isfinite(inc_par1[0]) else 'N/A',
                                round(ora_par1[0], dec_place) if np.isfinite(ora_par1[0]) else 'N/A',
                                round(def_par1[1], dec_place) if np.isfinite(def_par1[1]) else 'N/A',
                                round(inc_par1[1], dec_place) if np.isfinite(inc_par1[1]) else 'N/A',
                                round(ora_par1[1], dec_place) if np.isfinite(ora_par1[1]) else 'N/A',
-                               p_value_par1],
-                              ["{}/{}".format(def_timeouts_tuple[0][0], def_timeouts_tuple[0][1]),
+                               p_value_par1])
+            if 'Timeouts' in metrics:
+                array.append(["{}/{}".format(def_timeouts_tuple[0][0], def_timeouts_tuple[0][1]),
                                "{}/{}".format(inc_timeouts_tuple[0][0], inc_timeouts_tuple[0][1]),
                                "{}/{}".format(ora_timeout[0][0], ora_timeout[0][1]),
                                "{}/{}".format(def_timeouts_tuple[1][0], def_timeouts_tuple[1][1]),
                                "{}/{}".format(inc_timeouts_tuple[1][0], inc_timeouts_tuple[1][1]),
                                "{}/{}".format(ora_timeout[1][0], ora_timeout[1][1]),
                                p_value_timeouts
-                               ]])
-            df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
+                               ])
+            array = np.array(array)
+            df = DataFrame(data=array, index=metrics,
                            columns=['Default', 'Incumbent', 'Oracle', 'Default', 'Incumbent', 'Oracle', 'p-value'])
             table = df.to_html()
             # Insert two-column-header
@@ -365,19 +377,23 @@ class Analyzer(object):
             table = new_table + table
         else:
             # No distinction between train and test
-            array = np.array([[round(def_par10, dec_place) if np.isfinite(def_par10) else 'N/A',
+            array = []
+            if 'PAR10' in metrics:
+                array.append([round(def_par10, dec_place) if np.isfinite(def_par10) else 'N/A',
                                round(inc_par10, dec_place) if np.isfinite(inc_par10) else 'N/A',
                                round(ora_par10, dec_place) if np.isfinite(ora_par10) else 'N/A',
-                               p_value_par10],
-                              [round(def_par1, dec_place) if np.isfinite(def_par1) else 'N/A',
+                               p_value_par10])
+            array.append([round(def_par1, dec_place) if np.isfinite(def_par1) else 'N/A',
                                round(inc_par1, dec_place) if np.isfinite(inc_par1) else 'N/A',
                                round(ora_par1, dec_place) if np.isfinite(ora_par1) else 'N/A',
-                               p_value_par1],
-                              ["{}/{}".format(def_timeouts_tuple[0], def_timeouts_tuple[1]),
+                               p_value_par1])
+            if 'Timeouts' in metrics:
+                array.append(["{}/{}".format(def_timeouts_tuple[0], def_timeouts_tuple[1]),
                                "{}/{}".format(inc_timeouts_tuple[0], inc_timeouts_tuple[1]),
                                "{}/{}".format(ora_timeout[0], ora_timeout[1]),
-                               p_value_timeouts]])
-            df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
+                               p_value_timeouts])
+            array = np.array(array)
+            df = DataFrame(data=array, index=metrics,
                            columns=['Default', 'Incumbent', 'Oracle', 'p-value'])
             table = df.to_html()
         return table
