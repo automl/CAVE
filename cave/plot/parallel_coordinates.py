@@ -82,7 +82,8 @@ class ParallelCoordinatesPlotter(object):
         return ids
 
     def _fun(self, a, logy):
-        return np.log10(a) if logy else a
+        res = np.log10(a) if logy else a
+        return res
 
     def plot_n_configs(self, num_configs, params):
         """
@@ -103,7 +104,7 @@ class ParallelCoordinatesPlotter(object):
         self.logger.debug("Plotting %d configs.", min(num_configs, len(all_configs)))
 
         config_to_cost = {c : self.epm_rh.get_cost(c) for c in all_configs}
-        pngs = []
+        pngs = {}
         for log_cost in [False, True]:
             for log_sample in [False, True]:
                 configs_to_plot = list(sorted(all_configs, key=lambda x: self._fun(config_to_cost[x], log_cost)))
@@ -124,13 +125,15 @@ class ParallelCoordinatesPlotter(object):
                 configs_to_plot = np.array(configs_to_plot)[ids]
 
                 out_base = os.path.join(self.output_dir, "content/images/parallel_coordinates")
-                out_ext = "_{:s}_{:s}".format('log_cost' if log_cost else 'linear_cost',
-                                              'log_sampling' if log_sample else 'uniform_sampling') + str(len(ids)) + '.png'
+                out_ext = "_{:s}_{:s}_".format('log_cost' if log_cost else 'linear_cost',
+                                               'log_sampling' if log_sample else 'uniform_sampling') + str(len(ids)) + '.png'
                 out_fn = out_base + out_ext
                 self.logger.debug("Saving to %s", out_fn)
 
-                pngs.append(self._plot(configs_to_plot, params, fn=out_fn, logy=log_cost))
-        return pngs[3] if self.runtime else pngs[1]
+                path = self._plot(configs_to_plot, params, fn=out_fn, logy=log_cost)
+                pngs[('log_cost' if log_cost else 'linear_cost',
+                      'log_sampling' if log_sample else 'uniform_sampling')] = path
+        return pngs[('log_cost', 'log_sampling')] if self.runtime else pngs[('linear_cost', 'log_sampling')]
 
     def _plot(self, configs, params, fn=None, log_c=False, logy=False):
         """
@@ -140,6 +143,12 @@ class ParallelCoordinatesPlotter(object):
             configs to be plotted
         params: List[str]
             parameters to be plotted
+        fn: str
+            filename to save plot in
+        log_c: bool
+            whether to use log-scaled colormap
+        logy: bool
+            whether the cost-axis should be logscale
         Returns
         -------
         output: str
@@ -154,11 +163,7 @@ class ParallelCoordinatesPlotter(object):
             return
 
         # Create dataframe with configs
-        cost_str = ''
-        if self.runtime:
-            cost_str = 'log-runtime' if logy else 'runtime'
-        else:
-            cost_str = 'log-quality' if logy else 'quality'
+        cost_str = ('log-' if logy else '') + ('runtime' if self.runtime else 'quality')
         data = []
         for conf in configs:
             conf_dict = conf.get_dictionary()
@@ -239,6 +244,7 @@ class ParallelCoordinatesPlotter(object):
 
         def set_ticks_for_axis(p, ax, num_ticks=10):
             minimum, maximum, param_range = min_max_diff[params[p]]
+            # self.logger.debug("Ticks for parameter %s: Min %f, Max %f, Range %f", p, minimum, maximum, param_range)
             hyper = p
             if p > 0:
                 # First column not a parameter, but cost...
@@ -269,6 +275,7 @@ class ParallelCoordinatesPlotter(object):
             ax.set_yticklabels(tick_labels)
 
         # TODO adjust tick-labels to unused ranges of parameters and maybe even log?
+        plt.xticks(rotation=5)
         for p, ax in enumerate(axes):
             ax.xaxis.set_major_locator(ticker.FixedLocator([p]))
             set_ticks_for_axis(p, ax, num_ticks=6)
@@ -281,7 +288,7 @@ class ParallelCoordinatesPlotter(object):
         dim = len(axes)
         ax.xaxis.set_major_locator(ticker.FixedLocator([len(params) - 2, len(params) - 1]))
         set_ticks_for_axis(dim, ax, num_ticks=6)
-        ax.set_xticklabels([params[-2], params[-1]], rotation=5)
+        ax.set_xticklabels([params[-2], params[-1]])
         ax.set_ylim(axes[-1].get_ylim())
         setp(ax.get_yticklabels(), fontsize=15)
 

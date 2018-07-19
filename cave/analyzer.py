@@ -589,7 +589,8 @@ class Analyzer(object):
 
 #  PLOTS #########################################################################
 
-    def plot_parallel_coordinates(self, original_rh, validated_rh, validator, n_param=10, n_configs=500):
+    def plot_parallel_coordinates(self, original_rh, validated_rh, validator, n_param=10, n_configs=500,
+                                  max_runs_epm=300000):
         """ Plot parallel coordinates (visualize higher dimensions), here used
         to visualize pcs. This function prepares the data from a SMAC-related
         format (using runhistories and parameters) to a more general format
@@ -612,7 +613,10 @@ class Analyzer(object):
         n_param: int
             parameters to be plotted
         n_configs: int
-            max # configs
+            max # configs to be plotted
+        max_runs_epm: int
+            maximum number of total runs that should be predicted using epm. the higher this value is, the better the
+            predictions (probably), however high numbers are likely to lead to MemoryErrors
 
         Returns
         -------
@@ -637,22 +641,25 @@ class Analyzer(object):
         self.logger.info("    plotting %s parameters for (max) %s configurations",
                          len(params), n_configs)
 
+        # Reduce to feasible number of configurations
         all_configs = original_rh.get_all_configs()
-        max_train = 5000
-        if len(all_configs) > max_train:
-            self.logger.debug("Limiting number of configs to train epm from %d to %d and choosing "
-                              "the ones with the most runs", len(all_configs), max_train)
-            all_configs = sorted(all_configs, key=lambda c: len(original_rh.get_runs_for_config(c)))[:max_train]
+        max_runs_epm = 300000  #         max_configs = int(max_runs_epm / (len(self.scenario.train_insts) + len(self.scenario.test_insts)))
+        if len(all_configs) > max_configs:
+            self.logger.debug("Limiting number of configs to train epm from %d to %d (based on max runs %d) and choosing "
+                              "the ones with the most runs", len(all_configs), max_configs, max_runs_epm)
+            all_configs = sorted(all_configs, key=lambda c: len(original_rh.get_runs_for_config(c)))[:max_configs]
             if not self.default in all_configs:
                 all_configs = [self.default] + all_configs
             if not self.incumbent in all_configs:
                 all_configs.append(self.incumbent)
+
         if self.scenario.feature_dict:
-            epm_rh = validator.validate_epm(all_configs, 'train+test', 1, runhistory=validated_rh)
+            epm_rh = timing(validator.validate_epm)(all_configs, 'train+test', 1, runhistory=validated_rh)
+            epm_rh.update(validated_rh)
         else:
             epm_rh = validated_rh
         pcp = ParallelCoordinatesPlotter(original_rh, epm_rh, self.output_dir,
-                                         self.scenario.cs, runtime=self.scenario.run_obj == 'runtime')
+                                         self.scenario.cs, runtime=(self.scenario.run_obj == 'runtime'))
         output = pcp.plot_n_configs(n_configs, params)
         return output
 
