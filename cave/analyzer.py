@@ -312,32 +312,44 @@ class Analyzer(object):
         p_value_par1 = "%.5f" % p_value_par1 if np.isfinite(p_value_par1) else 'N/A'
 
         dec_place = 3
+
+        metrics = []
+        if self.scenario.run_obj == 'runtime':
+            metrics.append('PAR10')
+        metrics.append('PAR1')
+        if self.scenario.cutoff:
+            metrics.append('Timeouts')
+
         if len(self.scenario.train_insts) > 1 and len(self.scenario.test_insts) > 1:
             # Distinction between train and test
             # Create table
-            array = np.array([[round(def_par10[0], dec_place) if np.isfinite(def_par10[0]) else 'N/A',
+            array = []
+            if 'PAR10' in metrics:
+                array.append([round(def_par10[0], dec_place) if np.isfinite(def_par10[0]) else 'N/A',
                                round(inc_par10[0], dec_place) if np.isfinite(inc_par10[0]) else 'N/A',
                                round(ora_par10[0], dec_place) if np.isfinite(ora_par10[0]) else 'N/A',
                                round(def_par10[1], dec_place) if np.isfinite(def_par10[1]) else 'N/A',
                                round(inc_par10[1], dec_place) if np.isfinite(inc_par10[1]) else 'N/A',
                                round(ora_par10[1], dec_place) if np.isfinite(ora_par10[1]) else 'N/A',
-                               p_value_par10],
-                              [round(def_par1[0], dec_place) if np.isfinite(def_par1[0]) else 'N/A',
+                               p_value_par10])
+            array.append([round(def_par1[0], dec_place) if np.isfinite(def_par1[0]) else 'N/A',
                                round(inc_par1[0], dec_place) if np.isfinite(inc_par1[0]) else 'N/A',
                                round(ora_par1[0], dec_place) if np.isfinite(ora_par1[0]) else 'N/A',
                                round(def_par1[1], dec_place) if np.isfinite(def_par1[1]) else 'N/A',
                                round(inc_par1[1], dec_place) if np.isfinite(inc_par1[1]) else 'N/A',
                                round(ora_par1[1], dec_place) if np.isfinite(ora_par1[1]) else 'N/A',
-                               p_value_par1],
-                              ["{}/{}".format(def_timeouts_tuple[0][0], def_timeouts_tuple[0][1]),
+                               p_value_par1])
+            if 'Timeouts' in metrics:
+                array.append(["{}/{}".format(def_timeouts_tuple[0][0], def_timeouts_tuple[0][1]),
                                "{}/{}".format(inc_timeouts_tuple[0][0], inc_timeouts_tuple[0][1]),
                                "{}/{}".format(ora_timeout[0][0], ora_timeout[0][1]),
                                "{}/{}".format(def_timeouts_tuple[1][0], def_timeouts_tuple[1][1]),
                                "{}/{}".format(inc_timeouts_tuple[1][0], inc_timeouts_tuple[1][1]),
                                "{}/{}".format(ora_timeout[1][0], ora_timeout[1][1]),
                                p_value_timeouts
-                               ]])
-            df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
+                               ])
+            array = np.array(array)
+            df = DataFrame(data=array, index=metrics,
                            columns=['Default', 'Incumbent', 'Oracle', 'Default', 'Incumbent', 'Oracle', 'p-value'])
             table = df.to_html()
             # Insert two-column-header
@@ -365,19 +377,23 @@ class Analyzer(object):
             table = new_table + table
         else:
             # No distinction between train and test
-            array = np.array([[round(def_par10, dec_place) if np.isfinite(def_par10) else 'N/A',
+            array = []
+            if 'PAR10' in metrics:
+                array.append([round(def_par10, dec_place) if np.isfinite(def_par10) else 'N/A',
                                round(inc_par10, dec_place) if np.isfinite(inc_par10) else 'N/A',
                                round(ora_par10, dec_place) if np.isfinite(ora_par10) else 'N/A',
-                               p_value_par10],
-                              [round(def_par1, dec_place) if np.isfinite(def_par1) else 'N/A',
+                               p_value_par10])
+            array.append([round(def_par1, dec_place) if np.isfinite(def_par1) else 'N/A',
                                round(inc_par1, dec_place) if np.isfinite(inc_par1) else 'N/A',
                                round(ora_par1, dec_place) if np.isfinite(ora_par1) else 'N/A',
-                               p_value_par1],
-                              ["{}/{}".format(def_timeouts_tuple[0], def_timeouts_tuple[1]),
+                               p_value_par1])
+            if 'Timeouts' in metrics:
+                array.append(["{}/{}".format(def_timeouts_tuple[0], def_timeouts_tuple[1]),
                                "{}/{}".format(inc_timeouts_tuple[0], inc_timeouts_tuple[1]),
                                "{}/{}".format(ora_timeout[0], ora_timeout[1]),
-                               p_value_timeouts]])
-            df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
+                               p_value_timeouts])
+            array = np.array(array)
+            df = DataFrame(data=array, index=metrics,
                            columns=['Default', 'Incumbent', 'Oracle', 'p-value'])
             table = df.to_html()
         return table
@@ -482,7 +498,7 @@ class Analyzer(object):
         plots = OrderedDict([])
         self.parameter_importance(pimp, "lpi", self.incumbent, self.output_dir)
         for p, i in [(k, v) for k, v in sorted(self.param_imp['lpi'].items(),
-                     key=operator.itemgetter(1), reverse=True) if v > 0.05]:
+                     key=operator.itemgetter(1), reverse=True)]:
             plots[p] = os.path.join(self.output_dir, 'lpi', p + '.png')
         return plots
 
@@ -573,7 +589,8 @@ class Analyzer(object):
 
 #  PLOTS #########################################################################
 
-    def plot_parallel_coordinates(self, original_rh, validated_rh, validator, n_param=10, n_configs=500):
+    def plot_parallel_coordinates(self, original_rh, validated_rh, validator, n_param=10, n_configs=500,
+                                  max_runs_epm=300000):
         """ Plot parallel coordinates (visualize higher dimensions), here used
         to visualize pcs. This function prepares the data from a SMAC-related
         format (using runhistories and parameters) to a more general format
@@ -596,7 +613,10 @@ class Analyzer(object):
         n_param: int
             parameters to be plotted
         n_configs: int
-            max # configs
+            max # configs to be plotted
+        max_runs_epm: int
+            maximum number of total runs that should be predicted using epm. the higher this value is, the better the
+            predictions (probably), however high numbers are likely to lead to MemoryErrors
 
         Returns
         -------
@@ -609,28 +629,37 @@ class Analyzer(object):
         if self.param_imp:
             # Use the first applied parameter importance analysis to choose
             method, importance = list(self.param_imp.items())[0]
-            self.logger.debug("Choosing used parameters in parallel coordinates "
+            self.logger.debug("Choosing visualized parameters in parallel coordinates "
                               "according to parameter importance method %s" % method)
             n_param = min(n_param, max(3, len([x for x in importance.values() if x > 0.05])))
             # Some importance methods add "--source--" or similar to the parameter names -> filter them in next line
             params = [p for p in importance.keys() if p in self.scenario.cs.get_hyperparameter_names()][:n_param]
         else:
-            # what if no parameter importance has been performed?
-            # plot all? random subset? -> atm: random
-            self.logger.info("No parameter importance performed. Plotting random "
-                             "parameters in parallel coordinates plot.")
+            self.logger.info("No parameter importance performed. Plotting random parameters in parallel coordinates.")
             params = list(self.default.keys())[:n_param]
 
         self.logger.info("    plotting %s parameters for (max) %s configurations",
                          len(params), n_configs)
 
+        # Reduce to feasible number of configurations
         all_configs = original_rh.get_all_configs()
+        max_configs = int(max_runs_epm / (len(self.scenario.train_insts) + len(self.scenario.test_insts)))
+        if len(all_configs) > max_configs:
+            self.logger.debug("Limiting number of configs to train epm from %d to %d (based on max runs %d) and choosing "
+                              "the ones with the most runs", len(all_configs), max_configs, max_runs_epm)
+            all_configs = sorted(all_configs, key=lambda c: len(original_rh.get_runs_for_config(c)))[:max_configs]
+            if not self.default in all_configs:
+                all_configs = [self.default] + all_configs
+            if not self.incumbent in all_configs:
+                all_configs.append(self.incumbent)
+
         if self.scenario.feature_dict:
-            epm_rh = validator.validate_epm(all_configs, 'train+test', 1, runhistory=validated_rh)
+            epm_rh = timing(validator.validate_epm)(all_configs, 'train+test', 1, runhistory=validated_rh)
+            epm_rh.update(validated_rh)
         else:
             epm_rh = validated_rh
         pcp = ParallelCoordinatesPlotter(original_rh, epm_rh, self.output_dir,
-                                         self.scenario.cs, runtime=self.scenario.run_obj == 'runtime')
+                                         self.scenario.cs, runtime=(self.scenario.run_obj == 'runtime'))
         output = pcp.plot_n_configs(n_configs, params)
         return output
 

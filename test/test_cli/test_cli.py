@@ -65,7 +65,7 @@ class TestCLI(unittest.TestCase):
 
         for folders in test_folders:
             # Run from base-path
-            testargs = ["python", "scripts/cave", "--folders"]
+            testargs = ["scripts/cave", "--folders"]
             testargs.extend(folders)
             testargs.extend(self.def_args_off)
             # No ta_exec -> scenario cannot be loaded
@@ -91,7 +91,7 @@ class TestCLI(unittest.TestCase):
         with changedir("test/example_output"):
             for folders in test_folders:
                 # Run from base-path
-                testargs = ["python", "../../scripts/cave", "--folders"]
+                testargs = ["../../scripts/cave", "--folders"]
                 testargs.extend(folders)
                 testargs.extend(self.def_args_off)
                 with mock.patch.object(sys, 'argv', testargs):
@@ -106,7 +106,7 @@ class TestCLI(unittest.TestCase):
     def test_exceptions(self):
         test_folder = "test/example_output/example_output/run_1"
 
-        testargs = ["python", "scripts/cave",
+        testargs = ["scripts/cave",
                     "--folders", test_folder,
                     "--ta_exec", "test/example_output",
                     "--pimp_sort_table_by", "fanova",
