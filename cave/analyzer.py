@@ -643,7 +643,7 @@ class Analyzer(object):
 
         # Reduce to feasible number of configurations
         all_configs = original_rh.get_all_configs()
-        max_runs_epm = 300000  #         max_configs = int(max_runs_epm / (len(self.scenario.train_insts) + len(self.scenario.test_insts)))
+        max_configs = int(max_runs_epm / (len(self.scenario.train_insts) + len(self.scenario.test_insts)))
         if len(all_configs) > max_configs:
             self.logger.debug("Limiting number of configs to train epm from %d to %d (based on max runs %d) and choosing "
                               "the ones with the most runs", len(all_configs), max_configs, max_runs_epm)
