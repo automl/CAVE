@@ -61,7 +61,7 @@ class SMAC3Reader(BaseReader):
                                 "if that's not correct, change it with the "
                                 "--validation_format option!", rh_fn)
             raise
-        rh
+        return rh
 
     def get_trajectory(self, cs):
         traj_fn = os.path.join(self.folder, 'traj_aclib2.json')
