@@ -187,7 +187,7 @@ class CaveCLI(object):
                               version='%(prog)s ' + str(v), help="show program's version number and exit.")
         spe_opts.add_argument('-h', '--help', action="help", help="show this help message and exit")
 
-        args_= parser.parse_args(sys.argv[2:])
+        args_= parser.parse_args(sys.argv[1:])
 
         # Expand configs
         if "all" in args_.parameter_importance:
@@ -252,6 +252,8 @@ class CaveCLI(object):
         fh.setFormatter(formatter)
         logging.getLogger().addHandler(fh)
         logging.debug("Running CAVE version %s", v)
+
+        logging.getLogger().debug("CAVE is called with arguments: " + str(args_))
 
         # Configuration results to be analyzed
         folders = []

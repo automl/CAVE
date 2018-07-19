@@ -27,7 +27,7 @@ def export_bokeh(plot, path, logger):
     logger.debug("Exporting to %s (base: %s)", path, base)
     plot.background_fill_color = None
     plot.border_fill_color = None
-    if not os.path.exists(base):
+    if base and not os.path.exists(base):
         logger.debug("%s does not exist. Creating...", base)
         os.makedirs(base)
     try:
