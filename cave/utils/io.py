@@ -37,6 +37,8 @@ def export_bokeh(plot, path, logger):
         logger.warning("To activate png-export, please follow "
                        "instructions on CAVE's GitHub (install "
                        "selenium and phantomjs-prebuilt).")
+    except Exception as err:
+        logger.exception("Exporting failed with message \"%s\"", err)
 
 
 def load_csv_to_pandaframe(csv_path, logger, apply_numeric=True, delimiter=','):
