@@ -453,7 +453,9 @@ class Analyzer(object):
 
         pimp = self.parameter_importance(pimp, "fanova", incumbent, self.output_dir)
         parameter_imp = {k: v * 100 for k, v in pimp.evaluator.evaluated_parameter_importance.items()}
-        parameter_imp_std = {k: v * 100 for k, v in pimp.evaluator.evaluated_parameter_importance_uncertainty.items()}
+        parameter_imp_std = {}
+        if hasattr(pimp.evaluator, 'evaluated_parameter_importance_uncertainty'):
+            parameter_imp_std = {k: v * 100 for k, v in pimp.evaluator.evaluated_parameter_importance_uncertainty.items()}
         for k in parameter_imp.keys():
             self.logger.debug("fanova-importance for %s: mean (over trees): %f, std: %s", k, parameter_imp[k],
                               str(parameter_imp_std[k]) if parameter_imp_std else 'N/A')
