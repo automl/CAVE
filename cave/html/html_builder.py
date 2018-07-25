@@ -19,7 +19,9 @@ class HTMLBuilder(object):
 
     def __init__(self,
                  output_dn: str,
-                 scenario_name: str):
+                 scenario_name: str,
+                 logo_fn: str,
+                 logo_custom: bool=False):
         '''
         Constructor
 
@@ -29,10 +31,16 @@ class HTMLBuilder(object):
             output directory name
         scenario_name:str
             name of scenario
+        logo_fn: str
+            path to the logo of the configurator
+        logo_custom: bool
+            if true, logo ist treated as external logo that needs to be copied
         '''
         self.logger = logging.getLogger("HTMLBuilder")
 
         self.own_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
+        self.logo_fn = logo_fn
+        self.logo_custom = logo_custom
 
         self.output_dn = output_dn
         self.relative_content_js = os.path.join('content', 'js')
@@ -72,13 +80,13 @@ class HTMLBuilder(object):
 <script src="html/js/lightbox-plus-jquery.min.js"></script>
 <header>
     <div class='l-wrapper'>
-        <img class='logo logo--smac3' src="html/images/SMAC3.png" />
+        <img class='logo logo--configurator' src="html/images/{}" />
         <img class='logo logo--ml' src="html/images/ml4aad.png" />
     </div>
 </header>
 <div class='l-wrapper'>
 <h1>CAVE</h1>
-'''
+'''.format(self.logo_fn if not self.logo_custom else 'custom_logo.png')
 
         self.footer = '''
 </div>
@@ -149,6 +157,12 @@ for (i = 0; i < acc.length; i++) {
                                     os.path.join(self.output_dn, "html", sf))
             except OSError:
                 print_exc()
+        if self.logo_custom:
+            original_path = self.logo_fn
+            self.logo_fn = os.path.join(self.output_dn, "html", 'images', 'custom_logo.png')
+            self.logger.debug("Attempting to copy %s to %s", original_path, self.logo_fn)
+            shutil.copyfile(original_path, self.logo_fn)
+            self.logo_custom = False
 
     def add_layer(self, layer_name, data_dict: OrderedDict):
         '''

@@ -186,7 +186,18 @@ class CAVE(object):
                                  rng=self.rng)
 
         # Builder for html-website
-        self.builder = HTMLBuilder(self.output_dir, "CAVE")
+        custom_logo = './custom_logo.png'
+        if file_format.startswith('SMAC'):
+            logo_fn = 'SMAC_logo.png'
+        elif file_format == 'BOHB':
+            logo_fn = 'BOHB_logo.png'
+        elif os.path.exists(custom_logo):
+            logo_fn = custom_logo
+        else:
+            logo_fn = 'ml4aad.png'
+            self.logger.info("No suitable logo found. You can use a custom logo simply by having a file called '%s' "
+                             "in the directory from which you run CAVE.", custom_logo)
+        self.builder = HTMLBuilder(self.output_dir, "CAVE", logo_fn=logo_fn, logo_custom=custom_logo==logo_fn)
         self.website = OrderedDict([])
 
     @timing
