@@ -793,7 +793,7 @@ for (i = 0; i < lab_len; i++) {
             self.logger.debug("Plotting quantile %d!", idx)
             scatter_glyph_render_groups.append(self._plot_scatter(p, source, views, markers))
             if self.output_dir:
-                file_path = "content/images/cfp_over_time/configurator_footprint" + str(idx) + ".png"
+                file_path = "cfp_over_time/configurator_footprint" + str(idx) + ".png"
                 over_time_paths.append(os.path.join(self.output_dir, file_path))
                 self.logger.debug("Saving plot to %s", over_time_paths[-1])
                 export_bokeh(p, over_time_paths[-1], self.logger)
@@ -809,7 +809,7 @@ for (i = 0; i < lab_len; i++) {
         script, div = components(layout)
 
         if self.output_dir:
-            path = os.path.join(self.output_dir, "content/images/configurator_footprint.png")
+            path = os.path.join(self.output_dir, "configurator_footprint.png")
             export_bokeh(p, path, self.logger)
 
         return (script, div), over_time_paths

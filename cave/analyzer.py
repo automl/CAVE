@@ -6,6 +6,7 @@ import operator
 
 import numpy as np
 from pandas import DataFrame
+import matplotlib.pyplot as plt
 
 from smac.configspace import Configuration
 from smac.runhistory.runhistory import RunHistory
@@ -18,7 +19,7 @@ from cave.plot.configurator_footprint import ConfiguratorFootprint
 from cave.plot.scatter import plot_scatter_plot
 from cave.plot.parallel_coordinates import ParallelCoordinatesPlotter
 from cave.reader.configurator_run import ConfiguratorRun
-from cave.utils.helpers import get_cost_dict_for_config, get_timeout, NotApplicableError, MissingInstancesError
+from cave.utils.helpers import get_cost_dict_for_config, get_timeout, combine_runhistories, NotApplicableError, MissingInstancesError
 from cave.utils.timing import timing
 from cave.utils.statistical_tests import paired_permutation, paired_t_student
 from cave.plot.cost_over_time import CostOverTime
@@ -82,33 +83,32 @@ class Analyzer(object):
         self.fanova_pairwise = fanova_pairwise
 
     @timing
-    def get_oracle(self, runhistories, instances, validated_rh):
+    def get_oracle(self, instances, rh):
         """Estimation of oracle performance. Collects best performance seen for each instance in any run.
 
         Parameters
         ----------
-        runhistories: List[RunHistory]
-            list of runhistories
         instances: List[str]
             list of instances in question
-        validated_rh: RunHistory
-            runhistory
+        rh: RunHistory or List[RunHistory]
+            runhistory or list of runhistories (will be combined)
 
         Results
         -------
         oracle: dict[str->float]
-            best seen performance per instance
+            best seen performance per instance {inst : performance}
         """
+        if isinstance(rh, list):
+            rh = combine_runhistories(rh)
         self.logger.debug("Calculating oracle performance")
         oracle = {}
-        for rh in runhistories:
-            for c in rh.get_all_configs():
-                costs = get_cost_dict_for_config(validated_rh, c)
-                for i in costs.keys():
-                    if i not in oracle:
-                        oracle[i] = costs[i]
-                    elif oracle[i] > costs[i]:
-                        oracle[i] = costs[i]
+        for c in rh.get_all_configs():
+            costs = get_cost_dict_for_config(rh, c)
+            for i in costs.keys():
+                if i not in oracle:
+                    oracle[i] = costs[i]
+                elif oracle[i] > costs[i]:
+                    oracle[i] = costs[i]
         return oracle
 
     def timeouts_to_tuple(self, timeouts):
@@ -207,7 +207,7 @@ class Analyzer(object):
         return p
 
 #  TABLES #####################################################################
-    def create_overview_table(self, orig_rh, best_run):
+    def create_overview_table(self, orig_rh, best_run, num_runs, default, incumbent):
         """ Create overview-table.
 
         Parameters
@@ -216,6 +216,8 @@ class Analyzer(object):
             runhistory to take stats from
         best_run: ConfiguratorRun
             configurator run object with best incumbent
+        num_runs: int
+            number of configurator runs
 
         Returns
         -------
@@ -225,10 +227,11 @@ class Analyzer(object):
         # General
         all_confs = best_run.original_runhistory.get_all_configs()
         num_configs = len(all_confs)
+        num_conf_runs = num_runs
         ta_runtime = np.sum([orig_rh.get_cost(conf) for conf in all_confs])
         ta_evals = [len(orig_rh.get_runs_for_config(conf)) for conf in all_confs]
-        ta_evals_d = len(orig_rh.get_runs_for_config(self.default))
-        ta_evals_i = len(orig_rh.get_runs_for_config(self.incumbent))
+        ta_evals_d = len(orig_rh.get_runs_for_config(default))
+        ta_evals_i = len(orig_rh.get_runs_for_config(incumbent))
         min_ta_evals, max_ta_evals, = np.min(ta_evals), np.max(ta_evals)
         mean_ta_evals, ta_evals = np.mean(ta_evals), np.sum(ta_evals)
         num_changed_params = len([p for p in self.scenario.cs.get_hyperparameter_names()
@@ -238,11 +241,10 @@ class Analyzer(object):
         num_test = len([i for i in self.scenario.test_insts if i])
         # Features
         num_feats = self.scenario.n_features if self.scenario.feature_dict else 0
+        num_dup_feats = 0
         if self.scenario.feature_dict:
             dup_feats = DataFrame(self.scenario.feature_array)
             num_dup_feats = len(dup_feats[dup_feats.duplicated()])  # only contains train instances
-        else:
-            num_dup_feats = 0
 
         overview = OrderedDict([('Run with best incumbent', os.path.basename(best_run.folder)),
                                 # Constants for scenario
@@ -269,7 +271,7 @@ class Analyzer(object):
                                 ('# Runs per Config (mean)', mean_ta_evals),
                                 ('# Runs per Config (max)', max_ta_evals),
                                 ('Total number of configuration runs', ta_evals),
-                                ('empty4', 'empty4'),
+                                ('Number of configurator runs', num_conf_runs),
                                 ])
         # Split into two columns
         overview_split = self._split_table(overview)
@@ -842,7 +844,7 @@ class Analyzer(object):
             validator: TODO description
         """
         self.logger.info("... cost over time")
-        output_fn = os.path.join(self.output_dir, "performance_over_time.png")
+        output_fn = "performance_over_time.png"
         cost_over_time = CostOverTime(scenario=self.scenario, output_dir=self.output_dir)
         return cost_over_time.plot(rh, runs, output_fn, validator)
 
@@ -874,6 +876,28 @@ class Analyzer(object):
         bokeh = footprint.plot_interactive_footprint()
         plots3d = footprint.plot3d()
         return (bokeh, plots3d)
+
+    def bohb_plot(self, bohb_result, filename='bohb_plot.png'):
+        """ Import plot from bohb """
+        try:
+            from hpbandster.core.result import extract_HB_learning_curves
+            from hpbandster.visualization import interactive_HB_plot, default_tool_tips
+        except ImportError as e:
+            raise ImportError("To analyze BOHB-data, please install hpbandster (e.g. `pip install hpbandster`)")
+        filename = os.path.join(self.output_dir, filename)
+        # Hpbandster contains also a visualization tool to plot the
+        # 'learning curves' of the sampled configurations
+        incumbent_trajectory = bohb_result.get_incumbent_trajectory()
+        lcs = bohb_result.get_learning_curves(lc_extractor=extract_HB_learning_curves)
+
+        tool_tips = default_tool_tips(bohb_result, lcs)
+        fig, ax, check, none_button, all_button = interactive_HB_plot(lcs, tool_tip_strings=tool_tips, show=False)
+        ax.set_ylim([0.1*incumbent_trajectory['losses'][-1], 1])
+        #ax.set_yscale('log')
+
+        fig.savefig(filename)
+        plt.close(fig)
+        return filename
 
 #  FEATURE ANALYSIS ################################################################
 

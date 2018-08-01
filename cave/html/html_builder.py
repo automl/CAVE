@@ -47,6 +47,8 @@ class HTMLBuilder(object):
         self.relative_content_images = os.path.join('content', 'images')
         os.makedirs(os.path.join(self.output_dn, self.relative_content_js), exist_ok=True)
         os.makedirs(os.path.join(self.output_dn, self.relative_content_images), exist_ok=True)
+        self.budget = ''
+        # todo make relative dirs again
 
         self.header_part_1 = '''
 <!DOCTYPE html>
@@ -202,7 +204,11 @@ for (i = 0; i < acc.length; i++) {
         div += "<div class=\"panel\">\n"
 
         for k, v in data_dict.items():
-            if isinstance(v, dict) and v:
+            if k.startswith('budget'):
+                self.budget = k[7:]
+            if not v:
+                return '', ''
+            elif isinstance(v, dict):
                 add_script, add_div = self.add_layer(k, v)
                 script += add_script
                 div += add_div
@@ -245,8 +251,9 @@ for (i = 0; i < acc.length; i++) {
                         "Plot</a>\n</div>\n".format(v[len(self.output_dn):].lstrip("/")))
             elif k == "bokeh":
                 # Escape path for URL (replace   and ' with   . ;)
-                path_script = os.path.join(self.relative_content_js, layer_name + '_script.js')
+                path_script = os.path.join(self.relative_content_js, layer_name + self.budget + '_script.js')
                 path_script = path_script.translate({ord(c): None for c in ' \''})
+
                 # Write script to file
                 with open(os.path.join(self.output_dn, path_script), 'w') as fn:
                     js_code = re.sub('<.*?>', '', v[0].strip())  # Remove script-tags

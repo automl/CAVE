@@ -42,12 +42,12 @@ class TestAnalyzer(unittest.TestCase):
         """ testing configuration visualization """
         # Check all time_slider-options
         (script, div), paths = self.analyzer.plot_configurator_footprint(
-                self.cave.scenario, self.cave.runs, self.cave.original_rh, num_quantiles=1)
+                self.cave.scenario, self.cave.runs, self.cave.global_original_rh, num_quantiles=1)
         self.assertEqual(len(paths), 1)  # Only the last one
 
         for slider in [True, False]:
             (script, div), paths = self.analyzer.plot_configurator_footprint(
-                self.cave.scenario, self.cave.runs, self.cave.original_rh, num_quantiles=3)
+                self.cave.scenario, self.cave.runs, self.cave.global_original_rh, num_quantiles=3)
             self.assertEqual(len(paths), 3)
             for p in paths:
                 self.assertTrue(os.path.exists(p))
@@ -64,4 +64,4 @@ class TestAnalyzer(unittest.TestCase):
 
     def test_algorithm_footprints(self):
         """ testing algorithm footprints """
-        self.analyzer.plot_algorithm_footprint(self.cave.epm_rh)
+        self.analyzer.plot_algorithm_footprint(self.cave.global_epm_rh)

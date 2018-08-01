@@ -124,7 +124,7 @@ class ParallelCoordinatesPlotter(object):
                 ids[-5:] = list(range(len(configs_to_plot) - 6, len(configs_to_plot) - 1))
                 configs_to_plot = np.array(configs_to_plot)[ids]
 
-                out_base = os.path.join(self.output_dir, "content/images/parallel_coordinates")
+                out_base = os.path.join(self.output_dir, "parallel_coordinates")
                 out_ext = "_{:s}_{:s}_".format('log_cost' if log_cost else 'linear_cost',
                                                'log_sampling' if log_sample else 'uniform_sampling') + str(len(ids)) + '.png'
                 out_fn = out_base + out_ext

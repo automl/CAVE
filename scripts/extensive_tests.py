@@ -1,6 +1,7 @@
 import sys, os
 import logging
 import numpy as np
+import shutil
 
 from smac.facade.smac_facade import SMAC
 from smac.scenario.scenario import Scenario
@@ -104,6 +105,7 @@ def print_help():
           "Start this script with one of the following arguments in a suitable python-environment (that fulfills CAVE's requirements):\n"
           "-- 'generate' will generate suitable test-cases using SMAC-optimization \n"
           "-- 'cave' will analyze the results of the generate-option using cave \n"
+          "-- 'clean' will delete previous results \n"
           "-- 'firefox' will open all reports in firefox.")
 
 if __name__ == '__main__':
@@ -129,6 +131,8 @@ if __name__ == '__main__':
         firefox = webbrowser.get('firefox')
         for url in [os.path.join(scen['output_dir'], 'CAVE_RESULT/report.html') for scen in get_scenarios()]:
             firefox.open_new_tab(url)
+    elif sys.argv[1] == 'clean':
+        shutil.rmtree('test/general_example/results')
     else:
         logging.error("%s not an option.", sys.argv[1])
         print_help()

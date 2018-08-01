@@ -3,6 +3,7 @@ import numpy as np
 
 from ConfigSpace.configuration_space import Configuration
 from smac.runhistory.runhistory import RunHistory, RunKey
+from smac.optimizer.objective import average_cost
 
 # TODO Possibly inconsistent: median over timeouts is timeout, but mean over
 # costs is not. Possible?
@@ -119,6 +120,12 @@ def scenario_sanity_check(s, logger):
         raise ValueError("Detected train- and test-instances, but only train-features. Either\n  (a) remove train-"
                          "features\n  (b) add test-features or\n  (c) remove test-instances.")
 
+def combine_runhistories(rhs):
+    """Combine list of given runhistories"""
+    combi_rh = RunHistory(average_cost)
+    for rh in rhs:
+        combi_rh.update(rh)
+    return combi_rh
 
 class NotApplicableError(Exception):
     """Exception indicating that this analysis-method cannot be performed."""
