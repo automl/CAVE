@@ -194,6 +194,9 @@ class CAVE(object):
         self.incumbent = self.best_run.solver.incumbent
 
     def _init_helper_no_budgets(self):
+        """No budgets means using global, aggregated runhistories to analyze the Configurator's behaviour.
+        Also it creates an EPM using all available information, since all runs are "equal".
+        """
         self.global_original_rh = RunHistory(average_cost)
         self.global_validated_rh = RunHistory(average_cost)
         self.global_epm_rh = RunHistory(average_cost)# Save all relevant SMAC-runs in a list
@@ -225,8 +228,16 @@ class CAVE(object):
         self.logger.debug("Overall best run: %s, with incumbent: %s", self.best_run.folder, self.incumbent)
 
     def _init_pimp_and_validator(self, rh, alternative_output_dir=None):
-        # Create ParameterImportance-object and use it's trained model for  validation and further predictions
-        # We pass validated runhistory, so that the returned model will be based on as much information as possible
+        """Create ParameterImportance-object and use it's trained model for  validation and further predictions
+        We pass validated runhistory, so that the returned model will be based on as much information as possible
+
+        Parameters
+        ----------
+        rh: RunHistory
+            runhistory used to build EPM
+        alternative_output_dir: str
+            e.g. for budgets we want pimp to use an alternative output-dir (subfolders per budget)
+        """
         self.logger.debug("Using '%s' as output for pimp", alternative_output_dir if alternative_output_dir else
                 self.output_dir)
         self.pimp = Importance(scenario=copy.deepcopy(self.scenario),
@@ -353,6 +364,10 @@ class CAVE(object):
             self.website[h] = OrderedDict()
 
         if self.use_budgets:
+            # The individual configurator runs are not directory comparable and cannot be aggregated.
+            # Nevertheless they need to be combined in one comprehensive report and some metrics are to be compared over
+            # the individual runs.
+
             # if self.file_format == 'BOHB':
             #     self.website["BOHB Visualization"] = {"figure" : [self.analyzer.bohb_plot(self.bohb_result)]}
 
@@ -373,8 +388,10 @@ class CAVE(object):
                 # Train epm and stuff
                 self._init_pimp_and_validator(run.combined_runhistory, alternative_output_dir=sub_output_dir)
                 self.validate_default_and_incumbents(self.validation_method, run.ta_exec_dir)
-                self.pimp.incumbent = self.incumbent = run.incumbent
+                self.pimp.incumbent = run.incumbent
+                self.incumbent = run.incumbent
                 run.epm_rh = self.global_epm_rh
+                self.best_run = run
                 # Perform analysis
                 overview = self.analyzer.create_overview_table(self.global_original_rh,
                                                                run, len(self.runs), self.default, self.incumbent)
@@ -492,7 +509,8 @@ class CAVE(object):
             self.build_website()
 
         if cfp:  # Configurator Footprint
-            res = self.analyzer.plot_configurator_footprint(self.scenario, self.runs, self.global_original_rh,
+            runs = [self.best_run] if self.use_budgets else self.runs
+            res = self.analyzer.plot_configurator_footprint(self.scenario, runs, self.global_original_rh,
                                                             max_confs=cfp_max_plot,
                                                             time_slider=(cfp_time_slider and
                                                                          (cfp_number_quantiles > 1)),

@@ -821,7 +821,7 @@ class Analyzer(object):
         try:
             return cfp.run()
         except MemoryError as err:
-            self.logger.error(err)
+            self.logger.exception(err)
             raise MemoryError("Memory Error occured in configurator footprint. "
                               "You may want to reduce the number of plotted "
                               "configs (using the '--cfp_max_plot'-argument)")
