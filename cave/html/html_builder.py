@@ -19,7 +19,9 @@ class HTMLBuilder(object):
 
     def __init__(self,
                  output_dn: str,
-                 scenario_name: str):
+                 scenario_name: str,
+                 logo_fn: str,
+                 logo_custom: bool=False):
         '''
         Constructor
 
@@ -29,16 +31,24 @@ class HTMLBuilder(object):
             output directory name
         scenario_name:str
             name of scenario
+        logo_fn: str
+            path to the logo of the configurator
+        logo_custom: bool
+            if true, logo ist treated as external logo that needs to be copied
         '''
         self.logger = logging.getLogger("HTMLBuilder")
 
         self.own_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
+        self.logo_fn = logo_fn
+        self.logo_custom = logo_custom
 
         self.output_dn = output_dn
         self.relative_content_js = os.path.join('content', 'js')
         self.relative_content_images = os.path.join('content', 'images')
         os.makedirs(os.path.join(self.output_dn, self.relative_content_js), exist_ok=True)
         os.makedirs(os.path.join(self.output_dn, self.relative_content_images), exist_ok=True)
+        self.budget = ''
+        # todo make relative dirs again
 
         self.header_part_1 = '''
 <!DOCTYPE html>
@@ -72,13 +82,13 @@ class HTMLBuilder(object):
 <script src="html/js/lightbox-plus-jquery.min.js"></script>
 <header>
     <div class='l-wrapper'>
-        <img class='logo logo--smac3' src="html/images/SMAC3.png" />
+        <img class='logo logo--configurator' src="html/images/{}" />
         <img class='logo logo--ml' src="html/images/ml4aad.png" />
     </div>
 </header>
 <div class='l-wrapper'>
 <h1>CAVE</h1>
-'''
+'''.format(self.logo_fn if not self.logo_custom else 'custom_logo.png')
 
         self.footer = '''
 </div>
@@ -149,6 +159,12 @@ for (i = 0; i < acc.length; i++) {
                                     os.path.join(self.output_dn, "html", sf))
             except OSError:
                 print_exc()
+        if self.logo_custom:
+            original_path = self.logo_fn
+            self.logo_fn = os.path.join(self.output_dn, "html", 'images', 'custom_logo.png')
+            self.logger.debug("Attempting to copy %s to %s", original_path, self.logo_fn)
+            shutil.copyfile(original_path, self.logo_fn)
+            self.logo_custom = False
 
     def add_layer(self, layer_name, data_dict: OrderedDict):
         '''
@@ -188,7 +204,11 @@ for (i = 0; i < acc.length; i++) {
         div += "<div class=\"panel\">\n"
 
         for k, v in data_dict.items():
-            if isinstance(v, dict) and v:
+            if k.startswith('budget'):
+                self.budget = k[7:]
+            if not v:
+                return '', ''
+            elif isinstance(v, dict):
                 add_script, add_div = self.add_layer(k, v)
                 script += add_script
                 div += add_div
@@ -231,8 +251,9 @@ for (i = 0; i < acc.length; i++) {
                         "Plot</a>\n</div>\n".format(v[len(self.output_dn):].lstrip("/")))
             elif k == "bokeh":
                 # Escape path for URL (replace   and ' with   . ;)
-                path_script = os.path.join(self.relative_content_js, layer_name + '_script.js')
+                path_script = os.path.join(self.relative_content_js, layer_name + self.budget + '_script.js')
                 path_script = path_script.translate({ord(c): None for c in ' \''})
+
                 # Write script to file
                 with open(os.path.join(self.output_dn, path_script), 'w') as fn:
                     js_code = re.sub('<.*?>', '', v[0].strip())  # Remove script-tags

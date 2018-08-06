@@ -232,7 +232,7 @@ class ConfiguratorFootprint(object):
                 dist /= depth
                 dists[i, j] = np.sum(dist)
                 dists[j, i] = np.sum(dist)
-            if i % (n_confs // 5) == 0:
+            if 5 < n_confs and i % (n_confs // 5) == 0:
                 self.logger.debug("%.2f%% of all distances calculated...", 100 * i / n_confs)
 
         return dists
@@ -368,6 +368,12 @@ class ConfiguratorFootprint(object):
             if inc not in conf_list:
                 conf_matrix.append(inc.get_array())
                 conf_list.append(inc)
+
+        # Sanity check, number quantiles must be smaller than the number of configs
+        if self.num_quantiles >= len(conf_list):
+            self.logger.info("Number of quantiles %d bigger than number of configs %d, reducing to %d quantiles",
+                              self.num_quantiles, len(conf_list), len(conf_list) - 1)
+            self.num_quantiles = len(conf_list) - 1
 
         # We want to visualize the development over time, so we take
         # screenshots of the number of runs per config at different points
@@ -651,6 +657,8 @@ class ConfiguratorFootprint(object):
         num_bins = 20  # How fine-grained the size-ordering should be
         min_size, max_size = min(source.data['size']), max(source.data['size'])
         step_size = (max_size - min_size) / num_bins
+        if step_size == 0:
+            step_size = 1
         zorder = [str(int((s - min_size) / step_size)) for s in source.data['size']]
         source.add(zorder, 'zorder')  # string, so we can apply group filter
 
@@ -785,7 +793,7 @@ for (i = 0; i < lab_len; i++) {
             self.logger.debug("Plotting quantile %d!", idx)
             scatter_glyph_render_groups.append(self._plot_scatter(p, source, views, markers))
             if self.output_dir:
-                file_path = "content/images/cfp_over_time/configurator_footprint" + str(idx) + ".png"
+                file_path = "cfp_over_time/configurator_footprint" + str(idx) + ".png"
                 over_time_paths.append(os.path.join(self.output_dir, file_path))
                 self.logger.debug("Saving plot to %s", over_time_paths[-1])
                 export_bokeh(p, over_time_paths[-1], self.logger)

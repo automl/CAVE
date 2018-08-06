@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import sys
 from argparse import ArgumentParser, SUPPRESS
 import logging
 import glob
@@ -12,6 +13,7 @@ import matplotlib
 matplotlib.use('agg')  # noqa
 
 from pimp.utils.io.cmd_reader import SmartArgsDefHelpFormatter
+
 from cave.cavefacade import CAVE
 from cave.__version__ import __version__ as v
 
@@ -94,7 +96,7 @@ class CaveCLI(object):
         opt_opts.add_argument("--file_format",
                               default='SMAC3',
                               help="specify the format of the configurator-files. ",
-                              choices=['SMAC2', 'SMAC3', 'CSV'],
+                              choices=['SMAC2', 'SMAC3', 'CSV', 'BOHB'],
                               type=str.upper)
         opt_opts.add_argument("--validation_format",
                               default='NONE',
@@ -184,7 +186,7 @@ class CaveCLI(object):
                               version='%(prog)s ' + str(v), help="show program's version number and exit.")
         spe_opts.add_argument('-h', '--help', action="help", help="show this help message and exit")
 
-        args_, misc = parser.parse_known_args()
+        args_= parser.parse_args(sys.argv[1:])
 
         # Expand configs
         if "all" in args_.parameter_importance:
@@ -250,6 +252,8 @@ class CaveCLI(object):
         logging.getLogger().addHandler(fh)
         logging.debug("Running CAVE version %s", v)
 
+        logging.getLogger().debug("CAVE is called with arguments: " + str(args_))
+
         # Configuration results to be analyzed
         folders = []
         for f in args_.folders:
@@ -265,29 +269,58 @@ class CaveCLI(object):
             else:
                 ta_exec_dir.append(t)
 
+        tabular_analysis = args_.tabular_analysis
+        file_format = args_.file_format
+        validation_format = args_.validation_format
+        validation = args_.validation
+        pimp_max_samples = args_.pimp_max_samples
+        fanova_pairwise = args_.fanova_pairwise
+        seed = args_.seed
+        ecdf = args_.ecdf
+        scatter_plots = args_.scatter_plots
+        cfp = args_.cfp
+        cfp_time_slider = args_.cfp_time_slider
+        cfp_max_plot = args_.cfp_max_plot
+        cfp_number_quantiles = args_.cfp_number_quantiles
+        parallel_coordinates = args_.parallel_coordinates
+        cost_over_time = args_.cost_over_time
+        algorithm_footprints = args_.algorithm_footprints
+        pimp_sort_table_by = args_.pimp_sort_table_by
+
+        if file_format == 'BOHB':
+            logging.getLogger().info("File format is BOHB, performing special nested analysis for budget-based optimizer!")
+            validation_format = 'NONE'
+            validation_method = 'epm'
+            cdf = False
+            scatter = False
+            algo_footprint = False
+            param_importance = param_imp
+            feature_analysis = []
+
         cave = CAVE(folders,
-                    args_.output,
+                    output_dir,
                     ta_exec_dir,
-                    file_format=args_.file_format,
-                    validation_format=args_.validation_format,
-                    validation_method=args_.validation,
-                    pimp_max_samples=args_.pimp_max_samples,
-                    fanova_pairwise=args_.fanova_pairwise,
-                    seed=args_.seed)
+                    file_format=file_format,
+                    validation_format=validation_format,
+                    validation_method=validation,
+                    pimp_max_samples=pimp_max_samples,
+                    fanova_pairwise=fanova_pairwise,
+                    use_budgets=file_format=='BOHB',
+                    seed=seed)
 
         # Analyze
-        cave.analyze(performance=args_.tabular_analysis,
-                     cdf=args_.ecdf,
-                     scatter=args_.scatter_plots,
-                     cfp=args_.cfp,
+        cave.analyze(performance=tabular_analysis,
+                     cdf=ecdf,
+                     scatter=scatter_plots,
+                     cfp=cfp,
                      cfp_time_slider=cfp_time_slider,
-                     cfp_max_plot=args_.cfp_max_plot,
-                     cfp_number_quantiles=args_.cfp_number_quantiles,
-                     parallel_coordinates=args_.parallel_coordinates,
-                     cost_over_time=args_.cost_over_time,
-                     algo_footprint=args_.algorithm_footprints,
+                     cfp_max_plot=cfp_max_plot,
+                     cfp_number_quantiles=cfp_number_quantiles,
+                     parallel_coordinates=parallel_coordinates,
+                     cost_over_time=cost_over_time,
+                     algo_footprint=algorithm_footprints,
                      param_importance=param_imp,
-                     pimp_sort_table_by=args_.pimp_sort_table_by,
+                     pimp_sort_table_by=pimp_sort_table_by,
                      feature_analysis=feature_analysis)
 
 

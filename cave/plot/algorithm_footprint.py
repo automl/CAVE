@@ -135,7 +135,7 @@ class AlgorithmFootprint(object):
         if not hasattr(self, '__algo_cost'):
             self.__algo_cost = {}  # Use function self._get_cost!! Maps algo -> {instance -> cost}
         if algorithm not in self.__algo_cost:
-            self.logger.debug("Getting cost for %s, using PAR1-score", self.algo_name[algorithm])
+            #self.logger.debug("Getting cost for %s, using PAR1-score", self.algo_name[algorithm])
             self.__algo_cost[algorithm] = get_cost_dict_for_config(self.rh, algorithm)
         if instance:
             return self.__algo_cost[algorithm][instance]
@@ -165,7 +165,7 @@ class AlgorithmFootprint(object):
                 #                  best_cost / cost)
                 if (cost == 0 or
                     (best_cost/cost >= epsilon and
-                     not cost >= self.cutoff)):
+                     (not self.cutoff or not cost >= self.cutoff))):
                     # Algorithm for instance is in threshhold epsilon and no timeout
                     label = 1
                 else:

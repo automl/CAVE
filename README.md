@@ -39,12 +39,16 @@ Some of the plots in the report are generated using [bokeh](https://bokeh.pydata
 - phatomjs-prebuilt
 
 # INSTALLATION
-Clone the repository and install requirements into your virtual environment.
+You can install CAVE from pip:
+```
+pip install cave
+```
+or clone the repository and install requirements into your virtual environment.
 ```
 git clone https://github.com/automl/CAVE.git && cd CAVE
 pip install -r requirements.txt
 ```
-To have some `.png`s automatically available, you also need phantomjs.
+To have some `.png`s automagically available, you also need phantomjs.
 ```
 npm install phantomjs-prebuilt
 ```
@@ -60,34 +64,48 @@ Commandline arguments:
 
 Optional:
 - `--output`: where to save the CAVE-output
+- `--file_format`: of results to be analyzed, choose from [SMAC3](https://github.com/automl/SMAC3), [SMAC2](https://www.cs.ubc.ca/labs/beta/Projects/SMAC), [CSV](https://automl.github.io/CAVE/stable/quickstart.html#csv) or [BOHB](https://github.com/automl/HpBandSter)
+- `--validation_format`: of (optional) validation data (to enhance epm-quality where appropriate), choose from [SMAC3](https://github.com/automl/SMAC3), [SMAC2](https://www.cs.ubc.ca/labs/beta/Projects/SMAC), [CSV](https://automl.github.io/CAVE/stable/quickstart.html#csv) or NONE
 - `--ta_exec_dir`: target algorithm execution directory, this should be a path to
   the directory from which SMAC was run initially. used to find instance-files and
   if necessary execute the `algo`-parameter of the SMAC-scenario (DEFAULT:
   current working directory)
-- `--param_importance`: calculating parameter importance is expensive, so you can
+- `--parameter_importance`: calculating parameter importance is expensive, so you can
   specify which plots you desire: `ablation`, `forward_selection`, `fanova`
   and/or `lpi`.
   either provide a combination of those or use `all` or `none`
-- `--feat_analysis`: analysis features is expensive, so you can specify which
+- `--feature_analysis`: analysis features is expensive, so you can specify which
   algorithm to run: `box_violin`, `clustering`, `importance` and/or `feature_cdf`.
   either provide a combination of those or use `all` or `none`
 - `--no_tabular_analysis`: toggles the tabular analysis
 - `--no_ecdf`, `--no_scatter_plots`: toggle ecdf- and scatter-plots
 - `--no_cost_over_time`: toggles the cost-over-time plot
 - `--no_parallel_coordinates`: toggles the parallel-coordinates plot
-- `--no_conf_foot`: toggles the configurator-footprints
+- `--no_configurator_footprint`: toggles the configurator-footprints
 - `--no_algorithm_footprints`: toggles the algorithm-footprints
 - `--cfp_time_slider`: how to display the over-time development of the configurator footprint, choose from `off` (which yields only the final interactive plot), `static` (which yields a number of `.png`s to click through), `online` (which generates a time-slider-widget - might be slow interaction on big data) and `prerender` (which also generates time-slider, but large file with low interaction time)
 - `--cfp_number_quantiles`: if time-slider for configurator footprints is not `off`, determines the number of different quantiles to look at
 
-For further information on how to use CAVE, see:
-`python scripts/cave.py -h`
+For further information on  to use CAVE, see:
+`python scripts/cave.py -h
 
 # EXAMPLE
 You can run the spear-qcp example like this:
 ```
-python scripts/cave.py --folders examples/smac3/example_output/* --verbose DEBUG --ta_exec examples/smac3/ --output CAVE_results/
+cave --folders examples/smac3/example_output/* --ta_exec examples/smac3/ --output CAVE_results/
 ```
 This will analyze the results located in `examples/smac3` in the dirs `example_output/run_1` and `example_output/run_2`.
 The report is located in `CAVE_results/report.html`.
 `--ta_exec` corresponds to the folder from which the optimizer was originally executed (used to find the necessary files for loading the `scenario`).
+
+# USAGE WITH BOHB
+You can also use cave with Configurators that use budgets to estimate a quality of a certain algorithm (e.g. epochs in
+neural networks), a good example for this behaviour is [BOHB](https://github.com/automl/HpBandSter). To interpret BOHB's
+results, you need to install an additional dependency:
+```
+pip install hpbandster
+```
+and then you can use CAVE as usual, specifying the file_format as BOHB:
+```
+cave --folders examples/bohb --file_format BOHB --output CAVE_BOHB_results
+```

@@ -49,6 +49,10 @@ class ConfiguratorRun(SMAC):
         def get_reader(name):
             if name == 'SMAC3':
                 return SMAC3Reader(folder, ta_exec_dir)
+            elif name == 'BOHB':
+                self.logger.debug("File format is BOHB, assmuming data was converted to SMAC3-format using "
+                                  "HpBandSter2SMAC from cave.utils.converter.hpbandster2smac.")
+                return SMAC3Reader(folder, ta_exec_dir)
             elif name == 'SMAC2':
                 return SMAC2Reader(folder, ta_exec_dir)
             elif name == 'CSV':
@@ -60,11 +64,7 @@ class ConfiguratorRun(SMAC):
         self.scen = self.reader.get_scenario()
         self.original_runhistory = self.reader.get_runhistory(self.scen.cs)
         self.validated_runhistory = None
-        if validation_format:
-            self.logger.debug('Using format %s for validation', validation_format)
-            reader = get_reader(validation_format)
-            reader.scen = self.scen
-            self.validated_runhistory = reader.get_validated_runhistory(self.scen.cs)
+
         self.traj = self.reader.get_trajectory(cs=self.scen.cs)
         self.default = self.scen.cs.get_default_configuration()
         self.incumbent = self.traj[-1]['incumbent']
@@ -72,17 +72,15 @@ class ConfiguratorRun(SMAC):
         self.test_inst = self.scen.test_insts
         self._check_rh_for_inc_and_def(self.original_runhistory, 'original runhistory')
 
-        # Check validated runhistory for completeness
-        if self.validated_runhistory:
+        if validation_format:
+            self.logger.debug('Using format %s for validation', validation_format)
+            reader = get_reader(validation_format)
+            reader.scen = self.scen
+            self.validated_runhistory = reader.get_validated_runhistory(self.scen.cs)
             self._check_rh_for_inc_and_def(self.validated_runhistory, 'validated runhistory')
             self.logger.info("Found validated runhistory for \"%s\" and using "
                              "it for evaluation. #configs in validated rh: %d",
                              self.folder, len(self.validated_runhistory.config_ids))
-        elif self.validated_runhistory:
-            self.logger.warning("Found validated runhistory, but it's not "
-                                "evaluated for default and incumbent, so "
-                                "it's disregarded.")
-            self.validated_runhistory = False
 
         self.combined_runhistory = RunHistory(average_cost)
         self.combined_runhistory.update(self.original_runhistory,
@@ -90,6 +88,9 @@ class ConfiguratorRun(SMAC):
         if self.validated_runhistory:
             self.combined_runhistory.update(self.validated_runhistory,
                                             origin=DataOrigin.EXTERNAL_SAME_INSTANCES)
+
+        self.epm_runhistory = RunHistory(average_cost)
+        self.epm_runhistory.update(self.combined_runhistory)
 
         # Initialize SMAC-object
         super().__init__(scenario=self.scen, runhistory=self.combined_runhistory)  # restore_incumbent=incumbent)

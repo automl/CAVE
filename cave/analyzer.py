@@ -6,6 +6,7 @@ import operator
 
 import numpy as np
 from pandas import DataFrame
+import matplotlib.pyplot as plt
 
 from smac.configspace import Configuration
 from smac.runhistory.runhistory import RunHistory
@@ -18,7 +19,7 @@ from cave.plot.configurator_footprint import ConfiguratorFootprint
 from cave.plot.scatter import plot_scatter_plot
 from cave.plot.parallel_coordinates import ParallelCoordinatesPlotter
 from cave.reader.configurator_run import ConfiguratorRun
-from cave.utils.helpers import get_cost_dict_for_config, get_timeout, NotApplicableError, MissingInstancesError
+from cave.utils.helpers import get_cost_dict_for_config, get_timeout, combine_runhistories, NotApplicableError, MissingInstancesError
 from cave.utils.timing import timing
 from cave.utils.statistical_tests import paired_permutation, paired_t_student
 from cave.plot.cost_over_time import CostOverTime
@@ -82,33 +83,32 @@ class Analyzer(object):
         self.fanova_pairwise = fanova_pairwise
 
     @timing
-    def get_oracle(self, runhistories, instances, validated_rh):
+    def get_oracle(self, instances, rh):
         """Estimation of oracle performance. Collects best performance seen for each instance in any run.
 
         Parameters
         ----------
-        runhistories: List[RunHistory]
-            list of runhistories
         instances: List[str]
             list of instances in question
-        validated_rh: RunHistory
-            runhistory
+        rh: RunHistory or List[RunHistory]
+            runhistory or list of runhistories (will be combined)
 
         Results
         -------
         oracle: dict[str->float]
-            best seen performance per instance
+            best seen performance per instance {inst : performance}
         """
+        if isinstance(rh, list):
+            rh = combine_runhistories(rh)
         self.logger.debug("Calculating oracle performance")
         oracle = {}
-        for rh in runhistories:
-            for c in rh.get_all_configs():
-                costs = get_cost_dict_for_config(validated_rh, c)
-                for i in costs.keys():
-                    if i not in oracle:
-                        oracle[i] = costs[i]
-                    elif oracle[i] > costs[i]:
-                        oracle[i] = costs[i]
+        for c in rh.get_all_configs():
+            costs = get_cost_dict_for_config(rh, c)
+            for i in costs.keys():
+                if i not in oracle:
+                    oracle[i] = costs[i]
+                elif oracle[i] > costs[i]:
+                    oracle[i] = costs[i]
         return oracle
 
     def timeouts_to_tuple(self, timeouts):
@@ -207,7 +207,7 @@ class Analyzer(object):
         return p
 
 #  TABLES #####################################################################
-    def create_overview_table(self, orig_rh, best_run):
+    def create_overview_table(self, orig_rh, best_run, num_runs, default, incumbent):
         """ Create overview-table.
 
         Parameters
@@ -216,6 +216,8 @@ class Analyzer(object):
             runhistory to take stats from
         best_run: ConfiguratorRun
             configurator run object with best incumbent
+        num_runs: int
+            number of configurator runs
 
         Returns
         -------
@@ -225,10 +227,11 @@ class Analyzer(object):
         # General
         all_confs = best_run.original_runhistory.get_all_configs()
         num_configs = len(all_confs)
+        num_conf_runs = num_runs
         ta_runtime = np.sum([orig_rh.get_cost(conf) for conf in all_confs])
         ta_evals = [len(orig_rh.get_runs_for_config(conf)) for conf in all_confs]
-        ta_evals_d = len(orig_rh.get_runs_for_config(self.default))
-        ta_evals_i = len(orig_rh.get_runs_for_config(self.incumbent))
+        ta_evals_d = len(orig_rh.get_runs_for_config(default))
+        ta_evals_i = len(orig_rh.get_runs_for_config(incumbent))
         min_ta_evals, max_ta_evals, = np.min(ta_evals), np.max(ta_evals)
         mean_ta_evals, ta_evals = np.mean(ta_evals), np.sum(ta_evals)
         num_changed_params = len([p for p in self.scenario.cs.get_hyperparameter_names()
@@ -238,11 +241,10 @@ class Analyzer(object):
         num_test = len([i for i in self.scenario.test_insts if i])
         # Features
         num_feats = self.scenario.n_features if self.scenario.feature_dict else 0
+        num_dup_feats = 0
         if self.scenario.feature_dict:
             dup_feats = DataFrame(self.scenario.feature_array)
             num_dup_feats = len(dup_feats[dup_feats.duplicated()])  # only contains train instances
-        else:
-            num_dup_feats = 0
 
         overview = OrderedDict([('Run with best incumbent', os.path.basename(best_run.folder)),
                                 # Constants for scenario
@@ -269,7 +271,7 @@ class Analyzer(object):
                                 ('# Runs per Config (mean)', mean_ta_evals),
                                 ('# Runs per Config (max)', max_ta_evals),
                                 ('Total number of configuration runs', ta_evals),
-                                ('empty4', 'empty4'),
+                                ('Number of configurator runs', num_conf_runs),
                                 ])
         # Split into two columns
         overview_split = self._split_table(overview)
@@ -312,32 +314,44 @@ class Analyzer(object):
         p_value_par1 = "%.5f" % p_value_par1 if np.isfinite(p_value_par1) else 'N/A'
 
         dec_place = 3
+
+        metrics = []
+        if self.scenario.run_obj == 'runtime':
+            metrics.append('PAR10')
+        metrics.append('PAR1')
+        if self.scenario.cutoff:
+            metrics.append('Timeouts')
+
         if len(self.scenario.train_insts) > 1 and len(self.scenario.test_insts) > 1:
             # Distinction between train and test
             # Create table
-            array = np.array([[round(def_par10[0], dec_place) if np.isfinite(def_par10[0]) else 'N/A',
+            array = []
+            if 'PAR10' in metrics:
+                array.append([round(def_par10[0], dec_place) if np.isfinite(def_par10[0]) else 'N/A',
                                round(inc_par10[0], dec_place) if np.isfinite(inc_par10[0]) else 'N/A',
                                round(ora_par10[0], dec_place) if np.isfinite(ora_par10[0]) else 'N/A',
                                round(def_par10[1], dec_place) if np.isfinite(def_par10[1]) else 'N/A',
                                round(inc_par10[1], dec_place) if np.isfinite(inc_par10[1]) else 'N/A',
                                round(ora_par10[1], dec_place) if np.isfinite(ora_par10[1]) else 'N/A',
-                               p_value_par10],
-                              [round(def_par1[0], dec_place) if np.isfinite(def_par1[0]) else 'N/A',
+                               p_value_par10])
+            array.append([round(def_par1[0], dec_place) if np.isfinite(def_par1[0]) else 'N/A',
                                round(inc_par1[0], dec_place) if np.isfinite(inc_par1[0]) else 'N/A',
                                round(ora_par1[0], dec_place) if np.isfinite(ora_par1[0]) else 'N/A',
                                round(def_par1[1], dec_place) if np.isfinite(def_par1[1]) else 'N/A',
                                round(inc_par1[1], dec_place) if np.isfinite(inc_par1[1]) else 'N/A',
                                round(ora_par1[1], dec_place) if np.isfinite(ora_par1[1]) else 'N/A',
-                               p_value_par1],
-                              ["{}/{}".format(def_timeouts_tuple[0][0], def_timeouts_tuple[0][1]),
+                               p_value_par1])
+            if 'Timeouts' in metrics:
+                array.append(["{}/{}".format(def_timeouts_tuple[0][0], def_timeouts_tuple[0][1]),
                                "{}/{}".format(inc_timeouts_tuple[0][0], inc_timeouts_tuple[0][1]),
                                "{}/{}".format(ora_timeout[0][0], ora_timeout[0][1]),
                                "{}/{}".format(def_timeouts_tuple[1][0], def_timeouts_tuple[1][1]),
                                "{}/{}".format(inc_timeouts_tuple[1][0], inc_timeouts_tuple[1][1]),
                                "{}/{}".format(ora_timeout[1][0], ora_timeout[1][1]),
                                p_value_timeouts
-                               ]])
-            df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
+                               ])
+            array = np.array(array)
+            df = DataFrame(data=array, index=metrics,
                            columns=['Default', 'Incumbent', 'Oracle', 'Default', 'Incumbent', 'Oracle', 'p-value'])
             table = df.to_html()
             # Insert two-column-header
@@ -365,19 +379,23 @@ class Analyzer(object):
             table = new_table + table
         else:
             # No distinction between train and test
-            array = np.array([[round(def_par10, dec_place) if np.isfinite(def_par10) else 'N/A',
+            array = []
+            if 'PAR10' in metrics:
+                array.append([round(def_par10, dec_place) if np.isfinite(def_par10) else 'N/A',
                                round(inc_par10, dec_place) if np.isfinite(inc_par10) else 'N/A',
                                round(ora_par10, dec_place) if np.isfinite(ora_par10) else 'N/A',
-                               p_value_par10],
-                              [round(def_par1, dec_place) if np.isfinite(def_par1) else 'N/A',
+                               p_value_par10])
+            array.append([round(def_par1, dec_place) if np.isfinite(def_par1) else 'N/A',
                                round(inc_par1, dec_place) if np.isfinite(inc_par1) else 'N/A',
                                round(ora_par1, dec_place) if np.isfinite(ora_par1) else 'N/A',
-                               p_value_par1],
-                              ["{}/{}".format(def_timeouts_tuple[0], def_timeouts_tuple[1]),
+                               p_value_par1])
+            if 'Timeouts' in metrics:
+                array.append(["{}/{}".format(def_timeouts_tuple[0], def_timeouts_tuple[1]),
                                "{}/{}".format(inc_timeouts_tuple[0], inc_timeouts_tuple[1]),
                                "{}/{}".format(ora_timeout[0], ora_timeout[1]),
-                               p_value_timeouts]])
-            df = DataFrame(data=array, index=['PAR10', 'PAR1', 'Timeouts'],
+                               p_value_timeouts])
+            array = np.array(array)
+            df = DataFrame(data=array, index=metrics,
                            columns=['Default', 'Incumbent', 'Oracle', 'p-value'])
             table = df.to_html()
         return table
@@ -430,59 +448,66 @@ class Analyzer(object):
         plots: Dict[str: st]
             dictionary mapping single parameters to their plots
         """
+        def parse_pairwise(p):
+            """parse pimp's way of having pairwise parameters as key as str and return list of individuals"""
+            res = [tmp.strip('\' ') for tmp in p.strip('[]').split(',')]
+            return res
+
         pimp = self.parameter_importance(pimp, "fanova", incumbent, self.output_dir)
-        parameter_imp = pimp.evaluator.evaluated_parameter_importance
+        parameter_imp = {k: v * 100 for k, v in pimp.evaluator.evaluated_parameter_importance.items()}
+        parameter_imp_std = {}
+        if hasattr(pimp.evaluator, 'evaluated_parameter_importance_uncertainty'):
+            parameter_imp_std = {k: v * 100 for k, v in pimp.evaluator.evaluated_parameter_importance_uncertainty.items()}
+        for k in parameter_imp.keys():
+            self.logger.debug("fanova-importance for %s: mean (over trees): %f, std: %s", k, parameter_imp[k],
+                              str(parameter_imp_std[k]) if parameter_imp_std else 'N/A')
+
         # Split single and pairwise (pairwise are string: "['p1','p2']")
-        pairwise_imp = {k: v for k, v in parameter_imp.items() if k.startswith("[")}
-        for k in pairwise_imp.keys():
-            parameter_imp.pop(k)
+        single_imp = {k : v for k, v in parameter_imp.items() if not k.startswith('[') and v > marginal_threshold}
+        pairwise_imp = {k : v for k, v in parameter_imp.items() if k.startswith('[') and v > marginal_threshold}
 
         # Set internal parameter importance for further analysis (such as
         #   parallel coordinates)
-        self.logger.debug("Fanova importance: %s", str(parameter_imp))
-        self.param_imp['fanova'] = parameter_imp
+        self.param_imp['fanova'] = single_imp
 
-        # Dicts to lists of tuples, sorted descending after importance and only
-        #   including marginals > 0.05
-        parameter_imp = [(k, v * 100) for k, v in sorted(parameter_imp.items(),
-                                                         key=operator.itemgetter(1), reverse=True) if v > 0.05]
-        pairwise_imp = [(k, v * 100) for k, v in sorted(pairwise_imp.items(),
-                                                        key=operator.itemgetter(1), reverse=True) if v > 0.05]
+        # Dicts to lists of tuples, sorted descending after importance
+        single_imp = OrderedDict(sorted(single_imp.items(), key=operator.itemgetter(1), reverse=True))
+        pairwise_imp = OrderedDict(sorted(pairwise_imp.items(), key=operator.itemgetter(1), reverse=True))
+
         # Create table
         table = []
-        if len(parameter_imp) > 0:
+        if len(single_imp) > 0:
             table.extend([(20*"-"+" Single importance: "+20*"-", 20*"-")])
-            table.extend(parameter_imp)
+            for k, v in single_imp.items():
+                value = str(round(v, 4))
+                if parameter_imp_std:
+                    value += " +/- " + str(round(parameter_imp_std[k], 4))
+                table.append((k, value))
         if len(pairwise_imp) > 0:
             table.extend([(20*"-"+" Pairwise importance: "+20*"-", 20*"-")])
-            # TODO assuming (current) form of "['param1','param2']", but not
-            #       expecting it stays this way (on PIMPs side)
-            table.extend([(' & '.join([tmp.strip('\' ') for tmp in k.strip('[]').split(',')]), v)
-                          for k, v in pairwise_imp])
+            for k, v in pairwise_imp.items():
+                name = ' & '.join(parse_pairwise(k))
+                value = str(round(v, 4))
+                if parameter_imp_std:
+                    value += " +/- " + str(round(parameter_imp_std[k], 4))
+                table.append((name, value))
 
         keys, fanova_table = [k[0] for k in table], [k[1:] for k in table]
         df = DataFrame(data=fanova_table, index=keys)
         fanova_table = df.to_html(escape=False, header=False, index=True, justify='left')
 
-        single_plots = {}
-        for p, v in parameter_imp:
-            single_plots[p] = os.path.join(self.output_dir, "fanova", p+'.png')
-        # Check for pairwise plots
+        single_plots = {p : os.path.join(self.output_dir, "fanova", p + '.png') for p in single_imp.keys()}
         # Right now no way to access paths of the plots -> file issue
-        pairwise_plots = {}
-        for p, v in pairwise_imp:
-            p_new = p.replace('\'', '')
-            potential_path = os.path.join(self.output_dir, 'fanova', p_new + '.png')
-            self.logger.debug("Check for %s", potential_path)
-            if os.path.exists(potential_path):
-                pairwise_plots[p] = potential_path
+        pairwise_plots = {" & ".join(parse_pairwise(k)) : os.path.join(self.output_dir, 'fanova', '_'.join(parse_pairwise(k)) + '.png') for p in pairwise_imp.keys()}
+        pairwise_plots = {p : path for p, path in pairwise_plots.items() if os.path.exists(path)}
+
         return fanova_table, single_plots, pairwise_plots
 
     def local_epm_plots(self, pimp):
         plots = OrderedDict([])
         self.parameter_importance(pimp, "lpi", self.incumbent, self.output_dir)
         for p, i in [(k, v) for k, v in sorted(self.param_imp['lpi'].items(),
-                     key=operator.itemgetter(1), reverse=True) if v > 0.05]:
+                     key=operator.itemgetter(1), reverse=True)]:
             plots[p] = os.path.join(self.output_dir, 'lpi', p + '.png')
         return plots
 
@@ -540,9 +565,13 @@ class Analyzer(object):
             for e in self.evaluators:
                 if p in e.evaluated_parameter_importance:
                     value_percent = format(e.evaluated_parameter_importance[p] * 100, '.2f')
-                    values_for_p.append(value_percent)
                     if float(value_percent) > threshold:
                         add_parameter = True
+                    # Add uncertainty, if available
+                    if (hasattr(e, 'evaluated_parameter_importance_uncertainty') and
+                        p in e.evaluated_parameter_importance_uncertainty):
+                        value_percent += ' +/- ' + format(e.evaluated_parameter_importance_uncertainty[p] * 100, '.2f')
+                    values_for_p.append(value_percent)
                 else:
                     values_for_p.append('-')
             if add_parameter:
@@ -573,7 +602,8 @@ class Analyzer(object):
 
 #  PLOTS #########################################################################
 
-    def plot_parallel_coordinates(self, original_rh, validated_rh, validator, n_param=10, n_configs=500):
+    def plot_parallel_coordinates(self, original_rh, validated_rh, validator, n_param=10, n_configs=500,
+                                  max_runs_epm=300000):
         """ Plot parallel coordinates (visualize higher dimensions), here used
         to visualize pcs. This function prepares the data from a SMAC-related
         format (using runhistories and parameters) to a more general format
@@ -596,7 +626,10 @@ class Analyzer(object):
         n_param: int
             parameters to be plotted
         n_configs: int
-            max # configs
+            max # configs to be plotted
+        max_runs_epm: int
+            maximum number of total runs that should be predicted using epm. the higher this value is, the better the
+            predictions (probably), however high numbers are likely to lead to MemoryErrors
 
         Returns
         -------
@@ -609,28 +642,37 @@ class Analyzer(object):
         if self.param_imp:
             # Use the first applied parameter importance analysis to choose
             method, importance = list(self.param_imp.items())[0]
-            self.logger.debug("Choosing used parameters in parallel coordinates "
+            self.logger.debug("Choosing visualized parameters in parallel coordinates "
                               "according to parameter importance method %s" % method)
             n_param = min(n_param, max(3, len([x for x in importance.values() if x > 0.05])))
             # Some importance methods add "--source--" or similar to the parameter names -> filter them in next line
             params = [p for p in importance.keys() if p in self.scenario.cs.get_hyperparameter_names()][:n_param]
         else:
-            # what if no parameter importance has been performed?
-            # plot all? random subset? -> atm: random
-            self.logger.info("No parameter importance performed. Plotting random "
-                             "parameters in parallel coordinates plot.")
+            self.logger.info("No parameter importance performed. Plotting random parameters in parallel coordinates.")
             params = list(self.default.keys())[:n_param]
 
         self.logger.info("    plotting %s parameters for (max) %s configurations",
                          len(params), n_configs)
 
+        # Reduce to feasible number of configurations
         all_configs = original_rh.get_all_configs()
+        max_configs = int(max_runs_epm / (len(self.scenario.train_insts) + len(self.scenario.test_insts)))
+        if len(all_configs) > max_configs:
+            self.logger.debug("Limiting number of configs to train epm from %d to %d (based on max runs %d) and choosing "
+                              "the ones with the most runs", len(all_configs), max_configs, max_runs_epm)
+            all_configs = sorted(all_configs, key=lambda c: len(original_rh.get_runs_for_config(c)))[:max_configs]
+            if not self.default in all_configs:
+                all_configs = [self.default] + all_configs
+            if not self.incumbent in all_configs:
+                all_configs.append(self.incumbent)
+
         if self.scenario.feature_dict:
-            epm_rh = validator.validate_epm(all_configs, 'train+test', 1, runhistory=validated_rh)
+            epm_rh = timing(validator.validate_epm)(all_configs, 'train+test', 1, runhistory=validated_rh)
+            epm_rh.update(validated_rh)
         else:
             epm_rh = validated_rh
         pcp = ParallelCoordinatesPlotter(original_rh, epm_rh, self.output_dir,
-                                         self.scenario.cs, runtime=self.scenario.run_obj == 'runtime')
+                                         self.scenario.cs, runtime=(self.scenario.run_obj == 'runtime'))
         output = pcp.plot_n_configs(n_configs, params)
         return output
 
@@ -790,7 +832,7 @@ class Analyzer(object):
         try:
             return cfp.run()
         except MemoryError as err:
-            self.logger.error(err)
+            self.logger.exception(err)
             raise MemoryError("Memory Error occured in configurator footprint. "
                               "You may want to reduce the number of plotted "
                               "configs (using the '--cfp_max_plot'-argument)")
@@ -813,7 +855,7 @@ class Analyzer(object):
             validator: TODO description
         """
         self.logger.info("... cost over time")
-        output_fn = os.path.join(self.output_dir, "performance_over_time.png")
+        output_fn = "performance_over_time.png"
         cost_over_time = CostOverTime(scenario=self.scenario, output_dir=self.output_dir)
         return cost_over_time.plot(rh, runs, output_fn, validator)
 
@@ -845,6 +887,28 @@ class Analyzer(object):
         bokeh = footprint.plot_interactive_footprint()
         plots3d = footprint.plot3d()
         return (bokeh, plots3d)
+
+    def bohb_plot(self, bohb_result, filename='bohb_plot.png'):
+        """ Import plot from bohb """
+        try:
+            from hpbandster.core.result import extract_HB_learning_curves
+            from hpbandster.visualization import interactive_HB_plot, default_tool_tips
+        except ImportError as e:
+            raise ImportError("To analyze BOHB-data, please install hpbandster (e.g. `pip install hpbandster`)")
+        filename = os.path.join(self.output_dir, filename)
+        # Hpbandster contains also a visualization tool to plot the
+        # 'learning curves' of the sampled configurations
+        incumbent_trajectory = bohb_result.get_incumbent_trajectory()
+        lcs = bohb_result.get_learning_curves(lc_extractor=extract_HB_learning_curves)
+
+        tool_tips = default_tool_tips(bohb_result, lcs)
+        fig, ax, check, none_button, all_button = interactive_HB_plot(lcs, tool_tip_strings=tool_tips, show=False)
+        ax.set_ylim([0.1*incumbent_trajectory['losses'][-1], 1])
+        #ax.set_yscale('log')
+
+        fig.savefig(filename)
+        plt.close(fig)
+        return filename
 
 #  FEATURE ANALYSIS ################################################################
 

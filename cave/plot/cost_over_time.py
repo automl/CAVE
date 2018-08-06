@@ -203,7 +203,7 @@ class CostOverTime(object):
         # Tilt tick labels
         p.xaxis.major_label_orientation = 3/4
 
-        p.legend.location = "bottom_left"
+        p.legend.location = "top_right"
 
         p.xaxis.axis_label = "time (sec)"
         p.yaxis.axis_label = label
