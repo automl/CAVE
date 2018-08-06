@@ -8,6 +8,8 @@
   in certain fashion
 * Fix critical errors in csv- and smac2- reader
 * Catch failed bokeh-exports
+* Add algorithm footprints mouseover
+* Add fanova std's when using bleeding edge of pyimp and fanova
 
 ## Interface changes
 
