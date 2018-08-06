@@ -21,7 +21,7 @@ from cave.analyzer import Analyzer
 from cave.utils.helpers import scenario_sanity_check, combine_runhistories
 from cave.utils.html_helpers import compare_configs_to_html
 from cave.utils.timing import timing
-from cave.utils.converter.hpbandster2smac import HpBandSter2SMAC
+from cave.utils.hpbandster2smac import HpBandSter2SMAC
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
