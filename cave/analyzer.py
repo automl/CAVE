@@ -448,52 +448,59 @@ class Analyzer(object):
         plots: Dict[str: st]
             dictionary mapping single parameters to their plots
         """
+        def parse_pairwise(p):
+            """parse pimp's way of having pairwise parameters as key as str and return list of individuals"""
+            res = [tmp.strip('\' ') for tmp in p.strip('[]').split(',')]
+            return res
+
         pimp = self.parameter_importance(pimp, "fanova", incumbent, self.output_dir)
-        parameter_imp = pimp.evaluator.evaluated_parameter_importance
+        parameter_imp = {k: v * 100 for k, v in pimp.evaluator.evaluated_parameter_importance.items()}
+        parameter_imp_std = {}
+        if hasattr(pimp.evaluator, 'evaluated_parameter_importance_uncertainty'):
+            parameter_imp_std = {k: v * 100 for k, v in pimp.evaluator.evaluated_parameter_importance_uncertainty.items()}
+        for k in parameter_imp.keys():
+            self.logger.debug("fanova-importance for %s: mean (over trees): %f, std: %s", k, parameter_imp[k],
+                              str(parameter_imp_std[k]) if parameter_imp_std else 'N/A')
+
         # Split single and pairwise (pairwise are string: "['p1','p2']")
-        pairwise_imp = {k: v for k, v in parameter_imp.items() if k.startswith("[")}
-        for k in pairwise_imp.keys():
-            parameter_imp.pop(k)
+        single_imp = {k : v for k, v in parameter_imp.items() if not k.startswith('[') and v > marginal_threshold}
+        pairwise_imp = {k : v for k, v in parameter_imp.items() if k.startswith('[') and v > marginal_threshold}
 
         # Set internal parameter importance for further analysis (such as
         #   parallel coordinates)
-        self.logger.debug("Fanova importance: %s", str(parameter_imp))
-        self.param_imp['fanova'] = parameter_imp
+        self.param_imp['fanova'] = single_imp
 
-        # Dicts to lists of tuples, sorted descending after importance and only
-        #   including marginals > 0.05
-        parameter_imp = [(k, v * 100) for k, v in sorted(parameter_imp.items(),
-                                                         key=operator.itemgetter(1), reverse=True) if v > 0.05]
-        pairwise_imp = [(k, v * 100) for k, v in sorted(pairwise_imp.items(),
-                                                        key=operator.itemgetter(1), reverse=True) if v > 0.05]
+        # Dicts to lists of tuples, sorted descending after importance
+        single_imp = OrderedDict(sorted(single_imp.items(), key=operator.itemgetter(1), reverse=True))
+        pairwise_imp = OrderedDict(sorted(pairwise_imp.items(), key=operator.itemgetter(1), reverse=True))
+
         # Create table
         table = []
-        if len(parameter_imp) > 0:
+        if len(single_imp) > 0:
             table.extend([(20*"-"+" Single importance: "+20*"-", 20*"-")])
-            table.extend(parameter_imp)
+            for k, v in single_imp.items():
+                value = str(round(v, 4))
+                if parameter_imp_std:
+                    value += " +/- " + str(round(parameter_imp_std[k], 4))
+                table.append((k, value))
         if len(pairwise_imp) > 0:
             table.extend([(20*"-"+" Pairwise importance: "+20*"-", 20*"-")])
-            # TODO assuming (current) form of "['param1','param2']", but not
-            #       expecting it stays this way (on PIMPs side)
-            table.extend([(' & '.join([tmp.strip('\' ') for tmp in k.strip('[]').split(',')]), v)
-                          for k, v in pairwise_imp])
+            for k, v in pairwise_imp.items():
+                name = ' & '.join(parse_pairwise(k))
+                value = str(round(v, 4))
+                if parameter_imp_std:
+                    value += " +/- " + str(round(parameter_imp_std[k], 4))
+                table.append((name, value))
 
         keys, fanova_table = [k[0] for k in table], [k[1:] for k in table]
         df = DataFrame(data=fanova_table, index=keys)
         fanova_table = df.to_html(escape=False, header=False, index=True, justify='left')
 
-        single_plots = {}
-        for p, v in parameter_imp:
-            single_plots[p] = os.path.join(self.output_dir, "fanova", p+'.png')
-        # Check for pairwise plots
+        single_plots = {p : os.path.join(self.output_dir, "fanova", p + '.png') for p in single_imp.keys()}
         # Right now no way to access paths of the plots -> file issue
-        pairwise_plots = {}
-        for p, v in pairwise_imp:
-            p_new = p.replace('\'', '')
-            potential_path = os.path.join(self.output_dir, 'fanova', p_new + '.png')
-            self.logger.debug("Check for %s", potential_path)
-            if os.path.exists(potential_path):
-                pairwise_plots[p] = potential_path
+        pairwise_plots = {" & ".join(parse_pairwise(k)) : os.path.join(self.output_dir, 'fanova', '_'.join(parse_pairwise(k)) + '.png') for p in pairwise_imp.keys()}
+        pairwise_plots = {p : path for p, path in pairwise_plots.items() if os.path.exists(path)}
+
         return fanova_table, single_plots, pairwise_plots
 
     def local_epm_plots(self, pimp):
@@ -558,9 +565,13 @@ class Analyzer(object):
             for e in self.evaluators:
                 if p in e.evaluated_parameter_importance:
                     value_percent = format(e.evaluated_parameter_importance[p] * 100, '.2f')
-                    values_for_p.append(value_percent)
                     if float(value_percent) > threshold:
                         add_parameter = True
+                    # Add uncertainty, if available
+                    if (hasattr(e, 'evaluated_parameter_importance_uncertainty') and
+                        p in e.evaluated_parameter_importance_uncertainty):
+                        value_percent += ' +/- ' + format(e.evaluated_parameter_importance_uncertainty[p] * 100, '.2f')
+                    values_for_p.append(value_percent)
                 else:
                     values_for_p.append('-')
             if add_parameter:

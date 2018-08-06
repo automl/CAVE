@@ -39,7 +39,10 @@ def export_bokeh(plot, path, logger):
                        "selenium and phantomjs-prebuilt).")
     except (SystemError) as err:
         logger.exception("Exporting failed with message \"%s\"", err)
-        logger.warning("This issue is known, but not yet solved. However it seems to appear with too few data-points.")
+        logger.warning("This issue is known, but not yet solved. However it seems to appear with too few data-points. "
+                       "Feel free to report your example on https://github.com/automl/CAVE/issues.")
+    except Exception as err:
+        logger.exception("Exporting failed with message \"%s\"", err)
 
 
 def load_csv_to_pandaframe(csv_path, logger, apply_numeric=True, delimiter=','):
