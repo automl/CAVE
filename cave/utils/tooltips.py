@@ -20,7 +20,7 @@ stands for Penalized Average Runtime. This is applicable on scenarios that
 optimize runtimes with a cutoff. Since it is not clear how long the algorithm
 would have run without the cutoff (or whether it would have terminated at all),
 the cutoff is multiplied by a factor. PAR1 does not penalize (multiplicator of
-1), while PAR10 penalized with factor 10.
+1), while PAR10 penalizes with factor 10.
 
 If there are multiple runs on the same configuration-instance pair (with
 different seeds), some resulting in timeouts and some not, the majority decides here.

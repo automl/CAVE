@@ -49,6 +49,10 @@ class ConfiguratorRun(SMAC):
         def get_reader(name):
             if name == 'SMAC3':
                 return SMAC3Reader(folder, ta_exec_dir)
+            elif name == 'BOHB':
+                self.logger.debug("File format is BOHB, assmuming data was converted to SMAC3-format using "
+                                  "HpBandSter2SMAC from cave.utils.converter.hpbandster2smac.")
+                return SMAC3Reader(folder, ta_exec_dir)
             elif name == 'SMAC2':
                 return SMAC2Reader(folder, ta_exec_dir)
             elif name == 'CSV':
@@ -84,6 +88,9 @@ class ConfiguratorRun(SMAC):
         if self.validated_runhistory:
             self.combined_runhistory.update(self.validated_runhistory,
                                             origin=DataOrigin.EXTERNAL_SAME_INSTANCES)
+
+        self.epm_runhistory = RunHistory(average_cost)
+        self.epm_runhistory.update(self.combined_runhistory)
 
         # Initialize SMAC-object
         super().__init__(scenario=self.scen, runhistory=self.combined_runhistory)  # restore_incumbent=incumbent)

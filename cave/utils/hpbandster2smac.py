@@ -31,11 +31,10 @@ class HpBandSter2SMAC(object):
             raise ValueError("Missing pcs-file at '%s'!" % cs_fn)
         with open(cs_fn, 'r') as fh:
             cs = pcs_new.read(fh.readlines())
-        print(cs)
 
         tmp_dir = tempfile.mkdtemp()
-        paths = self.hpbandster2smac(result, cs, tmp_dir).values()
-        return paths
+        paths = list(self.hpbandster2smac(result, cs, tmp_dir).values())
+        return result, paths
 
     def hpbandster2smac(self, result, cs: ConfigurationSpace, output_dir: str):
         """Reading hpbandster-result-object and creating RunHistory and
@@ -67,8 +66,6 @@ class HpBandSter2SMAC(object):
             scenario = Scenario({'run_obj' : 'quality',
                                  'output_dir_for_this_run' : output_path,
                                  'cs' : cs})
-            print(rh.data)
-            print(rh.external)
             scenario.write()
             rh.save_json(fn=os.path.join(output_path, 'runhistory.json'))
 

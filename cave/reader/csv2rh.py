@@ -281,7 +281,6 @@ class CSV2RH(object):
             raise ValueError("Instances defined via \'instance_id\'-column, "
                              "but no instance features available.")
         elif not 'instance_id' in data.columns and feature_names:
-            print(inst_feats_to_id)
             # Add new column for instance-ids
             data['instance_id'] = -1
             self.old = None

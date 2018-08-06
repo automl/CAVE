@@ -81,7 +81,7 @@ class CSVReader(BaseReader):
         rh: RunHistory
             runhistory
         """
-        self._get_runhistory(cs, 'runhistory.csv')
+        return self._get_runhistory(cs, 'runhistory.csv')
 
     def get_validated_runhistory(self, cs):
         """Reads runhistory in csv-format:
@@ -102,7 +102,7 @@ class CSVReader(BaseReader):
         rh: RunHistory
             validated runhistory
         """
-        self._get_runhistory(cs, 'validated_runhistory.csv')
+        return self._get_runhistory(cs, 'validated_runhistory.csv')
 
     def get_trajectory(self, cs):
         """Reads `self.folder/trajectory.csv`, expected format:
