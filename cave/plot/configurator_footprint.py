@@ -809,7 +809,7 @@ for (i = 0; i < lab_len; i++) {
         script, div = components(layout)
 
         if self.output_dir:
-            path = os.path.join(self.output_dir, "configurator_footprint.png")
+            path = os.path.join(self.output_dir, "content/images/configurator_footprint.png")
             export_bokeh(p, path, self.logger)
 
         return (script, div), over_time_paths
