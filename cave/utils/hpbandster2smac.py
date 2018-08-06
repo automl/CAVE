@@ -32,6 +32,7 @@ class HpBandSter2SMAC(object):
         with open(cs_fn, 'r') as fh:
             cs = pcs_new.read(fh.readlines())
 
+        # Using temporary files for the intermediate smac-result-like format
         tmp_dir = tempfile.mkdtemp()
         paths = list(self.hpbandster2smac(result, cs, tmp_dir).values())
         return result, paths
@@ -41,8 +42,16 @@ class HpBandSter2SMAC(object):
         trajectory...
         treats each budget as an individual 'smac'-run, creates an
         output-directory with subdirectories for each budget.
-        """
 
+        Parameters
+        ----------
+        result: hpbandster.core.result.Result
+            bohb's result-object
+        cs: ConfigurationSpace
+            the configuration space
+        output_dir: str
+            the output-dir to save the smac-runs to
+        """
         # Create runhistories (one per budget)
         id2config_mapping = result.get_id2config_mapping()
         budget2rh = {}
@@ -63,9 +72,8 @@ class HpBandSter2SMAC(object):
             output_path = os.path.join(output_dir, 'budget_' + str(b))
             budget2path[b] = output_path
 
-            scenario = Scenario({'run_obj' : 'quality',
-                                 'output_dir_for_this_run' : output_path,
-                                 'cs' : cs})
+            scenario = Scenario({'run_obj' : 'quality', 'cs' : cs})
+            scenario.output_dir_for_this_run = output_path
             scenario.write()
             rh.save_json(fn=os.path.join(output_path, 'runhistory.json'))
 
@@ -90,7 +98,5 @@ class HpBandSter2SMAC(object):
                                                ta_time_used, wallclock_time)
                 traj_logger._add_in_aclib_format(train_perf, incumbent_id, incumbent,
                                                  ta_time_used, wallclock_time)
-
-
 
         return budget2path
