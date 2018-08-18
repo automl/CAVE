@@ -32,7 +32,7 @@ __maintainer__ = "Joshua Marben"
 __email__ = "jo.ma@posteo.de"
 
 
-class AlgorithmFootprint(object):
+class AlgorithmFootprintPlotter(object):
     """ Class that provides the algorithmic footprints after
     "Measuring algorithm footprints in instance space"
     (Kate Smith-Miles, Kate Smith-Miles)
@@ -433,8 +433,7 @@ class AlgorithmFootprint(object):
             export_bokeh(p, path, self.logger)
 
         layout = column(p, row(widgetbox(def_inc_radio_button), widgetbox(train_test_radio_button)))
-        script, div = components(layout)
-        return script, div
+        return layout
 
     def plot3d(self):
         """ Plot 3d-version of the algorithm footprint from four different

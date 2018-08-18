@@ -223,34 +223,6 @@ class CaveCLI(object):
             raise ValueError('At least one analysis method required to run CAVE')
 
         output_dir = args_.output
-        # Log to stream (console)
-        logging.getLogger().setLevel(logging.DEBUG)
-        formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
-        stdout_handler = logging.StreamHandler()
-        stdout_handler.setFormatter(formatter)
-        if args_.verbose_level == "INFO":
-            stdout_handler.setLevel(logging.INFO)
-        else:
-            stdout_handler.setLevel(logging.DEBUG)
-            if args_.verbose_level == "DEV_DEBUG":
-                # Disable annoying boilerplate-debug-logs from foreign modules
-                disable_loggers = ["smac.scenario",
-                                   "pimp.epm.unlogged_epar_x_rfwi.UnloggedEPARXrfi",
-                                   "PIL.PngImagePlugin",
-                                   "matplotlib.font_manager",
-                                   "selenium.webdriver.remote.remote_connection"]
-                for logger in disable_loggers:
-                    logging.getLogger().debug("Setting logger \'%s\' on level INFO", logger)
-                    logging.getLogger(logger).setLevel(logging.INFO)
-        logging.getLogger().addHandler(stdout_handler)
-        # Log to file
-        if not os.path.exists(os.path.join(output_dir, "debug")):
-            os.makedirs(os.path.join(output_dir, "debug"))
-        fh = logging.FileHandler(os.path.join(output_dir, "debug/debug.log"), "w")
-        fh.setLevel(logging.DEBUG)
-        fh.setFormatter(formatter)
-        logging.getLogger().addHandler(fh)
-        logging.debug("Running CAVE version %s", v)
 
         logging.getLogger().debug("CAVE is called with arguments: " + str(args_))
 
@@ -286,6 +258,7 @@ class CaveCLI(object):
         cost_over_time = args_.cost_over_time
         algorithm_footprints = args_.algorithm_footprints
         pimp_sort_table_by = args_.pimp_sort_table_by
+        verbose_level = args_.verbose_level
 
         if file_format == 'BOHB':
             logging.getLogger().info("File format is BOHB, performing special nested analysis for budget-based optimizer!")
@@ -306,7 +279,8 @@ class CaveCLI(object):
                     pimp_max_samples=pimp_max_samples,
                     fanova_pairwise=fanova_pairwise,
                     use_budgets=file_format=='BOHB',
-                    seed=seed)
+                    seed=seed,
+                    verbose_level=verbose_level)
 
         # Analyze
         cave.analyze(performance=tabular_analysis,

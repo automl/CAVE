@@ -72,7 +72,7 @@ class HpBandSter2SMAC(object):
             output_path = os.path.join(output_dir, 'budget_' + str(b))
             budget2path[b] = output_path
 
-            scenario = Scenario({'run_obj' : 'quality', 'cs' : cs})
+            scenario = Scenario({'run_obj' : 'quality', 'cs' : cs, 'output_dir' : output_dir})
             scenario.output_dir_for_this_run = output_path
             scenario.write()
             rh.save_json(fn=os.path.join(output_path, 'runhistory.json'))

@@ -45,7 +45,7 @@ from cave.utils.timing import timing
 from cave.utils.io import export_bokeh
 
 
-class ConfiguratorFootprint(object):
+class ConfiguratorFootprintPlotter(object):
 
     def __init__(self,
                  scenario: Scenario,
@@ -812,7 +812,7 @@ for (i = 0; i < lab_len; i++) {
             path = os.path.join(self.output_dir, "content/images/configurator_footprint.png")
             export_bokeh(p, path, self.logger)
 
-        return (script, div), over_time_paths
+        return layout, over_time_paths
 
     def _get_config_origin(self, c):
         """Return appropriate configuration origin
