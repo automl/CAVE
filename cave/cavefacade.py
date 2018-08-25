@@ -20,7 +20,6 @@ from pimp.importance.importance import Importance
 
 from cave.html.html_builder import HTMLBuilder
 from cave.reader.configurator_run import ConfiguratorRun
-from cave.old_analyzer import Analyzer
 from cave.utils.helpers import scenario_sanity_check, combine_runhistories
 from cave.utils.timing import timing
 from cave.utils.hpbandster2smac import HpBandSter2SMAC
