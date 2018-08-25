@@ -20,11 +20,11 @@ class HpBandSter2SMAC(object):
     def convert(self, folder):
         try:
             from hpbandster.core.result import Result as HPBResult
-            from hpbandster.core.result import logged_results_to_HB_result
+            from hpbandster.core.result import logged_results_to_HBS_result
         except ImportError as e:
             raise ImportError("To analyze BOHB-data, please install hpbandster (e.g. `pip install hpbandster`)")
 
-        result = logged_results_to_HB_result(folder)
+        result = logged_results_to_HBS_result(folder)
 
         cs_fn = os.path.join(folder, 'configspace.pcs')
         if not os.path.exists(cs_fn):
@@ -72,7 +72,7 @@ class HpBandSter2SMAC(object):
             output_path = os.path.join(output_dir, 'budget_' + str(b))
             budget2path[b] = output_path
 
-            scenario = Scenario({'run_obj' : 'quality', 'cs' : cs})
+            scenario = Scenario({'run_obj' : 'quality', 'cs' : cs, 'output_dir' : output_dir})
             scenario.output_dir_for_this_run = output_path
             scenario.write()
             rh.save_json(fn=os.path.join(output_path, 'runhistory.json'))

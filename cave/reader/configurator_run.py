@@ -39,8 +39,13 @@ class ConfiguratorRun(SMAC):
             from [SMAC2, SMAC3, CSV, NONE], in which format to look for validated data
         """
         self.logger = logging.getLogger("cave.ConfiguratorRun.{}".format(folder))
+        self.cave = None  # Set if we analyze configurators that use budgets
+
         self.folder = folder
         self.ta_exec_dir = ta_exec_dir
+        self.file_format = file_format
+        self.validation_format = validation_format
+
         self.logger.debug("Loading from \'%s\' with ta_exec_dir \'%s\'.",
                           folder, ta_exec_dir)
         if validation_format == 'NONE':
