@@ -1,4 +1,5 @@
 import logging
+from collections import OrderedDict
 
 import numpy as np
 from pandas import DataFrame
@@ -280,7 +281,7 @@ class PerformanceTable(BaseAnalyzer):
         return p
 
     def get_html(self, d=None):
-        if d:
+        if d is not None:
             d["Performance Analysis"] = OrderedDict({"table" : self.table})
         return "", self.table
 

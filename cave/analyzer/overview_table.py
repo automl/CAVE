@@ -119,7 +119,7 @@ class OverviewTable(BaseAnalyzer):
 
     def get_html(self, d=None):
         if d is not None:
-            d = {"table": self.html_table}
+            d["Overview"] = {"table": self.html_table}
         return self.html_table
 
     def get_jupyter(self):

@@ -86,6 +86,9 @@ class AlgorithmFootprintPlotter(object):
         self.algorithms = [config for config, name in algorithms]    # Configuration-objects
         self.algo_name = {algo: name for algo, name in algorithms}  # Mapping config to name
         self.name_algo = {name: algo for algo, name in algorithms}  # and vice versa
+        if len(self.algo_name.keys()) < len(self.name_algo.keys()):
+            raise ValueError("Default and Incumbent are equal or some other error occured. Deactivate "
+                             "algorithm-footprints with --no_algorithm_footprint")
 
         self.algo_labels = {}  # Maps algo -> label (good and bad)
 

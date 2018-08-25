@@ -44,7 +44,7 @@ class CompareDefaultIncumbent(BaseAnalyzer):
 
     def get_html(self, d=None):
         if d is not None:
-            d = {"table": self.html_table}
+            d["Default vs Incumbent"] = {"table": self.html_table}
         return self.html_table
 
     def get_jupyter(self):

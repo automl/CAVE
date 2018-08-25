@@ -68,7 +68,7 @@ class PlotScatter(BaseAnalyzer):
         self.output_fns = out_fns
 
     def get_html(self, d=None):
-        if d and self.output_fns:
+        if d is not None and self.output_fns:
             d["Scatterplot"] = {"figure": self.output_fns}
         return figure_to_html(self.output_fns)
 

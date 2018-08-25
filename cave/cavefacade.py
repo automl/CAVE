@@ -65,12 +65,11 @@ def changedir(newdir):
     finally:
         os.chdir(olddir)
 
-def analyzer(f):
+def analyzer_type(f):
     @wraps(f)
     def wrap(self, *args, d=None, **kw):
-        always_aggregated = ['bohb_learning_curves']  # these function-names will always be aggregated
         run = kw.pop('run', None)
-        if self.use_budgets and not f.__name__ in always_aggregated:
+        if self.use_budgets and not f.__name__ in self.always_aggregated:
             if run:
                 # Use the run-specific cave instance
                 try:
@@ -110,6 +109,7 @@ def analyzer(f):
             if d is not None:
                 analyzer.get_html(d)
         self.build_website()
+        return analyzer
     return wrap
 
 class CAVE(object):
@@ -124,6 +124,7 @@ class CAVE(object):
                  fanova_pairwise: bool=True,
                  use_budgets: bool=False,
                  seed: int=42,
+                 show_jupyter: bool=True,
                  verbose_level: str='OFF'):
         """
         Initialize CAVE facade to handle analyzing, plotting and building the report-page easily.
@@ -179,7 +180,9 @@ class CAVE(object):
         self.output_dir = output_dir
         self.set_verbosity(verbose_level.upper())
         self.logger.debug("Running CAVE version %s", v)
-        self.show_jupyter = True
+        self.show_jupyter = show_jupyter
+        # Methods that are never per-run, because they are inter-run-analysis by nature
+        self.always_aggregated = ['bohb_learning_curves']  # these function-names will always be aggregated
 
         for d in os.listdir():
             if d.startswith('run_1'):
@@ -198,6 +201,7 @@ class CAVE(object):
 
         # To be set during execution (used for dependencies of analysis-methods)
         self.param_imp = OrderedDict()
+        self.feature_imp = OrderedDict()
         self.evaluators = []
 
         self.feature_names = None
@@ -469,12 +473,9 @@ class CAVE(object):
             # Nevertheless they need to be combined in one comprehensive report and some metrics are to be compared over
             # the individual runs.
 
-            # if self.file_format == 'BOHB':
-            #     self.website["BOHB Visualization"] = {"figure" : [self.analyzer.bohb_plot(self.bohb_result)]}
-
             # Perform analysis for each run
             if self.bohb_result:
-                self.bohb_learning_curves(d=self.website["BOHB Learning Curves"])
+                self.bohb_learning_curves(d=self.website)
             for run in self.runs:
                 sub_sec = os.path.basename(run.folder)
                 for h in headings:
@@ -541,7 +542,7 @@ class CAVE(object):
         self.logger.info("CAVE finished. Report is located in %s",
                          os.path.join(self.output_dir, 'report.html'))
 
-    @analyzer
+    @analyzer_type
     def overview_table(self, cave):
         return OverviewTable(cave.scenario,
                              cave.global_original_rh,
@@ -552,7 +553,7 @@ class CAVE(object):
                              cave.output_dir)
 
 
-    @analyzer
+    @analyzer_type
     def compare_default_incumbent(self, cave):
         return CompareDefaultIncumbent(cave.default, cave.incumbent)
 
@@ -579,13 +580,13 @@ class CAVE(object):
 
         self.build_website()
 
-    @analyzer
+    @analyzer_type
     def performance_table(self, cave):
         instances = [i for i in cave.scenario.train_insts + cave.scenario.test_insts if i]
         return PerformanceTable(instances, cave.global_validated_rh, cave.default, cave.incumbent,
                                   cave.global_epm_rh, cave.scenario, cave.rng)
 
-    @analyzer
+    @analyzer_type
     def plot_scatter(self, cave):
         return PlotScatter(default=cave.default,
                            incumbent=cave.incumbent,
@@ -597,14 +598,14 @@ class CAVE(object):
                            output_dir=cave.output_dir,
                            )
 
-    @analyzer
+    @analyzer_type
     def plot_ecdf(self, cave):
         return PlotECDF(cave.default, cave.incumbent, cave.global_epm_rh,
                         cave.scenario.train_insts, cave.scenario.test_insts, cave.scenario.cutoff,
                         cave.output_dir)
 
 
-    @analyzer
+    @analyzer_type
     def algorithm_footprints(self, cave):
         return AlgorithmFootprint(algorithms=[(cave.default, "default"), (cave.incumbent, "incumbent")],
                                   epm_rh=cave.global_epm_rh,
@@ -616,11 +617,11 @@ class CAVE(object):
                                   rng=cave.rng,
                                   )
 
-    @analyzer
+    @analyzer_type
     def cost_over_time(self, cave):
         return CostOverTime(cave.scenario, cave.output_dir, cave.global_validated_rh, cave.runs, validator=cave.validator)
 
-    @analyzer
+    @analyzer_type
     def parallel_coordinates(self, cave,
                              params: Union[int, List[str]]=10,
                              n_configs: int=100,
@@ -657,7 +658,7 @@ class CAVE(object):
                                    cs=cave.scenario.cs,
                                    runtime=(cave.scenario.run_obj == 'runtime'))
 
-    @analyzer
+    @analyzer_type
     def configurator_footprint(self, cave,
                                time_slider=False, max_confs=1000, num_quantiles=8):
         self.logger.info("... visualizing explored configspace (this may take "
@@ -693,7 +694,7 @@ class CAVE(object):
             # Should be after parameter importance, if performed.
             self.parallel_coordinates(d=d, run=run)
 
-    @analyzer
+    @analyzer_type
     def cave_fanova(self, cave):
         fanova = CaveFanova(cave.pimp, cave.incumbent, cave.output_dir)
         cave.evaluators.append(cave.pimp.evaluator)
@@ -701,7 +702,7 @@ class CAVE(object):
 
         return fanova
 
-    @analyzer
+    @analyzer_type
     def cave_ablation(self, cave):
         ablation = CaveAblation(cave.pimp, cave.incumbent, cave.output_dir)
         cave.evaluators.append(cave.pimp.evaluator)
@@ -709,7 +710,7 @@ class CAVE(object):
 
         return ablation
 
-    @analyzer
+    @analyzer_type
     def pimp_forward_selection(self, cave):
         forward = CaveForwardSelection(cave.pimp, cave.incumbent, cave.output_dir)
         cave.evaluators.append(cave.pimp.evaluator)
@@ -717,7 +718,7 @@ class CAVE(object):
 
         return forward
 
-    @analyzer
+    @analyzer_type
     def local_parameter_importance(self, cave):
         lpi = LocalParameterImportance(cave.pimp, cave.incumbent, cave.output_dir)
         cave.evaluators.append(cave.pimp.evaluator)
@@ -725,7 +726,7 @@ class CAVE(object):
 
         return lpi
 
-    @analyzer
+    @analyzer_type
     def pimp_comparison_table(self, cave,
                               pimp_sort_table_by="average"):
         return PimpComparisonTable(cave.pimp,
@@ -770,32 +771,34 @@ class CAVE(object):
             self.pimp_comparison_table(d=d, run=run)
             self.build_website()
 
-    @analyzer
+    @analyzer_type
     def feature_importance(self, cave):
-        return FeatureImportance(cave.pimp, cave.output_dir)
+        res = FeatureImportance(cave.pimp, cave.output_dir)
+        cave.feature_imp = res.feat_importance
+        return res
 
-    @analyzer
+    @analyzer_type
     def box_violin(self, cave):
         return BoxViolin(cave.output_dir,
                          cave.scenario,
                          cave.feature_names,
-                         cave.feature_importance)
+                         cave.feature_imp)
 
 
-    @analyzer
+    @analyzer_type
     def feature_correlation(self, cave):
         return FeatureCorrelation(cave.output_dir,
                                 cave.scenario,
                                 cave.feature_names,
-                                cave.feature_importance)
+                                cave.feature_imp)
 
 
-    @analyzer
+    @analyzer_type
     def feature_clustering(self, cave):
         return FeatureClustering(cave.output_dir,
                                  cave.scenario,
                                  cave.feature_names,
-                                 cave.feature_importance)
+                                 cave.feature_imp)
 
     def feature_analysis(self, d, run,
                          box_violin=False, correlation=False, clustering=False, importance=False):
@@ -810,7 +813,7 @@ class CAVE(object):
             self.feature_clustering(d=d, run=run)
         self.build_website()
 
-    @analyzer
+    @analyzer_type
     def bohb_learning_curves(self, cave):
         return BohbLearningCurves(self.scenario.cs.get_hyperparameter_names(), result_object=self.bohb_result)
 

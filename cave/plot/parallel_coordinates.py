@@ -254,9 +254,11 @@ class ParallelCoordinatesPlotter():
                 tick_labels = hyper.choices
                 norm_min = data[params[p]].min()
                 norm_range = np.ptp(data[params[p]])
-                norm_step = norm_range / float(num_ticks - 1)
-                ticks = [round(norm_min + norm_step * i, 2) for i in
-                         range(num_ticks)]
+                if num_ticks > 1:
+                    norm_step = norm_range / float(num_ticks - 1)
+                    ticks = [round(norm_min + norm_step * i, 2) for i in range(num_ticks)]
+                else:
+                    ticks = [1]
             else:
                 step = param_range / float(num_ticks)
                 if isinstance(hyper, IntegerHyperparameter):

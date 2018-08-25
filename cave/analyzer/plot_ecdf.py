@@ -82,7 +82,7 @@ class PlotECDF(BaseAnalyzer):
         self.output_fns = output_fns
 
     def get_html(self, d=None):
-        if d and self.output_fns:
+        if d is not None and self.output_fns:
             d["empirical Cumulative Distribution Function (eCDF)"] = {"figure": self.output_fns}
         return figure_to_html(self.output_fns)#, self.output_dir)
 

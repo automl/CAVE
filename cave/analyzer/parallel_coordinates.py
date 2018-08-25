@@ -5,9 +5,6 @@ from typing import Union, Dict, List
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-plt.style.use(os.path.join(os.path.dirname(__file__), 'mpl_style'))  # noqa
-from matplotlib import ticker
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import matplotlib.patheffects as path_efx
@@ -147,7 +144,7 @@ class ParallelCoordinates(BaseAnalyzer):
                 self.error = str(err)
         return self.plots
 
-    def get_html(self, d, n_configs=500, params=None):
+    def get_html(self, d=None, n_configs=500, params=None):
         """
         Parameters
         ----------
