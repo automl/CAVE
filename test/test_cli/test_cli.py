@@ -15,7 +15,6 @@ from smac.utils.io.traj_logging import TrajLogger
 from smac.utils.validate import Validator
 
 from cave.cave_cli import CaveCLI
-from cave.analyzer import Analyzer
 from cave.cavefacade import CAVE
 
 @contextmanager

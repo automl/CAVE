@@ -1,9 +1,10 @@
 import os
 import csv
+import warnings
 
 import numpy as np
 import pandas as pd
-from bokeh.io import export_png
+from bokeh.io import export_png, output_notebook
 
 from ConfigSpace.util import deactivate_inactive_hyperparameters, fix_types
 
@@ -25,18 +26,19 @@ def export_bokeh(plot, path, logger):
     """
     base = os.path.split(path)[0]
     logger.debug("Exporting to %s (base: %s)", path, base)
-    plot.background_fill_color = None
-    plot.border_fill_color = None
+    plot.background_fill_color, plot.border_fill_color = None, None
     if base and not os.path.exists(base):
         logger.debug("%s does not exist. Creating...", base)
         os.makedirs(base)
     try:
-        export_png(plot, filename=path)
+        with warnings.catch_warnings(record=True) as list_of_warnings:
+            warnings.simplefilter('always')
+            export_png(plot, filename=path)
+            for w in list_of_warnings:
+                logger.debug("During export a %s was raised: %s", str(w.category), w.message)
     except (RuntimeError, TypeError) as err:
         logger.exception("Exporting failed with message \"%s\"", err)
-        logger.warning("To activate png-export, please follow "
-                       "instructions on CAVE's GitHub (install "
-                       "selenium and phantomjs-prebuilt).")
+        logger.warning("To activate automatic png-export, please follow instructions on CAVE's GitHub (install selenium and phantomjs-prebuilt).")
     except (SystemError) as err:
         logger.exception("Exporting failed with message \"%s\"", err)
         logger.warning("This issue is known, but not yet solved. However it seems to appear with too few data-points. "
@@ -118,4 +120,5 @@ def load_config_csv(path, cs, logger):
     for index, row in config_data.iterrows():
         values = {name: row[name] for name in config_data.columns if row[name]}
         id_to_config[index] = deactivate_inactive_hyperparameters(fix_types(values, cs), cs)
+        print(index)
     return config_data.columns, id_to_config
