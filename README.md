@@ -97,6 +97,12 @@ cave --folders examples/smac3/example_output/* --ta_exec examples/smac3/ --outpu
 This will analyze the results located in `examples/smac3` in the dirs `example_output/run_1` and `example_output/run_2`.
 The report is located in `CAVE_results/report.html`.
 `--ta_exec` corresponds to the folder from which the optimizer was originally executed (used to find the necessary files for loading the `scenario`).
+For other formats, e.g.:
+```
+cave --folders examples/smac2/ --ta_exec_dir examples/smac2/smac-output/aclib/state-run1/ --file_format smac2 --no_algorithm_footprint
+cave --folders examples/csv_allinone/ --ta_exec_dir examples/csv_allinone/ --file_format csv
+
+```
 
 # USAGE WITH BOHB
 You can also use cave with Configurators that use budgets to estimate a quality of a certain algorithm (e.g. epochs in
