@@ -21,17 +21,15 @@ __maintainer__ = "Joshua Marben"
 __email__ = "joshua.marben@neptun.uni-freiburg.de"
 
 
-class ParallelCoordinatesPlotter(object):
-    def __init__(self, original_rh, epm_rh, output_dir, cs, runtime=True):
+class ParallelCoordinatesPlotter():
+    def __init__(self, config_to_cost, output_dir, cs, runtime=True):
         """ Plotting a parallel coordinates plot, visualizing the explored PCS.
         Inspired by: http://benalexkeen.com/parallel-coordinates-in-matplotlib/
 
         Parameters
         ----------
-        original_rh: RunHistory
-            unvalidated(!) runhistory
-        epm_rh: RunHistory
-            validated and epm'ed runhistory (with best estimates for all configurations)
+        config_to_cost: Dict[Configuration -> float]
+            configurations to be considered for plotting mapped to estimated costs
         output_dir: str
             output-filepath
         cs: ConfigurationSpace
@@ -39,13 +37,14 @@ class ParallelCoordinatesPlotter(object):
         runtime: bool
             if True, the run_objective of this configurator run is runtime-optimization, if false it's quality
         """
-        self.logger = logging.getLogger(
-            self.__module__ + "." + self.__class__.__name__)
-        self.original_rh = original_rh
-        self.epm_rh = epm_rh
+        self.logger = logging.getLogger(self.__module__ + "." + self.__class__.__name__)
+        self.config_to_cost = config_to_cost
         self.output_dir = output_dir
         self.cs = cs  # type ConfigSpace.configuration_space.ConfigurationSpace
         self.runtime = runtime
+
+        # Will be set during execution
+        self.plots = []
 
     def _get_log_spaced_ids(self, all_configs, num_configs):
         """
@@ -94,22 +93,20 @@ class ParallelCoordinatesPlotter(object):
         params: List[str]
             parameters to be plotted
         """
-        all_configs = self.original_rh.get_all_configs()
+        all_configs = list(self.config_to_cost.keys())
         if len(all_configs) < 5:
-            self.logger.info("At least five configurations necessary for parallel coordinates!")
-            return
+            raise ValueError("At least five configurations necessary for parallel coordinates!")
         # Get n most run configs
         if num_configs == -1:
             num_configs = len(all_configs)
         self.logger.debug("Plotting %d configs.", min(num_configs, len(all_configs)))
 
-        config_to_cost = {c : self.epm_rh.get_cost(c) for c in all_configs}
         pngs = {}
         for log_cost in [False, True]:
             for log_sample in [False, True]:
-                configs_to_plot = list(sorted(all_configs, key=lambda x: self._fun(config_to_cost[x], log_cost)))
-                self.best_config_performance = self._fun(min(config_to_cost.values()), log_cost)
-                self.worst_config_performance = self._fun(max(config_to_cost.values()), log_cost)
+                configs_to_plot = list(sorted(all_configs, key=lambda x: self._fun(self.config_to_cost[x], log_cost)))
+                self.best_config_performance = self._fun(min(self.config_to_cost.values()), log_cost)
+                self.worst_config_performance = self._fun(max(self.config_to_cost.values()), log_cost)
 
                 # Determine configs to be plotted
                 if num_configs < len(configs_to_plot):
@@ -133,7 +130,9 @@ class ParallelCoordinatesPlotter(object):
                 path = self._plot(configs_to_plot, params, fn=out_fn, logy=log_cost)
                 pngs[('log_cost' if log_cost else 'linear_cost',
                       'log_sampling' if log_sample else 'uniform_sampling')] = path
-        return pngs[('log_cost', 'log_sampling')] if self.runtime else pngs[('linear_cost', 'log_sampling')]
+        return_path = pngs[('log_cost', 'log_sampling')] if self.runtime else pngs[('linear_cost', 'log_sampling')]
+        self.plots.append(return_path)
+        return return_path
 
     def _plot(self, configs, params, fn=None, log_c=False, logy=False):
         """
@@ -169,7 +168,7 @@ class ParallelCoordinatesPlotter(object):
             conf_dict = conf.get_dictionary()
             new_entry = {}
             # Add cost-column
-            new_entry[cost_str] = self._fun(self.epm_rh.get_cost(conf), logy)
+            new_entry[cost_str] = self._fun(self.config_to_cost[conf], logy)
             # Add parameters
             for p in params:
                 # Catch key-errors (implicate unused hyperparameter)
@@ -229,7 +228,7 @@ class ParallelCoordinatesPlotter(object):
         # Plot data
         for i, ax in enumerate(axes):  # Iterate over params
             for idx in data.index[::-1]:  # Iterate over configs
-                cval = scale.to_rgba(self._fun(self.epm_rh.get_cost(configs[idx]), logy))
+                cval = scale.to_rgba(self._fun(self.config_to_cost[configs[idx]], logy))
                 cval = (cval[2], cval[0], cval[1])
                 zorder = idx - 5 if idx > len(data) // 2 else len(data) - idx  # -5 to have the best on top of the worst
                 alpha = (zorder / len(data)) - 0.25
@@ -255,9 +254,11 @@ class ParallelCoordinatesPlotter(object):
                 tick_labels = hyper.choices
                 norm_min = data[params[p]].min()
                 norm_range = np.ptp(data[params[p]])
-                norm_step = norm_range / float(num_ticks - 1)
-                ticks = [round(norm_min + norm_step * i, 2) for i in
-                         range(num_ticks)]
+                if num_ticks > 1:
+                    norm_step = norm_range / float(num_ticks - 1)
+                    ticks = [round(norm_min + norm_step * i, 2) for i in range(num_ticks)]
+                else:
+                    ticks = [1]
             else:
                 step = param_range / float(num_ticks)
                 if isinstance(hyper, IntegerHyperparameter):
@@ -300,3 +301,4 @@ class ParallelCoordinatesPlotter(object):
         plt.close(fig)
 
         return filename
+

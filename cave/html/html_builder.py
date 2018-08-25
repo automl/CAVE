@@ -7,6 +7,7 @@ from traceback import print_exc
 from collections import OrderedDict
 
 from cave.utils.tooltips import get_tooltip
+from cave.html.html_helpers import figure_to_html
 from cave.__version__ import __version__ as version
 
 __author__ = "Marius Lindauer"
@@ -213,37 +214,9 @@ for (i = 0; i < acc.length; i++) {
                 script += add_script
                 div += add_div
             elif k == "figure":
-                div += "<div align=\"center\">\n"
-                if isinstance(v, str):
-                    div += ("<a href=\"{0}\" data-lightbox=\"{0}\" "
-                            "data-title=\"{0}\"><img src=\"{0}\" alt=\"Plot\" "
-                            "width=\"600px\"></a>\n".format(v[len(self.output_dn):].lstrip("/")))
-                else:
-                    # List with multiple figures size relative, put next to each other
-                    width = (100 - len(v)) / len(v)
-                    for fig in v:
-                        div += "<a href=\"{0}\" data-lightbox=\"{1}\" data-title=\"{0}\"><img src=\"{0}\"".format(
-                                fig[len(self.output_dn):].lstrip("/"),
-                                str(v))
-                        div += " alt=\"Plot\" style=\"float: left; width: {}%; margin-right: "\
-                               "1%; margin-bottom: 0.5em;\"></a>\n".format(int(width))
-
-                    div += "<p style=\"clear: both;\">"
-                div += "</div>\n"
+                div += figure_to_html(v, prefix=self.output_dn)
             elif k == "figure_x2":
-                # four figures in a grid
-                div += "<div align=\"center\">\n"
-                for fig in v:
-                    path = fig[len(self.output_dn):].lstrip("/")
-                    div += "<a href=\"{}\" ".format(path)
-                    div += "data-lightbox=\"{}\" ".format(str(v))
-                    div += "data-title=\"{0}\"><img src=\"{0}\" alt=\"Plot\" ".format(path)
-                    div += "style=\"float: left; width: 49%; margin-right: 1%; margin-bottom: 0.5em;\"></a>\n"
-                    if v.index(fig) % 2 == 1:
-                        div += " <br> "
-
-                div += "<p style=\"clear: both;\">"
-                div += "</div>\n"
+                div += figure_to_html(v, prefix=self.output_dn, max_in_a_row=2)
             elif k == "table":
                 div += "<div align=\"center\">\n{}\n</div>\n".format(v)
             elif k == "html":
