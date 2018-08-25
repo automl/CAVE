@@ -551,7 +551,6 @@ class CAVE(object):
                              cave.incumbent,
                              cave.output_dir)
 
-
     @analyzer_type
     def compare_default_incumbent(self, cave):
         return CompareDefaultIncumbent(cave.default, cave.incumbent)
