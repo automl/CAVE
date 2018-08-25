@@ -14,8 +14,6 @@ from matplotlib.pyplot import setp
 
 from ConfigSpace.hyperparameters import CategoricalHyperparameter, IntegerHyperparameter, FloatHyperparameter
 
-from cave.analyzer.base_analyzer import BaseAnalyzer
-
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
 __license__ = "3-clause BSD"
@@ -97,8 +95,7 @@ class ParallelCoordinatesPlotter():
         """
         all_configs = list(self.config_to_cost.keys())
         if len(all_configs) < 5:
-            self.logger.info("At least five configurations necessary for parallel coordinates!")
-            return
+            raise ValueError("At least five configurations necessary for parallel coordinates!")
         # Get n most run configs
         if num_configs == -1:
             num_configs = len(all_configs)

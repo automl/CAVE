@@ -4,6 +4,7 @@ import logging
 from pandas import DataFrame
 import numpy as np
 
+from cave.feature_analysis.feature_analysis import FeatureAnalysis
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.html.html_helpers import figure_to_html
 
@@ -13,10 +14,10 @@ class FeatureCorrelation(BaseAnalyzer):
 
         self.output_dir = output_dir
 
-        feat_analysis = FeatureAnalysis(output_dn=output_dir,
-                                        scenario=scenario,
-                                        feat_names=feat_names,
-                                        feat_importance=feat_importance)
+        self.feat_analysis = FeatureAnalysis(output_dn=output_dir,
+                                             scenario=scenario,
+                                             feat_names=feat_names,
+                                             feat_importance=feat_importance)
 
         self.feat_analysis.correlation_plot()
         self.correlation_plot = self.feat_analysis.correlation_plot(imp=False)

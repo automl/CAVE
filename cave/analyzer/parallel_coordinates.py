@@ -80,6 +80,7 @@ class ParallelCoordinates(BaseAnalyzer):
         """
 
         self.logger = logging.getLogger(self.__module__ + "." + self.__class__.__name__)
+        self.error = None
 
         self.default = default
         self.param_imp = param_imp
@@ -106,9 +107,9 @@ class ParallelCoordinates(BaseAnalyzer):
         epm_rh.update(validated_rh)
         if scenario.feature_dict:  # if instances are available
             epm_rh.update(timing(validator.validate_epm)(all_configs, 'train+test', 1, runhistory=validated_rh))
-        config_to_cost = {c : epm_rh.get_cost(c) for c in all_configs}
+        self.config_to_cost = {c : epm_rh.get_cost(c) for c in all_configs}
 
-        self.pcp = ParallelCoordinatesPlotter(config_to_cost, output_dir, cs, runtime)
+        self.pcp = ParallelCoordinatesPlotter(self.config_to_cost, output_dir, cs, runtime)
 
     def get_params(self, params):
         # Define what parameters to be plotted (using importance, if available)
@@ -140,7 +141,10 @@ class ParallelCoordinates(BaseAnalyzer):
         if not params:
             params = list(list(self.config_to_cost.keys())[0].keys())
         if not self.plots:
-            self.plots = [self.pcp.plot_n_configs(n_configs, params if params else self.params)]
+            try:
+                self.plots = [self.pcp.plot_n_configs(n_configs, params if params else self.params)]
+            except ValueError as err:
+                self.error = str(err)
         return self.plots
 
     def get_html(self, d, n_configs=500, params=None):
@@ -155,8 +159,13 @@ class ParallelCoordinates(BaseAnalyzer):
         if not self.plots:
             self.get_plots(n_configs, params)
 
+        if self.error:
+            if d is not None:
+                d["Parallel Coordinates"] = {"else": "Error occured: %s" % self.error}
+            return "", self.error
+
         if d is not None:
-            d["Parallel Coordinates"] = {"figure": pc.get_plots(n_configs, params)}
+            d["Parallel Coordinates"] = {"figure": self.get_plots(n_configs, params)}
         div = "<div class=\"panel\">\n"
         div += "<div align=\"center\">\n"
         div += ("<a href=\"{0}\" data-lightbox=\"{0}\" "
@@ -178,7 +187,10 @@ class ParallelCoordinates(BaseAnalyzer):
         if not self.plots:
             self.get_plots(n_configs, params)
 
-        from IPython.core.display import Image, display
-        display(Image(filename=self.plots[0]))
+        from IPython.core.display import HTML, Image, display
+        if self.plots:
+            display(Image(filename=self.plots[0]))
+        else:
+            display(HTML(self.error))
 
 

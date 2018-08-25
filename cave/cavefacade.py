@@ -6,6 +6,7 @@ import typing
 from typing import Union, List
 import copy
 from functools import wraps
+import shutil
 
 import numpy as np
 from pandas import DataFrame
@@ -41,6 +42,7 @@ from cave.analyzer.feature_correlation import FeatureCorrelation
 from cave.analyzer.feature_clustering import FeatureClustering
 from cave.analyzer.overview_table import OverviewTable
 from cave.analyzer.compare_default_incumbent import CompareDefaultIncumbent
+from cave.analyzer.bohb_learning_curves import BohbLearningCurves
 from cave.__version__ import __version__ as v
 
 __author__ = "Joshua Marben"
@@ -65,9 +67,10 @@ def changedir(newdir):
 
 def analyzer(f):
     @wraps(f)
-    def wrap(self, *args, d=None, show_jupyter=True, **kw):
+    def wrap(self, *args, d=None, **kw):
+        always_aggregated = ['bohb_learning_curves']  # these function-names will always be aggregated
         run = kw.pop('run', None)
-        if self.use_budgets:
+        if self.use_budgets and not f.__name__ in always_aggregated:
             if run:
                 # Use the run-specific cave instance
                 try:
@@ -89,11 +92,24 @@ def analyzer(f):
             # Use aggregated objects
             self.logger.debug("Using aggregated cave-instance")
             cave = self
-        analyzer = f(self, cave, *args, **kw)
-        if show_jupyter:
-            analyzer.get_jupyter()
-        if d is not None:
-            analyzer.get_html(d)
+        self.logger.debug("Args: %s, Kwargs: %s", str(args), str(kw))
+        try:
+            analyzer = f(self, cave, *args, **kw)
+        except Exception as err:
+            self.logger.exception(err)
+            raise
+        else:
+            if self.show_jupyter:
+                try:
+                    analyzer.get_jupyter()
+                except ImportError as err:
+                    self.logger.debug(err)
+                    self.logger.info("Assuming that jupyter is not installed. Disable for rest of report.")
+                    self.show_jupyter = False
+                    pass
+            if d is not None:
+                analyzer.get_html(d)
+        self.build_website()
     return wrap
 
 class CAVE(object):
@@ -163,6 +179,11 @@ class CAVE(object):
         self.output_dir = output_dir
         self.set_verbosity(verbose_level.upper())
         self.logger.debug("Running CAVE version %s", v)
+        self.show_jupyter = True
+
+        for d in os.listdir():
+            if d.startswith('run_1'):
+                shutil.rmtree(d)
 
         self.verbose_level = verbose_level
         self.seed = seed
@@ -432,14 +453,13 @@ class CAVE(object):
                 raise ValueError("%s not a valid option for feature analysis!" % f)
 
         # Start analysis
-
-
         headings = ["Meta Data",
                     "Best Configuration",
                     "Performance Analysis",
                     "Configurator's Behavior",
                     "Parameter Importance",
-                    "Feature Analysis"
+                    "Feature Analysis",
+                    "BOHB Plot",
                     ]
         for h in headings:
             self.website[h] = OrderedDict()
@@ -453,15 +473,15 @@ class CAVE(object):
             #     self.website["BOHB Visualization"] = {"figure" : [self.analyzer.bohb_plot(self.bohb_result)]}
 
             # Perform analysis for each run
+            if self.bohb_result:
+                self.bohb_learning_curves(d=self.website["BOHB Learning Curves"])
             for run in self.runs:
                 sub_sec = os.path.basename(run.folder)
+                for h in headings:
+                    self.website[h][sub_sec] = OrderedDict()
                 # Set paths for each budget individual to avoid path-conflicts
                 sub_output_dir = os.path.join(self.output_dir, 'content', sub_sec)
                 os.makedirs(sub_output_dir, exist_ok=True)
-                self.analyzer = Analyzer(run.default, run.incumbent,
-                                         self.scenario, sub_output_dir,
-                                         self.pimp_max_samples, self.fanova_pairwise,
-                                         rng=self.rng)
                 # Set runhistories
                 self.global_original_rh = run.original_runhistory
                 self.global_validated_rh = run.combined_runhistory
@@ -474,50 +494,47 @@ class CAVE(object):
                 run.epm_rh = self.global_epm_rh
                 self.best_run = run
                 # Perform analysis
-                overview = self.analyzer.create_overview_table(self.global_original_rh,
-                                                               run, len(self.runs), self.default, self.incumbent)
-                self.website["Meta Data"][sub_sec] = {"table": overview}
-                compare_config_html = compare_configs_to_html(self.default, self.incumbent)
-
-                d = self.website["Performance Analysis"][sub_sec] = OrderedDict()
-                self.performance_analysis(d, performance, cdf, scatter, algo_footprint)
-                d = self.website["Parameter Importance"][sub_sec] = OrderedDict()
-                self.parameter_importance(d, ablation='ablation' in param_importance,
+                self.overview_table(d=self.website["Meta Data"][sub_sec], run=sub_sec)
+                self.compare_default_incumbent(d=self.website["Best Configuration"][sub_sec], run=sub_sec)
+                self.performance_analysis(self.website["Performance Analysis"][sub_sec], sub_sec,
+                                          performance, cdf, scatter, algo_footprint)
+                self.parameter_importance(self.website["Parameter Importance"][sub_sec], sub_sec,
+                                          ablation='ablation' in param_importance,
                                           fanova='fanova' in param_importance,
                                           forward_selection='forward_selection' in param_importance,
                                           lpi='lpi' in param_importance,
                                           pimp_sort_table_by=pimp_sort_table_by)
-                d = self.website["Configurator's Behavior"][sub_sec] = OrderedDict()
-                self.configurators_behavior(d, cost_over_time,
+                self.configurators_behavior(self.website["Configurator's Behavior"][sub_sec], sub_sec,
+                                            cost_over_time,
                                             cfp, cfp_max_plot, cfp_time_slider, cfp_number_quantiles,
                                             parallel_coordinates)
-                d = self.website["Feature Analysis"][sub_sec] = OrderedDict()
-                self.feature_analysis(d, box_violin='box_violin' in feature_analysis,
-                                      correlation='correlation' in feature_analysis,
-                                      clustering='clustering' in feature_analysis,
-                                      importance='importance' in feature_analysis)
-                self.original_runhistory = self.validated_runhistory = self.epm_runhistory = None
+                if self.feature_names:
+                    self.feature_analysis(self.website["Feature Analysis"][sub_sec], sub_sec,
+                                          box_violin='box_violin' in feature_analysis,
+                                          correlation='correlation' in feature_analysis,
+                                          clustering='clustering' in feature_analysis,
+                                          importance='importance' in feature_analysis)
         else:
-            self.overview_table(self.website["Meta Data"])
-            self.compare_default_incumbent(self.website["Best Configuration"])
-            compare_config_html = compare_configs_to_html(self.default, self.incumbent)
-            self.website["Best Configuration"] = {"table": compare_config_html}
-
-            self.performance_analysis(self.website["Performance Analysis"], performance, cdf, scatter, algo_footprint)
-            self.parameter_importance(self.website["Parameter Importance"],
+            self.overview_table(d=self.website["Meta Data"], run=None)
+            self.compare_default_incumbent(d=self.website["Best Configuration"], run=None)
+            self.performance_analysis(self.website["Performance Analysis"], None,
+                                      performance, cdf, scatter, algo_footprint)
+            self.parameter_importance(self.website["Parameter Importance"], None,
                                       ablation='ablation' in param_importance,
                                       fanova='fanova' in param_importance,
                                       forward_selection='forward_selection' in param_importance,
                                       lpi='lpi' in param_importance,
                                       pimp_sort_table_by=pimp_sort_table_by)
-            self.configurators_behavior(self.website["Configurator's Behavior"], cost_over_time,
+            self.configurators_behavior(self.website["Configurator's Behavior"], None,
+                                        cost_over_time,
                                         cfp, cfp_max_plot, cfp_time_slider, cfp_number_quantiles,
                                         parallel_coordinates)
-            self.feature_analysis(self.website["Feature Analysis"],
-                                  box_violin='box_violin' in feature_analysis,
-                                  correlation='correlation' in feature_analysis,
-                                  clustering='clustering' in feature_analysis,
-                                  importance='importance' in feature_analysis)
+            if self.feature_names:
+                self.feature_analysis(self.website["Feature Analysis"], None,
+                                      box_violin='box_violin' in feature_analysis,
+                                      correlation='correlation' in feature_analysis,
+                                      clustering='clustering' in feature_analysis,
+                                      importance='importance' in feature_analysis)
 
         self.build_website()
 
@@ -526,7 +543,6 @@ class CAVE(object):
 
     @analyzer
     def overview_table(self, cave):
-        print(cave.runs)
         return OverviewTable(cave.scenario,
                              cave.global_original_rh,
                              cave.runs[0],
@@ -540,7 +556,7 @@ class CAVE(object):
     def compare_default_incumbent(self, cave):
         return CompareDefaultIncumbent(cave.default, cave.incumbent)
 
-    def performance_analysis(self, d,
+    def performance_analysis(self, d, run,
                              performance, cdf, scatter, algo_footprint):
         """Generate performance analysis.
 
@@ -553,13 +569,13 @@ class CAVE(object):
         """
 
         if performance:
-            self.performance_table(d)
+            self.performance_table(d=d, run=run)
         if cdf:
-            self.plot_ecdf(d)
+            self.plot_ecdf(d=d, run=run)
         if scatter:
-            self.plot_scatter(d)
+            self.plot_scatter(d=d, run=run)
         if algo_footprint and self.scenario.feature_dict:
-            self.algorithm_footprints(d)
+            self.algorithm_footprints(d=d, run=run)
 
         self.build_website()
 
@@ -658,6 +674,7 @@ class CAVE(object):
 
     def configurators_behavior(self,
                                d,
+                               run,
                                cost_over_time=False,
                                cfp=False,
                                cfp_max_plot=-1,
@@ -666,14 +683,15 @@ class CAVE(object):
                                parallel_coordinates=False):
 
         if cost_over_time:
-            self.cost_over_time(d)
+            self.cost_over_time(d=d, run=run)
 
         if cfp:  # Configurator Footprint
-            self.configurator_footprint(d, True, cfp_time_slider, cfp_max_plot, cfp_number_quantiles)
+            self.configurator_footprint(d=d, run=run,
+                                        time_slider=cfp_time_slider, max_confs=cfp_max_plot, num_quantiles=cfp_number_quantiles)
 
         if parallel_coordinates:
             # Should be after parameter importance, if performed.
-            self.parallel_coordinates(d)
+            self.parallel_coordinates(d=d, run=run)
 
     @analyzer
     def cave_fanova(self, cave):
@@ -702,11 +720,12 @@ class CAVE(object):
     @analyzer
     def local_parameter_importance(self, cave):
         lpi = LocalParameterImportance(cave.pimp, cave.incumbent, cave.output_dir)
-        self.evaluators.append(cave.pimp.evaluator)
+        cave.evaluators.append(cave.pimp.evaluator)
         cave.param_imp["lpi"] = cave.pimp.evaluator.evaluated_parameter_importance
 
         return lpi
 
+    @analyzer
     def pimp_comparison_table(self, cave,
                               pimp_sort_table_by="average"):
         return PimpComparisonTable(cave.pimp,
@@ -717,14 +736,13 @@ class CAVE(object):
                                    )
 
     def parameter_importance(self,
-                             d,
+                             d, run,
                              ablation=False, fanova=False,
                              forward_selection=False, lpi=False, pimp_sort_table_by='average'):
         """Perform the specified parameter importance procedures. """
-
         sum_ = 0
         if fanova:
-            self.cave_fanova(d)
+            self.cave_fanova(d=d, run=run)
             sum_ += 1
             self.logger.info("fANOVA...")
 
@@ -733,23 +751,23 @@ class CAVE(object):
         if ablation:
             sum_ += 1
             self.logger.info("Ablation...")
-            self.cave_ablation(d)
+            self.cave_ablation(d=d, run=run)
             self.build_website()
 
         if forward_selection:
             sum_ += 1
-            self.pimp_forward_selection(d)
+            self.pimp_forward_selection(d=d, run=run)
             self.logger.info("Forward Selection...")
             self.build_website()
 
         if lpi:
             sum_ += 1
             self.logger.info("Local EPM-predictions around incumbent...")
-            self.local_parameter_importance(d)
+            self.local_parameter_importance(d=d, run=run)
             self.build_website()
 
         if sum_ >= 2:
-            self.pimp_comparison_table(d)
+            self.pimp_comparison_table(d=d, run=run)
             self.build_website()
 
     @analyzer
@@ -779,21 +797,34 @@ class CAVE(object):
                                  cave.feature_names,
                                  cave.feature_importance)
 
-    def feature_analysis(self, d, box_violin=False, correlation=False, clustering=False, importance=False):
+    def feature_analysis(self, d, run,
+                         box_violin=False, correlation=False, clustering=False, importance=False):
         # feature importance using forward selection
         if importance:
-            self.feature_importance(d)
+            self.feature_importance(d=d, run=run)
         if box_violin:
-            self.box_violin(d)
+            self.box_violin(d=d, run=run)
         if correlation:
-            self.feature_correlation(d)
+            self.feature_correlation(d=d, run=run)
         if clustering:
-            self.feature_clustering(d)
+            self.feature_clustering(d=d, run=run)
         self.build_website()
+
+    @analyzer
+    def bohb_learning_curves(self, cave):
+        return BohbLearningCurves(self.scenario.cs.get_hyperparameter_names(), result_object=self.bohb_result)
+
+############################################################################
+############################################################################
+    def print_budgets(self):
+        if self.use_budgets:
+            print(list(self.folder_to_run.keys()))
+        else:
+            print("This cave instance does not seem to use budgets.")
 
     def get_feature_names(self):
         if not self.scenario.feature_dict:
-            self.logger.error("No features available. Skipping feature analysis.")
+            self.logger.info("No features available. Skipping feature analysis.")
             return
         feat_fn = self.scenario.feature_fn
         if not self.scenario.feature_names:

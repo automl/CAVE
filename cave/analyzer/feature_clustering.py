@@ -4,6 +4,7 @@ import logging
 from pandas import DataFrame
 import numpy as np
 
+from cave.feature_analysis.feature_analysis import FeatureAnalysis
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.html.html_helpers import figure_to_html
 

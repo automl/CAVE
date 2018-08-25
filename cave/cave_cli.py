@@ -72,6 +72,7 @@ class CaveCLI(object):
                                   "INFO",
                                   "DEBUG",
                                   "DEV_DEBUG",
+                                  "OFF"
                               ],
                               help="verbose level. use DEV_DEBUG for development to filter boilerplate-logs from "
                                    "imported modules, use DEBUG for full logging. full debug-log always in "
@@ -147,7 +148,7 @@ class CaveCLI(object):
                               default="off")
         opt_opts.add_argument("--cfp_number_quantiles",
                               help="number of quantiles that configurator footprint should plot over time. ",
-                              default=10, type=int)
+                              default=3, type=int)
         opt_opts.add_argument("--cfp_max_plot",
                               help="maximum number of configurations to be plotted in configurator footprint (in case "
                                    "you run into a MemoryError). -1 -> plot all. ",

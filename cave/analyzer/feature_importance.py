@@ -1,5 +1,6 @@
 import os
 import logging
+from collections import OrderedDict
 
 from pandas import DataFrame
 import numpy as np
@@ -38,7 +39,7 @@ class FeatureImportance(BaseAnalyzer):
         return self.plots
 
     def get_table(self):
-        table = DataFrame(data=list(self.imp.values()), index=list(self.imp.keys()), columns=["Error"])
+        table = DataFrame(data=list(self.feat_importance.values()), index=list(self.feat_importance.keys()), columns=["Error"])
         return table
 
     def get_html(self, d=None):
@@ -48,7 +49,7 @@ class FeatureImportance(BaseAnalyzer):
             for p in self.plots:
                 name = os.path.splitext(os.path.basename(p))[0]
                 d["Feature Importance"][name] = {"figure": p}
-        return self.get_table() + figure_to_html(self.get_plots())
+        return self.get_table().to_html() + figure_to_html(self.get_plots())
 
     def get_jupyter(self):
         from IPython.core.display import HTML, display

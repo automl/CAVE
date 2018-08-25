@@ -128,7 +128,5 @@ class CaveFanova(CaveParameterImportance):
         # Show table
         display(HTML(self.get_table()))
         # Show plots
-        print(self.single_plots)
-        display(HTML(figure_to_html(list(self.single_plots.values()), max_in_a_row=3, true_break_between_rows=True)))
-        display(HTML(figure_to_html(self.pairwise_plots.values(), max_in_a_row=3, true_break_between_rows=True)))
+        display(HTML(figure_to_html(list(self.single_plots.values()) + list(self.pairwise_plots.values()), max_in_a_row=3, true_break_between_rows=True)))
 
