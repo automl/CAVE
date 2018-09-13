@@ -41,10 +41,10 @@ class AlgorithmFootprint(BaseAnalyzer):
         output_notebook()
         show(self.bokeh_plot)
 
-    def get_html(self, d=None):
+    def get_html(self, d=None, tooltip=None):
         bokeh_components = self.script, self.div
         if d is not None:
-            d["Algorithm Footprints"] = OrderedDict()
+            d["Algorithm Footprints"] = OrderedDict([("tooltip", tooltip)])
             # Interactive bokeh-plot
             d["Algorithm Footprints"]["Interactive Algorithm Footprint"] = {"bokeh" : (self.script, self.div)}
             for plots in self.plots3d:

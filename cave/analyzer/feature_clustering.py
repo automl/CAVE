@@ -24,9 +24,9 @@ class FeatureClustering(BaseAnalyzer):
     def get_plots(self):
         return [self.cluster_plot]
 
-    def get_html(self, d=None):
+    def get_html(self, d=None, tooltip=None):
         if d is not None:
-            d["Clustering"] = {"figure": self.cluster_plot}
+            d["Clustering"] = {"figure": self.cluster_plot, "tooltip" : tooltip}
         return figure_to_html(self.get_plots())
 
     def get_jupyter(self):

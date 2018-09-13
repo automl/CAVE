@@ -42,9 +42,9 @@ class FeatureImportance(BaseAnalyzer):
         table = DataFrame(data=list(self.feat_importance.values()), index=list(self.feat_importance.keys()), columns=["Error"])
         return table
 
-    def get_html(self, d=None):
+    def get_html(self, d=None, tooltip=None):
         if d is not None:
-            d["Feature Importance"] = OrderedDict()
+            d["Feature Importance"] = OrderedDict([("tooltip", tooltip)])
             d["Feature Importance"]["Table"] = {"table": self.get_table().to_html()}
             for p in self.plots:
                 name = os.path.splitext(os.path.basename(p))[0]

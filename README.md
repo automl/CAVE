@@ -1,10 +1,6 @@
-Status for master branch:
+Status for master branch / development branch:
 
-[![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=master)](https://travis-ci.org/automl/CAVE)
-
-Status for development branch
-
-[![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=development)](https://travis-ci.org/automl/CAVE)
+[![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=master)](https://travis-ci.org/automl/CAVE) / [![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=development)](https://travis-ci.org/automl/CAVE)
 
 # CAVE 
 CAVE is a versatile analysis tool for automatic algorithm configurators. It generates comprehensive reports (e.g. http://ml.informatik.uni-freiburg.de/~biedenka/cave.html) that
@@ -115,3 +111,6 @@ and then you can use CAVE as usual, specifying the file_format as BOHB:
 ```
 cave --folders examples/bohb --file_format BOHB --output CAVE_BOHB_results
 ```
+There is an [example
+jupyter-notebook](https://github.com/automl/HpBandSter/blob/add_docu/hpbandster/examples/Workflow.ipynb) on how to use
+CAVE with BOHB.

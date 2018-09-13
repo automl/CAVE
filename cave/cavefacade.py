@@ -7,6 +7,7 @@ from typing import Union, List
 import copy
 from functools import wraps
 import shutil
+import inspect
 
 import numpy as np
 from pandas import DataFrame
@@ -52,7 +53,7 @@ __email__ = "joshua.marben@neptun.uni-freiburg.de"
 
 
 @contextmanager
-def changedir(newdir):
+def _changedir(newdir):
     """ Helper function to change directory, for example to create a scenario
     from file, where paths to the instance- and feature-files are relative to
     the original SMAC-execution-directory. Same with target algorithms that need
@@ -64,7 +65,7 @@ def changedir(newdir):
     finally:
         os.chdir(olddir)
 
-def analyzer_type(f):
+def _analyzer_type(f):
     @wraps(f)
     def wrap(self, *args, d=None, **kw):
         run = kw.pop('run', None)
@@ -104,10 +105,12 @@ def analyzer_type(f):
                     self.logger.debug(err)
                     self.logger.info("Assuming that jupyter is not installed. Disable for rest of report.")
                     self.show_jupyter = False
-                    pass
             if d is not None:
-                analyzer.get_html(d)
-        self.build_website()
+                tooltip = inspect.getdoc(f)
+                tooltip = tooltip.split("Parameters\n----------")[0] if tooltip is not None else ""
+                tooltip = tooltip.replace("\n", " ")
+                analyzer.get_html(d, tooltip=tooltip)
+        self._build_website()
         return analyzer
     return wrap
 
@@ -132,11 +135,11 @@ class CAVE(object):
 
         In the internal data-management the we have three types of runhistories: *original*, *validated* and *epm*.
 
-        - *original* contain only runs that have been gathered during the optimization-process.
-        - *validated* may contain original runs, but also data that was not gathered iteratively during the
+        - *original_rh* contain only runs that have been gathered during the optimization-process.
+        - *validated_rh* may contain original runs, but also data that was not gathered iteratively during the
           optimization, but systematically through external validation of interesting configurations.
           Important: NO ESTIMATED RUNS IN `validated` RUNHISTORIES!
-        - *epm* contain runs that are gathered through empirical performance models.
+        - *epm_rh* contain runs that are gathered through empirical performance models.
 
         Runhistories are organized as follows:
 
@@ -144,14 +147,6 @@ class CAVE(object):
         - if available, each ConfiguratorRun's *validated_runhistory* contains
           a runhistory with validation-data gathered after the optimization
         - *combined_runhistory* always contains as many real runs as possible
-
-        CaveFacade contains three runhistories:
-
-        - *original_rh*: original runs that have been performed **during optimization**!
-        - *validated_rh*: runs that have been validated, so they were not part of the original optimization
-        - *epm_rh*: contains epm-predictions for all incumbents
-
-        The analyze()-method performs an analysis and output a report.html.
 
         Arguments
         ---------
@@ -162,7 +157,9 @@ class CAVE(object):
         ta_exec_dir: string
             execution directory for target algorithm (to find instance.txt specified in scenario, ..)
         file_format: str
-            what format the rundata is in, options are [SMAC3, SMAC2 and CSV]
+            what format the rundata is in, options are [SMAC3, SMAC2, BOHB and CSV]
+        file_format: str
+            what format the validation rundata is in, options are [SMAC3, SMAC2, CSV and None]
         validation_method: string
             from [validation, epm], how to estimate missing runs
         pimp_max_samples: int
@@ -174,6 +171,10 @@ class CAVE(object):
             against each other. runs are expected in ascending budget-size.
         seed: int
             random seed for analysis (e.g. the random forests)
+        show_jupyter: bool
+            default True, tries to output plots and tables to jupyter-frontend, if available
+        verbose_level: str
+            from [OFF, INFO, DEBUG, DEV_DEBUG and WARNING]
         """
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
         self.output_dir = output_dir
@@ -243,7 +244,7 @@ class CAVE(object):
         # Use scenario of first run for general purposes (expecting they are all the same anyway!
         self.scenario = self.runs[0].solver.scenario
         scenario_sanity_check(self.scenario, self.logger)
-        self.feature_names = self.get_feature_names()
+        self.feature_names = self._get_feature_names()
         self.default = self.scenario.cs.get_default_configuration()
 
         # All runs that have been actually explored during optimization
@@ -315,7 +316,7 @@ class CAVE(object):
         self._init_pimp_and_validator(self.global_validated_rh)
 
         # Estimate missing costs for [def, inc1, inc2, ...]
-        self.validate_default_and_incumbents(self.validation_method, self.ta_exec_dir)
+        self._validate_default_and_incumbents(self.validation_method, self.ta_exec_dir)
         self.global_epm_rh.update(self.global_validated_rh)
 
         for rh_name, rh in [("original", self.global_original_rh),
@@ -361,7 +362,7 @@ class CAVE(object):
         self.validator.epm = self.model
 
     @timing
-    def validate_default_and_incumbents(self, method, ta_exec_dir):
+    def _validate_default_and_incumbents(self, method, ta_exec_dir):
         """Validate default and incumbent configurations on all instances possible.
         Either use validation (physically execute the target algorithm) or EPM-estimate and update according runhistory
         (validation -> self.global_validated_rh; epm -> self.global_epm_rh).
@@ -377,7 +378,7 @@ class CAVE(object):
             self.logger.debug("Validating %s using %s!", run.folder, method)
             self.validator.traj = run.traj
             if method == "validation":
-                with changedir(ta_exec_dir):
+                with _changedir(ta_exec_dir):
                     # TODO determine # repetitions
                     new_rh = self.validator.validate('def+inc', 'train+test', 1, -1, runhistory=self.global_validated_rh)
                 self.global_validated_rh.update(new_rh)
@@ -488,7 +489,7 @@ class CAVE(object):
                 self.global_epm_rh = RunHistory(average_cost)
                 # Train epm and stuff
                 self._init_pimp_and_validator(run.combined_runhistory, alternative_output_dir=sub_output_dir)
-                self.validate_default_and_incumbents(self.validation_method, run.ta_exec_dir)
+                self._validate_default_and_incumbents(self.validation_method, run.ta_exec_dir)
                 self.pimp.incumbent = run.incumbent
                 self.incumbent = run.incumbent
                 run.epm_rh = self.global_epm_rh
@@ -536,13 +537,16 @@ class CAVE(object):
                                       clustering='clustering' in feature_analysis,
                                       importance='importance' in feature_analysis)
 
-        self.build_website()
+        self._build_website()
 
         self.logger.info("CAVE finished. Report is located in %s",
                          os.path.join(self.output_dir, 'report.html'))
 
-    @analyzer_type
+    @_analyzer_type
     def overview_table(self, cave):
+        """ Meta data, i.e. number of instances and parameters as well as configuration budget. Statistics apply to the
+        best run, if multiple configurator runs are compared.
+        """
         return OverviewTable(cave.scenario,
                              cave.global_original_rh,
                              cave.runs[0],
@@ -551,8 +555,9 @@ class CAVE(object):
                              cave.incumbent,
                              cave.output_dir)
 
-    @analyzer_type
+    @_analyzer_type
     def compare_default_incumbent(self, cave):
+        """ Comparing parameters of default and incumbent.  Parameters that differ from default to incumbent are presented first."""
         return CompareDefaultIncumbent(cave.default, cave.incumbent)
 
     def performance_analysis(self, d, run,
@@ -576,16 +581,35 @@ class CAVE(object):
         if algo_footprint and self.scenario.feature_dict:
             self.algorithm_footprints(d=d, run=run)
 
-        self.build_website()
-
-    @analyzer_type
+    @_analyzer_type
     def performance_table(self, cave):
+        """
+        *CAVE* uses three kinds of scores: PAR1, PAR10 and number of timeouts. PAR stands for Penalized Average Runtime.
+        This is applicable on scenarios that optimize runtimes with a cutoff. Since it is not clear how long the
+        algorithm would have run without the cutoff (or whether it would have terminated at all), the cutoff is
+        multiplied by a factor. PAR1 does not penalize (multiplicator of
+
+        If there are multiple runs on the same configuration-instance pair (with different seeds), some resulting in timeouts
+        and some not, the majority decides here.
+
+        The resulting difference of default and incumbent is tested for significance using a paired permutation test with 10000
+        iterations and tests against the null-hypothesis that the mean of performance between default and incumbent is equal.
+        1), while PAR10 penalizes with factor 10.
+        """
         instances = [i for i in cave.scenario.train_insts + cave.scenario.test_insts if i]
         return PerformanceTable(instances, cave.global_validated_rh, cave.default, cave.incumbent,
                                   cave.global_epm_rh, cave.scenario, cave.rng)
 
-    @analyzer_type
+    @_analyzer_type
     def plot_scatter(self, cave):
+        """
+        Scatter plots show the costs of the default and optimized parameter configuration on each instance. Since this
+        looses detailed information about the individual cost on each instance by looking at aggregated cost values in
+        tables, scatter plots provide a more detailed picture. They provide insights whether overall performance
+        improvements can be explained only by some outliers or whether they are due to improvements on the entire
+        instance set. On the left side the training-data is scattered, on the right side the test-data is scattered.
+        """
+
         return PlotScatter(default=cave.default,
                            incumbent=cave.incumbent,
                            rh=cave.global_epm_rh,
@@ -596,15 +620,27 @@ class CAVE(object):
                            output_dir=cave.output_dir,
                            )
 
-    @analyzer_type
+    @_analyzer_type
     def plot_ecdf(self, cave):
+        """
+        Depicts cost distributions over the set of instances.  Since these are empirical distributions, the plots show
+        step functions. These plots provide insights into how well configurations perform up to a certain threshold. For
+        runtime scenarios this shows the probability of solving all instances from the set in a given timeframe. On the
+        left side the training-data is scattered, on the right side the test-data is scattered."""
         return PlotECDF(cave.default, cave.incumbent, cave.global_epm_rh,
                         cave.scenario.train_insts, cave.scenario.test_insts, cave.scenario.cutoff,
                         cave.output_dir)
 
 
-    @analyzer_type
+    @_analyzer_type
     def algorithm_footprints(self, cave):
+        """
+        The instance features are projected into a two/three dimensional space using principal component analysis (PCA)
+        and the footprint of each algorithm is plotted, i.e., on which instances the default or the optimized
+        configuration performs well. In contrast to the other analysis methods in this section, these plots allow
+        insights into which of the two configurations performs well on specific types or clusters of instances. Inspired
+        by Smith-Miles.
+        """
         return AlgorithmFootprint(algorithms=[(cave.default, "default"), (cave.incumbent, "incumbent")],
                                   epm_rh=cave.global_epm_rh,
                                   train=cave.scenario.train_insts,
@@ -615,18 +651,30 @@ class CAVE(object):
                                   rng=cave.rng,
                                   )
 
-    @analyzer_type
+    @_analyzer_type
     def cost_over_time(self, cave):
+        """
+        Depicts the average cost of the best so far found configuration (using all trajectory data) over the time spent
+        by the configurator (including target algorithm runs and the overhead generated by the configurator) If the
+        curve flattens out early, it indicates that too much time was spent for the configurator run; whereas a curve
+        that is still improving at the end of the budget indicates that one should increase the configuration budget.
+        The plotted standard deviation gives the uncertainty over multiple configurator runs.
+        """
         return CostOverTime(cave.scenario, cave.output_dir, cave.global_validated_rh, cave.runs, validator=cave.validator)
 
-    @analyzer_type
+    @_analyzer_type
     def parallel_coordinates(self, cave,
                              params: Union[int, List[str]]=10,
                              n_configs: int=100,
                              max_runs_epm: int=300000):
         """
-        Plot parallel coordinates (visualize higher dimensions), here used
-        to visualize the explored parameter configuration space.
+        Previously used by Golovin et al.  to study the frequency of chosen parameter settings in
+        black-box-optimization.  Each line corresponds to one configuration in the runhistory and shows the parameter
+        settings and the corresponding (estimated) average cost. To handle large configuration spaces with hundreds of
+        parameters, the (at most) 10 most important parameters based on a fANOVA parameter importance analysis are
+        plotted.  To emphasize better configurations, the performance is encoded in the color of each line, ranging from
+        blue to red. These plots provide insights into whether the configurator focused on specific parameter values and
+        how these correlate to their costs.
 
         NOTE: the given runhistory should contain only optimization and no
         validation to analyze the explored parameter-space.
@@ -656,9 +704,27 @@ class CAVE(object):
                                    cs=cave.scenario.cs,
                                    runtime=(cave.scenario.run_obj == 'runtime'))
 
-    @analyzer_type
+    @_analyzer_type
     def configurator_footprint(self, cave,
                                time_slider=False, max_confs=1000, num_quantiles=8):
+        """
+        Analysis of the iteratively sampled configurations during the optimization procedure.  Multi-dimensional scaling
+        (MDS) is used to reduce dimensionality of the search space and plot the distribution of evaluated
+        configurations. The larger the dot, the more often the configuration was evaluated on instances from the set.
+        Configurations that were incumbents at least once during optimization are marked as red squares.  Configurations
+        acquired through local search are marked with a 'x'.  The downward triangle denotes the final incumbent, whereas
+        the orange upward triangle denotes the default configuration.  The heatmap and the colorbar correspond to the
+        predicted performance in that part of the search space.
+
+        Parameters
+        ----------
+        time_slider: bool
+            whether to generate time-slíder widget in bokehplot (cool, but time-consuming)
+        max_confs: int
+            maximum number of configurations to consider for the plot
+        num_quantiles: int
+            number of quantiles for evolution over time (number of time-steps to look at)
+        """
         self.logger.info("... visualizing explored configspace (this may take "
                          "a long time, if there is a lot of data - deactive with --no_configurator_footprint)")
 
@@ -692,39 +758,60 @@ class CAVE(object):
             # Should be after parameter importance, if performed.
             self.parallel_coordinates(d=d, run=run)
 
-    @analyzer_type
+    @_analyzer_type
     def cave_fanova(self, cave):
+        """
+        fANOVA (functional analysis of variance) computes the fraction of the variance in the cost space explained by
+        changing a parameter by marginalizing over all other parameters, for each parameter (or for pairs of
+        parameters). Parameters with high importance scores will have a large impact on the performance.  To this end, a
+        random forest is trained as an empirical performance model on the available empirical data from the available
+        runhistories.
+        """
         fanova = CaveFanova(cave.pimp, cave.incumbent, cave.output_dir)
         cave.evaluators.append(cave.pimp.evaluator)
         cave.param_imp["fanova"] = cave.pimp.evaluator.evaluated_parameter_importance
 
         return fanova
 
-    @analyzer_type
+    @_analyzer_type
     def cave_ablation(self, cave):
+        """ Ablation Analysis is a method to determine parameter importance by comparing two parameter configurations,
+        typically the default and the optimized configuration.  It uses a greedy forward search to determine the order
+        of flipping the parameter settings from default configuration to incumbent such that in each step the cost is
+        maximally decreased."""
+
         ablation = CaveAblation(cave.pimp, cave.incumbent, cave.output_dir)
         cave.evaluators.append(cave.pimp.evaluator)
         cave.param_imp["ablation"] = cave.pimp.evaluator.evaluated_parameter_importance
 
         return ablation
 
-    @analyzer_type
+    @_analyzer_type
     def pimp_forward_selection(self, cave):
+        """
+        Forward Selection is a generic method to obtain a subset of parameters to achieve the same prediction error as
+        with the full parameter set.  Each parameter is scored by how much the out-of-bag-error of an empirical
+        performance model based on a random forest is decreased."""
         forward = CaveForwardSelection(cave.pimp, cave.incumbent, cave.output_dir)
         cave.evaluators.append(cave.pimp.evaluator)
         cave.param_imp["forward-selection"] = cave.pimp.evaluator.evaluated_parameter_importance
 
         return forward
 
-    @analyzer_type
+    @_analyzer_type
     def local_parameter_importance(self, cave):
+        """ Using an empirical performance model, performance changes of a configuration along each parameter are
+        calculated. To quantify the importance of a parameter value, the variance of all cost values by changing that
+        parameter are predicted and then the fraction of all variances is computed. This analysis is inspired by the
+        human behaviour to look for improvements in the neighborhood of individual parameters of a configuration."""
+
         lpi = LocalParameterImportance(cave.pimp, cave.incumbent, cave.output_dir)
         cave.evaluators.append(cave.pimp.evaluator)
         cave.param_imp["lpi"] = cave.pimp.evaluator.evaluated_parameter_importance
 
         return lpi
 
-    @analyzer_type
+    @_analyzer_type
     def pimp_comparison_table(self, cave,
                               pimp_sort_table_by="average"):
         return PimpComparisonTable(cave.pimp,
@@ -745,54 +832,64 @@ class CAVE(object):
             sum_ += 1
             self.logger.info("fANOVA...")
 
-            self.build_website()
-
         if ablation:
             sum_ += 1
             self.logger.info("Ablation...")
             self.cave_ablation(d=d, run=run)
-            self.build_website()
 
         if forward_selection:
             sum_ += 1
             self.pimp_forward_selection(d=d, run=run)
             self.logger.info("Forward Selection...")
-            self.build_website()
 
         if lpi:
             sum_ += 1
             self.logger.info("Local EPM-predictions around incumbent...")
             self.local_parameter_importance(d=d, run=run)
-            self.build_website()
 
         if sum_ >= 2:
             self.pimp_comparison_table(d=d, run=run)
-            self.build_website()
 
-    @analyzer_type
+    @_analyzer_type
     def feature_importance(self, cave):
         res = FeatureImportance(cave.pimp, cave.output_dir)
         cave.feature_imp = res.feat_importance
         return res
 
-    @analyzer_type
+    @_analyzer_type
     def box_violin(self, cave):
+        """
+        Box and Violin Plots show the distribution of each feature value across the instances.  Box plots show the
+        quantiles of the distribution and violin plots show the approximated probability density of the feature values.
+        Such plots are useful to inspect the instances and to detect characteristics of the instances. For example, if
+        the distributions have two or more modes, it could indicate that the instance set is heterogeneous which could
+        cause problems in combination with racing strategies configurators typically use. NaN values are removed from
+        the data."""
         return BoxViolin(cave.output_dir,
                          cave.scenario,
                          cave.feature_names,
                          cave.feature_imp)
 
 
-    @analyzer_type
+    @_analyzer_type
     def feature_correlation(self, cave):
+        """
+        Correlation of features based on the Pearson product-moment correlation. Since instance features are used to train an
+        empirical performance model in model-based configurators, it can be important to remove correlated features in a
+        pre-processing step depending on the machine-learning algorithm.  Darker fields corresponds to a larger correlation
+        between the features."""
         return FeatureCorrelation(cave.output_dir,
                                 cave.scenario,
                                 cave.feature_names,
                                 cave.feature_imp)
 
 
-    @analyzer_type
+    @_analyzer_type
     def feature_clustering(self, cave):
+        """ Clustering instances in 2d; the color encodes the cluster assigned to each cluster. Similar to ISAC, we use
+        a k-means to cluster the instances in the feature space. As pre-processing, we use standard scaling and a PCA to
+        2 dimensions. To guess the number of clusters, we use the silhouette score on the range of 2 to 12 in the number
+        of clusters"""
         return FeatureClustering(cave.output_dir,
                                  cave.scenario,
                                  cave.feature_names,
@@ -809,28 +906,28 @@ class CAVE(object):
             self.feature_correlation(d=d, run=run)
         if clustering:
             self.feature_clustering(d=d, run=run)
-        self.build_website()
 
-    @analyzer_type
+    @_analyzer_type
     def bohb_learning_curves(self, cave):
         return BohbLearningCurves(self.scenario.cs.get_hyperparameter_names(), result_object=self.bohb_result)
 
 ############################################################################
 ############################################################################
     def print_budgets(self):
+        """If the analyzed configurator uses budgets, print a list of available budgets."""
         if self.use_budgets:
             print(list(self.folder_to_run.keys()))
         else:
-            print("This cave instance does not seem to use budgets.")
+            raise NotImplementedError("This CAVE instance does not seem to use budgets.")
 
-    def get_feature_names(self):
+    def _get_feature_names(self):
         if not self.scenario.feature_dict:
             self.logger.info("No features available. Skipping feature analysis.")
             return
         feat_fn = self.scenario.feature_fn
         if not self.scenario.feature_names:
             self.logger.debug("`scenario.feature_names` is not set. Loading from '%s'", feat_fn)
-            with changedir(self.ta_exec_dir if self.ta_exec_dir else '.'):
+            with _changedir(self.ta_exec_dir if self.ta_exec_dir else '.'):
                 if not feat_fn or not os.path.exists(feat_fn):
                     self.logger.warning("Feature names are missing. Either provide valid feature_file in scenario "
                                         "(currently %s) or set `scenario.feature_names` manually." % feat_fn)
@@ -843,7 +940,7 @@ class CAVE(object):
             feat_names = copy.deepcopy(self.scenario.feature_names)
         return feat_names
 
-    def build_website(self):
+    def _build_website(self):
         self.builder.generate_html(self.website)
 
     def set_verbosity(self, level):

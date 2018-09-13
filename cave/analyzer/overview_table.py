@@ -117,9 +117,9 @@ class OverviewTable(BaseAnalyzer):
     def get_table(self):
         return self.table
 
-    def get_html(self, d=None):
+    def get_html(self, d=None, tooltip=None):
         if d is not None:
-            d["Overview"] = {"table": self.html_table}
+            d["Overview"] = {"table": self.html_table, "tooltip" : tooltip}
         return self.html_table
 
     def get_jupyter(self):

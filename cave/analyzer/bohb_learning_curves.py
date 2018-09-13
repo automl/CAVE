@@ -224,9 +224,9 @@ class BohbLearningCurves(BaseAnalyzer):
         output_notebook()
         show(self.bokeh_plot)
 
-    def get_html(self, d=None):
+    def get_html(self, d=None, tooltip=None):
         bokeh_components = components(self.bokeh_plot)
         if d is not None:
-            d["BOHB Learning Curves"] = {"bokeh" : bokeh_components}
+            d["BOHB Learning Curves"] = {"bokeh" : bokeh_components, "tooltip" : tooltip}
         return bokeh_components
 
