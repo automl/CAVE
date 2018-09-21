@@ -30,9 +30,9 @@ class LocalParameterImportance(CaveParameterImportance):
     def get_plots(self):
         return list(self.plots.values())
 
-    def get_html(self, d=None):
+    def get_html(self, d=None, tooltip=None):
         if d is not None:
-            d["Local Parameter Importance (LPI)"] = OrderedDict()
+            d["Local Parameter Importance (LPI)"] = OrderedDict([("tooltip", tooltip)])
             for param, plot in self.plots.items():
                 d["Local Parameter Importance (LPI)"][param] = {"figure": plot}
         return figure_to_html(self.get_plots())

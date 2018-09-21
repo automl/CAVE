@@ -96,13 +96,13 @@ class ConfiguratorFootprint(BaseAnalyzer):
             self.bokeh_plot = self._plot()
         show(self.bokeh_plot)
 
-    def get_html(self, d=None):
+    def get_html(self, d=None, tooltip=None):
         bokeh_components = self.script, self.div
         if d is not None:
             if self.num_quantiles == 1:  # Only one plot, no need for "Static"-field
-                d["Configurator Footprint"] = {"bokeh": (bokeh_components)}
+                d["Configurator Footprint"] = {"bokeh": (bokeh_components), "tooltip" : tooltip}
             else:
-                d["Configurator Footprint"] = OrderedDict()
+                d["Configurator Footprint"] = OrderedDict([("tooltip", tooltip)])
                 d["Configurator Footprint"]["Interactive"] = {"bokeh": (bokeh_components)}
                 if all([True for p in self.cfp_paths if os.path.exists(p)]):  # If the plots were actually generated
                     d["Configurator Footprint"]["Static"] = {"figure": self.cfp_paths}

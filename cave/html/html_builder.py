@@ -195,8 +195,9 @@ for (i = 0; i < acc.length; i++) {
             script goes into header, div goes into body
         '''
         script, div = "", ""
-        if data_dict.get("tooltip"):
-            tooltip = "<div class=\"help-tip\"><p>{}</p></div>".format(data_dict.get("tooltip"))
+        tooltip = data_dict.get("tooltip", None)
+        if tooltip is not None:
+            tooltip = "<div class=\"help-tip\"><p>{}</p></div>".format(tooltip)
         elif get_tooltip(layer_name):  # if no tooltip is parsed, try to look it up
             tooltip = "<div class=\"help-tip\"><p>{}</p></div>".format(get_tooltip(layer_name))
         else:
@@ -205,6 +206,8 @@ for (i = 0; i < acc.length; i++) {
         div += "<div class=\"panel\">\n"
 
         for k, v in data_dict.items():
+            if k == "tooltip":
+                continue
             if k.startswith('budget'):
                 self.budget = k[7:]
             if not v:

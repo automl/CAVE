@@ -67,7 +67,7 @@ class PimpComparisonTable(BaseAnalyzer):
 
         self.comp_table = DataFrame(values, columns=columns, index=index)
 
-    def get_html(self, d=None):
+    def get_html(self, d=None, tooltip=None):
         table = self.comp_table.to_html()
         if d is not None:
             d["Importance Table"] = {

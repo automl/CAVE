@@ -24,9 +24,9 @@ class BoxViolin(BaseAnalyzer):
     def get_plots(self):
         return [x[1] for x in self.name_plots]
 
-    def get_html(self, d=None):
+    def get_html(self, d=None, tooltip=None):
         if d is not None:
-            d["Violin and Box Plots"] = OrderedDict()
+            d["Violin and Box Plots"] = OrderedDict([("tooltip", tooltip)])
             for plot_tuple in self.name_plots:
                 key = "%s" % (plot_tuple[0])
                 d["Violin and Box Plots"][key] = {"figure": plot_tuple[1]}

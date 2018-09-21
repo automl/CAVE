@@ -280,9 +280,9 @@ class PerformanceTable(BaseAnalyzer):
         self.logger.debug("p-value for def/inc-difference: %f (paired t-test)", p)
         return p
 
-    def get_html(self, d=None):
+    def get_html(self, d=None, tooltip=None):
         if d is not None:
-            d["Performance Analysis"] = OrderedDict({"table" : self.table})
+            d["Performance Analysis"] = OrderedDict({"table" : self.table, "tooltip" : tooltip})
         return "", self.table
 
     def get_jupyter(self):

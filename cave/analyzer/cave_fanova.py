@@ -104,13 +104,13 @@ class CaveFanova(CaveParameterImportance):
     def get_plots(self):
         return list(self.single_plots.values()) + list(self.pairwise_plots.values())
 
-    def get_html(self, d=None):
+    def get_html(self, d=None, tooltip=None):
         div = ""
         if d is not None and self.error:
             d["fANOVA"] = {"else": self.error + " Check 'debug/debug.log' for more information."}
             div = self.error
         elif d is not None:
-            d["fANOVA"] = OrderedDict()
+            d["fANOVA"] = OrderedDict([("tooltip", tooltip)])
             d["fANOVA"]["Importance"] = {"table": self.fanova_table}
             # Insert plots (the received plots is a dict, mapping param -> path)
             d["fANOVA"]["Marginals"] = OrderedDict()

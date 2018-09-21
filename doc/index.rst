@@ -17,6 +17,7 @@ Contents:
 
    installation
    quickstart
+   manual
    faq
    api
    contact
