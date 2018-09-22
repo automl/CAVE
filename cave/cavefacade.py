@@ -263,14 +263,14 @@ class CAVE(object):
 
         # Builder for html-website
         custom_logo = './custom_logo.png'
-        if file_format.startswith('SMAC'):
-            logo_fn = 'SMAC_logo.png'
-        elif file_format == 'BOHB':
+        if self.use_budgets:
             logo_fn = 'BOHB_logo.png'
+        elif file_format.startswith('SMAC'):
+            logo_fn = 'SMAC_logo.png'
         elif os.path.exists(custom_logo):
             logo_fn = custom_logo
         else:
-            logo_fn = 'ml4aad.png'
+            logo_fn = 'automl-logo.png'
             self.logger.info("No suitable logo found. You can use a custom logo simply by having a file called '%s' "
                              "in the directory from which you run CAVE.", custom_logo)
         self.builder = HTMLBuilder(self.output_dir, "CAVE", logo_fn=logo_fn, logo_custom=custom_logo==logo_fn)
@@ -591,7 +591,7 @@ class CAVE(object):
         For timeouts: if there are multiple runs on the same configuration-instance pair (with different seeds), some
         resulting in timeouts and some not, the majority decides here.
 
-        P-value results from comparing default and incumbent using a paired permutation test with 10000 iterations
+        P-value (between 0 and 1) results from comparing default and incumbent using a paired permutation test with 10000 iterations
         (permuting instances) and tests against the null-hypothesis that the mean of performance between default and
         incumbent is equal.
 
