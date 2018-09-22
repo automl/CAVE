@@ -72,42 +72,71 @@ class PerformanceTable(BaseAnalyzer):
         metrics = []
         if self.scenario.run_obj == 'runtime':
             metrics.append('PAR10')
-        metrics.append('PAR1')
+            metrics.append('PAR1')
+        else:
+            metrics.append('Quality')
         if self.scenario.cutoff:
             metrics.append('Timeouts')
 
-        if len(self.scenario.train_insts) > 1 and len(self.scenario.test_insts) > 1:
-            # Distinction between train and test
-            # Create table
-            array = []
-            if 'PAR10' in metrics:
-                array.append([round(def_par10[0], dec_place) if np.isfinite(def_par10[0]) else 'N/A',
-                               round(inc_par10[0], dec_place) if np.isfinite(inc_par10[0]) else 'N/A',
-                               round(ora_par10[0], dec_place) if np.isfinite(ora_par10[0]) else 'N/A',
-                               round(def_par10[1], dec_place) if np.isfinite(def_par10[1]) else 'N/A',
-                               round(inc_par10[1], dec_place) if np.isfinite(inc_par10[1]) else 'N/A',
-                               round(ora_par10[1], dec_place) if np.isfinite(ora_par10[1]) else 'N/A',
-                               p_value_par10])
-            array.append([round(def_par1[0], dec_place) if np.isfinite(def_par1[0]) else 'N/A',
-                               round(inc_par1[0], dec_place) if np.isfinite(inc_par1[0]) else 'N/A',
-                               round(ora_par1[0], dec_place) if np.isfinite(ora_par1[0]) else 'N/A',
-                               round(def_par1[1], dec_place) if np.isfinite(def_par1[1]) else 'N/A',
-                               round(inc_par1[1], dec_place) if np.isfinite(inc_par1[1]) else 'N/A',
-                               round(ora_par1[1], dec_place) if np.isfinite(ora_par1[1]) else 'N/A',
-                               p_value_par1])
-            if 'Timeouts' in metrics:
-                array.append(["{}/{}".format(def_timeouts_tuple[0][0], def_timeouts_tuple[0][1]),
-                               "{}/{}".format(inc_timeouts_tuple[0][0], inc_timeouts_tuple[0][1]),
-                               "{}/{}".format(ora_timeout[0][0], ora_timeout[0][1]),
-                               "{}/{}".format(def_timeouts_tuple[1][0], def_timeouts_tuple[1][1]),
-                               "{}/{}".format(inc_timeouts_tuple[1][0], inc_timeouts_tuple[1][1]),
-                               "{}/{}".format(ora_timeout[1][0], ora_timeout[1][1]),
-                               p_value_timeouts
-                               ])
-            array = np.array(array)
-            df = DataFrame(data=array, index=metrics,
-                           columns=['Default', 'Incumbent', 'Oracle', 'Default', 'Incumbent', 'Oracle', 'p-value'])
-            table = df.to_html()
+        train, test = len(self.scenario.train_insts) > 1, len(self.scenario.test_insts) > 1
+        oracle = train or test  # oracle only makes sense with instances
+        # Create table
+        array = []
+        if 'PAR10' in metrics:
+            if train and test:
+                values = [def_par10[0], inc_par10[0], ora_par10[0], def_par10[1], inc_par10[1], ora_par10[1]]
+            elif oracle:
+                values = [def_par10, inc_par10, ora_par10]  # oracle only with instances
+            else:
+                values = [def_par10, inc_par10]
+            values = [round(value, dec_place) if np.isfinite(value) else 'N/A' for value in values]
+            if train or test:
+                values.append(p_value_par10)
+            array.append(values)
+        if 'PAR1' in metrics or 'Quality' in metrics:
+            if train and test:
+                values = [def_par1[0], inc_par1[0], ora_par1[0], def_par1[1], inc_par1[1], ora_par1[1]]
+            elif oracle:
+                values = [def_par1, inc_par1, ora_par1]  # oracle only with instances
+            else:
+                values = [def_par1, inc_par1]
+            values = [round(value, dec_place) if np.isfinite(value) else 'N/A' for value in values]
+            if train or test:
+                values.append(p_value_par1)
+            array.append(values)
+        if 'Timeouts' in metrics:
+            if train and test:
+                values = ["{}/{}".format(def_timeouts_tuple[0][0], def_timeouts_tuple[0][1]),
+                          "{}/{}".format(inc_timeouts_tuple[0][0], inc_timeouts_tuple[0][1]),
+                          "{}/{}".format(ora_timeout[0][0], ora_timeout[0][1]),
+                          "{}/{}".format(def_timeouts_tuple[1][0], def_timeouts_tuple[1][1]),
+                          "{}/{}".format(inc_timeouts_tuple[1][0], inc_timeouts_tuple[1][1]),
+                          "{}/{}".format(ora_timeout[1][0], ora_timeout[1][1]),
+                          ]
+            elif oracle:
+                values = ["{}/{}".format(def_timeouts_tuple[0], def_timeouts_tuple[1]),
+                          "{}/{}".format(inc_timeouts_tuple[0], inc_timeouts_tuple[1]),
+                          "{}/{}".format(ora_timeout[0], ora_timeout[1])]
+            else:
+                values = ["{}/{}".format(def_timeouts_tuple[0], def_timeouts_tuple[1]),
+                          "{}/{}".format(inc_timeouts_tuple[0], inc_timeouts_tuple[1]),]
+            if train or test:
+                values.append(p_value_timeouts)
+            array.append(values)
+
+        array = np.array(array)
+        columns = ['Default', 'Incumbent']
+        if oracle:
+            columns.append('Oracle')
+        if train and test:
+            columns = columns + columns
+        if train or test:
+           columns.append('p-value')
+        self.logger.debug(array)
+        self.logger.debug(columns)
+        df = DataFrame(data=array, index=metrics, columns=columns)
+        table = df.to_html()
+        if train and test:
             # Insert two-column-header
             table = table.split(sep='</thead>', maxsplit=1)[1]
             new_table = "<table border=\"3\" class=\"dataframe\">\n"\
@@ -131,27 +160,7 @@ class PerformanceTable(BaseAnalyzer):
                         "    </tr>\n"\
                         "</thead>\n"
             table = new_table + table
-        else:
-            # No distinction between train and test
-            array = []
-            if 'PAR10' in metrics:
-                array.append([round(def_par10, dec_place) if np.isfinite(def_par10) else 'N/A',
-                               round(inc_par10, dec_place) if np.isfinite(inc_par10) else 'N/A',
-                               round(ora_par10, dec_place) if np.isfinite(ora_par10) else 'N/A',
-                               p_value_par10])
-            array.append([round(def_par1, dec_place) if np.isfinite(def_par1) else 'N/A',
-                               round(inc_par1, dec_place) if np.isfinite(inc_par1) else 'N/A',
-                               round(ora_par1, dec_place) if np.isfinite(ora_par1) else 'N/A',
-                               p_value_par1])
-            if 'Timeouts' in metrics:
-                array.append(["{}/{}".format(def_timeouts_tuple[0], def_timeouts_tuple[1]),
-                               "{}/{}".format(inc_timeouts_tuple[0], inc_timeouts_tuple[1]),
-                               "{}/{}".format(ora_timeout[0], ora_timeout[1]),
-                               p_value_timeouts])
-            array = np.array(array)
-            df = DataFrame(data=array, index=metrics,
-                           columns=['Default', 'Incumbent', 'Oracle', 'p-value'])
-            table = df.to_html()
+
         self.table = table
         self.dataframe = df
         return df

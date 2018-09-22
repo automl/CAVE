@@ -584,17 +584,19 @@ class CAVE(object):
     @_analyzer_type
     def performance_table(self, cave):
         """
-        *CAVE* uses three kinds of scores: PAR1, PAR10 and number of timeouts. PAR stands for Penalized Average Runtime.
-        This is applicable on scenarios that optimize runtimes with a cutoff. Since it is not clear how long the
-        algorithm would have run without the cutoff (or whether it would have terminated at all), the cutoff is
-        multiplied by a factor. PAR1 does not penalize (multiplicator of
+        If the run-objective is 'runtime': PAR stands for Penalized Average Runtime. If there is a timeout in the
+        scenario, runs that were thus cut off can be penalized with a factor (because we do not know how long it would
+        have run). PAR1 is no penalty, PAR10 will count all cutoffs with a factor of 10.
 
-        If there are multiple runs on the same configuration-instance pair (with different seeds), some resulting in timeouts
-        and some not, the majority decides here.
+        For timeouts: if there are multiple runs on the same configuration-instance pair (with different seeds), some
+        resulting in timeouts and some not, the majority decides here.
 
-        The resulting difference of default and incumbent is tested for significance using a paired permutation test with 10000
-        iterations and tests against the null-hypothesis that the mean of performance between default and incumbent is equal.
-        1), while PAR10 penalizes with factor 10.
+        P-value results from comparing default and incumbent using a paired permutation test with 10000 iterations
+        (permuting instances) and tests against the null-hypothesis that the mean of performance between default and
+        incumbent is equal.
+
+        Oracle performance searches for the best single run per instance (so the best seed/configuration-pair that was
+        seen) and aggregates over them.
         """
         instances = [i for i in cave.scenario.train_insts + cave.scenario.test_insts if i]
         return PerformanceTable(instances, cave.global_validated_rh, cave.default, cave.incumbent,
