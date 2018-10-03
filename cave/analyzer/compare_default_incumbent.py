@@ -44,7 +44,8 @@ class CompareDefaultIncumbent(BaseAnalyzer):
 
     def get_html(self, d=None, tooltip=None):
         if d is not None:
-            d["Default vs Incumbent"] = {"table": self.html_table, "tooltip" : tooltip}
+            d["table"] = self.html_table
+            d["tooltip"] = tooltip
         return self.html_table
 
     def get_jupyter(self):

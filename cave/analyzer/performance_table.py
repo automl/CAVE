@@ -291,7 +291,8 @@ class PerformanceTable(BaseAnalyzer):
 
     def get_html(self, d=None, tooltip=None):
         if d is not None:
-            d["Performance Analysis"] = OrderedDict({"table" : self.table, "tooltip" : tooltip})
+            d["table"] = self.table
+            d["tooltip"] = tooltip
         return "", self.table
 
     def get_jupyter(self):

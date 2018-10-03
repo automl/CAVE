@@ -105,11 +105,8 @@ def _analyzer_type(f):
                     self.logger.debug(err)
                     self.logger.info("Assuming that jupyter is not installed. Disable for rest of report.")
                     self.show_jupyter = False
-            if d is not None:
-                tooltip = inspect.getdoc(f)
-                tooltip = tooltip.split("Parameters\n----------")[0] if tooltip is not None else ""
-                tooltip = tooltip.replace("\n", " ")
-                analyzer.get_html(d, tooltip=tooltip)
+            if isinstance(d, dict):
+                analyzer.get_html(d, tooltip=self._get_tooltip(f))
         self._build_website()
         return analyzer
     return wrap
@@ -460,7 +457,7 @@ class CAVE(object):
         headings = ["Meta Data",
                     "Best Configuration",
                     "Performance Analysis",
-                    "Configurator's Behavior",
+                    "Configurators Behavior",
                     "Parameter Importance",
                     "Feature Analysis",
                     "BOHB Plot",
@@ -478,8 +475,6 @@ class CAVE(object):
                 self.bohb_learning_curves(d=self.website)
             for run in self.runs:
                 sub_sec = os.path.basename(run.folder)
-                for h in headings:
-                    self.website[h][sub_sec] = OrderedDict()
                 # Set paths for each budget individual to avoid path-conflicts
                 sub_output_dir = os.path.join(self.output_dir, 'content', sub_sec)
                 os.makedirs(sub_output_dir, exist_ok=True)
@@ -495,22 +490,24 @@ class CAVE(object):
                 run.epm_rh = self.global_epm_rh
                 self.best_run = run
                 # Perform analysis
-                self.overview_table(d=self.website["Meta Data"][sub_sec], run=sub_sec)
-                self.compare_default_incumbent(d=self.website["Best Configuration"][sub_sec], run=sub_sec)
-                self.performance_analysis(self.website["Performance Analysis"][sub_sec], sub_sec,
+                self.overview_table(d=self._get_dict(self.website, "Meta Data", sub_sec), run=sub_sec)
+                self.compare_default_incumbent(d=self._get_dict(self.website, "Best Configuration", sub_sec), run=sub_sec)
+                self.website["Meta Data"]["tooltip"] = self._get_tooltip(self.overview_table)
+                self.website["Best Configuration"]["tooltip"] = self._get_tooltip(self.compare_default_incumbent)
+                self.performance_analysis(self.website["Performance Analysis"], sub_sec,
                                           performance, cdf, scatter, algo_footprint)
-                self.parameter_importance(self.website["Parameter Importance"][sub_sec], sub_sec,
+                self.parameter_importance(self.website["Parameter Importance"], sub_sec,
                                           ablation='ablation' in param_importance,
                                           fanova='fanova' in param_importance,
                                           forward_selection='forward_selection' in param_importance,
                                           lpi='lpi' in param_importance,
                                           pimp_sort_table_by=pimp_sort_table_by)
-                self.configurators_behavior(self.website["Configurator's Behavior"][sub_sec], sub_sec,
+                self.configurators_behavior(self.website["Configurators Behavior"], sub_sec,
                                             cost_over_time,
                                             cfp, cfp_max_plot, cfp_time_slider, cfp_number_quantiles,
                                             parallel_coordinates)
                 if self.feature_names:
-                    self.feature_analysis(self.website["Feature Analysis"][sub_sec], sub_sec,
+                    self.feature_analysis(self.website["Feature Analysis"], sub_sec,
                                           box_violin='box_violin' in feature_analysis,
                                           correlation='correlation' in feature_analysis,
                                           clustering='clustering' in feature_analysis,
@@ -526,7 +523,7 @@ class CAVE(object):
                                       forward_selection='forward_selection' in param_importance,
                                       lpi='lpi' in param_importance,
                                       pimp_sort_table_by=pimp_sort_table_by)
-            self.configurators_behavior(self.website["Configurator's Behavior"], None,
+            self.configurators_behavior(self.website["Configurators Behavior"], None,
                                         cost_over_time,
                                         cfp, cfp_max_plot, cfp_time_slider, cfp_number_quantiles,
                                         parallel_coordinates)
@@ -541,6 +538,18 @@ class CAVE(object):
 
         self.logger.info("CAVE finished. Report is located in %s",
                          os.path.join(self.output_dir, 'report.html'))
+
+    def _get_dict(self, d, layername, run=None):
+        """ Get the appropriate sub-dict for this layer (or layer-run combination) and create it if necessary """
+        if not isinstance(d, dict):
+            raise ValueError("Pass a valid dict to _get_dict!")
+        if not layername in d:
+            d[layername] = OrderedDict()
+        if run is not None and not run in d[layername] and self.use_budgets:
+            d[layername][run] = OrderedDict()
+        if run is not None:
+            return d[layername][run]
+        return d[layername]
 
     @_analyzer_type
     def overview_table(self, cave):
@@ -573,13 +582,17 @@ class CAVE(object):
         """
 
         if performance:
-            self.performance_table(d=d, run=run)
+            self.performance_table(d=self._get_dict(d, "Performance Table", run=run), run=run)
+            d["Performance Table"]["tooltip"] = self._get_tooltip(self.performance_table)
         if cdf:
-            self.plot_ecdf(d=d, run=run)
+            self.plot_ecdf(d=self._get_dict(d, "empirical Cumulative Distribution Function (eCDF)", run=run), run=run)
+            d["empirical Cumulative Distribution Function (eCDF)"]["tooltip"] = self._get_tooltip(self.plot_ecdf)
         if scatter:
-            self.plot_scatter(d=d, run=run)
+            self.plot_scatter(d=self._get_dict(d, "Scatterplot", run=run), run=run)
+            d["Scatterplot"]["tooltip"] = self._get_tooltip(self.plot_scatter)
         if algo_footprint and self.scenario.feature_dict:
-            self.algorithm_footprints(d=d, run=run)
+            self.algorithm_footprints(d=self._get_dict(d, "Algorithm Footprints", run=run), run=run)
+            d["Algorithm Footprints"]["tooltip"] = self._get_tooltip(self.algorithm_footprints)
 
     @_analyzer_type
     def performance_table(self, cave):
@@ -750,15 +763,16 @@ class CAVE(object):
                                parallel_coordinates=False):
 
         if cost_over_time:
-            self.cost_over_time(d=d, run=run)
-
+            self.cost_over_time(d=self._get_dict(d, "Cost Over Time", run=run), run=run)
+            d["Cost Over Time"]["tooltip"] = self._get_tooltip(self.cost_over_time)
         if cfp:  # Configurator Footprint
-            self.configurator_footprint(d=d, run=run,
+            self.configurator_footprint(d=self._get_dict(d, "Configurator Footprint", run=run), run=run,
                                         time_slider=cfp_time_slider, max_confs=cfp_max_plot, num_quantiles=cfp_number_quantiles)
-
+            d["Configurator Footprint"]["tooltip"] = self._get_tooltip(self.configurator_footprint)
         if parallel_coordinates:
             # Should be after parameter importance, if performed.
-            self.parallel_coordinates(d=d, run=run)
+            self.parallel_coordinates(d=self._get_dict(d, "Parallel Coordinates", run=run), run=run)
+            d["Parallel Coordinates"]["tooltip"] = self._get_tooltip(self.parallel_coordinates)
 
     @_analyzer_type
     def cave_fanova(self, cave):
@@ -816,6 +830,9 @@ class CAVE(object):
     @_analyzer_type
     def pimp_comparison_table(self, cave,
                               pimp_sort_table_by="average"):
+        """
+        Parameters are sorted by pimp_sort_table_by. Note, that the values are not directly comparable, since the
+        different techniques provide different metrics (see respective tooltips for details on the differences)."""
         return PimpComparisonTable(cave.pimp,
                                    cave.evaluators,
                                    sort_table_by=pimp_sort_table_by,
@@ -830,27 +847,33 @@ class CAVE(object):
         """Perform the specified parameter importance procedures. """
         sum_ = 0
         if fanova:
-            self.cave_fanova(d=d, run=run)
-            sum_ += 1
             self.logger.info("fANOVA...")
+            self.cave_fanova(d=self._get_dict(d, "fANOVA", run=run), run=run)
+            d["fANOVA"]["tooltip"] = self._get_tooltip(self.cave_fanova)
+            sum_ += 1
 
         if ablation:
-            sum_ += 1
             self.logger.info("Ablation...")
-            self.cave_ablation(d=d, run=run)
+            self.cave_ablation(d=self._get_dict(d, "Ablation", run=run), run=run)
+            d["Ablation"]["tooltip"] = self._get_tooltip(self.cave_ablation)
+            sum_ += 1
 
         if forward_selection:
-            sum_ += 1
-            self.pimp_forward_selection(d=d, run=run)
             self.logger.info("Forward Selection...")
+            self.pimp_forward_selection(d=self._get_dict(d, "Forward Selection", run=run), run=run)
+            d["Forward Selection"]["tooltip"] = self._get_tooltip(self.pimp_forward_selection)
+            sum_ += 1
 
         if lpi:
-            sum_ += 1
             self.logger.info("Local EPM-predictions around incumbent...")
-            self.local_parameter_importance(d=d, run=run)
+            self.local_parameter_importance(d=self._get_dict(d, "Local Parameter Importance (LPI)", run=run), run=run)
+            d["Local Parameter Importance (LPI)"]["tooltip"] = self._get_tooltip(self.local_parameter_importance)
+            sum_ += 1
 
         if sum_ >= 2:
-            self.pimp_comparison_table(d=d, run=run)
+            self.pimp_comparison_table(d=self._get_dict(d, "Importance Table", run=run), run=run)
+            d.move_to_end("Importance Table", last=False)
+            d["Importance Table"]["tooltip"] = self._get_tooltip(self.pimp_comparison_table).replace('pimp_sort_table_by', pimp_sort_table_by)
 
     @_analyzer_type
     def feature_importance(self, cave):
@@ -881,9 +904,9 @@ class CAVE(object):
         pre-processing step depending on the machine-learning algorithm.  Darker fields corresponds to a larger correlation
         between the features."""
         return FeatureCorrelation(cave.output_dir,
-                                cave.scenario,
-                                cave.feature_names,
-                                cave.feature_imp)
+                                  cave.scenario,
+                                  cave.feature_names,
+                                  cave.feature_imp)
 
 
     @_analyzer_type
@@ -901,13 +924,17 @@ class CAVE(object):
                          box_violin=False, correlation=False, clustering=False, importance=False):
         # feature importance using forward selection
         if importance:
-            self.feature_importance(d=d, run=run)
+            self.feature_importance(d=self._get_dict(d, "Feature Importance", run=run), run=run)
+            d["Feature Importance"]["tooltip"] = self._get_tooltip(self.feature_importance)
         if box_violin:
-            self.box_violin(d=d, run=run)
+            self.box_violin(d=self._get_dict(d, "Violin and Box Plots", run=run), run=run)
+            d["Violin and Box Plots"]["tooltip"] = self._get_tooltip(self.box_violin)
         if correlation:
-            self.feature_correlation(d=d, run=run)
+            self.feature_correlation(d=self._get_dict(d, "Correlation", run=run), run=run)
+            d["Correlation"]["tooltip"] = self._get_tooltip(self.feature_correlation)
         if clustering:
-            self.feature_clustering(d=d, run=run)
+            self.feature_clustering(d=self._get_dict(d, "Clustering", run=run), run=run)
+            d["Clustering"]["tooltip"] = self._get_tooltip(self.feature_clustering)
 
     @_analyzer_type
     def bohb_learning_curves(self, cave):
@@ -921,6 +948,13 @@ class CAVE(object):
             print(list(self.folder_to_run.keys()))
         else:
             raise NotImplementedError("This CAVE instance does not seem to use budgets.")
+
+    def _get_tooltip(self, f):
+        """Extract tooltip from function-docstrings"""
+        tooltip = inspect.getdoc(f)
+        tooltip = tooltip.split("Parameters\n----------")[0] if tooltip is not None else ""
+        tooltip = tooltip.replace("\n", " ")
+        return tooltip
 
     def _get_feature_names(self):
         if not self.scenario.feature_dict:

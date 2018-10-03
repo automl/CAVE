@@ -99,15 +99,16 @@ class ConfiguratorFootprint(BaseAnalyzer):
     def get_html(self, d=None, tooltip=None):
         bokeh_components = self.script, self.div
         if d is not None:
-            if self.num_quantiles == 1:  # Only one plot, no need for "Static"-field
-                d["Configurator Footprint"] = {"bokeh": (bokeh_components), "tooltip" : tooltip}
+            if self.num_quantiles == 1 or self.time_slider:  # Only one plot, no need for "Static"-field
+                d["bokeh"] = (bokeh_components)
+                d["tooltip"] = tooltip
             else:
-                d["Configurator Footprint"] = OrderedDict([("tooltip", tooltip)])
-                d["Configurator Footprint"]["Interactive"] = {"bokeh": (bokeh_components)}
+                d["tooltip"] = tooltip
+                d["Interactive"] = {"bokeh": (bokeh_components)}
                 if all([True for p in self.cfp_paths if os.path.exists(p)]):  # If the plots were actually generated
-                    d["Configurator Footprint"]["Static"] = {"figure": self.cfp_paths}
+                    d["Static"] = {"figure": self.cfp_paths}
                 else:
-                    d["Configurator Footprint"]["Static"] = {
+                    d["Static"] = {
                             "else": "This plot is missing. Maybe it was not generated? "
                                     "Check if you installed selenium and phantomjs "
                                     "correctly to activate bokeh-exports. "

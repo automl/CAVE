@@ -158,11 +158,13 @@ class ParallelCoordinates(BaseAnalyzer):
 
         if self.error:
             if d is not None:
-                d["Parallel Coordinates"] = {"else": "Error occured: %s" % self.error}
+                d["else"] = "Error occured: %s" % self.error
             return "", self.error
 
         if d is not None:
-            d["Parallel Coordinates"] = {"figure": self.get_plots(n_configs, params), "tooltip" : tooltip}
+            d["figure"] = self.get_plots(n_configs, params)
+            d["tooltip"] = tooltip
+
         div = "<div class=\"panel\">\n"
         div += "<div align=\"center\">\n"
         div += ("<a href=\"{0}\" data-lightbox=\"{0}\" "

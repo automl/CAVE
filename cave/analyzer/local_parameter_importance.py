@@ -32,9 +32,9 @@ class LocalParameterImportance(CaveParameterImportance):
 
     def get_html(self, d=None, tooltip=None):
         if d is not None:
-            d["Local Parameter Importance (LPI)"] = OrderedDict([("tooltip", tooltip)])
+            d["tooltip"] = tooltip
             for param, plot in self.plots.items():
-                d["Local Parameter Importance (LPI)"][param] = {"figure": plot}
+                d[param] = {"figure": plot}
         return figure_to_html(self.get_plots())
 
     def get_jupyter(self):
