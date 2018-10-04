@@ -40,15 +40,6 @@ test:
   # Grep error on the documentation
   override:
     - cat ~/log.txt && if grep -q "Traceback (most recent call last):" ~/log.txt; then false; else true; fi
-deploy:
-  master:
-    branch: master
-    commands:
-      - bash ci_scripts/push_doc.sh 'stable'
-  development:
-    branch: development
-    commands:
-      - bash ci_scripts/push_doc.sh 'dev'
 general:
   # Open the doc to the API
   artifacts:

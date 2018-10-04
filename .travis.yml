@@ -52,3 +52,12 @@ script:
   - nosetests -sv --with-coverage --cover-package=cave
 after_success:
   - codecov
+deploy:
+  master:
+    branch: master
+    commands:
+      - bash ci_scripts/push_doc.sh 'stable'
+  development:
+    branch: development
+    commands:
+      - bash ci_scripts/push_doc.sh 'dev'
