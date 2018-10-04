@@ -40,7 +40,7 @@ test:
   # Grep error on the documentation
   override:
     - cat ~/log.txt && if grep -q "Traceback (most recent call last):" ~/log.txt; then false; else true; fi
-deployment:
+deploy:
   master:
     branch: master
     commands:
