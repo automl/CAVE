@@ -582,8 +582,13 @@ class CAVE(object):
         """
 
         if performance:
-            self.performance_table(d=self._get_dict(d, "Performance Table", run=run), run=run)
-            d["Performance Table"]["tooltip"] = self._get_tooltip(self.performance_table)
+            if self.use_budgets:
+                self.logger.debug("Skipping extra accordion for Performance Table and other performance analysis")
+                self.performance_table(d=self._get_dict(self.website, "Performance Analysis", run=run), run=run)
+                return
+            else:
+                self.performance_table(d=self._get_dict(d, "Performance Table", run=run), run=run)
+                d["Performance Table"]["tooltip"] = self._get_tooltip(self.performance_table)
         if cdf:
             self.plot_ecdf(d=self._get_dict(d, "empirical Cumulative Distribution Function (eCDF)", run=run), run=run)
             d["empirical Cumulative Distribution Function (eCDF)"]["tooltip"] = self._get_tooltip(self.plot_ecdf)
