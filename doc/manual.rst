@@ -11,4 +11,5 @@ Manual
     manualdoc/commandline
     manualdoc/jupyternotebook
     manualdoc/fileformats
+    manualdoc/budgets
 
