@@ -131,7 +131,8 @@ class BohbLearningCurves(BaseAnalyzer):
         # Create plot
         p = figure(plot_height=500, plot_width=600,
                    y_axis_type="log" if len([a for a in scatter_data['losses'] if a <= 0]) == 0 else 'linear',
-                   tools=[hover, 'save', 'pan', 'wheel_zoom', 'box_zoom', 'reset'])
+                   tools=[hover, 'save', 'pan', 'wheel_zoom', 'box_zoom', 'reset'],
+                   x_axis_label='Time', y_axis_label='Quality')
 
         # Plot per HB_iteration, each config individually
         HB_iterations = sorted(set(data['HB_iteration']))
