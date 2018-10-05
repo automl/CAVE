@@ -1,3 +1,4 @@
+import sys
 import os
 import logging
 from collections import OrderedDict
@@ -992,8 +993,11 @@ class CAVE(object):
         stdout_handler.setFormatter(formatter)
         if level == "INFO":
             stdout_handler.setLevel(logging.INFO)
-        elif level in ["OFF", "WARNING"]:
+        elif level == "WARNING":
             stdout_handler.setLevel(logging.WARNING)
+        elif level == "OFF":
+            sys.stdout = open(os.devnull, 'w')
+            stdout_handler.setLevel(logging.ERROR)
         elif level in ["DEBUG", "DEV_DEBUG"]:
             stdout_handler.setLevel(logging.DEBUG)
             if level == "DEV_DEBUG":
