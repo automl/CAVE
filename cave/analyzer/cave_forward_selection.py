@@ -29,7 +29,8 @@ class CaveForwardSelection(CaveParameterImportance):
 
     def get_html(self, d=None, tooltip=None):
         if d is not None:
-            d["Forward Selection"] = {"figure": self.plots, "tooltip" : tooltip}
+            d["figure"] = self.plots
+            d["tooltip"] = tooltip
         return figure_to_html(self.plots)
 
     def get_jupyter(self):

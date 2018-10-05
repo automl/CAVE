@@ -10,7 +10,7 @@ from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, Cu
 from bokeh.models.sources import CDSView
 from bokeh.models.filters import GroupFilter
 from bokeh.layouts import column, row, widgetbox
-from bokeh.models.widgets import CheckboxButtonGroup, CheckboxGroup, Button
+from bokeh.models.widgets import CheckboxButtonGroup, CheckboxGroup, Button, Select
 from bokeh.palettes import Spectral11
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
@@ -73,12 +73,11 @@ class BohbLearningCurves(BaseAnalyzer):
                             ('duration', []),
                             ('HB_iteration', []),
                             ('colors', []),
+                            ('colors_performance', []),
+                            ('colors_iteration', []),
                            ])
         for hp in hyperparameter_names:
             data[hp] = []
-
-        # Colors
-        colors = {c_id : color for c_id, color in zip(config_ids, itertools.cycle(Spectral11))}
 
         # Populate
         id2conf = result_object.get_id2config_mapping()
@@ -101,13 +100,14 @@ class BohbLearningCurves(BaseAnalyzer):
             else:
                 data['duration'].append('N/A')
             data['HB_iteration'].append(str(c_id[0]))
-            data['colors'].append(colors[c_id])
             for hp in hyperparameter_names:
                 try:
                     data[hp].append(id2conf[c_id]['config'][hp])
                 except KeyError:
                     data[hp].append("None")
-        self.logger.debug(data)
+            data['colors'].append(losses[counter][-1])
+            data['colors_performance'].append(losses[counter][-1])
+            data['colors_iteration'].append(c_id[0])
 
         # Tooltips
         tooltips=[(key, '@' + key) for key in data.keys() if not key in ['times', 'duration', 'colors']]
@@ -128,10 +128,16 @@ class BohbLearningCurves(BaseAnalyzer):
                     scatter_data[key].append(data[key][idx])
         source_scatter = ColumnDataSource(data=scatter_data)
 
+        # Color
+        min_perf, max_perf = min([l[-1] for l in data['losses']]), max([l[-1] for l in data['losses']])
+        min_iter, max_iter = min([int(i) for i in data['HB_iteration']]), max([int(i) for i in data['HB_iteration']])
+        color_mapper = LinearColorMapper(palette=Spectral11, low=min_perf, high=max_perf)
+
         # Create plot
         p = figure(plot_height=500, plot_width=600,
                    y_axis_type="log" if len([a for a in scatter_data['losses'] if a <= 0]) == 0 else 'linear',
-                   tools=[hover, 'save', 'pan', 'wheel_zoom', 'box_zoom', 'reset'])
+                   tools=[hover, 'save', 'pan', 'wheel_zoom', 'box_zoom', 'reset'],
+                   x_axis_label='Time', y_axis_label='Quality')
 
         # Plot per HB_iteration, each config individually
         HB_iterations = sorted(set(data['HB_iteration']))
@@ -142,14 +148,16 @@ class BohbLearningCurves(BaseAnalyzer):
             line_handles.append(p.multi_line(xs='times', ys='losses',
                                           source=source_multiline,
                                           view=view,
-                                          color='colors',
+                                          color={'field': 'colors', 'transform': color_mapper},
+                                          alpha=0.5,
                                           line_width=5,
                                       ))
             view = CDSView(source=source_scatter, filters=[GroupFilter(column_name='HB_iteration', group=str(it))])
             line_handles.append(p.circle(x='times', y='losses',
                                          source=source_scatter,
                                          view=view,
-                                         fill_color='colors',
+                                         fill_color={'field': 'colors', 'transform': color_mapper},
+                                         fill_alpha=0.5,
                                          line_color='colors',
                                          size=20,
                                       ))
@@ -188,6 +196,31 @@ class BohbLearningCurves(BaseAnalyzer):
             }
         }
         """
+
+        callback_color = CustomJS(args=dict(source_multiline=source_multiline, source_scatter=source_scatter,
+                                            cm=color_mapper), code="""
+            var data_multiline = source_multiline.data;
+            var data_scatter = source_scatter.data;
+            var min_perf = {0};
+            var max_perf = {1};
+            var min_iter = {2};
+            var max_iter = {3};
+            if (cb_obj.value == 'performance') {{
+                data_multiline['colors'] = data_multiline['colors_performance'];
+                data_scatter['colors'] = data_scatter['colors_performance'];
+                cm.low = min_perf;
+                cm.high = max_perf;
+            }} else {{
+                data_multiline['colors'] = data_multiline['colors_iteration'];
+                data_scatter['colors'] = data_scatter['colors_iteration'];
+                cm.low = min_iter;
+                cm.high = max_iter;
+            }}
+            source.change.emit();
+            """.format(min_perf, max_perf, min_iter, max_iter))
+        select_color = Select(title="Select colors", value="performance", options = ["performance", "iteration"],
+                              callback=callback_color)
+
         iteration_labels = ['warmstart data' if l == -1 or l == '-1' else str(l) for l in HB_iterations]
         self.logger.debug("iteration_labels: %s", str(iteration_labels))
         self.logger.debug("HB_iterations: %s", str(HB_iterations))
@@ -206,7 +239,8 @@ class BohbLearningCurves(BaseAnalyzer):
         select_none = Button(label="None", callback=CustomJS(args=dict({'checkbox':checkbox}, **args_checkbox),
                                 code="var labels = []; checkbox.active = labels;" + code_checkbox.replace('cb_obj', 'checkbox')))
         # Put it all together
-        layout = column(p, row(widgetbox(select_all, select_none), widgetbox(checkbox)))
+        layout = column(p, row(widgetbox(select_all, select_none, width=100), widgetbox(checkbox, width=100),
+                               widgetbox(select_color, width=200)))
         return layout
 
     def get_longest_run(self, c_id, result_object):

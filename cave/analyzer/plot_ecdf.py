@@ -83,8 +83,9 @@ class PlotECDF(BaseAnalyzer):
 
     def get_html(self, d=None, tooltip=None):
         if d is not None and self.output_fns:
-            d["empirical Cumulative Distribution Function (eCDF)"] = {"figure": self.output_fns, "tooltip" : tooltip}
-        return figure_to_html(self.output_fns)#, self.output_dir)
+            d["figure"] = self.output_fns
+            d["tooltip"] = tooltip
+        return figure_to_html(self.output_fns)
 
     def get_plots(self):
         return self.output_fns

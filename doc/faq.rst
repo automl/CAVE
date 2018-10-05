@@ -6,7 +6,7 @@ F.A.Q.
 You're likely seeing a warning refering to missing installs of selenium and/or
 phantomjs-prebuilt. While selenium should be included in the requirements,
 phantomjs-prebuilt is not a pip-install. Please refer to the documentation of
-phantomjs to see how installation works (usually `npm install -g phantomjs-prebuilt` should do the trick).
+phantomjs or `bokeh <https://bokeh.pydata.org/en/latest/docs/user_guide/export.html>`_ to see how installation works (usually `npm install -g phantomjs-prebuilt` should do the trick).
 
 .. rubric:: What is the `ta_exec_dir`-option good for?
 

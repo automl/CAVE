@@ -254,7 +254,7 @@ class CaveCLI(object):
         ecdf = args_.ecdf
         scatter_plots = args_.scatter_plots
         cfp = args_.cfp
-        cfp_time_slider = args_.cfp_time_slider
+        cfp_time_slider = args_.cfp_time_slider == 'on'
         cfp_max_plot = args_.cfp_max_plot
         cfp_number_quantiles = args_.cfp_number_quantiles
         parallel_coordinates = args_.parallel_coordinates

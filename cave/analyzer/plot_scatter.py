@@ -69,7 +69,8 @@ class PlotScatter(BaseAnalyzer):
 
     def get_html(self, d=None, tooltip=None):
         if d is not None and self.output_fns:
-            d["Scatterplot"] = {"figure": self.output_fns, "tooltip" : tooltip}
+            d["figure"] = self.output_fns
+            d["tooltip"] = tooltip
         return figure_to_html(self.output_fns)
 
     def get_plots(self):
