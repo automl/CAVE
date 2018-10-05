@@ -1,0 +1,550 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>cave.html.html_builder &mdash; CAVE 1.1.3_dev documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> CAVE
+          
+
+          
+            
+            <img src="../../../_static/cave.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.3_dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../manual.html">Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/commandline.html">Commandline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.analyzer.html">cave.analyzer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.cave_cli.html">cave.cave_cli module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.cavefacade.html">cave.cavefacade module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.plot.html">cave.plot package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.cost_over_time.html">cave.plot.cost_over_time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.html.html">cave.html package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.html.html_builder.html">cave.html.html_builder module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.tooltips.html">cave.utils.tooltips module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contact.html">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CAVE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>cave.html.html_builder</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for cave.html.html_builder</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">traceback</span> <span class="k">import</span> <span class="n">print_exc</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">random</span>
+
+<span class="kn">from</span> <span class="nn">cave.utils.tooltips</span> <span class="k">import</span> <span class="n">get_tooltip</span>
+<span class="kn">from</span> <span class="nn">cave.html.html_helpers</span> <span class="k">import</span> <span class="n">figure_to_html</span>
+<span class="kn">from</span> <span class="nn">cave.__version__</span> <span class="k">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">version</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Marius Lindauer&quot;</span>
+<span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2016, ML4AAD&quot;</span>
+<span class="n">__license__</span> <span class="o">=</span> <span class="s2">&quot;MIT&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;lindauer@cs.uni-freiburg.de&quot;</span>
+
+
+<div class="viewcode-block" id="HTMLBuilder"><a class="viewcode-back" href="../../../apidoc/cave.html.html_builder.html#cave.html.html_builder.HTMLBuilder">[docs]</a><span class="k">class</span> <span class="nc">HTMLBuilder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">output_dn</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">logo_fn</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">logo_custom</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        Arguments</span>
+<span class="sd">        ---------</span>
+<span class="sd">        output_dn:str</span>
+<span class="sd">            output directory name</span>
+<span class="sd">        scenario_name:str</span>
+<span class="sd">            name of scenario</span>
+<span class="sd">        logo_fn: str</span>
+<span class="sd">            path to the logo of the configurator</span>
+<span class="sd">        logo_custom: bool</span>
+<span class="sd">            if true, logo ist treated as external logo that needs to be copied</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;HTMLBuilder&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">own_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()))[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logo_fn</span> <span class="o">=</span> <span class="n">logo_fn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logo_custom</span> <span class="o">=</span> <span class="n">logo_custom</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span> <span class="o">=</span> <span class="n">output_dn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unique_id_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relative_content_js</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;js&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relative_content_images</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;images&#39;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_content_js</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_content_images</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">budget</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="c1"># todo make relative dirs again</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">header_part_1</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">&lt;!DOCTYPE html&gt;</span>
+<span class="s1">&lt;html&gt;</span>
+<span class="s1">&lt;head&gt;</span>
+<span class="s1">&lt;title&gt;CAVE&lt;/title&gt;</span>
+<span class="s1">&lt;link href=&quot;html/css/accordion.css&quot; rel=&quot;stylesheet&quot; /&gt;</span>
+<span class="s1">&lt;link href=&quot;html/css/table.css&quot; rel=&quot;stylesheet&quot; /&gt;</span>
+<span class="s1">&lt;link href=&quot;html/css/lightbox.min.css&quot; rel=&quot;stylesheet&quot; /&gt;</span>
+<span class="s1">&lt;link href=&quot;html/css/help-tip.css&quot; rel=&quot;stylesheet&quot; /&gt;</span>
+<span class="s1">&lt;link href=&quot;html/css/global.css&quot; rel=&quot;stylesheet&quot; /&gt;</span>
+<span class="s1">&lt;link href=&quot;html/css/back-to-top.css&quot; rel=&quot;stylesheet&quot; /&gt;</span>
+<span class="s1">&lt;link href=&quot;html/css/tabs.css&quot; rel=&quot;stylesheet&quot; /&gt;</span>
+
+<span class="s1">&lt;link href=&quot;html/css/bokeh-0.12.14.min.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;&gt;</span>
+<span class="s1">&lt;link href=&quot;html/css/bokeh-widgets-0.12.14.min.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;&gt;</span>
+<span class="s1">&lt;link href=&quot;html/css/bokeh-tables-0.12.14.min.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;&gt;</span>
+
+<span class="s1">&lt;script src=&quot;html/js/tabs.js&quot;&gt;&lt;/script&gt;</span>
+
+<span class="s1">&lt;script src=&quot;html/js/bokeh-0.12.14.min.js&quot;&gt;&lt;/script&gt;</span>
+<span class="s1">&lt;script src=&quot;html/js/bokeh-widgets-0.12.14.min.js&quot;&gt;&lt;/script&gt;</span>
+<span class="s1">&lt;script src=&quot;html/js/bokeh-tables-0.12.14.min.js&quot;&gt;&lt;/script&gt;</span>
+
+<span class="s1">&lt;!--Below here are the includes of scripts for the report (e.g. bokeh)--&gt;</span>
+<span class="s1">&#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">header_part_2</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">&lt;!--Above here are the includes of scripts for the report (e.g. bokeh)--&gt;</span>
+
+<span class="s1">&lt;/head&gt;</span>
+<span class="s1">&lt;body&gt;</span>
+<span class="s1">&lt;script src=&quot;http://www.w3schools.com/lib/w3data.js&quot;&gt;&lt;/script&gt;</span>
+<span class="s1">&lt;script src=&quot;html/js/lightbox-plus-jquery.min.js&quot;&gt;&lt;/script&gt;</span>
+<span class="s1">&lt;header&gt;</span>
+<span class="s1">    &lt;div class=&#39;l-wrapper&#39;&gt;</span>
+<span class="s1">        &lt;img class=&#39;logo logo--configurator&#39; src=&quot;html/images/</span><span class="si">{}</span><span class="s1">&quot; /&gt;</span>
+<span class="s1">        &lt;img class=&#39;logo logo--ml&#39; src=&quot;html/images/automl-logo.png&quot; /&gt;</span>
+<span class="s1">    &lt;/div&gt;</span>
+<span class="s1">&lt;/header&gt;</span>
+<span class="s1">&lt;div class=&#39;l-wrapper&#39;&gt;</span>
+<span class="s1">&lt;h1&gt;CAVE&lt;/h1&gt;</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logo_fn</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logo_custom</span> <span class="k">else</span> <span class="s1">&#39;custom_logo.png&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">footer</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">&lt;/div&gt;</span>
+<span class="s1">&lt;footer&gt;</span>
+<span class="s1">    &lt;div class=&#39;l-wrapper&#39;&gt;</span>
+<span class="s1">        Generated by &lt;a href=&quot;https://github.com/automl/CAVE&quot;&gt;CAVE v</span><span class="si">{}</span><span class="s1">&lt;/a&gt; and developed by</span>
+<span class="s1">        &lt;a href=&quot;http://www.automl.org&quot;&gt;autoML&lt;/a&gt; | Optimized for Chrome and Firefox</span>
+<span class="s1">    &lt;/div&gt;</span>
+<span class="s1">&lt;/footer&gt;&#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">version</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">&lt;script&gt;</span>
+<span class="s1">var acc = document.getElementsByClassName(&quot;accordion&quot;);</span>
+<span class="s1">var i;</span>
+<span class="s1">for (i = 0; i &lt; acc.length; i++) {</span>
+<span class="s1">    acc[i].onclick = function(){</span>
+<span class="s1">        this.classList.toggle(&quot;active&quot;);</span>
+<span class="s1">        this.nextElementSibling.classList.toggle(&quot;show&quot;);</span>
+<span class="s1">  }</span>
+<span class="s1">}</span>
+<span class="s1">&lt;/script&gt;</span>
+<span class="s1">&lt;script src=&quot;html/js/back-to-top.js&quot;&gt;&lt;/script&gt;</span>
+<span class="s1">&lt;/body&gt;</span>
+<span class="s1">&lt;/html&gt;</span>
+<span class="s1">&#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="HTMLBuilder.generate_html"><a class="viewcode-back" href="../../../apidoc/cave.html.html_builder.html#cave.html.html_builder.HTMLBuilder.generate_html">[docs]</a>    <span class="k">def</span> <span class="nf">generate_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Arguments</span>
+<span class="sd">        ---------</span>
+<span class="sd">        data_dict : OrderedDict</span>
+<span class="sd">            {&quot;top1&quot; : {</span>
+<span class="sd">                        &quot;tooltip&quot;: str|None,</span>
+<span class="sd">                        &quot;subtop1: {  # generates a further bottom if it is dictionary</span>
+<span class="sd">                                &quot;tooltip&quot;: str|None,</span>
+<span class="sd">                                ...</span>
+<span class="sd">                                }</span>
+<span class="sd">                        &quot;table&quot;: str|None (html table)</span>
+<span class="sd">                        &quot;figure&quot; : str|None (file name)</span>
+<span class="sd">                        &quot;bokeh&quot; : ( str,str)|None  # (script, div)</span>
+<span class="sd">                        }</span>
+<span class="sd">            &quot;top2: { ... }</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">html_head</span><span class="p">,</span> <span class="n">html_body</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">html_head</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header_part_1</span>
+        <span class="n">html_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="c1"># Get components (script, div) for each entry in report</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>  <span class="c1"># ignore empty entry</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No content for </span><span class="si">%s</span><span class="s2">, skipping in html-generation&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">script</span><span class="p">,</span> <span class="n">div</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_layer</span><span class="p">(</span><span class="n">layer_name</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">data_dict</span><span class="o">=</span><span class="n">v</span><span class="p">)</span>
+            <span class="n">html_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;script&#39;</span><span class="p">:</span> <span class="n">script</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">:</span> <span class="n">div</span><span class="p">}</span>
+        <span class="c1"># Scripts go into header, divs go into body</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">html_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;script&#39;</span><span class="p">]:</span>
+                <span class="n">html_head</span> <span class="o">+=</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;script&#39;</span><span class="p">]</span>  <span class="c1"># e.g. bokeh-scripts used for hover</span>
+            <span class="n">html_body</span> <span class="o">+=</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;div&#39;</span><span class="p">]</span>
+        <span class="n">html_head</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header_part_2</span>  <span class="c1"># Close header after adding all scripts</span>
+        <span class="n">html</span> <span class="o">=</span> <span class="n">html_head</span> <span class="o">+</span> <span class="n">html_body</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">footer</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="s2">&quot;report.html&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+
+        <span class="n">subfolders</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;css&quot;</span><span class="p">,</span> <span class="s2">&quot;images&quot;</span><span class="p">,</span> <span class="s2">&quot;js&quot;</span><span class="p">,</span> <span class="s2">&quot;font&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">sf</span> <span class="ow">in</span> <span class="n">subfolders</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="s2">&quot;html&quot;</span><span class="p">,</span> <span class="n">sf</span><span class="p">)):</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">own_folder</span><span class="p">,</span> <span class="s2">&quot;web_files&quot;</span><span class="p">,</span> <span class="n">sf</span><span class="p">),</span>
+                                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="s2">&quot;html&quot;</span><span class="p">,</span> <span class="n">sf</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="n">print_exc</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logo_custom</span><span class="p">:</span>
+            <span class="n">original_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logo_fn</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logo_fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="s2">&quot;html&quot;</span><span class="p">,</span> <span class="s1">&#39;images&#39;</span><span class="p">,</span> <span class="s1">&#39;custom_logo.png&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Attempting to copy </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">original_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logo_fn</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">original_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logo_fn</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logo_custom</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="HTMLBuilder.add_layer"><a class="viewcode-back" href="../../../apidoc/cave.html.html_builder.html#cave.html.html_builder.HTMLBuilder.add_layer">[docs]</a>    <span class="k">def</span> <span class="nf">add_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer_name</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">is_tab</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        add a further layer of top data_dict keys</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        layer_name: str</span>
+<span class="sd">            name of the layer</span>
+<span class="sd">        data_dict : OrderedDict</span>
+<span class="sd">            {&quot;top1&quot; : {</span>
+<span class="sd">                        &quot;tooltip&quot;: str|None,</span>
+<span class="sd">                        &quot;subtop1&quot;: {  # generates a further bottom if it is dictionary</span>
+<span class="sd">                                &quot;tooltip&quot;: str|None,</span>
+<span class="sd">                                ...</span>
+<span class="sd">                                }</span>
+<span class="sd">                        &quot;table&quot;: str|None (html table)</span>
+<span class="sd">                        &quot;figure&quot; : str|None (file name)</span>
+<span class="sd">                        &quot;bokeh&quot; : ( str,str)|None  # (script, div)</span>
+<span class="sd">                        }</span>
+<span class="sd">            &quot;top2&quot;: { ... }</span>
+<span class="sd">            }</span>
+<span class="sd">        is_tab: bool</span>
+<span class="sd">            if True, don&#39;t use accordion but tab-structure to wrap content</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        (script, div): (str, str)</span>
+<span class="sd">            script goes into header, div goes into body</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">script</span><span class="p">,</span> <span class="n">div</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># Add tooltip, if possible</span>
+        <span class="n">tooltip</span> <span class="o">=</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tooltip&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tooltip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tooltip</span> <span class="o">=</span> <span class="s2">&quot;&lt;div class=</span><span class="se">\&quot;</span><span class="s2">help-tip</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;p&gt;</span><span class="si">{}</span><span class="s2">&lt;/p&gt;&lt;/div&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tooltip</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">get_tooltip</span><span class="p">(</span><span class="n">layer_name</span><span class="p">):</span>  <span class="c1"># if no tooltip is parsed, try to look it up</span>
+            <span class="n">tooltip</span> <span class="o">=</span> <span class="s2">&quot;&lt;div class=</span><span class="se">\&quot;</span><span class="s2">help-tip</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;p&gt;</span><span class="si">{}</span><span class="s2">&lt;/p&gt;&lt;/div&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">get_tooltip</span><span class="p">(</span><span class="n">layer_name</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tooltip</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># Start accordion-panel</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_tab</span><span class="p">:</span>
+            <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;div class=</span><span class="se">\&quot;</span><span class="s2">accordion</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="si">{0}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2">&lt;/div&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">layer_name</span><span class="p">,</span> <span class="n">tooltip</span><span class="p">)</span>
+            <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;div class=</span><span class="se">\&quot;</span><span class="s2">panel</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="c1"># If tabs for this layer, add tabs-code</span>
+        <span class="n">sublayer_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)]</span>
+        <span class="n">use_tabs</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sublayer_names</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">([</span><span class="n">sn</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;budget&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">sublayer_names</span><span class="p">]):</span>
+            <span class="n">use_tabs</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">use_tabs</span><span class="p">:</span>
+            <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;div class=</span><span class="se">\&quot;</span><span class="s2">tab</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">tabs_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)]</span>
+            <span class="n">rnd_prefix</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">())</span>
+            <span class="n">default_open_id</span> <span class="o">=</span> <span class="s2">&quot;defaultOpen&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unique_id</span><span class="p">()</span>
+            <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;  &lt;button class=</span><span class="se">\&quot;</span><span class="s2">tablinks</span><span class="se">\&quot;</span><span class="s2"> onclick=</span><span class="se">\&quot;</span><span class="s2">openTab(event, &#39;</span><span class="si">{0}</span><span class="s2">&#39;, &#39;</span><span class="si">{1}</span><span class="s2">&#39;)</span><span class="se">\&quot;</span><span class="s2"> &quot;</span>\
+                   <span class="s2">&quot;id=</span><span class="se">\&quot;</span><span class="si">{2}</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="si">{1}</span><span class="s2">&lt;/button&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">layer_name</span><span class="p">,</span> <span class="n">tabs_names</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">default_open_id</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">tabs_names</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;  &lt;button class=</span><span class="se">\&quot;</span><span class="s2">tablinks</span><span class="se">\&quot;</span><span class="s2"> onclick=</span><span class="se">\&quot;</span><span class="s2">openTab(event, &#39;</span><span class="si">{0}</span><span class="s2">&#39;, &#39;</span><span class="si">{1}</span><span class="s2">&#39;)</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="si">{1}</span><span class="s2">&lt;/button&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">layer_name</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/div&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;budget&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">budget</span> <span class="o">=</span> <span class="n">k</span><span class="p">[</span><span class="mi">7</span><span class="p">:]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">use_tabs</span><span class="p">:</span>
+                    <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;div id=</span><span class="se">\&quot;</span><span class="si">{0}</span><span class="se">\&quot;</span><span class="s2"> class=</span><span class="se">\&quot;</span><span class="s2">tabcontent</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">layer_name</span> <span class="o">+</span> <span class="n">k</span><span class="p">)</span>
+                    <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;div class=</span><span class="se">\&quot;</span><span class="s2">pane</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">add_script</span><span class="p">,</span> <span class="n">add_div</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_layer</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">is_tab</span><span class="o">=</span><span class="n">use_tabs</span><span class="p">)</span>
+                <span class="n">script</span> <span class="o">+=</span> <span class="n">add_script</span>
+                <span class="n">div</span> <span class="o">+=</span> <span class="n">add_div</span>
+                <span class="k">if</span> <span class="n">use_tabs</span><span class="p">:</span>  <span class="c1"># close div</span>
+                    <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/div&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/div&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;figure&quot;</span><span class="p">:</span>
+                <span class="n">div</span> <span class="o">+=</span> <span class="n">figure_to_html</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;figure_x2&quot;</span><span class="p">:</span>
+                <span class="n">div</span> <span class="o">+=</span> <span class="n">figure_to_html</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="n">max_in_a_row</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;table&quot;</span><span class="p">:</span>
+                <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;div align=</span><span class="se">\&quot;</span><span class="s2">center</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&lt;/div&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;html&quot;</span><span class="p">:</span>
+                <span class="n">div</span> <span class="o">+=</span> <span class="p">(</span><span class="s2">&quot;&lt;div align=</span><span class="se">\&quot;</span><span class="s2">center</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&lt;a href=&#39;</span><span class="si">{}</span><span class="s2">&#39;&gt;Interactive &quot;</span>
+                        <span class="s2">&quot;Plot&lt;/a&gt;</span><span class="se">\n</span><span class="s2">&lt;/div&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">):]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)))</span>
+            <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;bokeh&quot;</span><span class="p">:</span>
+                <span class="c1"># Escape path for URL (replace   and &#39; with   . ;)</span>
+                <span class="n">path_script</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">relative_content_js</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">layer_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">budget</span><span class="p">,</span>
+                                                                              <span class="bp">self</span><span class="o">.</span><span class="n">get_unique_id</span><span class="p">(),</span> <span class="s1">&#39;script.js&#39;</span><span class="p">]))</span>
+                <span class="n">path_script</span> <span class="o">=</span> <span class="n">path_script</span><span class="o">.</span><span class="n">translate</span><span class="p">({</span><span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">):</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="s1">&#39; </span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">})</span>
+
+                <span class="c1"># Write script to file</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="n">path_script</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fn</span><span class="p">:</span>
+                    <span class="n">js_code</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&lt;.*?&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>  <span class="c1"># Remove script-tags</span>
+                    <span class="n">fn</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">js_code</span><span class="p">)</span>
+                <span class="n">script</span> <span class="o">+=</span> <span class="s2">&quot;&lt;script src=</span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">path_script</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;/script&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;div align=</span><span class="se">\&quot;</span><span class="s2">center</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&lt;/div&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">div</span> <span class="o">+=</span> <span class="n">v</span>
+
+        <span class="k">if</span> <span class="n">use_tabs</span><span class="p">:</span>  <span class="c1"># close tab with selecting first element by default</span>
+            <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;script&gt; </span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;// Get the element with id=</span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2"> and click on it </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">default_open_id</span><span class="p">)</span>
+            <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;document.getElementById(</span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2">).click(); </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">default_open_id</span><span class="p">)</span>
+            <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/script&gt; </span><span class="se">\n</span><span class="s2">&quot;</span>
+
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_tab</span><span class="p">:</span>
+            <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/div&gt;&quot;</span>
+        <span class="k">return</span> <span class="n">script</span><span class="p">,</span> <span class="n">div</span></div>
+
+<div class="viewcode-block" id="HTMLBuilder.get_unique_id"><a class="viewcode-back" href="../../../apidoc/cave.html.html_builder.html#cave.html.html_builder.HTMLBuilder.get_unique_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_unique_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unique_id_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unique_id_counter</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017-2018, Marius Lindauer, Joshua Marben, Andre Biedenkapp.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'1.1.3_dev',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

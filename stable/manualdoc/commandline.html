@@ -1,0 +1,316 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Commandline &mdash; CAVE 1.1.3_dev documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Jupyter Notebook" href="jupyternotebook.html" />
+    <link rel="prev" title="Manual" href="../manual.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> CAVE
+          
+
+          
+            
+            <img src="../_static/cave.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.3_dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../manual.html">Manual</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Commandline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jupyternotebook.html">Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fileformats.html">Input Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="budgets.html">Budgets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">F.A.Q.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../apidoc/cave.analyzer.html">cave.analyzer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidoc/cave.cave_cli.html">cave.cave_cli module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidoc/cave.cavefacade.html">cave.cavefacade module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../apidoc/cave.plot.html">cave.plot package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.plot.cost_over_time.html">cave.plot.cost_over_time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../apidoc/cave.html.html">cave.html package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.html.html_builder.html">cave.html.html_builder module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../apidoc/cave.utils.html">cave.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.tooltips.html">cave.utils.tooltips module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contact.html">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CAVE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../manual.html">Manual</a> &raquo;</li>
+        
+      <li>Commandline</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/manualdoc/commandline.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="commandline">
+<h1>Commandline<a class="headerlink" href="#commandline" title="Permalink to this headline">¶</a></h1>
+<p>When running CAVE via the commandline you can use the following arguments to control it’s behaviour:</p>
+<p>Mandatory:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">--folders</span></code>: path(s) to folder(s) containing the SMAC3-output (works with
+<cite>output/run_*</cite>)</li>
+</ul>
+<p>Meta-parameters:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">--output</span></code>: where to save the CAVE-output</li>
+<li><code class="docutils literal notranslate"><span class="pre">--file_format</span></code>: of results to be analyzed, choose from <a class="reference external" href="https://github.com/automl/SMAC3">SMAC3</a>, <a class="reference external" href="https://www.cs.ubc.ca/labs/beta/Projects/SMAC">SMAC2</a>,
+<a class="reference external" href="fileformats.html#csv">CSV</a> or <a class="reference external" href="https://github.com/automl/HpBandSter">BOHB</a>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">--validation_format</span></code>: of (optional) validation data (to enhance epm-quality where appropriate), choose from
+<a class="reference external" href="https://github.com/automl/SMAC3">SMAC3</a>, <a class="reference external" href="https://www.cs.ubc.ca/labs/beta/Projects/SMAC">SMAC2</a>,
+<a class="reference external" href="fileformats.html#csv">CSV</a> or None.</li>
+<li><code class="docutils literal notranslate"><span class="pre">--ta_exec_dir</span></code>: target algorithm execution directory, this should be a path to
+the directory from which the Configurator was run initially (e.g. used to find relative instance-files and
+if necessary execute the <cite>algo</cite>-parameter of the SMAC-scenario). (DEFAULT:
+current working directory)</li>
+</ul>
+<p>Analysis-control (what methods to use in what way):</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">--parameter_importance</span></code>: calculating parameter importance is expensive, so you can
+specify which plots you desire: <cite>ablation</cite>, <cite>forward_selection</cite>, <cite>fanova</cite>
+and/or <cite>lpi</cite>.
+either provide a combination of those or use <cite>all</cite> or <cite>none</cite></li>
+<li><code class="docutils literal notranslate"><span class="pre">--feature_analysis</span></code>: analysis of features is expensive, so you can specify which
+algorithm to run: <cite>box_violin</cite>, <cite>clustering</cite>, <cite>importance</cite> and/or <cite>feature_cdf</cite>.
+either provide a combination of those or use <cite>all</cite> or <cite>none</cite></li>
+<li><code class="docutils literal notranslate"><span class="pre">--no_tabular_analysis</span></code>: toggles the tabular analysis</li>
+<li><code class="docutils literal notranslate"><span class="pre">--no_ecdf</span></code>, <code class="docutils literal notranslate"><span class="pre">--no_scatter_plots</span></code>: toggle ecdf- and scatter-plots</li>
+<li><code class="docutils literal notranslate"><span class="pre">--no_cost_over_time</span></code>: toggles the cost-over-time plot</li>
+<li><code class="docutils literal notranslate"><span class="pre">--no_parallel_coordinates</span></code>: toggles the parallel-coordinates plot</li>
+<li><code class="docutils literal notranslate"><span class="pre">--no_configurator_footprint</span></code>: toggles the configurator-footprints</li>
+<li><code class="docutils literal notranslate"><span class="pre">--no_algorithm_footprints</span></code>: toggles the algorithm-footprints</li>
+<li><code class="docutils literal notranslate"><span class="pre">--cfp_time_slider</span></code>: how to display the over-time development of the configurator footprint, choose from <cite>off</cite> (which yields only the final interactive plot), <cite>static</cite> (which yields a number of <cite>.png`s to click through), `online</cite> (which generates a time-slider-widget - might be slow interaction on big data) and <cite>prerender</cite> (which also generates time-slider, but large file with low interaction time)</li>
+<li><code class="docutils literal notranslate"><span class="pre">--cfp_number_quantiles</span></code>: if time-slider for configurator footprints is not <cite>off</cite>, determines the number of different quantiles to look at</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you analyze BOHB-results, you can only provide one folder.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="jupyternotebook.html" class="btn btn-neutral float-right" title="Jupyter Notebook" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../manual.html" class="btn btn-neutral" title="Manual" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017-2018, Marius Lindauer, Joshua Marben, Andre Biedenkapp.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.1.3_dev',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
