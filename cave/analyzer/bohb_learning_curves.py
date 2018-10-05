@@ -239,7 +239,8 @@ class BohbLearningCurves(BaseAnalyzer):
         select_none = Button(label="None", callback=CustomJS(args=dict({'checkbox':checkbox}, **args_checkbox),
                                 code="var labels = []; checkbox.active = labels;" + code_checkbox.replace('cb_obj', 'checkbox')))
         # Put it all together
-        layout = column(p, row(widgetbox(select_all, select_none), widgetbox(checkbox, width=50), widgetbox(select_color)))
+        layout = column(p, row(widgetbox(select_all, select_none, width=100), widgetbox(checkbox, width=100),
+                               widgetbox(select_color, width=200)))
         return layout
 
     def get_longest_run(self, c_id, result_object):
