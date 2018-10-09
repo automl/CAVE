@@ -1,0 +1,601 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>cave.cavefacade module &mdash; CAVE 1.1.3_dev documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="cave.plot package" href="cave.plot.html" />
+    <link rel="prev" title="cave.cave_cli module" href="cave.cave_cli.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> CAVE
+          
+
+          
+            
+            <img src="../_static/cave.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.3_dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../manual.html">Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/commandline.html">Commandline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/fileformats.html">Input Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/budgets.html">Budgets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">F.A.Q.</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cave.analyzer.html">cave.analyzer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cave.cave_cli.html">cave.cave_cli module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">cave.cavefacade module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cave.plot.html">cave.plot package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.cdf.html">cave.plot.cdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.cost_over_time.html">cave.plot.cost_over_time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.scatter.html">cave.plot.scatter module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cave.html.html">cave.html package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cave.html.html_builder.html">cave.html.html_builder module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cave.utils.html">cave.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.helpers.html">cave.utils.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.io.html">cave.utils.io module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.timing.html">cave.utils.timing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.tooltips.html">cave.utils.tooltips module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contact.html">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CAVE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API Documentation</a> &raquo;</li>
+        
+      <li>cave.cavefacade module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/apidoc/cave.cavefacade.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-cave.cavefacade">
+<span id="cave-cavefacade-module"></span><h1>cave.cavefacade module<a class="headerlink" href="#module-cave.cavefacade" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="cave.cavefacade.CAVE">
+<em class="property">class </em><code class="descclassname">cave.cavefacade.</code><code class="descname">CAVE</code><span class="sig-paren">(</span><em>folders: List[str], output_dir: str, ta_exec_dir: List[str], file_format: str = 'SMAC3', validation_format='NONE', validation_method: str = 'epm', pimp_max_samples: int = -1, fanova_pairwise: bool = True, use_budgets: bool = False, seed: int = 42, show_jupyter: bool = True, verbose_level: str = 'OFF'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Initialize CAVE facade to handle analyzing, plotting and building the report-page easily.
+During initialization, the analysis-infrastructure is built and the data is validated, the overall best
+incumbent is found and default+incumbent are evaluated for all instances for all runs, by default using an EPM.</p>
+<p>In the internal data-management the we have three types of runhistories: <em>original</em>, <em>validated</em> and <em>epm</em>.</p>
+<ul class="simple">
+<li><em>original_rh</em> contain only runs that have been gathered during the optimization-process.</li>
+<li><em>validated_rh</em> may contain original runs, but also data that was not gathered iteratively during the
+optimization, but systematically through external validation of interesting configurations.
+Important: NO ESTIMATED RUNS IN <cite>validated</cite> RUNHISTORIES!</li>
+<li><em>epm_rh</em> contain runs that are gathered through empirical performance models.</li>
+</ul>
+<p>Runhistories are organized as follows:</p>
+<ul class="simple">
+<li>each ConfiguratorRun has an <em>original_runhistory</em>- and a <em>combined_runhistory</em>-attribute</li>
+<li>if available, each ConfiguratorRun’s <em>validated_runhistory</em> contains
+a runhistory with validation-data gathered after the optimization</li>
+<li><em>combined_runhistory</em> always contains as many real runs as possible</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>folders</strong> (<em>list&lt;strings&gt;</em>) – paths to relevant SMAC runs</li>
+<li><strong>output_dir</strong> (<em>string</em>) – output for cave to write results (figures + report)</li>
+<li><strong>ta_exec_dir</strong> (<em>string</em>) – execution directory for target algorithm (to find instance.txt specified in scenario, ..)</li>
+<li><strong>file_format</strong> (<em>str</em>) – what format the rundata is in, options are [SMAC3, SMAC2, BOHB and CSV]</li>
+<li><strong>file_format</strong> – what format the validation rundata is in, options are [SMAC3, SMAC2, CSV and None]</li>
+<li><strong>validation_method</strong> (<em>string</em>) – from [validation, epm], how to estimate missing runs</li>
+<li><strong>pimp_max_samples</strong> (<em>int</em>) – passed to PIMP for configuration</li>
+<li><strong>fanova_pairwise</strong> (<em>bool</em>) – whether to calculate pairwise marginals for fanova</li>
+<li><strong>use_budgets</strong> (<em>bool</em>) – if true, individual runs are treated as different budgets. they are not evaluated together, but compared
+against each other. runs are expected in ascending budget-size.</li>
+<li><strong>seed</strong> (<em>int</em>) – random seed for analysis (e.g. the random forests)</li>
+<li><strong>show_jupyter</strong> (<em>bool</em>) – default True, tries to output plots and tables to jupyter-frontend, if available</li>
+<li><strong>verbose_level</strong> (<em>str</em>) – from [OFF, INFO, DEBUG, DEV_DEBUG and WARNING]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.algorithm_footprints">
+<code class="descname">algorithm_footprints</code><span class="sig-paren">(</span><em>cave</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.algorithm_footprints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.algorithm_footprints" title="Permalink to this definition">¶</a></dt>
+<dd><p>The instance features are projected into a two/three dimensional space using principal component analysis (PCA)
+and the footprint of each algorithm is plotted, i.e., on which instances the default or the optimized
+configuration performs well. In contrast to the other analysis methods in this section, these plots allow
+insights into which of the two configurations performs well on specific types or clusters of instances. Inspired
+by Smith-Miles.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.analyze">
+<code class="descname">analyze</code><span class="sig-paren">(</span><em>performance=True, cdf=True, scatter=True, cfp=True, cfp_time_slider=False, cfp_max_plot=-1, cfp_number_quantiles=10, param_importance=['forward_selection', 'ablation', 'fanova'], pimp_sort_table_by: str = 'average', feature_analysis=['box_violin', 'correlation', 'importance', 'clustering', 'feature_cdf'], parallel_coordinates=True, cost_over_time=True, algo_footprint=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.analyze"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.analyze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Analyze the available data and build HTML-webpage as dict.
+Save webpage in ‘self.output_dir/CAVE/report.html’.
+Analyzing is performed with the analyzer-instance that is initialized in
+the __init__</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>performance</strong> (<em>bool</em>) – whether to calculate par10-values</li>
+<li><strong>cdf</strong> (<em>bool</em>) – whether to plot cdf</li>
+<li><strong>scatter</strong> (<em>bool</em>) – whether to plot scatter</li>
+<li><strong>cfp</strong> (<em>bool</em>) – whether to perform configuration visualization</li>
+<li><strong>cfp_time_slider</strong> (<em>bool</em>) – whether to include an interactive time-slider in configuration footprint</li>
+<li><strong>cfp_max_plot</strong> (<em>int</em>) – limit number of configurations considered for configuration footprint (-1 -&gt; all configs)</li>
+<li><strong>cfp_number_quantiles</strong> (<em>int</em>) – number of steps over time generated in configuration footprint</li>
+<li><strong>param_importance</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – containing methods for parameter importance</li>
+<li><strong>pimp_sort_table</strong> (<em>str</em>) – in what order the parameter-importance overview should be organized</li>
+<li><strong>feature_analysis</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – containing methods for feature analysis</li>
+<li><strong>parallel_coordinates</strong> (<em>bool</em>) – whether to plot parallel coordinates</li>
+<li><strong>cost_over_time</strong> (<em>bool</em>) – whether to plot cost over time</li>
+<li><strong>algo_footprint</strong> (<em>bool</em>) – whether to plot algorithm footprints</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.bohb_learning_curves">
+<code class="descname">bohb_learning_curves</code><span class="sig-paren">(</span><em>cave</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.bohb_learning_curves"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.bohb_learning_curves" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.box_violin">
+<code class="descname">box_violin</code><span class="sig-paren">(</span><em>cave</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.box_violin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.box_violin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Box and Violin Plots show the distribution of each feature value across the instances.  Box plots show the
+quantiles of the distribution and violin plots show the approximated probability density of the feature values.
+Such plots are useful to inspect the instances and to detect characteristics of the instances. For example, if
+the distributions have two or more modes, it could indicate that the instance set is heterogeneous which could
+cause problems in combination with racing strategies configurators typically use. NaN values are removed from
+the data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.cave_ablation">
+<code class="descname">cave_ablation</code><span class="sig-paren">(</span><em>cave</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.cave_ablation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.cave_ablation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ablation Analysis is a method to determine parameter importance by comparing two parameter configurations,
+typically the default and the optimized configuration.  It uses a greedy forward search to determine the order
+of flipping the parameter settings from default configuration to incumbent such that in each step the cost is
+maximally decreased.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.cave_fanova">
+<code class="descname">cave_fanova</code><span class="sig-paren">(</span><em>cave</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.cave_fanova"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.cave_fanova" title="Permalink to this definition">¶</a></dt>
+<dd><p>fANOVA (functional analysis of variance) computes the fraction of the variance in the cost space explained by
+changing a parameter by marginalizing over all other parameters, for each parameter (or for pairs of
+parameters). Parameters with high importance scores will have a large impact on the performance.  To this end, a
+random forest is trained as an empirical performance model on the available empirical data from the available
+runhistories.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.compare_default_incumbent">
+<code class="descname">compare_default_incumbent</code><span class="sig-paren">(</span><em>cave</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.compare_default_incumbent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.compare_default_incumbent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Comparing parameters of default and incumbent.  Parameters that differ from default to incumbent are presented first.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.configurator_footprint">
+<code class="descname">configurator_footprint</code><span class="sig-paren">(</span><em>cave</em>, <em>time_slider=False</em>, <em>max_confs=1000</em>, <em>num_quantiles=8</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.configurator_footprint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.configurator_footprint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Analysis of the iteratively sampled configurations during the optimization procedure.  Multi-dimensional scaling
+(MDS) is used to reduce dimensionality of the search space and plot the distribution of evaluated
+configurations. The larger the dot, the more often the configuration was evaluated on instances from the set.
+Configurations that were incumbents at least once during optimization are marked as red squares.  Configurations
+acquired through local search are marked with a ‘x’.  The downward triangle denotes the final incumbent, whereas
+the orange upward triangle denotes the default configuration.  The heatmap and the colorbar correspond to the
+predicted performance in that part of the search space.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>time_slider</strong> (<em>bool</em>) – whether to generate time-slíder widget in bokehplot (cool, but time-consuming)</li>
+<li><strong>max_confs</strong> (<em>int</em>) – maximum number of configurations to consider for the plot</li>
+<li><strong>num_quantiles</strong> (<em>int</em>) – number of quantiles for evolution over time (number of time-steps to look at)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.configurators_behavior">
+<code class="descname">configurators_behavior</code><span class="sig-paren">(</span><em>d</em>, <em>run</em>, <em>cost_over_time=False</em>, <em>cfp=False</em>, <em>cfp_max_plot=-1</em>, <em>cfp_time_slider=False</em>, <em>cfp_number_quantiles=1</em>, <em>parallel_coordinates=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.configurators_behavior"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.configurators_behavior" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.cost_over_time">
+<code class="descname">cost_over_time</code><span class="sig-paren">(</span><em>cave</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.cost_over_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.cost_over_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Depicts the average cost of the best so far found configuration (using all trajectory data) over the time spent
+by the configurator (including target algorithm runs and the overhead generated by the configurator) If the
+curve flattens out early, it indicates that too much time was spent for the configurator run; whereas a curve
+that is still improving at the end of the budget indicates that one should increase the configuration budget.
+The plotted standard deviation gives the uncertainty over multiple configurator runs.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.feature_analysis">
+<code class="descname">feature_analysis</code><span class="sig-paren">(</span><em>d</em>, <em>run</em>, <em>box_violin=False</em>, <em>correlation=False</em>, <em>clustering=False</em>, <em>importance=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.feature_analysis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.feature_analysis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.feature_clustering">
+<code class="descname">feature_clustering</code><span class="sig-paren">(</span><em>cave</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.feature_clustering"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.feature_clustering" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clustering instances in 2d; the color encodes the cluster assigned to each cluster. Similar to ISAC, we use
+a k-means to cluster the instances in the feature space. As pre-processing, we use standard scaling and a PCA to
+2 dimensions. To guess the number of clusters, we use the silhouette score on the range of 2 to 12 in the number
+of clusters</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.feature_correlation">
+<code class="descname">feature_correlation</code><span class="sig-paren">(</span><em>cave</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.feature_correlation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.feature_correlation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Correlation of features based on the Pearson product-moment correlation. Since instance features are used to train an
+empirical performance model in model-based configurators, it can be important to remove correlated features in a
+pre-processing step depending on the machine-learning algorithm.  Darker fields corresponds to a larger correlation
+between the features.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.feature_importance">
+<code class="descname">feature_importance</code><span class="sig-paren">(</span><em>cave</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.feature_importance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.feature_importance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.local_parameter_importance">
+<code class="descname">local_parameter_importance</code><span class="sig-paren">(</span><em>cave</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.local_parameter_importance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.local_parameter_importance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Using an empirical performance model, performance changes of a configuration along each parameter are
+calculated. To quantify the importance of a parameter value, the variance of all cost values by changing that
+parameter are predicted and then the fraction of all variances is computed. This analysis is inspired by the
+human behaviour to look for improvements in the neighborhood of individual parameters of a configuration.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.overview_table">
+<code class="descname">overview_table</code><span class="sig-paren">(</span><em>cave</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.overview_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.overview_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meta data, i.e. number of instances and parameters as well as configuration budget. Statistics apply to the
+best run, if multiple configurator runs are compared.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.parallel_coordinates">
+<code class="descname">parallel_coordinates</code><span class="sig-paren">(</span><em>cave</em>, <em>params: Union[int</em>, <em>typing.List[str]] = 10</em>, <em>n_configs: int = 100</em>, <em>max_runs_epm: int = 300000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.parallel_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.parallel_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Previously used by Golovin et al.  to study the frequency of chosen parameter settings in
+black-box-optimization.  Each line corresponds to one configuration in the runhistory and shows the parameter
+settings and the corresponding (estimated) average cost. To handle large configuration spaces with hundreds of
+parameters, the (at most) 10 most important parameters based on a fANOVA parameter importance analysis are
+plotted.  To emphasize better configurations, the performance is encoded in the color of each line, ranging from
+blue to red. These plots provide insights into whether the configurator focused on specific parameter values and
+how these correlate to their costs.</p>
+<p>NOTE: the given runhistory should contain only optimization and no
+validation to analyze the explored parameter-space.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>params</strong> (<em>List</em><em>[</em><em>str</em><em>] or </em><em>int</em>) – if int, plot at most params parameters, trying to determine with parameter importance.
+if List of strings, the names of the parameters to be plotted</li>
+<li><strong>n_configs</strong> (<em>int</em>) – number of configs. will try to find most interesting configs to plot</li>
+<li><strong>max_runs_epm</strong> (<em>int</em>) – this is a maximum of runs to be used for training of the epm. use to avoid MemoryErrors</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.parameter_importance">
+<code class="descname">parameter_importance</code><span class="sig-paren">(</span><em>d</em>, <em>run</em>, <em>ablation=False</em>, <em>fanova=False</em>, <em>forward_selection=False</em>, <em>lpi=False</em>, <em>pimp_sort_table_by='average'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.parameter_importance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.parameter_importance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform the specified parameter importance procedures.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.performance_analysis">
+<code class="descname">performance_analysis</code><span class="sig-paren">(</span><em>d</em>, <em>run</em>, <em>performance</em>, <em>cdf</em>, <em>scatter</em>, <em>algo_footprint</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.performance_analysis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.performance_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate performance analysis.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>d</strong> (<em>dictionary</em>) – dictionary to add entries to</li>
+<li><strong>cdf</strong><strong>, </strong><strong>scatter</strong><strong>, </strong><strong>algo_footprint</strong> (<em>performance</em><em>,</em>) – what analysis-methods to perform</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.performance_table">
+<code class="descname">performance_table</code><span class="sig-paren">(</span><em>cave</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.performance_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.performance_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the run-objective is ‘runtime’: PAR stands for Penalized Average Runtime. If there is a timeout in the
+scenario, runs that were thus cut off can be penalized with a factor (because we do not know how long it would
+have run). PAR1 is no penalty, PAR10 will count all cutoffs with a factor of 10.</p>
+<p>For timeouts: if there are multiple runs on the same configuration-instance pair (with different seeds), some
+resulting in timeouts and some not, the majority decides here.</p>
+<p>P-value (between 0 and 1) results from comparing default and incumbent using a paired permutation test with 10000 iterations
+(permuting instances) and tests against the null-hypothesis that the mean of performance between default and
+incumbent is equal.</p>
+<p>Oracle performance searches for the best single run per instance (so the best seed/configuration-pair that was
+seen) and aggregates over them.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.pimp_comparison_table">
+<code class="descname">pimp_comparison_table</code><span class="sig-paren">(</span><em>cave</em>, <em>pimp_sort_table_by='average'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.pimp_comparison_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.pimp_comparison_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parameters are sorted by pimp_sort_table_by. Note, that the values are not directly comparable, since the
+different techniques provide different metrics (see respective tooltips for details on the differences).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.pimp_forward_selection">
+<code class="descname">pimp_forward_selection</code><span class="sig-paren">(</span><em>cave</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.pimp_forward_selection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.pimp_forward_selection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forward Selection is a generic method to obtain a subset of parameters to achieve the same prediction error as
+with the full parameter set.  Each parameter is scored by how much the out-of-bag-error of an empirical
+performance model based on a random forest is decreased.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.plot_ecdf">
+<code class="descname">plot_ecdf</code><span class="sig-paren">(</span><em>cave</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.plot_ecdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.plot_ecdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Depicts cost distributions over the set of instances.  Since these are empirical distributions, the plots show
+step functions. These plots provide insights into how well configurations perform up to a certain threshold. For
+runtime scenarios this shows the probability of solving all instances from the set in a given timeframe. On the
+left side the training-data is scattered, on the right side the test-data is scattered.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.plot_scatter">
+<code class="descname">plot_scatter</code><span class="sig-paren">(</span><em>cave</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.plot_scatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.plot_scatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scatter plots show the costs of the default and optimized parameter configuration on each instance. Since this
+looses detailed information about the individual cost on each instance by looking at aggregated cost values in
+tables, scatter plots provide a more detailed picture. They provide insights whether overall performance
+improvements can be explained only by some outliers or whether they are due to improvements on the entire
+instance set. On the left side the training-data is scattered, on the right side the test-data is scattered.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.print_budgets">
+<code class="descname">print_budgets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.print_budgets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.print_budgets" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the analyzed configurator uses budgets, print a list of available budgets.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.cavefacade.CAVE.set_verbosity">
+<code class="descname">set_verbosity</code><span class="sig-paren">(</span><em>level</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.set_verbosity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.set_verbosity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="cave.plot.html" class="btn btn-neutral float-right" title="cave.plot package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="cave.cave_cli.html" class="btn btn-neutral" title="cave.cave_cli module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017-2018, Marius Lindauer, Joshua Marben, Andre Biedenkapp.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.1.3_dev',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

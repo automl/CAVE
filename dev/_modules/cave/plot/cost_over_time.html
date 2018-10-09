@@ -1,0 +1,479 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>cave.plot.cost_over_time &mdash; CAVE 1.1.3_dev documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> CAVE
+          
+
+          
+            
+            <img src="../../../_static/cave.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.3_dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../manual.html">Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/commandline.html">Commandline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.analyzer.html">cave.analyzer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.cave_cli.html">cave.cave_cli module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.cavefacade.html">cave.cavefacade module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.plot.html">cave.plot package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.cost_over_time.html">cave.plot.cost_over_time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.html.html">cave.html package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.html.html_builder.html">cave.html.html_builder module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.tooltips.html">cave.utils.tooltips module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contact.html">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CAVE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>cave.plot.cost_over_time</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for cave.plot.cost_over_time</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">smac.configspace</span> <span class="k">import</span> <span class="n">convert_configurations_to_array</span>
+<span class="kn">from</span> <span class="nn">smac.epm.rf_with_instances</span> <span class="k">import</span> <span class="n">RandomForestWithInstances</span>
+<span class="kn">from</span> <span class="nn">smac.optimizer.objective</span> <span class="k">import</span> <span class="n">_cost</span>
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory2epm</span> <span class="k">import</span> <span class="n">RunHistory2EPM4Cost</span>
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span>
+<span class="kn">from</span> <span class="nn">smac.utils.util_funcs</span> <span class="k">import</span> <span class="n">get_types</span>
+<span class="kn">from</span> <span class="nn">smac.utils.validate</span> <span class="k">import</span> <span class="n">Validator</span>
+
+<span class="kn">from</span> <span class="nn">cave.utils.io</span> <span class="k">import</span> <span class="n">export_bokeh</span>
+<span class="kn">from</span> <span class="nn">cave.reader.configurator_run</span> <span class="k">import</span> <span class="n">ConfiguratorRun</span>
+
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">ColumnDataSource</span>
+<span class="kn">from</span> <span class="nn">bokeh.embed</span> <span class="k">import</span> <span class="n">components</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="n">Range1d</span>
+
+
+<div class="viewcode-block" id="CostOverTime"><a class="viewcode-back" href="../../../apidoc/cave.plot.cost_over_time.html#cave.plot.cost_over_time.CostOverTime">[docs]</a><span class="k">class</span> <span class="nc">CostOverTime</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span>
+
+    <span class="k">def</span> <span class="nf">_get_mean_var_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validator</span><span class="p">,</span> <span class="n">traj</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">rh</span><span class="p">):</span>
+        <span class="c1"># TODO kinda important: docstrings, what is this function doing?</span>
+        <span class="n">validator</span><span class="o">.</span><span class="n">traj</span> <span class="o">=</span> <span class="n">traj</span>  <span class="c1"># set trajectory</span>
+        <span class="n">time</span><span class="p">,</span> <span class="n">configs</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">pred</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">traj</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;wallclock_time&quot;</span><span class="p">])</span>
+                <span class="n">configs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;incumbent&quot;</span><span class="p">])</span>
+                <span class="c1"># self.logger.debug(&#39;Time: %d Runs: %d&#39;, time[-1],</span>
+                <span class="c1">#                   len(rh.get_runs_for_config(configs[-1])))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Using </span><span class="si">%d</span><span class="s2"> samples (</span><span class="si">%d</span><span class="s2"> distinct) from trajectory.&quot;</span><span class="p">,</span>
+                              <span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">configs</span><span class="p">)))</span>
+
+            <span class="k">if</span> <span class="n">validator</span><span class="o">.</span><span class="n">epm</span><span class="p">:</span>  <span class="c1"># not log as validator epm is trained on cost, not log cost</span>
+                <span class="n">epm</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">epm</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No EPM passed! Training new one from runhistory.&quot;</span><span class="p">)</span>
+                <span class="c1"># Train random forest and transform training data (from given rh)</span>
+                <span class="c1"># Not using validator because we want to plot uncertainties</span>
+                <span class="n">rh2epm</span> <span class="o">=</span> <span class="n">RunHistory2EPM4Cost</span><span class="p">(</span><span class="n">num_params</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">()),</span>
+                                             <span class="n">scenario</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">)</span>
+                <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">rh2epm</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">rh</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Training model with data of shape X: </span><span class="si">%s</span><span class="s2">, y:</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                                  <span class="nb">str</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+
+                <span class="n">types</span><span class="p">,</span> <span class="n">bounds</span> <span class="o">=</span> <span class="n">get_types</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">feature_array</span><span class="p">)</span>
+                <span class="n">epm</span> <span class="o">=</span> <span class="n">RandomForestWithInstances</span><span class="p">(</span><span class="n">types</span><span class="o">=</span><span class="n">types</span><span class="p">,</span>
+                                                <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span>
+                                                <span class="n">instance_features</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">feature_array</span><span class="p">,</span>
+                                                <span class="c1"># seed=self.rng.randint(MAXINT),</span>
+                                                <span class="n">ratio_features</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+                <span class="n">epm</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="n">config_array</span> <span class="o">=</span> <span class="n">convert_configurations_to_array</span><span class="p">(</span><span class="n">configs</span><span class="p">)</span>
+            <span class="n">mean</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="n">epm</span><span class="o">.</span><span class="n">predict_marginalized_over_instances</span><span class="p">(</span><span class="n">config_array</span><span class="p">)</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">mean</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="c1"># We don&#39;t want to show the uncertainty of the model but uncertainty over multiple optimizer runs</span>
+            <span class="c1"># This variance is computed in an outer loop.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mean</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">traj</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;wallclock_time&quot;</span><span class="p">])</span>
+                <span class="n">configs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;incumbent&quot;</span><span class="p">])</span>
+                <span class="n">costs</span> <span class="o">=</span> <span class="n">_cost</span><span class="p">(</span><span class="n">configs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">rh</span><span class="p">,</span> <span class="n">rh</span><span class="o">.</span><span class="n">get_runs_for_config</span><span class="p">(</span><span class="n">configs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+                <span class="c1"># self.logger.debug(len(costs), time[-1]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">costs</span><span class="p">:</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">mean</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">costs</span><span class="p">))</span>
+                    <span class="n">var</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># No variance over instances</span>
+            <span class="n">mean</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mean</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">time</span>
+
+<div class="viewcode-block" id="CostOverTime.plot"><a class="viewcode-back" href="../../../apidoc/cave.plot.cost_over_time.html#cave.plot.cost_over_time.CostOverTime.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">:</span> <span class="n">RunHistory</span><span class="p">,</span> <span class="n">runs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ConfiguratorRun</span><span class="p">],</span>
+             <span class="n">output_fn</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;performance_over_time.png&quot;</span><span class="p">,</span>
+             <span class="n">validator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">Validator</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Plot performance over time, using all trajectory entries</span>
+<span class="sd">            with max_time = wallclock_limit or (if inf) the highest</span>
+<span class="sd">            recorded time</span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            rh: RunHistory</span>
+<span class="sd">                runhistory to use</span>
+<span class="sd">            runs: List[SMACrun]</span>
+<span class="sd">                list of configurator-runs</span>
+<span class="sd">            output_fn: str</span>
+<span class="sd">                path to output-png</span>
+<span class="sd">            validator: TODO description</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Estimating costs over time for </span><span class="si">%d</span><span class="s2"> runs, save png in </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span>
+                          <span class="nb">len</span><span class="p">(</span><span class="n">runs</span><span class="p">),</span> <span class="n">output_fn</span><span class="p">)</span>
+        <span class="n">validated</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># TODO ?</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">runs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># If there is more than one run, we average over the runs</span>
+            <span class="n">means</span><span class="p">,</span> <span class="n">times</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="n">all_times</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">:</span>
+                <span class="c1"># Ignore variances as we plot variance over runs</span>
+                <span class="n">validated</span> <span class="o">=</span> <span class="n">validated</span> <span class="ow">and</span> <span class="n">run</span><span class="o">.</span><span class="n">traj</span>
+                <span class="n">mean</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_mean_var_time</span><span class="p">(</span><span class="n">validator</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">traj</span><span class="p">,</span> <span class="ow">not</span>
+                                                        <span class="n">run</span><span class="o">.</span><span class="n">validated_runhistory</span><span class="p">,</span> <span class="n">rh</span><span class="p">)</span>
+                <span class="n">means</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mean</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+                <span class="n">all_times</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+                <span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+            <span class="n">means</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">means</span><span class="p">)</span>
+            <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+            <span class="n">all_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">all_times</span><span class="p">))</span>
+            <span class="n">at</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">]</span>  <span class="c1"># keep track at which timestep each trajectory is</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">]</span>  <span class="c1"># used to compute the mean over the timesteps</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">all_times</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">all_times</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">all_times</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">all_times</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">for</span> <span class="n">time_idx</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">all_times</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">traj_idx</span><span class="p">,</span> <span class="n">entry_idx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">at</span><span class="p">):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="n">times</span><span class="p">[</span><span class="n">traj_idx</span><span class="p">][</span><span class="n">entry_idx</span><span class="p">]:</span>
+                            <span class="n">m</span><span class="p">[</span><span class="n">traj_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">means</span><span class="p">[</span><span class="n">traj_idx</span><span class="p">][</span><span class="n">entry_idx</span><span class="p">]</span>
+                            <span class="n">at</span><span class="p">[</span><span class="n">traj_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                        <span class="k">pass</span>  <span class="c1"># Reached the end of one trajectory. No need to check it further</span>
+                <span class="c1"># var[time_idx][0] = np.nanvar(m)</span>
+                <span class="n">u</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">m_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">75</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+                <span class="c1"># self.logger.debug((mean[time_idx][0] + np.sqrt(var[time_idx][0]), mean[time_idx][0],</span>
+                <span class="c1">#                   mean[time_idx][0] - np.sqrt(var[time_idx][0])))</span>
+                <span class="c1"># self.logger.debug((l, m_, u))</span>
+                <span class="n">upper</span><span class="p">[</span><span class="n">time_idx</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span>
+                <span class="n">mean</span><span class="p">[</span><span class="n">time_idx</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">m_</span>
+                <span class="n">lower</span><span class="p">[</span><span class="n">time_idx</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">all_times</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># no new statistics computation necessary</span>
+            <span class="n">validated</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">runs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">validated_runhistory</span> <span class="k">else</span> <span class="kc">False</span>
+            <span class="n">mean</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_mean_var_time</span><span class="p">(</span><span class="n">validator</span><span class="p">,</span> <span class="n">runs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">traj</span><span class="p">,</span> <span class="ow">not</span> <span class="n">validated</span><span class="p">,</span> <span class="n">rh</span><span class="p">)</span>
+            <span class="n">upper</span> <span class="o">=</span> <span class="n">lower</span> <span class="o">=</span> <span class="n">mean</span>
+
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">mean</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">upper</span> <span class="o">=</span> <span class="n">upper</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">lower</span> <span class="o">=</span> <span class="n">lower</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">uncertainty_upper</span> <span class="o">=</span> <span class="n">upper</span>  <span class="c1"># mean + np.sqrt(var)</span>
+        <span class="n">uncertainty_lower</span> <span class="o">=</span> <span class="n">lower</span>  <span class="c1"># mean - np.sqrt(var)</span>
+        <span class="n">clip_y_lower</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">run_obj</span> <span class="o">==</span> <span class="s1">&#39;runtime&#39;</span><span class="p">:</span>  <span class="c1"># y-axis on log -&gt; clip plot</span>
+            <span class="c1"># Determine clipping point from lowest legal value</span>
+            <span class="n">clip_y_lower</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">uncertainty_lower</span><span class="p">[</span><span class="n">uncertainty_lower</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+                               <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">mean</span><span class="p">))</span> <span class="o">*</span> <span class="mf">0.8</span>
+            <span class="n">uncertainty_lower</span><span class="p">[</span><span class="n">uncertainty_lower</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">clip_y_lower</span> <span class="o">*</span> <span class="mf">0.9</span>
+
+        <span class="n">time_double</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">sub</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">mean_double</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">mean</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">sub</span><span class="p">][:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">x</span><span class="o">=</span><span class="n">time_double</span><span class="p">,</span>
+                    <span class="n">y</span><span class="o">=</span><span class="n">mean_double</span><span class="p">,</span>
+                    <span class="n">epm_perf</span><span class="o">=</span><span class="n">mean_double</span><span class="p">))</span>
+
+        <span class="n">hover</span> <span class="o">=</span> <span class="n">HoverTool</span><span class="p">(</span><span class="n">tooltips</span><span class="o">=</span><span class="p">[</span>
+                <span class="p">(</span><span class="s2">&quot;performance&quot;</span><span class="p">,</span> <span class="s2">&quot;@epm_perf&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;at-time&quot;</span><span class="p">,</span> <span class="s2">&quot;@x&quot;</span><span class="p">)])</span>
+
+        <span class="n">p</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">plot_width</span><span class="o">=</span><span class="mi">700</span><span class="p">,</span> <span class="n">plot_height</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">hover</span><span class="p">,</span> <span class="s1">&#39;save&#39;</span><span class="p">],</span>
+                   <span class="n">x_range</span><span class="o">=</span><span class="n">Range1d</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">time</span><span class="p">)),</span>
+                   <span class="n">x_axis_type</span><span class="o">=</span><span class="s1">&#39;log&#39;</span><span class="p">,</span>
+                   <span class="n">y_axis_type</span><span class="o">=</span><span class="s1">&#39;log&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">run_obj</span> <span class="o">==</span> <span class="s1">&#39;runtime&#39;</span> <span class="k">else</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span>
+                   <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Cost over time&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">clip_y_lower</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">y_range</span> <span class="o">=</span> <span class="n">Range1d</span><span class="p">(</span><span class="n">clip_y_lower</span><span class="p">,</span> <span class="mf">1.2</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">uncertainty_upper</span><span class="p">))</span>
+
+        <span class="c1"># start after 1% of the configuration budget</span>
+        <span class="c1"># p.x_range = Range1d(min(time) + (max(time) - min(time)) * 0.01, max(time))</span>
+
+        <span class="c1"># Plot</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">run_obj</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;validated &#39;</span> <span class="k">if</span> <span class="n">validated</span> <span class="k">else</span> <span class="s1">&#39;estimated &#39;</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+
+        <span class="c1"># Fill area (uncertainty)</span>
+        <span class="c1"># Defined as sequence of coordinates, so for step-effect double and</span>
+        <span class="c1"># arange accordingly ([(t0, v0), (t1, v0), (t1, v1), ... (tn, vn-1)])</span>
+        <span class="n">time_double</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">sub</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">uncertainty_lower_double</span> <span class="o">=</span> <span class="p">[</span><span class="n">u</span> <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">uncertainty_lower</span><span class="p">,</span>
+                                    <span class="n">uncertainty_lower</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">sub</span><span class="p">][:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">uncertainty_upper_double</span> <span class="o">=</span> <span class="p">[</span><span class="n">u</span> <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">uncertainty_upper</span><span class="p">,</span>
+                                    <span class="n">uncertainty_upper</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">sub</span><span class="p">][:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">band_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time_double</span><span class="p">,</span> <span class="n">time_double</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">band_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">uncertainty_lower_double</span><span class="p">,</span> <span class="n">uncertainty_upper_double</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="n">band_x</span><span class="p">,</span> <span class="n">band_y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#7570B3&#39;</span><span class="p">,</span> <span class="n">fill_alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+
+        <span class="c1"># Tilt tick labels</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">major_label_orientation</span> <span class="o">=</span> <span class="mi">3</span><span class="o">/</span><span class="mi">4</span>
+
+        <span class="n">p</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="s2">&quot;top_right&quot;</span>
+
+        <span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">axis_label</span> <span class="o">=</span> <span class="s2">&quot;time (sec)&quot;</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">axis_label</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">axis_label_text_font_size</span> <span class="o">=</span> <span class="s2">&quot;15pt&quot;</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">axis_label_text_font_size</span> <span class="o">=</span> <span class="s2">&quot;15pt&quot;</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">major_label_text_font_size</span> <span class="o">=</span> <span class="s2">&quot;12pt&quot;</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">major_label_text_font_size</span> <span class="o">=</span> <span class="s2">&quot;12pt&quot;</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">text_font_size</span> <span class="o">=</span> <span class="s2">&quot;15pt&quot;</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">label_text_font_size</span> <span class="o">=</span> <span class="s2">&quot;15pt&quot;</span>
+
+        <span class="n">script</span><span class="p">,</span> <span class="n">div</span> <span class="o">=</span> <span class="n">components</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="n">export_bokeh</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">output_fn</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">script</span><span class="p">,</span> <span class="n">div</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017-2018, Marius Lindauer, Joshua Marben, Andre Biedenkapp.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'1.1.3_dev',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

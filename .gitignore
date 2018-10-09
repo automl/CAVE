@@ -1,0 +1,23 @@
+# setup.py
+build
+dist
+*.egg*
+
+# Python
+*.pyc
+*.pyo
+
+# IDEs
+.idea
+
+# SMAC output
+runhistory.json
+target_algo_runs.json
+
+# Other
+.tox
+*~
+
+#eclipse files
+.pydevproject 
+.project
