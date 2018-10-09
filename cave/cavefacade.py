@@ -476,6 +476,8 @@ class CAVE(object):
                 self.bohb_learning_curves(d=self.website)
             for run in self.runs:
                 sub_sec = os.path.basename(run.folder)
+                for h in headings:
+                    self.website[h][sub_sec] = OrderedDict()
                 # Set paths for each budget individual to avoid path-conflicts
                 sub_output_dir = os.path.join(self.output_dir, 'content', sub_sec)
                 os.makedirs(sub_output_dir, exist_ok=True)
