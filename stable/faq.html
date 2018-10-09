@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>F.A.Q. &mdash; CAVE 1.1.3_dev documentation</title>
+  <title>F.A.Q. &mdash; CAVE 1.1.2 documentation</title>
   
 
   
@@ -29,7 +29,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API Documentation" href="api.html" />
-    <link rel="prev" title="Budgets" href="manualdoc/budgets.html" /> 
+    <link rel="prev" title="Quickstart" href="quickstart.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.3_dev
+                1.1.2
               </div>
             
           
@@ -88,13 +88,6 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="manual.html">Manual</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="manualdoc/commandline.html">Commandline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
-<li class="toctree-l2"><a class="reference internal" href="manualdoc/fileformats.html">Input Format</a></li>
-<li class="toctree-l2"><a class="reference internal" href="manualdoc/budgets.html">Budgets</a></li>
-</ul>
-</li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">F.A.Q.</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="apidoc/cave.analyzer.html">cave.analyzer module</a></li>
@@ -206,11 +199,10 @@
 <p>You’re likely seeing a warning refering to missing installs of selenium and/or
 phantomjs-prebuilt. While selenium should be included in the requirements,
 phantomjs-prebuilt is not a pip-install. Please refer to the documentation of
-phantomjs or <a class="reference external" href="https://bokeh.pydata.org/en/latest/docs/user_guide/export.html">bokeh</a> to see how installation works (usually <cite>npm install -g phantomjs-prebuilt</cite> should do the trick).</p>
+phantomjs to see how installation works (usually <cite>npm install -g phantomjs-prebuilt</cite> should do the trick).</p>
 <p class="rubric">What is the <cite>ta_exec_dir</cite>-option good for?</p>
 <p>The <cite>ta_exec_dir</cite> specifies the target algorithm execution directory. With this option you can run <em>CAVE</em> from any
 folder, just make sure the relative paths in the scenario can be found from the path you specify in <cite>ta_exec_dir</cite>.</p>
-<p class="rubric">I experience problems with the origins in the configuration footprint when using SMAC3-data…</p>
 <p>Configuration origins may require you to install SMAC3’s development branch with <cite>pip install -e
 git+git://github.com/automl/SMAC3&#64;development#egg=smac</cite>.</p>
 </div>
@@ -226,7 +218,7 @@ git+git://github.com/automl/SMAC3&#64;development#egg=smac</cite>.</p>
         <a href="api.html" class="btn btn-neutral float-right" title="API Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="manualdoc/budgets.html" class="btn btn-neutral" title="Budgets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="quickstart.html" class="btn btn-neutral" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -257,7 +249,7 @@ git+git://github.com/automl/SMAC3&#64;development#egg=smac</cite>.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.1.3_dev',
+            VERSION:'1.1.2',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

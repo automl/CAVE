@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; CAVE 1.1.3_dev documentation</title>
+  <title>Index &mdash; CAVE 1.1.2 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                1.1.3_dev
+                1.1.2
               </div>
             
           
@@ -87,13 +87,6 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="manual.html">Manual</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="manualdoc/commandline.html">Commandline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
-<li class="toctree-l2"><a class="reference internal" href="manualdoc/fileformats.html">Input Format</a></li>
-<li class="toctree-l2"><a class="reference internal" href="manualdoc/budgets.html">Budgets</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">F.A.Q.</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="apidoc/cave.analyzer.html">cave.analyzer module</a></li>
@@ -233,6 +226,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.analyze">analyze() (cave.cavefacade.CAVE method)</a>
 </li>
+      <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.analyzer_type">analyzer_type() (in module cave.cavefacade)</a>
+</li>
       <li><a href="apidoc/cave.utils.helpers.html#cave.utils.helpers.MissingInstancesError.args">args (cave.utils.helpers.MissingInstancesError attribute)</a>
 
       <ul>
@@ -247,11 +242,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidoc/cave.reader.base_reader.html#cave.reader.base_reader.BaseReader">BaseReader (class in cave.reader.base_reader)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.bohb_learning_curves">bohb_learning_curves() (cave.cavefacade.CAVE method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.box_violin">box_violin() (cave.cavefacade.CAVE method)</a>
+</li>
+      <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.build_website">build_website() (cave.cavefacade.CAVE method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -261,7 +258,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE">CAVE (class in cave.cavefacade)</a>
 </li>
-      <li><a href="api.html#module-cave">cave (module)</a>, <a href="manual.html#module-cave">[1]</a>
+      <li><a href="api.html#module-cave">cave (module)</a>
 </li>
       <li><a href="apidoc/cave.__version__.html#module-cave.__version__">cave.__version__ (module)</a>
 </li>
@@ -327,8 +324,12 @@
 </li>
       <li><a href="apidoc/cave.cave_cli.html#cave.cave_cli.CaveCLI">CaveCLI (class in cave.cave_cli)</a>
 </li>
-      <li><a href="apidoc/cave.reader.base_reader.html#cave.reader.base_reader.changedir">changedir() (in module cave.reader.base_reader)</a>
+      <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.changedir">changedir() (in module cave.cavefacade)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.reader.base_reader.html#cave.reader.base_reader.changedir">(in module cave.reader.base_reader)</a>
 </li>
+      </ul></li>
       <li><a href="apidoc/cave.utils.helpers.html#cave.utils.helpers.combine_runhistories">combine_runhistories() (in module cave.utils.helpers)</a>
 </li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.compare_default_incumbent">compare_default_incumbent() (cave.cavefacade.CAVE method)</a>
@@ -407,6 +408,8 @@
 </li>
       <li><a href="apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_distance">get_distance() (cave.plot.configurator_footprint.ConfiguratorFootprintPlotter method)</a>
 </li>
+      <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.get_feature_names">get_feature_names() (cave.cavefacade.CAVE method)</a>
+</li>
       <li><a href="apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun.get_incumbent">get_incumbent() (cave.reader.configurator_run.ConfiguratorRun method)</a>
 </li>
       <li><a href="apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_mds">get_mds() (cave.plot.configurator_footprint.ConfiguratorFootprintPlotter method)</a>
@@ -455,8 +458,6 @@
         <li><a href="apidoc/cave.reader.smac3_reader.html#cave.reader.smac3_reader.SMAC3Reader.get_trajectory">(cave.reader.smac3_reader.SMAC3Reader method)</a>
 </li>
       </ul></li>
-      <li><a href="apidoc/cave.html.html_builder.html#cave.html.html_builder.HTMLBuilder.get_unique_id">get_unique_id() (cave.html.html_builder.HTMLBuilder method)</a>
-</li>
       <li><a href="apidoc/cave.reader.base_reader.html#cave.reader.base_reader.BaseReader.get_validated_runhistory">get_validated_runhistory() (cave.reader.base_reader.BaseReader method)</a>
 
       <ul>
@@ -620,6 +621,10 @@
       <li><a href="apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun.validate">validate() (cave.reader.configurator_run.ConfiguratorRun method)</a>
 </li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.validate_default_and_incumbents">validate_default_and_incumbents() (cave.cavefacade.CAVE method)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="W">W</h2>
@@ -668,7 +673,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.1.3_dev',
+            VERSION:'1.1.2',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
