@@ -243,11 +243,12 @@ class CostOverTime(BaseAnalyzer):
 
         return p
 
-    def get_html(self, d=None):
+    def get_html(self, d=None, tooltip=None):
         if not self.script or not self.div:
             self._plot()
         if d is not None:
-            d = {"bokeh": (self.script, self.div)}
+            d["bokeh"] = (self.script, self.div)
+            d["tooltip"] = tooltip
         return self.script, self.div
 
     def get_plots(self):

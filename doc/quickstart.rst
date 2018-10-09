@@ -1,107 +1,47 @@
 Quickstart
 ----------
-CAVE is invoked via the commandline. After completing the
-`Installation <installation.html>`_ , type
+CAVE is designed to adapt to any given workflow. While it's possible to generate a HTML-report via the commandline on a
+given result-folder, CAVE may also run in interactive mode, running `individual analysis-methods <apidoc/cave.cavefacade.html>`_ on demand. We provide a
+few examples to demonstrate this.
+Make sure you followed the `installation <installation.html>`_ before starting.
+
+Analyse existing results via the commandline
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are example toy results of all supported file formats in the folder `examples
+<https://github.com/automl/CAVE/tree/master/examples>`_ on the github-repo.
+Run
 
 .. code-block:: bash
 
-    python scripts/cave --folders examples/smac3/example_output/* --ta_exec_dir examples/smac3/
+    cave --folders examples/smac3/example_output/* --ta_exec_dir examples/smac3/ --output CAVE_OUTPUT
 
-to start the example (assuming you
-cloned the GitHub-repository in which the example is included). By default, CAVE
-will execute all parts of the analysis. To disable certain (timeconsuming) parts
-of the analysis, please see the section commandline-options.
+to start the example (assuming you cloned the GitHub-repository in which the example is included).
+By default, CAVE will execute all parts of the analysis. To disable certain (timeconsuming) parts
+of the analysis, please see the section `commandline-options <manualdoc/commandline.html>`_.
 
-Supported file-formats for configurator-output are currently the output of
-*SMAC2* and *SMAC3*, as well as csv-data formatted as specified below.
+Most importantly though: ``--folders`` takes one or several paths to directories with configurator output.
+*glob*-extension is supported.
+``--ta_exec_dir`` defines a directory, from which the configurator was run - in case that
+there are relative paths while loading the data (e.g. instance-file-paths in SMAC's scenario-file). Here also one or more values are valid,
+however either one path for all ``--folders``-paths or exactly as many (one-to-one mapping).
+``--output`` simply defines, where to save CAVE-output (report, plots, tables, etc.).
 
-*SMAC2*
-=======
-Relevant files for the analysis of *SMAC2* (relative to the specified
-folder with ??? as wildcards for digits) are:
-- scenario.txt
-- run_and_results-it???.csv
-- paramstrings-it???.txt
-- ../traj-run-?.txt
-plus the files specified in the scenario.txt (pcs_fn.pcs, instance- and
-instancefeature-fn.txt, ...)
+Interactive notebook mode
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-*SMAC3*
-=======
-Relevant files for the analysis of *SMAC3* (relative to the specified
-folder) are:
-- scenario.txt
-- runhistory.json
-- traj_aclib2.json
-- validated_runhistory.json (optional)
-plus the files specified in the scenario.txt (pcs_fn.pcs, instance- and
-instancefeature-fn.txt, ...)
+You can also run CAVE in an interactive notebook mode. Make sure you have `jupyter <http://jupyter.org/install>`_
+installed, then just create a CAVE-object within a running notebook and run analysis-methods manually. See the
+`jupyter-explanation <manualdoc/jupyternotebook.html>`_ for details.
+To run the smac3-example (within a notebook):
 
-*CSV*
-=====
-CSV gives the opportunity to parse all the rundata in a very simple
-format. A scenario-file (and therein specified files) is still required.
-`runhistory.csv` substitutes the runhistory, each line representing one target
-algorithm run. The first line of the file is the header, with the following
-entries: `cost`, `time`, `status`, `seed`, `config_id` and `instance_id`.
-When specifying `config_id`, the specified folder must also contain a `configurations.csv`.
-If you use `instance_id`-columns, the instance_ids must be the same
-that are specified in the instance-feature-file.
+.. code-block:: python
 
-`instance_features.csv` (path for instance_features is used from provided scenario):
+    from cave.cavefacade import CAVE
+    cave = CAVE(folders=["examples/smac3/example_output/run_1"],
+                output_dir="test_jupyter_smac",
+                ta_exec_dir=["examples/smac3"],
+                file_format='SMAC3',
+               )
+    cave.performance_table()
 
-    +-------------+-----------------+-----------------+-----+
-    | INSTANCE_ID | inst_feat_name1 | inst_feat_name2 | ... |
-    +=============+=================+=================+=====+
-    | 0           | value1          | value2          | ... |
-    +-------------+-----------------+-----------------+-----+
-    | ...         | ...             | ...             | ... |
-    +-------------+-----------------+-----------------+-----+
-
-`configurations.csv`:
-
-    +-----------+-----------------+-----------------+-----+
-    | CONFIG_ID | parameter_name1 | parameter_name2 | ... |
-    +===========+=================+=================+=====+
-    | 0         | value1          | value2          | ... |
-    +-----------+-----------------+-----------------+-----+
-    | ...       | ...             | ...             | ... |
-    +-----------+-----------------+-----------------+-----+
-
-`runhistory.csv`:
-
-    +--------------------+--------------------+------+------+------+--------+
-    |      config_id     |  instance_id       | cost | time | seed | status |
-    +====================+====================+======+======+======+========+
-    | name of config 1   | name of instance 1 | ...  |  ... | ...  |  ...   |
-    +--------------------+--------------------+------+------+------+--------+
-    |         ...        |          ...       | ...  |  ... | ...  |  ...   |
-    +--------------------+--------------------+------+------+------+--------+
-
-`trajectory.csv`:
-
-    +----------+------+----------------+-----------+
-    | cpu_time | cost | wallclock_time | incumbent |
-    +==========+======+================+===========+
-    | ...      | ...  | ...            | ...       |
-    +----------+------+----------------+-----------+
-
-Alternatively CAVE can also read in one `runhistory.csv`-file containing all the information
-about parameters and instances, in this case the file `configurations.csv` is
-not needed. See below for example:
-
-`runhistory.csv`:
-
-    +------+------+------+--------+------------+------------+-----+------------+------------+-----+
-    | cost | time | seed | status | parameter1 | parameter2 | ... | inst_feat1 | inst_feat2 | ... |
-    +======+======+======+========+============+============+=====+============+============+=====+
-    | ...  |  ... | ...  |  ...   | ...        | ...        | ... | ...        | ...        | ... |
-    +------+------+------+--------+------------+------------+-----+------------+------------+-----+
-
-`trajectory.csv`:
-
-    +----------+------+----------------+------------+------------+-----+
-    | cpu_time | cost | wallclock_time | parameter1 | parameter2 | ... |
-    +==========+======+================+============+============+=====+
-    | ...      | ...  | ...            | ...        | ...        | ... |
-    +----------+------+----------------+------------+------------+-----+

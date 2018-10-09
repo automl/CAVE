@@ -144,7 +144,7 @@ class ParallelCoordinates(BaseAnalyzer):
                 self.error = str(err)
         return self.plots
 
-    def get_html(self, d=None, n_configs=500, params=None):
+    def get_html(self, d=None, tooltip=None, n_configs=500, params=None):
         """
         Parameters
         ----------
@@ -158,11 +158,13 @@ class ParallelCoordinates(BaseAnalyzer):
 
         if self.error:
             if d is not None:
-                d["Parallel Coordinates"] = {"else": "Error occured: %s" % self.error}
+                d["else"] = "Error occured: %s" % self.error
             return "", self.error
 
         if d is not None:
-            d["Parallel Coordinates"] = {"figure": self.get_plots(n_configs, params)}
+            d["figure"] = self.get_plots(n_configs, params)
+            d["tooltip"] = tooltip
+
         div = "<div class=\"panel\">\n"
         div += "<div align=\"center\">\n"
         div += ("<a href=\"{0}\" data-lightbox=\"{0}\" "

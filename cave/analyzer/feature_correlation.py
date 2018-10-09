@@ -25,9 +25,10 @@ class FeatureCorrelation(BaseAnalyzer):
     def get_plots(self):
         return [self.correlation_plot]
 
-    def get_html(self, d=None):
+    def get_html(self, d=None, tooltip=None):
         if d is not None:
-            d["Correlation"] = {"figure": self.correlation_plot}
+            d["figure"] = self.correlation_plot
+            d["tooltip"] = tooltip
         return figure_to_html(self.get_plots())
 
     def get_jupyter(self):

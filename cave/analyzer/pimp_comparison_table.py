@@ -67,16 +67,10 @@ class PimpComparisonTable(BaseAnalyzer):
 
         self.comp_table = DataFrame(values, columns=columns, index=index)
 
-    def get_html(self, d=None):
+    def get_html(self, d=None, tooltip=None):
         table = self.comp_table.to_html()
         if d is not None:
-            d["Importance Table"] = {
-                    "table": table,
-                    "tooltip": "Parameters are sorted by {}. Note, that the values are not "
-                               "directly comparable, since the different techniques "
-                               "provide different metrics (see respective tooltips "
-                               "for details on the differences).".format(self.sort_table_by)}
-            d.move_to_end("Importance Table", last=False)
+            d["table"] = table
         return table
 
     def get_jupyter(self):
