@@ -51,14 +51,17 @@ class PimpComparisonTable(BaseAnalyzer):
             add_parameter = False
             for e in evaluators:
                 if p in e.evaluated_parameter_importance:
-                    value_percent = format(e.evaluated_parameter_importance[p] * 100, '.2f')
-                    if float(value_percent) > threshold:
+                    value_to_add = e.evaluated_parameter_importance[p]
+                    if e.name != 'Forward-Selection':
+                        value_to_add = value_to_add * 100
+                    value_to_add = format(value_to_add, '.2f')
+                    if float(value_to_add) > threshold:
                         add_parameter = True
                     # Add uncertainty, if available
                     if (hasattr(e, 'evaluated_parameter_importance_uncertainty') and
                         p in e.evaluated_parameter_importance_uncertainty):
-                        value_percent += ' +/- ' + format(e.evaluated_parameter_importance_uncertainty[p] * 100, '.2f')
-                    values_for_p.append(value_percent)
+                        value_to_add += ' +/- ' + format(e.evaluated_parameter_importance_uncertainty[p] * 100, '.2f')
+                    values_for_p.append(value_to_add)
                 else:
                     values_for_p.append('-')
             if add_parameter:
