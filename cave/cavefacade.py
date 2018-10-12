@@ -295,7 +295,7 @@ class CAVE(object):
                             fanova_pairwise=self.fanova_pairwise,
                             use_budgets=False,
                             seed=self.seed,
-                            verbose_level=self.verbose_level)
+                            verbose_level='OFF')
 
     def _init_helper_no_budgets(self):
         """
