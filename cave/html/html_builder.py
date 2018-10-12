@@ -54,6 +54,16 @@ class HTMLBuilder(object):
         self.budget = ''
         # todo make relative dirs again
 
+        # Copy subfolders
+        subfolders = ["css", "images", "js", "font"]
+        for sf in subfolders:
+            try:
+                shutil.rmtree(os.path.join(self.output_dn, "html", sf), ignore_errors=True)
+                shutil.copytree(os.path.join(self.own_folder, "web_files", sf),
+                                os.path.join(self.output_dn, "html", sf))
+            except OSError:
+                print_exc()
+
         self.header_part_1 = '''
 <!DOCTYPE html>
 <html>
@@ -158,13 +168,6 @@ for (i = 0; i < acc.length; i++) {
         with open(os.path.join(self.output_dn, "report.html"), "w") as fp:
             fp.write(html)
 
-        subfolders = ["css", "images", "js", "font"]
-        for sf in subfolders:
-            try:
-                shutil.copytree(os.path.join(self.own_folder, "web_files", sf),
-                                os.path.join(self.output_dn, "html", sf))
-            except OSError:
-                print_exc()
         if self.logo_custom:
             original_path = self.logo_fn
             self.logo_fn = os.path.join(self.output_dn, "html", 'images', 'custom_logo.png')
