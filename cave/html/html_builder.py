@@ -161,9 +161,8 @@ for (i = 0; i < acc.length; i++) {
         subfolders = ["css", "images", "js", "font"]
         for sf in subfolders:
             try:
-                if not os.path.isdir(os.path.join(self.output_dn, "html", sf)):
-                    shutil.copytree(os.path.join(self.own_folder, "web_files", sf),
-                                    os.path.join(self.output_dn, "html", sf))
+                shutil.copytree(os.path.join(self.own_folder, "web_files", sf),
+                                os.path.join(self.output_dn, "html", sf))
             except OSError:
                 print_exc()
         if self.logo_custom:
