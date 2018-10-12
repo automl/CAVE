@@ -471,6 +471,8 @@ class CAVE(object):
             # The individual configurator runs are not directory comparable and cannot be aggregated.
             # Nevertheless they need to be combined in one comprehensive report and some metrics are to be compared over
             # the individual runs.
+            # TODO: Currently, the code below is configured for bohb... if we extend ot other budget-driven
+            # configurators, review!
 
             # Perform analysis for each run
             if self.bohb_result:
@@ -500,7 +502,7 @@ class CAVE(object):
                 self.overview_table(d=self._get_dict(self.website, "Meta Data", sub_sec), run=sub_sec)
                 self.website["Meta Data"]["tooltip"] = self._get_tooltip(self.overview_table)
                 self.parameter_importance(self.website["Parameter Importance"], sub_sec,
-                                          ablation='ablation' in param_importance,
+                                          ablation=False, #'ablation' in param_importance,
                                           fanova='fanova' in param_importance,
                                           forward_selection='forward_selection' in param_importance,
                                           lpi='lpi' in param_importance,
