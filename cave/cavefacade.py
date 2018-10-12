@@ -44,6 +44,7 @@ from cave.analyzer.feature_clustering import FeatureClustering
 from cave.analyzer.overview_table import OverviewTable
 from cave.analyzer.compare_default_incumbent import CompareDefaultIncumbent
 from cave.analyzer.bohb_learning_curves import BohbLearningCurves
+from cave.analyzer.bohb_incumbents_per_budget import BohbIncumbentsPerBudget
 from cave.__version__ import __version__ as v
 
 __author__ = "Joshua Marben"
@@ -180,7 +181,7 @@ class CAVE(object):
         self.logger.debug("Running CAVE version %s", v)
         self.show_jupyter = show_jupyter
         # Methods that are never per-run, because they are inter-run-analysis by nature
-        self.always_aggregated = ['bohb_learning_curves']  # these function-names will always be aggregated
+        self.always_aggregated = ['bohb_learning_curves', 'bohb_incumbents_per_budget']  # these function-names will always be aggregated
 
         for d in os.listdir():
             if d.startswith('run_1'):
@@ -474,6 +475,11 @@ class CAVE(object):
             # Perform analysis for each run
             if self.bohb_result:
                 self.bohb_learning_curves(d=self.website)
+                self.website["Incumbents Over Budgets"] = OrderedDict()
+                self.bohb_incumbents_per_budget(d=self.website["Incumbents Over Budgets"])
+                # Move to second position
+                self.website.move_to_end("Incumbents Over Budgets", last=False)
+                self.website.move_to_end("Meta Data", last=False)
             for run in self.runs:
                 sub_sec = os.path.basename(run.folder)
                 # Set paths for each budget individual to avoid path-conflicts
@@ -492,11 +498,7 @@ class CAVE(object):
                 self.best_run = run
                 # Perform analysis
                 self.overview_table(d=self._get_dict(self.website, "Meta Data", sub_sec), run=sub_sec)
-                self.compare_default_incumbent(d=self._get_dict(self.website, "Best Configuration", sub_sec), run=sub_sec)
                 self.website["Meta Data"]["tooltip"] = self._get_tooltip(self.overview_table)
-                self.website["Best Configuration"]["tooltip"] = self._get_tooltip(self.compare_default_incumbent)
-                self.performance_analysis(self.website["Performance Analysis"], sub_sec,
-                                          performance, cdf, scatter, algo_footprint)
                 self.parameter_importance(self.website["Parameter Importance"], sub_sec,
                                           ablation='ablation' in param_importance,
                                           fanova='fanova' in param_importance,
@@ -583,13 +585,8 @@ class CAVE(object):
         """
 
         if performance:
-            if self.use_budgets:
-                self.logger.debug("Skipping extra accordion for Performance Table and other performance analysis")
-                self.performance_table(d=self._get_dict(self.website, "Performance Analysis", run=run), run=run)
-                return
-            else:
-                self.performance_table(d=self._get_dict(d, "Performance Table", run=run), run=run)
-                d["Performance Table"]["tooltip"] = self._get_tooltip(self.performance_table)
+            self.performance_table(d=self._get_dict(d, "Performance Table", run=run), run=run)
+            d["Performance Table"]["tooltip"] = self._get_tooltip(self.performance_table)
         if cdf:
             self.plot_ecdf(d=self._get_dict(d, "empirical Cumulative Distribution Function (eCDF)", run=run), run=run)
             d["empirical Cumulative Distribution Function (eCDF)"]["tooltip"] = self._get_tooltip(self.plot_ecdf)
@@ -946,8 +943,16 @@ class CAVE(object):
     def bohb_learning_curves(self, cave):
         return BohbLearningCurves(self.scenario.cs.get_hyperparameter_names(), result_object=self.bohb_result)
 
-############################################################################
-############################################################################
+    @_analyzer_type
+    def bohb_incumbents_per_budget(self, cave):
+        return BohbIncumbentsPerBudget([b.incumbent for b in self.runs],
+                                       [b.folder for b in self.runs],
+                                       [b.epm_runhistory for b in self.runs])
+
+###########################################################################
+# HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS #
+###########################################################################
+
     def print_budgets(self):
         """If the analyzed configurator uses budgets, print a list of available budgets."""
         if self.use_budgets:
