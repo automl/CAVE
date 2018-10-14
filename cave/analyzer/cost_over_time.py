@@ -24,7 +24,11 @@ from bokeh.io import output_notebook
 
 class CostOverTime(BaseAnalyzer):
 
-    def __init__(self, scenario, output_dir, rh: RunHistory, runs: List[ConfiguratorRun],
+    def __init__(self,
+                 scenario,
+                 output_dir,
+                 rh: RunHistory,
+                 runs: List[ConfiguratorRun],
                  output_fn: str="performance_over_time.png",
                  validator: Union[None, Validator]=None):
         """ Plot performance over time, using all trajectory entries
@@ -56,11 +60,35 @@ class CostOverTime(BaseAnalyzer):
         self.output_fn =output_fn
         self.validator = validator
 
+        self.logger.debug("Initialized CostOverTime with %d runs, output to \"%s\"", len(self.runs), self.output_dir)
+
         # Will be set during execution:
-        self.script, self.div, self.plots = None, None, []
-        self.bokeh_plot = None
+        self.script, self.div = None, None  # Bokeh for standalone html
+        self.plots = []                     # List with paths to '.png's
+        self.bokeh_plot = None              # Bokeh plot object
+
+        self._plot(self.rh, self.runs, self.output_fn, self.validator)
 
     def _get_mean_var_time(self, validator, traj, pred, rh):
+        """
+        Parameters
+        ----------
+        validator: Validator
+            validator (smac-based)
+        traj: List[Configuraton]
+            trajectory to set in validator
+        pred: bool
+            validated or not (?)
+        rh: RunHistory
+            ??
+
+        Returns
+        -------
+        mean, var
+
+        times: List[float]
+            times to plot (x-values)
+        """
         # TODO kinda important: docstrings, what is this function doing?
         validator.traj = traj  # set trajectory
         time, configs = [], []
@@ -69,23 +97,20 @@ class CostOverTime(BaseAnalyzer):
             for entry in traj:
                 time.append(entry["wallclock_time"])
                 configs.append(entry["incumbent"])
-                # self.logger.debug('Time: %d Runs: %d', time[-1],
-                #                   len(rh.get_runs_for_config(configs[-1])))
+                # self.logger.debug('Time: %d Runs: %d', time[-1], len(rh.get_runs_for_config(configs[-1])))
 
-            self.logger.debug("Using %d samples (%d distinct) from trajectory.",
-                              len(time), len(set(configs)))
+            self.logger.debug("Using %d samples (%d distinct) from trajectory.", len(time), len(set(configs)))
 
+            # Initialize EPM
             if validator.epm:  # not log as validator epm is trained on cost, not log cost
                 epm = validator.epm
             else:
                 self.logger.debug("No EPM passed! Training new one from runhistory.")
                 # Train random forest and transform training data (from given rh)
                 # Not using validator because we want to plot uncertainties
-                rh2epm = RunHistory2EPM4Cost(num_params=len(self.scenario.cs.get_hyperparameters()),
-                                             scenario=self.scenario)
+                rh2epm = RunHistory2EPM4Cost(num_params=len(self.scenario.cs.get_hyperparameters()), scenario=self.scenario)
                 X, y = rh2epm.transform(rh)
-                self.logger.debug("Training model with data of shape X: %s, y:%s",
-                                  str(X.shape), str(y.shape))
+                self.logger.debug("Training model with data of shape X: %s, y: %s", str(X.shape), str(y.shape))
 
                 types, bounds = get_types(self.scenario.cs, self.scenario.feature_array)
                 epm = RandomForestWithInstances(types=types,
@@ -114,39 +139,26 @@ class CostOverTime(BaseAnalyzer):
             mean, var = np.array(mean).reshape(-1, 1), np.array(var).reshape(-1, 1)
         return mean, var, time
 
-    def _plot(self):
-        """ Plot performance over time, using all trajectory entries
-            with max_time = wallclock_limit or (if inf) the highest
-            recorded time
+    def _plot(self, rh, runs, output_fn, validator):
         """
-        rh = self.rh
-        runs = self.runs
-        output_fn = self.output_fn
-        validator = self.validator
-
-        self.logger.debug("Estimating costs over time for %d runs, save png in %s.",
-                          len(runs), output_fn)
-        validated = True  # TODO ?
-
+        Plot performance over time, using all trajectory entries.
+        max_time denotes max(wallclock_limit, highest recorded time).
+        """
         if len(runs) > 1:
             # If there is more than one run, we average over the runs
             means, times = [], []
-            all_times = []
             for run in runs:
                 # Ignore variances as we plot variance over runs
-                validated = validated and run.traj
-                mean, _, time = self._get_mean_var_time(validator, run.traj, not
-                                                        run.validated_runhistory, rh)
+                mean, _, time = self._get_mean_var_time(validator, run.traj, not run.validated_runhistory, rh)
                 means.append(mean.flatten())
-                all_times.extend(time)
                 times.append(time)
+            all_times = np.array(sorted([a for b in times for a in b]))  # flatten times
             means = np.array(means)
             times = np.array(times)
-            all_times = np.array(sorted(all_times))
-            at = [0 for _ in runs]  # keep track at which timestep each trajectory is
+            at = [0 for _ in runs]      # keep track at which timestep each trajectory is
             m = [np.nan for _ in runs]  # used to compute the mean over the timesteps
-            mean = np.ones((len(all_times), 1)) * -1
-            var = np.ones((len(all_times), 1)) * -1
+            mean  = np.ones((len(all_times), 1)) * -1
+            var   = np.ones((len(all_times), 1)) * -1
             upper = np.ones((len(all_times), 1)) * -1
             lower = np.ones((len(all_times), 1)) * -1
             for time_idx, t in enumerate(all_times):
@@ -160,7 +172,7 @@ class CostOverTime(BaseAnalyzer):
                 # var[time_idx][0] = np.nanvar(m)
                 u, l, m_ = np.nanpercentile(m, 75), np.nanpercentile(m, 25), np.nanpercentile(m, 50)
                 # self.logger.debug((mean[time_idx][0] + np.sqrt(var[time_idx][0]), mean[time_idx][0],
-                #                   mean[time_idx][0] - np.sqrt(var[time_idx][0])))
+                #                    mean[time_idx][0] - np.sqrt(var[time_idx][0])))
                 # self.logger.debug((l, m_, u))
                 upper[time_idx][0] = u
                 mean[time_idx][0] = m_
@@ -172,18 +184,17 @@ class CostOverTime(BaseAnalyzer):
             upper = lower = mean
 
         mean = mean[:, 0]
-        upper = upper[:, 0]
-        lower = lower[:, 0]
+        uncertainty_upper = upper[:, 0]
+        uncertainty_lower = lower[:, 0]
 
-        uncertainty_upper = upper  # mean + np.sqrt(var)
-        uncertainty_lower = lower  # mean - np.sqrt(var)
+        # Determine clipping point for y-axis from lowest legal value
         clip_y_lower = False
         if self.scenario.run_obj == 'runtime':  # y-axis on log -> clip plot
-            # Determine clipping point from lowest legal value
             clip_y_lower = min(list(uncertainty_lower[uncertainty_lower > 0])
                                + list(mean)) * 0.8
             uncertainty_lower[uncertainty_lower <= 0] = clip_y_lower * 0.9
 
+        # Imitate step-function
         time_double = [t for sub in zip(time, time) for t in sub][1:-1]
         mean_double = [t for sub in zip(mean, mean) for t in sub][:-2]
         source = ColumnDataSource(data=dict(
@@ -208,7 +219,7 @@ class CostOverTime(BaseAnalyzer):
         # p.x_range = Range1d(min(time) + (max(time) - min(time)) * 0.01, max(time))
 
         # Plot
-        label = self.scenario.run_obj
+        label = self.scenario.run_obj if self.scenario.run_obj != 'quality' else 'cost'
         label = '{}{}'.format('validated ' if validated else 'estimated ', label)
         p.line('x', 'y', source=source, legend=label)
 
@@ -216,15 +227,13 @@ class CostOverTime(BaseAnalyzer):
         # Defined as sequence of coordinates, so for step-effect double and
         # arange accordingly ([(t0, v0), (t1, v0), (t1, v1), ... (tn, vn-1)])
         time_double = [t for sub in zip(time, time) for t in sub][1:-1]
-        uncertainty_lower_double = [u for sub in zip(uncertainty_lower,
-                                    uncertainty_lower) for u in sub][:-2]
-        uncertainty_upper_double = [u for sub in zip(uncertainty_upper,
-                                    uncertainty_upper) for u in sub][:-2]
+        uncertainty_lower_double = [u for sub in zip(uncertainty_lower, uncertainty_lower) for u in sub][:-2]
+        uncertainty_upper_double = [u for sub in zip(uncertainty_upper, uncertainty_upper) for u in sub][:-2]
         band_x = np.append(time_double, time_double[::-1])
         band_y = np.append(uncertainty_lower_double, uncertainty_upper_double[::-1])
         p.patch(band_x, band_y, color='#7570B3', fill_alpha=0.2)
 
-        # Tilt tick labels
+        # Tilt tick labels and configure axis labels
         p.xaxis.major_label_orientation = 3/4
 
         p.legend.location = "top_right"
@@ -235,29 +244,22 @@ class CostOverTime(BaseAnalyzer):
         p.title.text_font_size = "15pt"
         p.legend.label_text_font_size = "15pt"
 
+        # Assign objects and save png's
         self.script, self.div = components(p)
-
+        self.bokeh_plot = p
         output_path = os.path.join(self.output_dir, output_fn)
         export_bokeh(p, output_path, self.logger)
         self.plots.append(output_path)
 
-        return p
-
     def get_html(self, d=None, tooltip=None):
-        if not self.script or not self.div:
-            self._plot()
         if d is not None:
             d["bokeh"] = (self.script, self.div)
             d["tooltip"] = tooltip
         return self.script, self.div
 
     def get_plots(self):
-        if not self.plots:
-            self._plot()
         return self.plots
 
     def get_jupyter(self):
         output_notebook()
-        if not self.bokeh_plot:
-            self.bokeh_plot = self._plot()
         show(self.bokeh_plot)

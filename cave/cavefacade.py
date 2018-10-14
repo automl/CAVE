@@ -680,7 +680,11 @@ class CAVE(object):
         that is still improving at the end of the budget indicates that one should increase the configuration budget.
         The plotted standard deviation gives the uncertainty over multiple configurator runs.
         """
-        return CostOverTime(cave.scenario, cave.output_dir, cave.global_validated_rh, cave.runs, validator=cave.validator)
+        return CostOverTime(cave.scenario,
+                            cave.output_dir,
+                            cave.global_validated_rh,
+                            cave.runs,
+                            validator=cave.validator)
 
     @_analyzer_type
     def parallel_coordinates(self, cave,
@@ -993,6 +997,7 @@ class CAVE(object):
         self.builder.generate_html(self.website)
 
     def set_verbosity(self, level):
+        # TODO add custom level with logging.addLevelName (e.g. DEV_DEBUG)
         # Log to stream (console)
         logging.getLogger().setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
