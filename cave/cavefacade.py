@@ -684,6 +684,7 @@ class CAVE(object):
                             cave.output_dir,
                             cave.global_validated_rh,
                             cave.runs,
+                            block_epm=self.use_budgets,  # blocking epms if bohb is analyzed
                             validator=cave.validator)
 
     @_analyzer_type

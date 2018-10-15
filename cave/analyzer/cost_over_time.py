@@ -30,6 +30,7 @@ class CostOverTime(BaseAnalyzer):
                  output_dir,
                  rh: RunHistory,
                  runs: List[ConfiguratorRun],
+                 block_epm: bool=False,
                  output_fn: str="performance_over_time.png",
                  validator: Union[None, Validator]=None):
         """ Plot performance over time, using all trajectory entries
@@ -46,6 +47,8 @@ class CostOverTime(BaseAnalyzer):
                 runhistory to use
             runs: List[ConfiguratorRun]
                 list of configurator-runs
+            block_epm: bool
+                if block_epm, only use given runs to estimate cost
             output_fn: str
                 path to output-png for this analysis
             validator: Validator or None
@@ -58,6 +61,7 @@ class CostOverTime(BaseAnalyzer):
         self.output_dir = output_dir
         self.rh = rh
         self.runs = runs
+        self.block_epm = block_epm
         self.output_fn =output_fn
         self.validator = validator
 
@@ -70,7 +74,7 @@ class CostOverTime(BaseAnalyzer):
 
         self._plot(self.rh, self.runs, self.output_fn, self.validator)
 
-    def _get_mean_var_time(self, validator, traj, pred, rh):
+    def _get_mean_var_time(self, validator, traj, use_epm, rh):
         """
         Parameters
         ----------
@@ -78,8 +82,8 @@ class CostOverTime(BaseAnalyzer):
             validator (smac-based)
         traj: List[Configuraton]
             trajectory to set in validator
-        pred: bool
-            validated or not (?)
+        use_epm: bool
+            validated or not (no need to use epm if validated)
         rh: RunHistory
             ??
 
@@ -94,7 +98,7 @@ class CostOverTime(BaseAnalyzer):
         validator.traj = traj  # set trajectory
         time, configs = [], []
 
-        if pred:
+        if use_epm and not self.block_epm:
             for entry in traj:
                 time.append(entry["wallclock_time"])
                 configs.append(entry["incumbent"])
@@ -195,17 +199,30 @@ class CostOverTime(BaseAnalyzer):
                                + list(mean)) * 0.8
             uncertainty_lower[uncertainty_lower <= 0] = clip_y_lower * 0.9
 
-        # Imitate step-function
+        # Create source (double to imitate step-function with line-plot)
         time_double = [t for sub in zip(time, time) for t in sub][1:-1]
         mean_double = [t for sub in zip(mean, mean) for t in sub][:-2]
-        source = ColumnDataSource(data=dict(
-                    x=time_double,
-                    y=mean_double,
-                    epm_perf=mean_double))
+        data_dict = OrderedDict(x=time_double,
+                                y=mean_double,
+                                epm_perf=mean_double)
+        tooltips = [("estimated performance", "@epm_perf"),
+                    ("at-time", "@x")]
 
-        hover = HoverTool(tooltips=[
-                ("performance", "@epm_perf"),
-                ("at-time", "@x")])
+        if len(runs) == 1:  # add configs to tooltips (only with unique incumbents per timestep)
+            incs = [entry['incumbent'] for entry in runs[0].traj]
+            incs = [i for sub in zip(incs, incs) for i in sub][1:-1]  # to zip to times
+            # Add parameters to dict/tooltip
+            hp_names = incs[0].configuration_space.get_hyperparameter_names()
+            for p in hp_names:
+                data_dict[p] = []
+                tooltips.append((p, '@' + p))
+            # Populate dict
+            for inc in incs:
+                for p in hp_names:
+                    data_dict[p].append(inc[p] if inc[p] else "inactive")
+
+        source = ColumnDataSource(data=data_dict)
+        hover = HoverTool(tooltips=tooltips)
 
         p = figure(plot_width=700, plot_height=500, tools=[hover, 'save'],
                    x_range=Range1d(max(min(time), 1), max(time)),
