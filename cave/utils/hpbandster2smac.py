@@ -78,7 +78,7 @@ class HpBandSter2SMAC(object):
             rh.save_json(fn=os.path.join(output_path, 'runhistory.json'))
 
             # trajectory
-            traj_dict = result.get_incumbent_trajectory()
+            traj_dict = self.get_incumbent_trajectory_for_budget(result, b)
             traj_logger = TrajLogger(output_path, Stats(scenario))
             for config_id, time, budget, loss in zip(traj_dict['config_ids'], traj_dict['times_finished'], traj_dict['budgets'], traj_dict['losses']):
                 incumbent = Configuration(cs, id2config_mapping[config_id]['config'])
@@ -100,3 +100,66 @@ class HpBandSter2SMAC(object):
                                                  ta_time_used, wallclock_time)
 
         return budget2path
+
+    def get_incumbent_trajectory_for_budget(self, result, budget):
+        """
+        Returns the best configurations over time
+
+        Parameters
+        ----------
+        budget: string
+            TODO
+        result: Result
+            result object with runs
+
+        Returns
+        -------
+            dict:
+                dictionary with all the config IDs, the times the runs
+                finished, their respective budgets, and corresponding losses
+        """
+        all_runs = result.get_all_runs(only_largest_budget=False)
+
+        #if not all_budgets:
+        #    all_runs = list(filter(lambda r: r.budget==res.HB_config['max_budget'], all_runs))
+
+        all_runs.sort(key=lambda r: (r.budget, r.time_stamps['finished']))
+
+        self.logger.debug("all runs %s", str(all_runs))
+
+        return_dict = { 'config_ids' : [],
+                        'times_finished': [],
+                        'budgets'    : [],
+                        'losses'     : [],
+        }
+
+        current_incumbent = float('inf')
+        incumbent_budget = result.HB_config['min_budget']
+
+        for r in all_runs:
+            if r.loss is None: continue
+            if r.budget != budget: continue
+
+            new_incumbent = False
+
+            if r.loss < current_incumbent:
+                new_incumbent = True
+
+            if new_incumbent:
+                current_incumbent = r.loss
+
+                return_dict['config_ids'].append(r.config_id)
+                return_dict['times_finished'].append(r.time_stamps['finished'])
+                return_dict['budgets'].append(r.budget)
+                return_dict['losses'].append(r.loss)
+
+        if current_incumbent != r.loss:
+            r = all_runs[-1]
+
+            return_dict['config_ids'].append(return_dict['config_ids'][-1])
+            return_dict['times_finished'].append(r.time_stamps['finished'])
+            return_dict['budgets'].append(return_dict['budgets'][-1])
+            return_dict['losses'].append(return_dict['losses'][-1])
+
+
+        return (return_dict)
