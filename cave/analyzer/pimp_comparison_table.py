@@ -9,6 +9,12 @@ import numpy as np
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.html.html_helpers import figure_to_html
 
+from bokeh.models import ColumnDataSource
+from bokeh.models.widgets import DataTable, TableColumn
+from bokeh.embed import components
+from bokeh.plotting import show
+from bokeh.io import output_notebook
+
 class PimpComparisonTable(BaseAnalyzer):
 
     def __init__(self,
@@ -69,14 +75,27 @@ class PimpComparisonTable(BaseAnalyzer):
                 index.append(p)
 
         self.comp_table = DataFrame(values, columns=columns, index=index)
+        self.bokeh_plot = self._pandaDF2bokehTable(self.comp_table)
+        self.script, self.div = components(self.bokeh_plot)
+
+    def _pandaDF2bokehTable(self, df):
+        columns = list(df.columns.values)
+        data = dict(df[columns])
+        data["Parameters"] = df.index.tolist()
+        source = ColumnDataSource(data)
+        columns = [TableColumn(field='Parameters', title="Parameters", sortable=False, width=150)] + [
+                   TableColumn(field=header, title=header, default_sort='descending', width=100) for header in columns
+                  ]
+        data_table = DataTable(source=source, columns=columns, row_headers=False, height=20 + 30 * len(data["Parameters"]))
+        return data_table
 
     def get_html(self, d=None, tooltip=None):
         table = self.comp_table.to_html()
         if d is not None:
-            d["table"] = table
-        return table
+            d["bokeh"] = self.script, self.div
+        return self.script, self.div
 
     def get_jupyter(self):
-        from IPython.core.display import HTML, display
-        display(HTML(self.get_html()))
+        output_notebook()
+        show(self.bokeh_plot)
 
