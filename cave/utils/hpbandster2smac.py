@@ -10,7 +10,7 @@ from smac.optimizer.objective import average_cost
 from smac.scenario.scenario import Scenario
 from smac.stats.stats import Stats
 from smac.utils.io.output_writer import OutputWriter
-from smac.utils.io.traj_logging import TrajLogger
+from smac.utils.io.traj_logging import TrajLogger, TrajEntry
 
 class HpBandSter2SMAC(object):
 
@@ -77,29 +77,49 @@ class HpBandSter2SMAC(object):
             scenario.write()
             rh.save_json(fn=os.path.join(output_path, 'runhistory.json'))
 
-            # trajectory
-            traj_dict = self.get_incumbent_trajectory_for_budget(result, b)
-            traj_logger = TrajLogger(output_path, Stats(scenario))
-            for config_id, time, budget, loss in zip(traj_dict['config_ids'], traj_dict['times_finished'], traj_dict['budgets'], traj_dict['losses']):
-                incumbent = Configuration(cs, id2config_mapping[config_id]['config'])
-                try:
-                    incumbent_id = rh.config_ids[incumbent]
-                except KeyError as e:
-                    # This config was not evaluated on this budget, just skip it
-                    continue
-                except:
-                    raise
-                ta_runs = -1
-                ta_time_used = -1
-                wallclock_time = time
-                train_perf = loss
-                # add
-                traj_logger._add_in_old_format(train_perf, incumbent_id, incumbent,
-                                               ta_time_used, wallclock_time)
-                traj_logger._add_in_aclib_format(train_perf, incumbent_id, incumbent,
-                                                 ta_time_used, wallclock_time)
+            self.get_trajectory(result, output_path, scenario, rh, budget=b)
+
 
         return budget2path
+
+    def get_trajectory(self, result, output_path, scenario, rh, budget=None):
+        """
+        If budget is specified, get trajectory for only that budget. Else use hpbandster's averaging.
+        """
+        cs = scenario.cs
+        id2config_mapping = result.get_id2config_mapping()
+        if budget:
+            traj_dict = self.get_incumbent_trajectory_for_budget(result, budget)
+        else:
+            traj_dict = result.get_incumbent_trajectory()
+            self.logger.debug(traj_dict)
+        if not output_path:
+            output_path = tempfile.mkdtemp()
+        traj_logger = TrajLogger(output_path, Stats(scenario))
+        for config_id, time, budget, loss in zip(traj_dict['config_ids'], traj_dict['times_finished'], traj_dict['budgets'], traj_dict['losses']):
+            incumbent = Configuration(cs, id2config_mapping[config_id]['config'])
+            try:
+                incumbent_id = rh.config_ids[incumbent]
+            except KeyError as e:
+                # This config was not evaluated on this budget, just skip it
+                continue
+            except:
+                raise
+            ta_runs = -1
+            ta_time_used = -1
+            wallclock_time = time
+            train_perf = loss
+            # add
+            traj_logger.trajectory.append({"cpu_time": ta_time_used,
+                                           "total_cpu_time": None,  # TODO: fix this
+                                           "wallclock_time": wallclock_time,
+                                           "evaluations": ta_runs,
+                                           "cost": train_perf,
+                                           "incumbent": incumbent
+                                           })
+            traj_logger._add_in_old_format(train_perf, incumbent_id, incumbent, ta_time_used, wallclock_time)
+            traj_logger._add_in_aclib_format(train_perf, incumbent_id, incumbent, ta_time_used, wallclock_time)
+        return traj_logger.trajectory
 
     def get_incumbent_trajectory_for_budget(self, result, budget):
         """
