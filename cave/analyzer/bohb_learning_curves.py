@@ -15,6 +15,7 @@ from bokeh.palettes import Spectral11
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.utils.timing import timing
+from cave.utils.bokeh_routines import get_checkbox
 
 class BohbLearningCurves(BaseAnalyzer):
 
@@ -163,41 +164,14 @@ class BohbLearningCurves(BaseAnalyzer):
                                       ))
             HB_handles.append(line_handles)
 
-        # Add interactiveness (select certain lines, etc.)
-        num_total_lines = sum([len(group) for group in HB_handles])
-        glyph_renderers_flattened = ['glyph_renderer' + str(i) for i in range(num_total_lines)]
-        glyph_renderers = []
-        start = 0
-        for group in HB_handles:
-            self.logger.debug("%d elements", len(group))
-            glyph_renderers.append(glyph_renderers_flattened[start: start+len(group)])
-            start += len(group)
-        self.logger.debug("%d, %d, %d", len(HB_handles),
-                          len(glyph_renderers), num_total_lines)
-        HB_handles_flattened = [a for b in HB_handles for a in b]
-        args_checkbox = {name: glyph for name, glyph in zip(glyph_renderers_flattened,
-                                                   HB_handles_flattened)}
-        code_checkbox = "len_labels = " + str(len(HB_handles)) + "; glyph_renderers = [" + ','.join(['[' + ','.join([str(idx) for idx
-            in group]) + ']' for
-                                                 group in glyph_renderers]) + '];' + """
-        for (i = 0; i < len_labels; i++) {
-            if (cb_obj.active.includes(i)) {
-                // console.log('Setting to true: ' + i + '(' + glyph_renderers[i].length + ')')
-                for (j = 0; j < glyph_renderers[i].length; j++) {
-                    glyph_renderers[i][j].visible = true;
-                    // console.log('Setting to true: ' + i + ' : ' + j)
-                }
-            } else {
-                // console.log('Setting to false: ' + i + '(' + glyph_renderers[i].length + ')')
-                for (j = 0; j < glyph_renderers[i].length; j++) {
-                    glyph_renderers[i][j].visible = false;
-                    // console.log('Setting to false: ' + i + ' : ' + j)
-                }
-            }
-        }
-        """
+        iteration_labels = ['warmstart data' if l == -1 or l == '-1' else str(l) for l in HB_iterations]
+        self.logger.debug("iteration_labels: %s", str(iteration_labels))
+        self.logger.debug("HB_iterations: %s", str(HB_iterations))
 
-        callback_color = CustomJS(args=dict(source_multiline=source_multiline, source_scatter=source_scatter,
+        checkbox, select_all, select_none = get_checkbox(HB_handles, iteration_labels)
+
+        callback_color = CustomJS(args=dict(source_multiline=source_multiline,
+                                            source_scatter=source_scatter,
                                             cm=color_mapper), code="""
             var data_multiline = source_multiline.data;
             var data_scatter = source_scatter.data;
@@ -221,23 +195,7 @@ class BohbLearningCurves(BaseAnalyzer):
         select_color = Select(title="Select colors", value="performance", options = ["performance", "iteration"],
                               callback=callback_color)
 
-        iteration_labels = ['warmstart data' if l == -1 or l == '-1' else str(l) for l in HB_iterations]
-        self.logger.debug("iteration_labels: %s", str(iteration_labels))
-        self.logger.debug("HB_iterations: %s", str(HB_iterations))
 
-        callback = CustomJS(args=args_checkbox, code=code_checkbox)
-        # TODO Use the CheckboxButtonGroup code after upgrading bokeh to >0.12.14 (it's prettier)    
-        #checkbox = CheckboxButtonGroup(
-        checkbox = CheckboxGroup(
-                                labels=iteration_labels,
-                                active=list(range(len(iteration_labels))),
-                                callback=callback)
-        # Select all/none:
-        handle_list_as_string = str(list(range(len(HB_handles))))
-        select_all = Button(label="All", callback=CustomJS(args=dict({'checkbox':checkbox}, **args_checkbox),
-                                code="var labels = " + handle_list_as_string + "; checkbox.active = labels;" + code_checkbox.replace('cb_obj', 'checkbox')))
-        select_none = Button(label="None", callback=CustomJS(args=dict({'checkbox':checkbox}, **args_checkbox),
-                                code="var labels = []; checkbox.active = labels;" + code_checkbox.replace('cb_obj', 'checkbox')))
         # Put it all together
         layout = column(p, row(widgetbox(select_all, select_none, width=100), widgetbox(checkbox, width=100),
                                widgetbox(select_color, width=200)))
