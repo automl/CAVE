@@ -683,8 +683,9 @@ class CAVE(object):
         return CostOverTime(cave.scenario,
                             cave.output_dir,
                             cave.global_validated_rh,
-                            cave.runs,
+                            self.runs,
                             block_epm=self.use_budgets,  # blocking epms if bohb is analyzed
+                            bohb_result=self.bohb_result,
                             validator=cave.validator)
 
     @_analyzer_type
