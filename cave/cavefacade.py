@@ -955,6 +955,8 @@ class CAVE(object):
 
     @_analyzer_type
     def bohb_learning_curves(self, cave):
+        """Visualizing the learning curves of the individual Hyperband-iterations. The config-id tuple denotes
+        (HB_iteration, SH_iteration, id_within_SH_iteration), so it can be interpreted as a nested index-identifier."""
         return BohbLearningCurves(self.scenario.cs.get_hyperparameter_names(), result_object=self.bohb_result)
 
     @_analyzer_type

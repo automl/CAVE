@@ -111,7 +111,8 @@ class BohbLearningCurves(BaseAnalyzer):
             data['colors_iteration'].append(c_id[0])
 
         # Tooltips
-        tooltips=[(key, '@' + key) for key in data.keys() if not key in ['times', 'duration', 'colors']]
+        tooltips=[(key, '@' + key) for key in data.keys() if not key in ['times', 'duration', 'colors',
+                                                                         'colors_performance', 'colors_iteration']]
         tooltips.insert(4, ('duration (sec)', '@duration'))
         hover = HoverTool(tooltips=tooltips)
 
