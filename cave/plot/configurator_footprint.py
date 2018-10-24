@@ -454,6 +454,7 @@ class ConfiguratorFootprintPlotter(object):
         min_size, enlargement_factor = 5, 20
         if normalization_factor == 0:  # All configurations same size
             normalization_factor = 1
+            min_size = 12
         sizes = min_size + ((r_p_c - self.min_runs_per_conf) / normalization_factor) * enlargement_factor
         sizes *= np.array([0 if r == 0 else 1 for r in r_p_c])  # 0 size if 0 runs
         return sizes
@@ -795,7 +796,7 @@ for (i = 0; i < lab_len; i++) {
         for idx, source, u_cfgs in zip(range(len(sources)), sources, used_configs):
             if not time_slider or idx == 0:
                 # Only plot all quantiles in one plot if timeslider is on
-                p = figure(plot_height=500, plot_width=600, tools=[hover, 'save'], x_range=x_range, y_range=y_range)
+                p = figure(plot_height=500, plot_width=600, tools=[hover, 'save', 'box_zoom', 'wheel_zoom', 'reset'], x_range=x_range, y_range=y_range)
                 if contour_data is not None:
                     p = self._plot_contour(p, contour_data, x_range, y_range)
             views, views_by_run_tmp, markers = self._plot_create_views(source, u_cfgs)
@@ -847,7 +848,7 @@ for (i = 0; i < lab_len; i++) {
         """
         if not c.origin:
             origin = "Unknown"
-        elif c.origin.startswith("Local") or "sorted" in c.origin:
+        elif c.origin.startswith("Local") or c.origin == 'Model based pick' or "sorted" in c.origin:
             origin = "Acquisition Function"
         elif c.origin.startswith("Random"):
             origin = "Random"

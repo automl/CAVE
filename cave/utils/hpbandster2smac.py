@@ -59,7 +59,14 @@ class HpBandSter2SMAC(object):
             if not run.budget in budget2rh:
                 budget2rh[run.budget] = RunHistory(average_cost)
             rh = budget2rh[run.budget]
-            rh.add(config=Configuration(cs, id2config_mapping[run.config_id]['config']),
+            config = Configuration(cs, id2config_mapping[run.config_id]['config'])
+            try:
+                model_based_pick = id2config_mapping[run.config_id]['config_info']['model_based_pick']
+                config.origin = 'Model based pick' if model_based_pick else 'Random'
+            except KeyError:
+                self.logger.debug("No origin for config!", exc_info=True)
+
+            rh.add(config=config,
                    cost=run.loss,
                    time=run.time_stamps['finished'] - run.time_stamps['started'],
                    status=StatusType.SUCCESS,
@@ -92,7 +99,6 @@ class HpBandSter2SMAC(object):
             traj_dict = self.get_incumbent_trajectory_for_budget(result, budget)
         else:
             traj_dict = result.get_incumbent_trajectory()
-            self.logger.debug(traj_dict)
         if not output_path:
             output_path = tempfile.mkdtemp()
         traj_logger = TrajLogger(output_path, Stats(scenario))
@@ -145,7 +151,7 @@ class HpBandSter2SMAC(object):
 
         all_runs.sort(key=lambda r: (r.budget, r.time_stamps['finished']))
 
-        self.logger.debug("all runs %s", str(all_runs))
+        #self.logger.debug("all runs %s", str(all_runs))
 
         return_dict = { 'config_ids' : [],
                         'times_finished': [],
