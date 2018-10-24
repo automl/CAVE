@@ -149,6 +149,8 @@ class CostOverTime(BaseAnalyzer):
         Plot performance over time, using all trajectory entries.
         max_time denotes max(wallclock_limit, highest recorded time).
         """
+        validated = True if all([r.validated_runhistory for r in runs]) else False
+
         if len(runs) > 1:
             # If there is more than one run, we average over the runs
             means, times = [], []
@@ -184,7 +186,6 @@ class CostOverTime(BaseAnalyzer):
                 lower[time_idx][0] = l
             time = all_times
         else:  # no new statistics computation necessary
-            validated = True if runs[0].validated_runhistory else False
             mean, var, time = self._get_mean_var_time(validator, runs[0].traj, not validated, rh)
             upper = lower = mean
 
