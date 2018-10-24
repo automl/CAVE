@@ -181,7 +181,7 @@ class CAVE(object):
         self.logger.debug("Running CAVE version %s", v)
         self.show_jupyter = show_jupyter
         # Methods that are never per-run, because they are inter-run-analysis by nature
-        self.always_aggregated = ['bohb_learning_curves', 'bohb_incumbents_per_budget']  # these function-names will always be aggregated
+        self.always_aggregated = ['bohb_learning_curves', 'bohb_incumbents_per_budget', 'configurator_footprint']  # these function-names will always be aggregated
 
         for d in os.listdir():
             if d.startswith('run_1'):
@@ -482,6 +482,13 @@ class CAVE(object):
                 # Move to second position
                 self.website.move_to_end("Incumbents Over Budgets", last=False)
                 self.website.move_to_end("Meta Data", last=False)
+
+            # Configurator Footprint always aggregated
+            if cfp:  # Configurator Footprint
+                self.configurator_footprint(d=self._get_dict(self.website["Configurators Behavior"], "Configurator Footprint"),
+                                            run=None,
+                                            time_slider=cfp_time_slider, max_confs=cfp_max_plot, num_quantiles=cfp_number_quantiles)
+                self.website["Configurators Behavior"]["Configurator Footprint"]["tooltip"] = self._get_tooltip(self.configurator_footprint)
             for run in self.runs:
                 sub_sec = os.path.basename(run.folder)
                 # Set paths for each budget individual to avoid path-conflicts
@@ -509,7 +516,7 @@ class CAVE(object):
                                           pimp_sort_table_by=pimp_sort_table_by)
                 self.configurators_behavior(self.website["Configurators Behavior"], sub_sec,
                                             cost_over_time,
-                                            cfp, cfp_max_plot, cfp_time_slider, cfp_number_quantiles,
+                                            False, cfp_max_plot, cfp_time_slider, cfp_number_quantiles,
                                             parallel_coordinates)
                 if self.feature_names:
                     self.feature_analysis(self.website["Feature Analysis"], sub_sec,
@@ -949,6 +956,8 @@ class CAVE(object):
 
     @_analyzer_type
     def bohb_learning_curves(self, cave):
+        """Visualizing the learning curves of the individual Hyperband-iterations. The config-id tuple denotes
+        (HB_iteration, SH_iteration, id_within_SH_iteration), so it can be interpreted as a nested index-identifier."""
         return BohbLearningCurves(self.scenario.cs.get_hyperparameter_names(), result_object=self.bohb_result)
 
     @_analyzer_type

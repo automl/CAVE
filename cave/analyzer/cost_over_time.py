@@ -149,7 +149,7 @@ class CostOverTime(BaseAnalyzer):
         else:
             mean, var = [], []
             for entry in traj:
-                self.logger.debug(entry)
+                #self.logger.debug(entry)
                 time.append(entry["wallclock_time"])
                 configs.append(entry["incumbent"])
                 costs = _cost(configs[-1], rh, rh.get_runs_for_config(configs[-1]))
@@ -232,19 +232,19 @@ class CostOverTime(BaseAnalyzer):
             rh_bohb = RunHistory(average_cost)
             for run in runs:
                 rh_bohb.update(run.combined_runhistory)
-            self.logger.debug(rh_bohb.data)
+            #self.logger.debug(rh_bohb.data)
             # Get collective trajectory
             traj = HpBandSter2SMAC().get_trajectory(self.bohb_result, '', self.scenario, rh_bohb)
-            self.logger.debug(traj)
+            #self.logger.debug(traj)
             mean, time, configs = [], [], []
             traj_dict = self.bohb_result.get_incumbent_trajectory()
 
             mean, _, time, configs = self._get_mean_var_time(validator, traj, False, rh_bohb)
 
             configs, time, budget, mean = traj_dict['config_ids'],  traj_dict['times_finished'], traj_dict['budgets'], traj_dict['losses']
-            time_double = [t for sub in zip(time, time) for t in sub][1:-1]
-            mean_double = [t for sub in zip(mean, mean) for t in sub][:-2]
-            configs_double = [c for sub in zip(configs, configs) for c in sub][1:-1]
+            time_double = [t for sub in zip(time, time) for t in sub][1:]
+            mean_double = [t for sub in zip(mean, mean) for t in sub][:-1]
+            configs_double = [c for sub in zip(configs, configs) for c in sub][:-1]
             return Line('all_budgets', time_double, mean_double, mean_double, mean_double, configs_double)
 
     def _plot(self, rh, runs, output_fn, validator):
@@ -280,9 +280,11 @@ class CostOverTime(BaseAnalyzer):
 
         # Create plot
         self.logger.info(data)
+        x_range = Range1d(min(source.data['time']),
+                          max(source.data['time']))
         y_label = 'estimated {}'.format(self.scenario.run_obj if self.scenario.run_obj != 'quality' else 'cost')
-        p = figure(plot_width=700, plot_height=500, tools=['save', 'box_zoom', 'wheel_zoom', 'reset'],
-                   x_range=Range1d(max(min(source.data['time']), 1), max(source.data['time'])),
+        p = figure(plot_width=700, plot_height=500, tools=['save', 'pan', 'box_zoom', 'wheel_zoom', 'reset'],
+                   x_range=x_range,
                    x_axis_type='log',
                    y_axis_type='log' if self.scenario.run_obj == 'runtime' else 'linear',
                    x_axis_label='time (sec)',
@@ -305,7 +307,6 @@ class CostOverTime(BaseAnalyzer):
             # Add to legend
             legend_it.append((name, renderers[-1]))
 
-            self.logger.debug(renderers)
             if name == 'average':
                 # Fill area (uncertainty)
                 # Defined as sequence of coordinates, so for step-effect double and arange accordingly ([(t0, v0), (t1, v0), (t1, v1), ... (tn, vn-1)])

@@ -23,8 +23,8 @@ from bokeh.plotting import figure, ColumnDataSource
 from bokeh.embed import components
 from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider
 from bokeh.models.sources import CDSView
-from bokeh.models.filters import GroupFilter
-from bokeh.layouts import column, widgetbox
+from bokeh.models.filters import GroupFilter, BooleanFilter
+from bokeh.layouts import column, row, widgetbox
 
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))  # noqa
 cmd_folder = os.path.realpath(os.path.join(cmd_folder, ".."))  # noqa
@@ -43,6 +43,7 @@ from cave.utils.convert_for_epm import convert_data_for_epm
 from cave.utils.helpers import escape_parameter_name
 from cave.utils.timing import timing
 from cave.utils.io import export_bokeh
+from cave.utils.bokeh_routines import get_checkbox
 
 
 class ConfiguratorFootprintPlotter(object):
@@ -56,6 +57,7 @@ class ConfiguratorFootprintPlotter(object):
                  output_dir: str=None,
                  time_slider: bool=False,
                  num_quantiles: int=10,
+                 configs_in_run: dict=None,
                  ):
         '''
         Constructor
@@ -90,6 +92,7 @@ class ConfiguratorFootprintPlotter(object):
         self.num_quantiles = num_quantiles
         self.contour_step_size = contour_step_size
         self.output_dir = output_dir
+        self.configs_in_run = configs_in_run if configs_in_run else {'all' : self.orig_rh.get_all_configs()}
 
     def run(self):
         """
@@ -451,6 +454,7 @@ class ConfiguratorFootprintPlotter(object):
         min_size, enlargement_factor = 5, 20
         if normalization_factor == 0:  # All configurations same size
             normalization_factor = 1
+            min_size = 12
         sizes = min_size + ((r_p_c - self.min_runs_per_conf) / normalization_factor) * enlargement_factor
         sizes *= np.array([0 if r == 0 else 1 for r in r_p_c])  # 0 size if 0 runs
         return sizes
@@ -512,14 +516,14 @@ class ConfiguratorFootprintPlotter(object):
         p.add_layout(color_bar, 'right')
         return p
 
-    def _plot_create_views(self, source):
+    def _plot_create_views(self, source, used_configs):
         """Create views in order of plotting, so more interesting views are
         plotted on top. Order of interest:
         default > final-incumbent > incumbent > candidate
           local > random
             num_runs (ascending, more evaluated -> more interesting)
         Individual views are necessary, since bokeh can only plot one
-        marker-typei (circle, triangle, ...) per 'scatter'-call
+        marker-type (circle, triangle, ...) per 'scatter'-call
 
         Parameters
         ----------
@@ -546,18 +550,25 @@ class ConfiguratorFootprintPlotter(object):
             return shape
 
         views, markers = [], []
+        views_by_run = {run : [] for run in self.configs_in_run}
+        idx = 0
         for t in ['Candidate', 'Incumbent', 'Final Incumbent', 'Default']:
             for o in ['Unknown', 'Random', 'Acquisition Function']:
-                for z in sorted(list(set(source.data['zorder'])),
-                                key=lambda x: int(x)):
-                    views.append(CDSView(source=source, filters=[
-                            GroupFilter(column_name='type', group=t),
-                            GroupFilter(column_name='origin', group=o),
-                            GroupFilter(column_name='zorder', group=z)]))
-                    markers.append(_get_marker(t, o))
+                for z in sorted(list(set(source.data['zorder'])), key=lambda x: int(x)):
+                    for run, configs in self.configs_in_run.items():
+                        booleans = [True if c in configs else False for c in used_configs]
+                        view = CDSView(source=source, filters=[
+                                GroupFilter(column_name='type', group=t),
+                                GroupFilter(column_name='origin', group=o),
+                                GroupFilter(column_name='zorder', group=z),
+                                BooleanFilter(booleans)])
+                        views.append(view)  # all views
+                        views_by_run[run].append(idx)  # views sorted by runs
+                        idx += 1
+                        markers.append(_get_marker(t, o))
         self.logger.debug("%d different glyph renderers, %d different zorder-values",
                           len(views), len(set(source.data['zorder'])))
-        return (views, markers)
+        return (views, views_by_run, markers)
 
     @timing
     def _plot_scatter(self, p, source, views, markers):
@@ -637,8 +648,7 @@ class ConfiguratorFootprintPlotter(object):
 
         source = ColumnDataSource(data=dict(x=X[:, 0], y=X[:, 1]))
         for k in hp_names:  # Add parameters for each config
-            source.add([c[k] if c[k] else "None" for c in conf_list],
-                       escape_parameter_name(k))
+            source.add([c[k] if c[k] else "None" for c in conf_list], escape_parameter_name(k))
         default = conf_list[0].configuration_space.get_default_configuration()
         conf_types = ["Default" if c == default else "Final Incumbent" if c == inc_list[-1]
                       else "Incumbent" if c in inc_list else "Candidate" for c in conf_list]
@@ -662,7 +672,7 @@ class ConfiguratorFootprintPlotter(object):
         zorder = [str(int((s - min_size) / step_size)) for s in source.data['size']]
         source.add(zorder, 'zorder')  # string, so we can apply group filter
 
-        return source
+        return source, conf_list
 
     def _plot_get_timeslider(self, scatter_glyph_render_groups):
         """Add a prerendered timeslider.
@@ -769,8 +779,8 @@ for (i = 0; i < lab_len; i++) {
                     conf_list[0].configuration_space.get_hyperparameters()]
 
         # Get individual sources for quantiles
-        sources = [self._plot_get_source(conf_list, quantiled_run, X, inc_list, hp_names)
-                   for quantiled_run in runs_per_quantile]
+        sources, used_configs = zip(*[self._plot_get_source(conf_list, quantiled_run, X, inc_list, hp_names)
+                                      for quantiled_run in runs_per_quantile])
 
         # Define what appears in tooltips
         # TODO add only important parameters (needs to change order of exec pimp before conf-footprints)
@@ -782,21 +792,30 @@ for (i = 0; i < lab_len; i++) {
         y_range = [min(X[:, 1]) - 1, max(X[:, 1]) + 1]
 
         scatter_glyph_render_groups = []
-        for idx, source in enumerate(sources):
+        views_by_run = {run : [] for run in self.configs_in_run.keys()}
+        for idx, source, u_cfgs in zip(range(len(sources)), sources, used_configs):
             if not time_slider or idx == 0:
                 # Only plot all quantiles in one plot if timeslider is on
-                p = figure(plot_height=500, plot_width=600,
-                           tools=[hover, 'save'], x_range=x_range, y_range=y_range)
+                p = figure(plot_height=500, plot_width=600, tools=[hover, 'save', 'box_zoom', 'wheel_zoom', 'reset'], x_range=x_range, y_range=y_range)
                 if contour_data is not None:
                     p = self._plot_contour(p, contour_data, x_range, y_range)
-            views, markers = self._plot_create_views(source)
+            views, views_by_run_tmp, markers = self._plot_create_views(source, u_cfgs)
             self.logger.debug("Plotting quantile %d!", idx)
-            scatter_glyph_render_groups.append(self._plot_scatter(p, source, views, markers))
+            scatter_handles = self._plot_scatter(p, source, views, markers)
+            scatter_glyph_render_groups.append(scatter_handles)
+            for r, v in views_by_run_tmp.items():
+                views_by_run[r].extend([scatter_handles[i] for i in v])
+
             if self.output_dir:
                 file_path = "cfp_over_time/configurator_footprint" + str(idx) + ".png"
                 over_time_paths.append(os.path.join(self.output_dir, file_path))
                 self.logger.debug("Saving plot to %s", over_time_paths[-1])
                 export_bokeh(p, over_time_paths[-1], self.logger)
+
+        labels = list(views_by_run.keys())
+        glyphs = [list(views_by_run[k]) for k in labels]
+        self.logger.debug("checkboxing %s" % str(list(zip(labels, [len(g) for g in glyphs]))))
+        checkbox, select_all, select_none = get_checkbox(list(glyphs), list(labels))
 
         if time_slider:
             self.logger.debug("Adding timeslider")
@@ -804,7 +823,7 @@ for (i = 0; i < lab_len; i++) {
             layout = column(p, widgetbox(slider))
         else:
             self.logger.debug("Not adding timeslider")
-            layout = column(p)
+            layout = row(p, widgetbox(checkbox, width=50))
 
         script, div = components(layout)
 
@@ -829,7 +848,7 @@ for (i = 0; i < lab_len; i++) {
         """
         if not c.origin:
             origin = "Unknown"
-        elif c.origin.startswith("Local") or "sorted" in c.origin:
+        elif c.origin.startswith("Local") or c.origin == 'Model based pick' or "sorted" in c.origin:
             origin = "Acquisition Function"
         elif c.origin.startswith("Random"):
             origin = "Random"

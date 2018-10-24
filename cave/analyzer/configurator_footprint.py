@@ -6,6 +6,7 @@ import numpy as np
 from bokeh.embed import components
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
+from cave.utils.helpers import scenario_sanity_check, combine_runhistories
 from cave.plot.configurator_footprint import ConfiguratorFootprintPlotter
 
 from bokeh.plotting import show
@@ -58,7 +59,7 @@ class ConfiguratorFootprint(BaseAnalyzer):
 
         self.scenario = scenario
         self.runs = runs
-        self.runhistory = runhistory
+        self.runhistory = runhistory if runhistory else combine_runhistories([r.combined_runhistory for r in runs])
         self.output_dir = output_dir
         self.max_confs = max_confs
         self.time_slider = time_slider
@@ -71,14 +72,17 @@ class ConfiguratorFootprint(BaseAnalyzer):
         incumbents = list(map(lambda x: x['incumbent'], runs[0].traj))
         assert(incumbents[-1] == runs[0].traj[-1]['incumbent'])
 
+        configs_in_run = {os.path.basename(r.folder) : r.combined_runhistory.get_all_configs() for r in runs}
+
         cfp = ConfiguratorFootprintPlotter(
-                       scenario=scenario,
-                       rh=runhistory,
+                       scenario=self.scenario,
+                       rh=self.runhistory,
                        incs=incumbents,
-                       max_plot=max_confs,
-                       time_slider=time_slider and num_quantiles > 1,
-                       num_quantiles=num_quantiles,
-                       output_dir=output_dir)
+                       max_plot=self.max_confs,
+                       time_slider=self.time_slider and self.num_quantiles > 1,
+                       num_quantiles=self.num_quantiles,
+                       configs_in_run=configs_in_run,
+                       output_dir=self.output_dir)
         try:
             res = cfp.run()
         except MemoryError as err:
