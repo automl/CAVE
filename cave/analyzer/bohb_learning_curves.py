@@ -53,7 +53,7 @@ class BohbLearningCurves(BaseAnalyzer):
         # Extract information from learning-curve-dict
         times, losses, config_ids, = [], [], []
         for conf_id, learning_curves in learning_curves.items():
-            self.logger.debug("Config ID: %s, learning_curves: %s", str(conf_id), str(learning_curves))
+            # self.logger.debug("Config ID: %s, learning_curves: %s", str(conf_id), str(learning_curves))
             for l in learning_curves:
                 if len(l) == 0:
                     continue

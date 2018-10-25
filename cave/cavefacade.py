@@ -45,6 +45,7 @@ from cave.analyzer.overview_table import OverviewTable
 from cave.analyzer.compare_default_incumbent import CompareDefaultIncumbent
 from cave.analyzer.bohb_learning_curves import BohbLearningCurves
 from cave.analyzer.bohb_incumbents_per_budget import BohbIncumbentsPerBudget
+from cave.analyzer.budget_correlation import BudgetCorrelation
 from cave.__version__ import __version__ as v
 
 __author__ = "Joshua Marben"
@@ -181,7 +182,8 @@ class CAVE(object):
         self.logger.debug("Running CAVE version %s", v)
         self.show_jupyter = show_jupyter
         # Methods that are never per-run, because they are inter-run-analysis by nature
-        self.always_aggregated = ['bohb_learning_curves', 'bohb_incumbents_per_budget', 'configurator_footprint']  # these function-names will always be aggregated
+        self.always_aggregated = ['bohb_learning_curves', 'bohb_incumbents_per_budget', 'configurator_footprint',
+                                  'budget_correlation', 'cost_over_time']  # these function-names will always be aggregated
 
         for d in os.listdir():
             if d.startswith('run_1'):
@@ -476,10 +478,14 @@ class CAVE(object):
 
             # Perform analysis for each run
             if self.bohb_result:
+                self.website["Budget Correlation"] = OrderedDict()
+                self.budget_correlation(d=self.website["Budget Correlation"])
                 self.bohb_learning_curves(d=self.website)
                 self.website["Incumbents Over Budgets"] = OrderedDict()
                 self.bohb_incumbents_per_budget(d=self.website["Incumbents Over Budgets"])
                 # Move to second position
+                self.website.move_to_end("Budget Correlation", last=False)
+                self.website.move_to_end("BOHB Learning Curves", last=False)
                 self.website.move_to_end("Incumbents Over Budgets", last=False)
                 self.website.move_to_end("Meta Data", last=False)
 
@@ -489,6 +495,10 @@ class CAVE(object):
                                             run=None,
                                             time_slider=cfp_time_slider, max_confs=cfp_max_plot, num_quantiles=cfp_number_quantiles)
                 self.website["Configurators Behavior"]["Configurator Footprint"]["tooltip"] = self._get_tooltip(self.configurator_footprint)
+            if cost_over_time:
+                self.cost_over_time(d=self._get_dict(self.website["Configurators Behavior"], "Cost Over Time"), run=None)
+                self.website["Configurators Behavior"]["Cost Over Time"]["tooltip"] = self._get_tooltip(self.cost_over_time)
+
             for run in self.runs:
                 sub_sec = os.path.basename(run.folder)
                 # Set paths for each budget individual to avoid path-conflicts
@@ -515,7 +525,7 @@ class CAVE(object):
                                           lpi='lpi' in param_importance,
                                           pimp_sort_table_by=pimp_sort_table_by)
                 self.configurators_behavior(self.website["Configurators Behavior"], sub_sec,
-                                            cost_over_time,
+                                            False,
                                             False, cfp_max_plot, cfp_time_slider, cfp_number_quantiles,
                                             parallel_coordinates)
                 if self.feature_names:
@@ -965,6 +975,16 @@ class CAVE(object):
         return BohbIncumbentsPerBudget([b.incumbent for b in self.runs],
                                        [b.folder for b in self.runs],
                                        [b.epm_runhistory for b in self.runs])
+
+    @_analyzer_type
+    def budget_correlation(self, cave):
+        """
+        Use spearman correlation, to get a correlation-value and a p-value for every pairwise combination of budgets.
+        First value is the correlation, second is the p-value (the p-value roughly estimates the likelihood to obtain
+        this correlation coefficient with uncorrelated datasets).
+        """
+        return BudgetCorrelation(self.runs)
+
 
 ###########################################################################
 # HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS #
