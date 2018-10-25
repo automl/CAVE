@@ -37,6 +37,15 @@ class HpBandSter2SMAC(object):
         paths = list(self.hpbandster2smac(result, cs, tmp_dir).values())
         return result, paths
 
+    def _get_config(self, config_id, id2config, cs):
+        config = Configuration(cs, id2config[config_id]['config'])
+        try:
+            model_based_pick = id2config[config_id]['config_info']['model_based_pick']
+            config.origin = 'Model based pick' if model_based_pick else 'Random'
+        except KeyError:
+            self.logger.debug("No origin for config!", exc_info=True)
+        return config
+
     def hpbandster2smac(self, result, cs: ConfigurationSpace, output_dir: str):
         """Reading hpbandster-result-object and creating RunHistory and
         trajectory...
@@ -59,12 +68,8 @@ class HpBandSter2SMAC(object):
             if not run.budget in budget2rh:
                 budget2rh[run.budget] = RunHistory(average_cost)
             rh = budget2rh[run.budget]
-            config = Configuration(cs, id2config_mapping[run.config_id]['config'])
-            try:
-                model_based_pick = id2config_mapping[run.config_id]['config_info']['model_based_pick']
-                config.origin = 'Model based pick' if model_based_pick else 'Random'
-            except KeyError:
-                self.logger.debug("No origin for config!", exc_info=True)
+
+            config = self._get_config(run.config_id, id2config_mapping, cs)
 
             rh.add(config=config,
                    cost=run.loss,
@@ -103,7 +108,7 @@ class HpBandSter2SMAC(object):
             output_path = tempfile.mkdtemp()
         traj_logger = TrajLogger(output_path, Stats(scenario))
         for config_id, time, budget, loss in zip(traj_dict['config_ids'], traj_dict['times_finished'], traj_dict['budgets'], traj_dict['losses']):
-            incumbent = Configuration(cs, id2config_mapping[config_id]['config'])
+            incumbent = self._get_config(config_id, id2config_mapping, cs)
             try:
                 incumbent_id = rh.config_ids[incumbent]
             except KeyError as e:
