@@ -112,7 +112,8 @@ class CostOverTime(BaseAnalyzer):
 
         """
         # TODO kinda important: docstrings, what is this function doing?
-        validator.traj = traj  # set trajectory
+        if validator:
+            validator.traj = traj  # set trajectory
         time, configs = [], []
 
         if use_epm and not self.block_epm:

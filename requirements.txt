@@ -9,8 +9,8 @@ bokeh==0.12.14
 pillow
 smac>=0.8.0
 configspace>=0.4.6
-fanova
-pyimp>=1.0.1
+-e git+https://github.com/automl/fanova.git#egg=fanova
+-e git+https://github.com/automl/ParameterImportance.git#egg=pyimp
 scipy
 sklearn
 orange3

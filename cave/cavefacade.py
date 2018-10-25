@@ -204,6 +204,7 @@ class CAVE(object):
         self.param_imp = OrderedDict()
         self.feature_imp = OrderedDict()
         self.evaluators = []
+        self.validator = None
 
         self.feature_names = None
 
