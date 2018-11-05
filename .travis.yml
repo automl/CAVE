@@ -48,5 +48,18 @@ install:
 # command to run tests, e.g. python setup.py test
 script:
   - nosetests -sv --with-coverage --cover-package=cave
+
 after_success:
+  - source ci_scripts/create_doc.sh $TRAVIS_BRANCH "doc_result"
   - codecov
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  keep-history: true
+  committer-from-gh: true
+  on:
+    branch: master
+    condition: $doc_result = "success"
+  local_dir: docs/$TRAVIS_BRANCH
