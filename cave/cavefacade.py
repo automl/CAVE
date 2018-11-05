@@ -356,7 +356,9 @@ class CAVE(object):
                                seed=self.rng.randint(1, 100000),
                                max_sample_size=self.pimp_max_samples,
                                fANOVA_pairwise=self.fanova_pairwise,
-                               preprocess=False)
+                               preprocess=False,
+                               verbose=self.verbose_level != 'OFF',  # disable progressbars
+                               )
         self.model = self.pimp.model
 
         # Validator (initialize without trajectory)
@@ -1040,7 +1042,6 @@ class CAVE(object):
         elif level == "WARNING":
             stdout_handler.setLevel(logging.WARNING)
         elif level == "OFF":
-            sys.stdout = open(os.devnull, 'w')
             stdout_handler.setLevel(logging.ERROR)
         elif level in ["DEBUG", "DEV_DEBUG"]:
             stdout_handler.setLevel(logging.DEBUG)

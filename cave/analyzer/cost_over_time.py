@@ -280,7 +280,6 @@ class CostOverTime(BaseAnalyzer):
 
 
         # Create plot
-        self.logger.info(data)
         x_range = Range1d(min(source.data['time']),
                           max(source.data['time']))
         y_label = 'estimated {}'.format(self.scenario.run_obj if self.scenario.run_obj != 'quality' else 'cost')
