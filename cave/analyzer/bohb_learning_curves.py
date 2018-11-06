@@ -154,7 +154,22 @@ class BohbLearningCurves(BaseAnalyzer):
                                           alpha=0.5,
                                           line_width=5,
                                       ))
-            view = CDSView(source=source_scatter, filters=[GroupFilter(column_name='HB_iteration', group=str(it))])
+            # Separate modelbased and random
+            self.logger.debug("Assuming config_info to be either \"model_based_pick=True\" or \"(...)=False\"")
+            view = CDSView(source=source_scatter, filters=[GroupFilter(column_name='HB_iteration', group=str(it)),
+                                                           GroupFilter(column_name='config_info',
+                                                           group="model_based_pick=True")])
+            line_handles.append(p.circle_x(x='times', y='losses',
+                                           source=source_scatter,
+                                           view=view,
+                                           fill_color={'field': 'colors', 'transform': color_mapper},
+                                           fill_alpha=0.5,
+                                           line_color='colors',
+                                           size=20,
+                                      ))
+            view = CDSView(source=source_scatter, filters=[GroupFilter(column_name='HB_iteration', group=str(it)),
+                                                           GroupFilter(column_name='config_info',
+                                                           group="model_based_pick=False")])
             line_handles.append(p.circle(x='times', y='losses',
                                          source=source_scatter,
                                          view=view,
