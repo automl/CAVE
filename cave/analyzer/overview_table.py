@@ -7,6 +7,7 @@ import numpy as np
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.html.html_helpers import figure_to_html
+from cave.utils.helpers import get_config_origin
 
 class OverviewTable(BaseAnalyzer):
     def __init__(self, scenario, orig_rh, best_run, num_runs, default, incumbent, output_dir):
@@ -86,6 +87,11 @@ class OverviewTable(BaseAnalyzer):
         overview['Total number of configuration runs'] = ta_evals
         if num_conf_runs != 1:
             overview['Number of configurator runs'] = num_conf_runs
+        # Origins
+        origins = [get_config_origin(c) for c in orig_rh.get_all_configs()]
+        origins = {o2 : len([o1 for o1 in origins if o1==o2]) for o2 in set(origins)}
+        if not (list(origins.keys()) == ["Unknown"]):
+            overview['Configuration origins'] = ", ".join(['{} : {}'.format(o, n) for o, n in origins.items()])
 
         # Split into two columns
         overview_split = self._split_table(overview)
