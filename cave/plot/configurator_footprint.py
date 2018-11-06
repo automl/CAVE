@@ -40,7 +40,7 @@ from ConfigSpace.util import impute_inactive_values
 from ConfigSpace import CategoricalHyperparameter
 
 from cave.utils.convert_for_epm import convert_data_for_epm
-from cave.utils.helpers import escape_parameter_name
+from cave.utils.helpers import escape_parameter_name, get_config_origin
 from cave.utils.timing import timing
 from cave.utils.io import export_bokeh
 from cave.utils.bokeh_routines import get_checkbox
@@ -653,7 +653,7 @@ class ConfiguratorFootprintPlotter(object):
         conf_types = ["Default" if c == default else "Final Incumbent" if c == inc_list[-1]
                       else "Incumbent" if c in inc_list else "Candidate" for c in conf_list]
         # We group "Local Search" and "Random Search (sorted)" both into local
-        origins = [self._get_config_origin(c) for c in conf_list]
+        origins = [get_config_origin(c) for c in conf_list]
         source.add(conf_types, 'type')
         source.add(origins, 'origin')
         sizes = self._get_size(runs)
@@ -833,25 +833,3 @@ for (i = 0; i < lab_len; i++) {
 
         return layout, over_time_paths
 
-    def _get_config_origin(self, c):
-        """Return appropriate configuration origin
-
-        Parameters
-        ----------
-        c: Configuration
-            configuration to be examined
-
-        Returns
-        -------
-        origin: str
-            origin of configuration (e.g. "Local", "Random", etc.)
-        """
-        if not c.origin:
-            origin = "Unknown"
-        elif c.origin.startswith("Local") or c.origin == 'Model based pick' or "sorted" in c.origin:
-            origin = "Acquisition Function"
-        elif c.origin.startswith("Random"):
-            origin = "Random"
-        else:
-            origin = "Unknown"
-        return origin
