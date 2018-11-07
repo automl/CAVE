@@ -1,5 +1,6 @@
 import typing
 import numpy as np
+import logging
 
 from ConfigSpace.configuration_space import Configuration
 from smac.runhistory.runhistory import RunHistory, RunKey
@@ -135,3 +136,26 @@ class MissingInstancesError(Exception):
     """Exception indicating that instances are missing."""
     pass
 
+def get_config_origin(c):
+    """Return appropriate configuration origin
+
+    Parameters
+    ----------
+    c: Configuration
+        configuration to be examined
+
+    Returns
+    -------
+    origin: str
+        origin of configuration (e.g. "Local", "Random", etc.)
+    """
+    if not c.origin:
+        origin = "Unknown"
+    elif c.origin.startswith("Local") or c.origin == 'Model based pick' or "sorted" in c.origin:
+        origin = "Acquisition Function"
+    elif c.origin.startswith("Random"):
+        origin = "Random"
+    else:
+        logging.getLogger("cave.utils.helpers").debug("Cannot interpret origin: %s", c.origin)
+        origin = "Unknown"
+    return origin
