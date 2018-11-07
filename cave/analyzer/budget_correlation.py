@@ -11,7 +11,7 @@ from ConfigSpace.configuration_space import Configuration
 from smac.runhistory.runhistory import RunHistory
 from smac.scenario.scenario import Scenario
 
-from bokeh.models import ColumnDataSource, CustomJS
+from bokeh.models import ColumnDataSource, CustomJS, Range1d
 from bokeh.models.widgets import DataTable, TableColumn
 from bokeh.embed import components
 from bokeh.plotting import show, figure
@@ -40,56 +40,67 @@ class BudgetCorrelation(BaseAnalyzer):
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
 
         # To be set
-        self.table = None
+        self.bokeh_plot = None
         self.dataframe = None
-        self.create_table(runs)
+        self.plot(runs)
 
-    def create_table(self, runs):
-        """Create table.
-
-        Parameters
-        ----------
-        """
+    def _get_table(self, runs):
         table = []
         for b1 in runs:
             table.append([])
             for b2 in runs:
                 configs = set(b1.combined_runhistory.get_all_configs()).intersection(set(b2.combined_runhistory.get_all_configs()))
                 costs = list(zip(*[(b1.combined_runhistory.get_cost(c), b2.combined_runhistory.get_cost(c)) for c in configs]))
-                self.logger.debug(costs)
                 rho, p = scipy.stats.spearmanr(costs[0], costs[1])
+                # Differentiate to generate upper diagonal
                 if runs.index(b2) < runs.index(b1):
                     table[-1].append("")
                 else:
                     table[-1].append("{:.2f} ({} samples)".format(rho, len(costs[0])))
 
         budget_names = [os.path.basename(run.folder) for run in runs]
-        df = DataFrame(data=table, columns=budget_names, index=budget_names)
-        self.logger.debug(table)
-        self.logger.debug(self.table)
+        return DataFrame(data=table, columns=budget_names, index=budget_names)
+
+    def plot(self, runs):
+        """Create table and plot that reacts to selection of cells by updating the plotted data to visualize correlation.
+
+        Parameters
+        ----------
+        runs: List[ConfiguratorRun]
+            list with runs (budgets) to be compared
+        """
+        df = self._get_table(runs)
+        # Create CDS from pandas dataframe
         columns = list(df.columns.values)
         data = dict(df[columns])
         data["Budget"] = df.index.tolist()
         table_source = ColumnDataSource(data)
+        # Create bokeh-datatable
         columns = [TableColumn(field='Budget', title="Budget", sortable=False, width=20)] + [
                    TableColumn(field=header, title=header, default_sort='descending', width=10) for header in columns
                   ]
         bokeh_table = DataTable(source=table_source, columns=columns, row_headers=False, sortable=False,
                                height=20 + 30 * len(data["Budget"]))
 
-        # Scatter
+        # Create CDS for scatter-plot
         all_configs = set([a for b in [run.original_runhistory.get_all_configs() for run in runs] for a in b])
         data = {os.path.basename(run.folder) : [run.original_runhistory.get_cost(c) if c in
-            run.original_runhistory.get_all_configs() else
+                                                run.original_runhistory.get_all_configs() else
                                                 None for c in all_configs] for run in runs}
-        data['x'] = list(data.values())[0]
-        data['y'] = list(data.values())[0]
+        data['x'] = []
+        data['y'] = []
         scatter_source = ColumnDataSource(data=data)
-        # plot scatter
-
-        p = figure(plot_width=400, plot_height=400,)
-
-        # add a circle renderer with a size, color, and alpha
+        # Create figure and dynamically updating plot (linked with table)
+        min_val = min([min([v for v in val if v]) for val in data.values() if len(val) > 0])
+        max_val = max([max([v for v in val if v]) for val in data.values() if len(val) > 0])
+        padding = (max_val - min_val) / 10  # Small padding to border (fraction of total intervall)
+        min_val -= padding
+        max_val += padding
+        p = figure(plot_width=400, plot_height=400,
+                   match_aspect=True,
+                   y_range=Range1d(start=min_val, end=max_val, bounds=(min_val, max_val)),
+                   x_range=Range1d(start=min_val, end=max_val, bounds=(min_val, max_val)),
+                   x_axis_label='budget', y_axis_label='budget')
         p.circle(x='x', y='y',
                  #x=jitter('x', 0.1), y=jitter('y', 0.1),
                  source=scatter_source, size=5, color="navy", alpha=0.5)
@@ -98,6 +109,7 @@ class BudgetCorrelation(BaseAnalyzer):
         code += 'console.log(budgets);'
         code += """
         try {
+            // This first part only extracts selected row and column!
             var grid = document.getElementsByClassName('grid-canvas')[0].children;
             var row = '';
             var col = '';
@@ -110,11 +122,13 @@ class BudgetCorrelation(BaseAnalyzer):
                 }
             }
             col = col - 1;
-            console.log('row',row, budgets[row]);
-            console.log('col',col, budgets[col]);
-            cb_obj.selected['1d'].indices = [];
+            console.log('row', row, budgets[row]);
+            console.log('col', col, budgets[col]);
+            cb_obj.selected['1d'].indices = [];  // Reset, so gets triggered again when clicked again
 
+            // This is the actual updating of the plot
             if (row =>  0 && col > 0) {
+              // Copy relevant arrays
               var new_x = scatter_source.data[budgets[row]].slice();
               var new_y = scatter_source.data[budgets[col]].slice();
               // Remove all pairs where one value is null
@@ -126,12 +140,22 @@ class BudgetCorrelation(BaseAnalyzer):
                 new_x.splice(next_null, 1);
                 new_y.splice(next_null, 1);
               }
+              // Assign new data to the plotted columns
               scatter_source.data['x'] = new_x;
               scatter_source.data['y'] = new_y;
               scatter_source.change.emit();
               // Update axis-labels
               xaxis.attributes.axis_label = budgets[row];
               yaxis.attributes.axis_label = budgets[col];
+              // Update ranges
+              var min = Math.min(...[Math.min(...new_x), Math.min(...new_y)])
+                  max = Math.max(...[Math.max(...new_x), Math.max(...new_y)]);
+              var padding = (max - min) / 10;
+              console.log(min, max, padding);
+              xr.start = min - padding;
+              yr.start = min - padding;
+              xr.end = max + padding;
+              yr.end = max + padding;
             }
         } catch(err) {
             console.log(err.message);
@@ -142,6 +166,8 @@ class BudgetCorrelation(BaseAnalyzer):
                                       scatter_source=scatter_source,
                                       xaxis=p.xaxis[0],
                                       yaxis=p.yaxis[0],
+                                      xr=p.x_range,
+                                      yr=p.y_range,
                                       ), code=code)
         table_source.js_on_change('selected', callback)
 
@@ -156,5 +182,3 @@ class BudgetCorrelation(BaseAnalyzer):
     def get_jupyter(self):
         output_notebook()
         show(self.bokeh_plot)
-
-
