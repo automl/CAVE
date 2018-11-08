@@ -1,13 +1,14 @@
 #!/usr/bin/env sh
 
 set -euo pipefail
-echo $DOCPUSH
+echo "Starting Doc Push"
 
 # Check if DOCPUSH is set
 if ! [[ -z ${DOCPUSH+x} ]]; then
-
+    
     if [[ "$DOCPUSH" == "true" ]]; then
-
+        
+        echo "DOCPUSH is TRUE"
         # install documentation building dependencies
         pip install --upgrade matplotlib pillow sphinx sphinx-gallery sphinx_bootstrap_theme
 
