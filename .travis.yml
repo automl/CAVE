@@ -25,15 +25,23 @@ script:
 
 after_success:
   - source ci_scripts/create_doc.sh $TRAVIS_BRANCH "doc_result"
-  - codecov
 
 deploy:
-  provider: pages
-  skip-cleanup: true
-  github-token: $CAVE_TOKEN
-  keep-history: true
-  committer-from-gh: true
-  on:
-    all_branches: true
-    condition: $doc_result = "success"
-  local_dir: doc/$TRAVIS_BRANCH
+  -   provider: pages
+      skip-cleanup: true
+      github-token: $CAVE_TOKEN
+      keep-history: true
+      committer-from-gh: true
+      on:
+        branc: master
+        condition: $doc_result = "success"
+      local_dir: doc/stable
+  -   provider: pages
+      skip-cleanup: true
+      github-token: $CAVE_TOKEN
+      keep-history: true
+      committer-from-gh: true
+      on:
+        branch: true
+        condition: $doc_result = "success"
+      local_dir: doc/dev
