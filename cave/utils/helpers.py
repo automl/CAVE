@@ -55,8 +55,8 @@ def get_cost_dict_for_config(rh: RunHistory,
     """
     Aggregates loss for configuration on evaluated instances over seeds.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     rh: RunHistory
         runhistory with data
     conf: Configuration
@@ -66,8 +66,8 @@ def get_cost_dict_for_config(rh: RunHistory,
     cutoff: float
         cutoff of scenario - used to penalize costs if par != 1
 
-    Returns:
-    --------
+    Returns
+    -------
     cost: dict(instance->cost)
         cost per instance (aggregated or as list per seed)
     """

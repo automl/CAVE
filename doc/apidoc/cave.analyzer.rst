@@ -12,8 +12,10 @@ cave.analyzer package
 
    cave.analyzer.algorithm_footprint
    cave.analyzer.base_analyzer
+   cave.analyzer.bohb_incumbents_per_budget
    cave.analyzer.bohb_learning_curves
    cave.analyzer.box_violin
+   cave.analyzer.budget_correlation
    cave.analyzer.cave_ablation
    cave.analyzer.cave_fanova
    cave.analyzer.cave_forward_selection

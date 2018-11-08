@@ -4,8 +4,8 @@ from scipy.stats import ttest_rel
 def paired_permutation(data1, data2, rng, num_permutations=10000, logger=None):
     """Test for significance using paired permutation.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     data1, data2: List<float>, List<float>
         ordered results for instances for two different configurations
     rng: np.RandomState
@@ -15,8 +15,8 @@ def paired_permutation(data1, data2, rng, num_permutations=10000, logger=None):
     logger: Logger
         logger-instance write debugs to
 
-    Returns:
-    --------
+    Returns
+    -------
     p: float
         p-value for statistical test
     """
@@ -47,15 +47,15 @@ def paired_permutation(data1, data2, rng, num_permutations=10000, logger=None):
 def paired_t_student(data1, data2, logger=None):
     """Test for significance using paired t-test.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     data1, data2: List<float>, List<float>
         ordered results for instances for two different configurations
     logger: logging.Logger
         to log scores, if given
 
-    Returns:
-    --------
+    Returns
+    -------
     p: float
         p-value for statistical test
     """

@@ -26,7 +26,21 @@ class HTMLBuilder(object):
                  logo_fn: str,
                  logo_custom: bool=False):
         '''
-        Constructor
+        The dictionary structure in the HTML-Builder follows the following syntax:
+        ::
+
+          {"top1" : {
+                    "tooltip": str|None,
+                    "subtop1: {  # generates a further bottom if it is dictionary
+                            "tooltip": str|None,
+                            ...
+                            }
+                    "table": str|None (html table)
+                    "figure" : str|None (file name)
+                    "bokeh" : (str, str)|None  # (script, div as returned by components())
+                    }
+           "top2: { ... }
+          }
 
         Arguments
         ---------
@@ -135,17 +149,7 @@ for (i = 0; i < acc.length; i++) {
         Arguments
         ---------
         data_dict : OrderedDict
-            {"top1" : {
-                        "tooltip": str|None,
-                        "subtop1: {  # generates a further bottom if it is dictionary
-                                "tooltip": str|None,
-                                ...
-                                }
-                        "table": str|None (html table)
-                        "figure" : str|None (file name)
-                        "bokeh" : ( str,str)|None  # (script, div)
-                        }
-            "top2: { ... }
+            see constructor
         '''
         html_head, html_body = "", ""
         html_head += self.header_part_1
@@ -184,18 +188,7 @@ for (i = 0; i < acc.length; i++) {
         layer_name: str
             name of the layer
         data_dict : OrderedDict
-            {"top1" : {
-                        "tooltip": str|None,
-                        "subtop1": {  # generates a further bottom if it is dictionary
-                                "tooltip": str|None,
-                                ...
-                                }
-                        "table": str|None (html table)
-                        "figure" : str|None (file name)
-                        "bokeh" : ( str,str)|None  # (script, div)
-                        }
-            "top2": { ... }
-            }
+            see constructor
         is_tab: bool
             if True, don't use accordion but tab-structure to wrap content
 

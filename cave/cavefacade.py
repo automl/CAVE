@@ -357,7 +357,7 @@ class CAVE(object):
                                max_sample_size=self.pimp_max_samples,
                                fANOVA_pairwise=self.fanova_pairwise,
                                preprocess=False,
-                               verbose=self.verbose_level != 'OFF',  # disable progressbars
+                               #verbose=self.verbose_level != 'OFF',  # disable progressbars
                                )
         self.model = self.pimp.model
 
