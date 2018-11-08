@@ -33,7 +33,7 @@ deploy:
       keep-history: true
       committer-from-gh: true
       on:
-        branc: master
+        branch: master
         condition: $doc_result = "success"
       local_dir: doc/stable
   -   provider: pages
@@ -42,6 +42,6 @@ deploy:
       keep-history: true
       committer-from-gh: true
       on:
-        branch: true
+        branch: development
         condition: $doc_result = "success"
       local_dir: doc/dev
