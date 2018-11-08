@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 set -euo pipefail
+echo $DOCPUSH
 
 # Check if DOCPUSH is set
 if ! [[ -z ${DOCPUSH+x} ]]; then
@@ -12,8 +13,8 @@ if ! [[ -z ${DOCPUSH+x} ]]; then
 
         # $1 is the branch name
         # $2 is the global variable where we set the script status
-
-        if ! { [ $1 = "master" ]; }; then
+        
+        if ! { [ $1 = "master" ] || [ $1 = "development" ]; }; then
             { echo "Not one of the allowed branches"; exit 0; }
         fi
 
