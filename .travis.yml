@@ -56,7 +56,7 @@ after_success:
 deploy:
   provider: pages
   skip-cleanup: true
-  github-token: $GITHUB_TOKEN
+  github-token: $CAVE_TOKEN
   keep-history: true
   committer-from-gh: true
   on:
