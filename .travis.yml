@@ -60,6 +60,6 @@ deploy:
   keep-history: true
   committer-from-gh: true
   on:
-    branch: master
+    branch: development
     condition: $doc_result = "success"
   local_dir: docs/$TRAVIS_BRANCH
