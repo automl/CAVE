@@ -29,6 +29,7 @@ conda create -n testenv --yes python=$PYTHON_VERSION pip wheel nose gxx_linux-64
 source activate testenv
 
 pip install pip --upgrade
+pip install codecov
 cat requirements.txt | xargs -n 1 -L 1 pip install
 
 python setup.py install
