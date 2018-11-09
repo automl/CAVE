@@ -20,8 +20,8 @@ if ! [[ -z ${DOCPUSH+x} ]]; then
         fi
 
         # delete any previous documentation folder
-        if [ -d docs/$1 ]; then
-            rm -rf docs/$1
+        if [ -d doc/$1 ]; then
+            rm -rf doc/$1
         fi
 
         # create the documentation
