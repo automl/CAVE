@@ -32,7 +32,7 @@ if ! [[ -z ${DOCPUSH+x} ]]; then
         mkdir $1
 
         # get previous documentation from github
-        git clone https://github.com/PhMueller/CAVE.git --branch gh-pages --single-branch
+        git clone https://github.com/automl/CAVE.git --branch gh-pages --single-branch
 
         # copy previous documentation
         cp -r CAVE/. $1
