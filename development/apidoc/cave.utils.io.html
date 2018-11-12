@@ -1,0 +1,394 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>cave.utils.io module &mdash; CAVE 1.1.3_dev documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="cave.utils.statistical_tests module" href="cave.utils.statistical_tests.html" />
+    <link rel="prev" title="cave.utils.html_helpers module" href="cave.utils.html_helpers.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> CAVE
+          
+
+          
+            
+            <img src="../_static/cave.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.3_dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../manual.html">Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/commandline.html">Commandline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/fileformats.html">Input Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/budgets.html">Budgets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">F.A.Q.</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cave.analyzer.html">cave.analyzer package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.algorithm_footprint.html">cave.analyzer.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.base_analyzer.html">cave.analyzer.base_analyzer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.bohb_incumbents_per_budget.html">cave.analyzer.bohb_incumbents_per_budget module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.bohb_learning_curves.html">cave.analyzer.bohb_learning_curves module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.box_violin.html">cave.analyzer.box_violin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.budget_correlation.html">cave.analyzer.budget_correlation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.cave_ablation.html">cave.analyzer.cave_ablation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.cave_fanova.html">cave.analyzer.cave_fanova module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.cave_forward_selection.html">cave.analyzer.cave_forward_selection module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.cave_parameter_importance.html">cave.analyzer.cave_parameter_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.compare_default_incumbent.html">cave.analyzer.compare_default_incumbent module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.configurator_footprint.html">cave.analyzer.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.cost_over_time.html">cave.analyzer.cost_over_time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.feature_clustering.html">cave.analyzer.feature_clustering module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.feature_correlation.html">cave.analyzer.feature_correlation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.feature_importance.html">cave.analyzer.feature_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.local_parameter_importance.html">cave.analyzer.local_parameter_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.overview_table.html">cave.analyzer.overview_table module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.parallel_coordinates.html">cave.analyzer.parallel_coordinates module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.performance_table.html">cave.analyzer.performance_table module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.pimp_comparison_table.html">cave.analyzer.pimp_comparison_table module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.plot_ecdf.html">cave.analyzer.plot_ecdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.plot_scatter.html">cave.analyzer.plot_scatter module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cave.cave_cli.html">cave.cave_cli module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cave.cavefacade.html">cave.cavefacade module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cave.plot.html">cave.plot package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.cdf.html">cave.plot.cdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.scatter.html">cave.plot.scatter module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cave.html.html">cave.html package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cave.html.html_builder.html">cave.html.html_builder module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.html.html_helpers.html">cave.html.html_helpers module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="cave.utils.html">cave.utils package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.helpers.html">cave.utils.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">cave.utils.io module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.timing.html">cave.utils.timing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.tooltips.html">cave.utils.tooltips module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contact.html">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CAVE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API Documentation</a> &raquo;</li>
+        
+          <li><a href="cave.utils.html">cave.utils package</a> &raquo;</li>
+        
+      <li>cave.utils.io module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/apidoc/cave.utils.io.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-cave.utils.io">
+<span id="cave-utils-io-module"></span><h1>cave.utils.io module<a class="headerlink" href="#module-cave.utils.io" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="cave.utils.io.export_bokeh">
+<code class="descclassname">cave.utils.io.</code><code class="descname">export_bokeh</code><span class="sig-paren">(</span><em>plot</em>, <em>path</em>, <em>logger</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/io.html#export_bokeh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.io.export_bokeh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export bokeh-plot to png-file. Create directory if necessary</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>plot</strong> (<em>bokeh.plotting.figure</em>) – bokeh plot to export</li>
+<li><strong>path</strong> (<em>str</em>) – path to save plot to</li>
+<li><strong>logger</strong> (<em>Logger</em>) – logger for debugging</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="cave.utils.io.load_config_csv">
+<code class="descclassname">cave.utils.io.</code><code class="descname">load_config_csv</code><span class="sig-paren">(</span><em>path</em>, <em>cs</em>, <em>logger</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/io.html#load_config_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.io.load_config_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load configurations.csv in the following format:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="34%" />
+<col width="34%" />
+<col width="10%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">CONFIG_ID</th>
+<th class="head">parameter_name1</th>
+<th class="head">parameter_name2</th>
+<th class="head">…</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>value1</td>
+<td>value2</td>
+<td>…</td>
+</tr>
+<tr class="row-odd"><td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<em>str</em>) – path to csv-file</li>
+<li><strong>cs</strong> (<em>ConfigurationSpace</em>) – configspace with matching parameters</li>
+<li><strong>logger</strong> (<em>Logger</em>) – logger for debugs</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>(parameters, id_to_config)</strong> – parameter-names and dict mapping ids to Configurations</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(str, dict)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="cave.utils.io.load_csv_to_pandaframe">
+<code class="descclassname">cave.utils.io.</code><code class="descname">load_csv_to_pandaframe</code><span class="sig-paren">(</span><em>csv_path</em>, <em>logger</em>, <em>apply_numeric=True</em>, <em>delimiter='</em>, <em>'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/io.html#load_csv_to_pandaframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.io.load_csv_to_pandaframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load csv-file and return pd.DataFrame. First line of file is expected to
+be the header.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>csv_path</strong> (<em>str</em>) – path to csv-file</li>
+<li><strong>logger</strong> (<em>logging.Logger</em>) – logger, for debugging</li>
+<li><strong>apply_numeric</strong> (<em>boolean</em>) – whether to an attempt should be taken to turn columns into numeric values.</li>
+<li><strong>delimiter</strong> (<em>str</em>) – can be used to determine custom delimiter</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>data_frame</strong> – csv-dataframe</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pd.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="cave.utils.statistical_tests.html" class="btn btn-neutral float-right" title="cave.utils.statistical_tests module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="cave.utils.html_helpers.html" class="btn btn-neutral" title="cave.utils.html_helpers module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017-2018, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

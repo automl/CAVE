@@ -1,0 +1,824 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>cave.plot.algorithm_footprint &mdash; CAVE 1.1.3_dev documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> CAVE
+          
+
+          
+            
+            <img src="../../../_static/cave.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.3_dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../manual.html">Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/commandline.html">Commandline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.analyzer.html">cave.analyzer package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.algorithm_footprint.html">cave.analyzer.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.base_analyzer.html">cave.analyzer.base_analyzer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.bohb_incumbents_per_budget.html">cave.analyzer.bohb_incumbents_per_budget module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.bohb_learning_curves.html">cave.analyzer.bohb_learning_curves module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.box_violin.html">cave.analyzer.box_violin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.budget_correlation.html">cave.analyzer.budget_correlation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cave_ablation.html">cave.analyzer.cave_ablation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cave_fanova.html">cave.analyzer.cave_fanova module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cave_forward_selection.html">cave.analyzer.cave_forward_selection module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cave_parameter_importance.html">cave.analyzer.cave_parameter_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.compare_default_incumbent.html">cave.analyzer.compare_default_incumbent module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.configurator_footprint.html">cave.analyzer.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cost_over_time.html">cave.analyzer.cost_over_time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_clustering.html">cave.analyzer.feature_clustering module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_correlation.html">cave.analyzer.feature_correlation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_importance.html">cave.analyzer.feature_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.local_parameter_importance.html">cave.analyzer.local_parameter_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.overview_table.html">cave.analyzer.overview_table module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.parallel_coordinates.html">cave.analyzer.parallel_coordinates module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.performance_table.html">cave.analyzer.performance_table module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.pimp_comparison_table.html">cave.analyzer.pimp_comparison_table module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.plot_ecdf.html">cave.analyzer.plot_ecdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.plot_scatter.html">cave.analyzer.plot_scatter module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.cave_cli.html">cave.cave_cli module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.cavefacade.html">cave.cavefacade module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.plot.html">cave.plot package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.html.html">cave.html package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.html.html_builder.html">cave.html.html_builder module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.html.html_helpers.html">cave.html.html_helpers module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.tooltips.html">cave.utils.tooltips module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contact.html">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CAVE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>cave.plot.algorithm_footprint</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for cave.plot.algorithm_footprint</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;mpl_style&#39;</span><span class="p">))</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">spatial</span>
+<span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="k">import</span> <span class="n">PCA</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">StandardScaler</span>
+<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="k">import</span> <span class="n">KMeans</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">silhouette_score</span>
+
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">ColumnDataSource</span>
+<span class="kn">from</span> <span class="nn">bokeh.embed</span> <span class="k">import</span> <span class="n">components</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="n">CustomJS</span><span class="p">,</span> <span class="n">CDSView</span><span class="p">,</span> <span class="n">GroupFilter</span>
+<span class="kn">from</span> <span class="nn">bokeh.models.widgets</span> <span class="k">import</span> <span class="n">RadioButtonGroup</span>
+<span class="kn">from</span> <span class="nn">bokeh.models.ranges</span> <span class="k">import</span> <span class="n">DataRange1d</span>
+<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="k">import</span> <span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">widgetbox</span>
+
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span>
+
+<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">get_cost_dict_for_config</span>
+<span class="kn">from</span> <span class="nn">cave.utils.io</span> <span class="k">import</span> <span class="n">export_bokeh</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Joshua Marben&quot;</span>
+<span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2017, ML4AAD&quot;</span>
+<span class="n">__license__</span> <span class="o">=</span> <span class="s2">&quot;3-clause BSD&quot;</span>
+<span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">&quot;Joshua Marben&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;jo.ma@posteo.de&quot;</span>
+
+
+<div class="viewcode-block" id="AlgorithmFootprintPlotter"><a class="viewcode-back" href="../../../apidoc/cave.plot.algorithm_footprint.html#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter">[docs]</a><span class="k">class</span> <span class="nc">AlgorithmFootprintPlotter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Class that provides the algorithmic footprints after</span>
+<span class="sd">    &quot;Measuring algorithm footprints in instance space&quot;</span>
+<span class="sd">    (Kate Smith-Miles, Kate Smith-Miles)</span>
+
+<span class="sd">    General procedure:</span>
+<span class="sd">        - label for each algorithm each instance with the same metric</span>
+<span class="sd">        - map the instances onto a plane using pca</span>
+
+<span class="sd">    NOTE:</span>
+<span class="sd">    The terms &#39;algorithm&#39; and &#39;config/configuration&#39; will be used synonymous</span>
+<span class="sd">    throughout the class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">rh</span><span class="p">:</span> <span class="n">RunHistory</span><span class="p">,</span>
+                 <span class="n">train_inst_feat</span><span class="p">,</span>
+                 <span class="n">test_inst_feat</span><span class="p">,</span>
+                 <span class="n">algorithms</span><span class="p">,</span>
+                 <span class="n">cutoff</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+                 <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rh: RunHistory</span>
+<span class="sd">            runhistory to take cost from</span>
+<span class="sd">        train_inst_feat, test_inst_feat: dict[str-&gt;np.array]</span>
+<span class="sd">            instances names mapped to features</span>
+<span class="sd">        algorithms: List[Tuple(Configuration, str)]</span>
+<span class="sd">            list with configs and descriptive names</span>
+<span class="sd">        cutoff: int</span>
+<span class="sd">            cutoff (if available)</span>
+<span class="sd">        output_dir: str</span>
+<span class="sd">            output directory</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rng</span> <span class="o">=</span> <span class="n">rng</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No randomstate passed. Generate deterministic random state.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rh</span> <span class="o">=</span> <span class="n">rh</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_feats</span> <span class="o">=</span> <span class="n">train_inst_feat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_feats</span> <span class="o">=</span> <span class="n">test_inst_feat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst_to_feat</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">train_inst_feat</span><span class="p">,</span> <span class="o">**</span><span class="n">test_inst_feat</span><span class="p">}</span>
+        <span class="c1"># This is the order of instances:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">train_inst_feat</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">test_inst_feat</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">algorithms</span> <span class="o">=</span> <span class="p">[</span><span class="n">config</span> <span class="k">for</span> <span class="n">config</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">algorithms</span><span class="p">]</span>    <span class="c1"># Configuration-objects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algo_name</span> <span class="o">=</span> <span class="p">{</span><span class="n">algo</span><span class="p">:</span> <span class="n">name</span> <span class="k">for</span> <span class="n">algo</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">algorithms</span><span class="p">}</span>  <span class="c1"># Mapping config to name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_algo</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">algo</span> <span class="k">for</span> <span class="n">algo</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">algorithms</span><span class="p">}</span>  <span class="c1"># and vice versa</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">algo_name</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_algo</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Default and Incumbent are equal or some other error occured. Deactivate &quot;</span>
+                             <span class="s2">&quot;algorithm-footprints with --no_algorithm_footprint&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">algo_labels</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Maps algo -&gt; label (good and bad)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">inst_to_feat</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">insts</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">features_2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reduce_dim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">features_3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reduce_dim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="c1"># self.clusters, self.cluster_dict = self.get_clusters(self.features_2d)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span> <span class="o">=</span> <span class="n">cutoff</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_label_instances</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_reduce_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_array</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Expects feature-array (not dict!), performs a PCA</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        feature_array: np.array</span>
+<span class="sd">            array containing features in order of self.inst_names</span>
+<span class="sd">        n: int</span>
+<span class="sd">            target dimension for pca, 2 or 3</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        feature_array_nd: np.array</span>
+<span class="sd">            array with pca&#39;ed features (n-dimensional)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only 2 and 3 supported as target dimension!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">feature_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">n</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Use PCA to reduce features to </span><span class="si">%d</span><span class="s2"> dimensions&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+            <span class="n">feature_array</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">feature_array</span><span class="p">)</span>
+            <span class="n">feature_array</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">feature_array</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">feature_array</span>
+
+    <span class="k">def</span> <span class="nf">_get_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return cost according to (possibly EPM-)validated runhistory.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        algorithm: Configuration</span>
+<span class="sd">            config</span>
+<span class="sd">        instance: str</span>
+<span class="sd">            instance name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__algo_cost&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__algo_cost</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Use function self._get_cost!! Maps algo -&gt; {instance -&gt; cost}</span>
+        <span class="k">if</span> <span class="n">algorithm</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__algo_cost</span><span class="p">:</span>
+            <span class="c1">#self.logger.debug(&quot;Getting cost for %s, using PAR1-score&quot;, self.algo_name[algorithm])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__algo_cost</span><span class="p">[</span><span class="n">algorithm</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_cost_dict_for_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rh</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">instance</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__algo_cost</span><span class="p">[</span><span class="n">algorithm</span><span class="p">][</span><span class="n">instance</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__algo_cost</span><span class="p">[</span><span class="n">algorithm</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_label_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.95</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns dictionary with a label for each instance.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        labels: Dict[str:float]</span>
+<span class="sd">            maps instance-names (strings) to label (floats)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">algo_labels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algo_labels</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">algo_name</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">insts</span><span class="p">:</span>
+            <span class="n">best_cost</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_cost</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">algo_name</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">algo_name</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cost</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                <span class="c1"># self.logger.debug(&quot;%s on \&#39;%s\&#39;: best/this (%f/%f=%f)&quot;,</span>
+                <span class="c1">#                  self.algo_name[a], i,</span>
+                <span class="c1">#                  best_cost, cost,</span>
+                <span class="c1">#                  best_cost / cost)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">cost</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span>
+                    <span class="p">(</span><span class="n">best_cost</span><span class="o">/</span><span class="n">cost</span> <span class="o">&gt;=</span> <span class="n">epsilon</span> <span class="ow">and</span>
+                     <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">cost</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="p">))):</span>
+                    <span class="c1"># Algorithm for instance is in threshhold epsilon and no timeout</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">algo_labels</span><span class="p">[</span><span class="n">a</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Labeling instances in </span><span class="si">%.2f</span><span class="s2"> secs.&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span>
+
+<span class="c1"># -~-~-~-~ FOOTPRINT</span>
+
+<div class="viewcode-block" id="AlgorithmFootprintPlotter.footprint"><a class="viewcode-back" href="../../../apidoc/cave.plot.algorithm_footprint.html#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter.footprint">[docs]</a>    <span class="k">def</span> <span class="nf">footprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">density_threshold</span><span class="p">,</span> <span class="n">purity_threshold</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculating the footprint within a portfolio using convex hulls that</span>
+<span class="sd">        depend on density and purity thresholds.</span>
+<span class="sd">        (algorithm 1 in Smith-Miles 2014)</span>
+
+<span class="sd">        We use 3 ways to refer to an instance here:</span>
+<span class="sd">        name: the name (unique!) of the instance</span>
+<span class="sd">        feat2d: the position as np.array</span>
+<span class="sd">        tup: the tuple-version of feat2d (hashable...)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        a: Configuration</span>
+<span class="sd">            configuration to get footprint of</span>
+<span class="sd">        density_threshold: float</span>
+<span class="sd">            minimum density that regions must show to be merged</span>
+<span class="sd">        purity_threshold: float</span>
+<span class="sd">            minimum purity (percentage of good instance)</span>
+<span class="sd">            that regions must show to be merged</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        footprint: float</span>
+<span class="sd">            the size of all resulting convex hulls</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">get_2NN</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot; Return indices in X of two nearest points in X to x. &quot;&quot;&quot;</span>
+            <span class="c1"># map index to dist from point</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">tmp</span> <span class="o">-</span> <span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">tmp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">X</span><span class="p">)]</span>
+            <span class="c1"># sort after dist</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="c1"># return indices of the two smallest values</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">dist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">dist</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">count_exceptions</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># -~-~ Initialise Stage</span>
+        <span class="c1"># Map inst-names to feat2d (np.array) and tup (tuple)</span>
+        <span class="n">inst_feat2d</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_2d</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">insts</span><span class="p">)}</span>
+        <span class="n">inst_tup</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">inst_feat2d</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>  <span class="c1"># noqa</span>
+
+        <span class="c1"># regions maps tuple(centroid) of region to inst-names in region</span>
+        <span class="n">regions</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+
+        <span class="c1"># Instances (by name) in not_in_region</span>
+        <span class="n">not_in_region</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">insts</span><span class="p">[:]</span>
+
+        <span class="c1"># Randomly select a good instance;</span>
+        <span class="n">good</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">insts</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">algo_labels</span><span class="p">[</span><span class="n">a</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">good</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Less than 3 good instances found in </span><span class="si">%s</span><span class="s2">, footprint&quot;</span>
+                              <span class="s2">&quot; not calculated.&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">algo_name</span><span class="p">[</span><span class="n">a</span><span class="p">])</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="c1"># Repeat until no more triangles can be formed (at least 3 points left).</span>
+        <span class="k">while</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">not_in_region</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="c1"># Select random good instance TODO also from in_regions?!?!</span>
+            <span class="n">rand_good</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">good</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">not_in_region</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">rand_good</span><span class="p">)</span>  <span class="c1"># Remove here so it&#39;s not its own nearest neighbor</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="c1"># Form a closed region (triangle) with the two closest (smallest</span>
+            <span class="c1">#        Euclidean distance in feature space) instances to</span>
+            <span class="c1">#        rand_good, not already part of a triangle;</span>
+            <span class="n">idx1</span><span class="p">,</span> <span class="n">idx2</span> <span class="o">=</span> <span class="n">get_2NN</span><span class="p">(</span><span class="n">inst_feat2d</span><span class="p">[</span><span class="n">rand_good</span><span class="p">],</span>
+                                 <span class="p">[</span><span class="n">inst_feat2d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">not_in_region</span><span class="p">])</span>
+
+            <span class="n">triangle</span> <span class="o">=</span> <span class="p">(</span><span class="n">rand_good</span><span class="p">,</span> <span class="n">not_in_region</span><span class="p">[</span><span class="n">idx1</span><span class="p">],</span> <span class="n">not_in_region</span><span class="p">[</span><span class="n">idx2</span><span class="p">])</span>  <span class="c1"># names</span>
+            <span class="n">triangle_feat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">inst_feat2d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">triangle</span><span class="p">])</span>
+            <span class="n">centroid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">triangle_feat</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">triangle</span><span class="p">)</span>
+            <span class="n">regions</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">centroid</span><span class="p">)]</span> <span class="o">=</span> <span class="n">triangle</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">triangle</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">not_in_region</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+        <span class="c1"># -~-~ Merge Stage</span>
+        <span class="c1"># Repeat the Merge Stage until there are no more pairs to consider.</span>
+        <span class="c1"># If we iterated over whole list once, we are done.</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">stop</span><span class="p">:</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">centroids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">regions</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">centroids</span><span class="p">)</span>
+            <span class="c1"># Randomly select a closed region;</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">cent</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">centroids</span><span class="p">):</span>
+                <span class="n">reg</span> <span class="o">=</span> <span class="n">regions</span><span class="p">[</span><span class="n">cent</span><span class="p">]</span>          <span class="c1"># inst-names!</span>
+                <span class="n">cent_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cent</span><span class="p">)</span>  <span class="c1"># Keys in dict are tuples!</span>
+
+                <span class="c1"># Find the closest closed region (minimum Euclidean</span>
+                <span class="c1">#   centroid distance);</span>
+                <span class="n">remaining_centroids</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">regions</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span> <span class="o">==</span> <span class="n">cent</span><span class="p">]</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">get_2NN</span><span class="p">(</span><span class="n">cent_array</span><span class="p">,</span> <span class="n">remaining_centroids</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">nearest_cent</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">remaining_centroids</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+                <span class="n">nearest_reg</span> <span class="o">=</span> <span class="n">regions</span><span class="p">[</span><span class="n">nearest_cent</span><span class="p">]</span>  <span class="c1"># inst-names!</span>
+
+                <span class="c1"># Check purity and density</span>
+                <span class="n">new_reg</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">reg</span><span class="p">)</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">nearest_reg</span><span class="p">))</span>  <span class="c1"># names</span>
+                <span class="n">new_reg_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">inst_feat2d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">new_reg</span><span class="p">])</span>  <span class="c1"># array</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">combined_hull</span> <span class="o">=</span> <span class="n">spatial</span><span class="o">.</span><span class="n">ConvexHull</span><span class="p">(</span><span class="n">new_reg_array</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">spatial</span><span class="o">.</span><span class="n">qhull</span><span class="o">.</span><span class="n">QhullError</span><span class="p">:</span>
+                    <span class="n">count_exceptions</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">continue</span>
+                <span class="n">density</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_reg</span><span class="p">)</span><span class="o">/</span><span class="n">combined_hull</span><span class="o">.</span><span class="n">volume</span>
+                <span class="n">purity</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">reg</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">good</span><span class="p">])</span> <span class="o">+</span>
+                          <span class="nb">len</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">nearest_reg</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">good</span><span class="p">]))</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">new_reg</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">density</span> <span class="o">&gt;</span> <span class="n">density_threshold</span> <span class="ow">and</span> <span class="n">purity</span> <span class="o">&gt;</span> <span class="n">purity_threshold</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Purity: </span><span class="si">%f</span><span class="s2">, density: </span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">purity</span><span class="p">,</span> <span class="n">density</span><span class="p">)</span>
+                    <span class="n">regions</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">cent</span><span class="p">)</span>
+                    <span class="n">regions</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">nearest_cent</span><span class="p">)</span>
+                    <span class="n">new_centroid</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">new_reg_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">new_reg</span><span class="p">))</span>
+                    <span class="n">regions</span><span class="p">[</span><span class="n">new_centroid</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_reg</span>
+                    <span class="n">stop</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">break</span>
+
+        <span class="c1"># We now have final regions -&gt; return sum of individual convex hulls</span>
+        <span class="n">area</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">reg</span> <span class="ow">in</span> <span class="n">regions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">hull</span> <span class="o">=</span> <span class="n">spatial</span><span class="o">.</span><span class="n">ConvexHull</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">inst_feat2d</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">reg</span><span class="p">]))</span>
+                <span class="n">area</span> <span class="o">+=</span> <span class="n">hull</span><span class="o">.</span><span class="n">volume</span>
+            <span class="k">except</span> <span class="n">spatial</span><span class="o">.</span><span class="n">qhull</span><span class="o">.</span><span class="n">QhullError</span><span class="p">:</span>
+                <span class="n">count_exceptions</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Area for </span><span class="si">%s</span><span class="s2"> is </span><span class="si">%f</span><span class="s2"> (</span><span class="si">%d</span><span class="s2"> Qhull-exceptions, </span><span class="si">%d</span><span class="s2">/</span><span class="si">%d</span><span class="s2"> good &quot;</span>
+                          <span class="s2">&quot;insts, </span><span class="si">%d</span><span class="s2"> regions)&quot;</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">algo_name</span><span class="p">[</span><span class="n">a</span><span class="p">],</span> <span class="n">area</span><span class="p">,</span> <span class="n">count_exceptions</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">good</span><span class="p">),</span>
+                          <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">insts</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">regions</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">area</span></div>
+
+<span class="c1"># -~-~-~ PLOTS</span>
+    <span class="k">def</span> <span class="nf">_get_good_bad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">insts</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="sd">&quot;&quot;&quot; Creates a list of indices for good and bad instances for a</span>
+<span class="sd">        configuration.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        conf: Configuration</span>
+<span class="sd">            configuration for which to plot good vs bad</span>
+<span class="sd">        insts: List[str]</span>
+<span class="sd">            instances to be plotted</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        outpath: str</span>
+<span class="sd">            output path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">insts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">insts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">insts</span>
+
+        <span class="n">good_idx</span><span class="p">,</span> <span class="n">bad_idx</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cost</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Only consider passed insts</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">insts</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="c1"># Append inst-idx either to good or to bad</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">algo_labels</span><span class="p">[</span><span class="n">conf</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">bad_idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">insts</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">good_idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">insts</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">good_idx</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">good_idx</span><span class="p">)))</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bad_idx</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">bad_idx</span><span class="p">)))</span>
+        <span class="n">good_idx</span><span class="p">,</span> <span class="n">bad_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">good_idx</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bad_idx</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;for config </span><span class="si">%s</span><span class="s2"> good: </span><span class="si">%d</span><span class="s2">, bad: </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">algo_name</span><span class="p">[</span><span class="n">conf</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">good_idx</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">bad_idx</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">good_idx</span><span class="p">,</span> <span class="n">bad_idx</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AlgorithmFootprintPlotter.plot_interactive_footprint"><a class="viewcode-back" href="../../../apidoc/cave.plot.algorithm_footprint.html#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter.plot_interactive_footprint">[docs]</a>    <span class="k">def</span> <span class="nf">plot_interactive_footprint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Use bokeh to create an interactive algorithm footprint with zoom and</span>
+<span class="sd">        hover tooltips. Should avoid problems with overplotting (since we can</span>
+<span class="sd">        zoom) and provide better information about instances.&quot;&quot;&quot;</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features_2d</span><span class="p">)</span>
+        <span class="n">instances</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">insts</span>
+        <span class="n">runhistory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rh</span>
+        <span class="n">algo</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">algo_name</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">incumbent</span> <span class="o">=</span> <span class="n">algo</span><span class="p">[</span><span class="s1">&#39;incumbent&#39;</span><span class="p">]</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="n">algo</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">]</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">features</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">features</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]))</span>
+        <span class="c1"># Add all necessary information for incumbent and default</span>
+        <span class="n">source</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span> <span class="s1">&#39;instance_name&#39;</span><span class="p">)</span>
+        <span class="n">instance_set</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;train&#39;</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_feats</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="s1">&#39;test&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">]</span>
+        <span class="n">source</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">instance_set</span><span class="p">,</span> <span class="s1">&#39;instance_set&#39;</span><span class="p">)</span>  <span class="c1"># train or test</span>
+        <span class="k">for</span> <span class="n">config</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">incumbent</span><span class="p">,</span> <span class="s1">&#39;incumbent&#39;</span><span class="p">),</span> <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">)]:</span>
+            <span class="n">cost</span> <span class="o">=</span> <span class="n">get_cost_dict_for_config</span><span class="p">(</span><span class="n">runhistory</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+            <span class="n">source</span><span class="o">.</span><span class="n">add</span><span class="p">([</span><span class="n">cost</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">],</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_cost&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+            <span class="c1"># TODO should be in function</span>
+            <span class="n">good</span><span class="p">,</span> <span class="n">bad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_good_bad</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="k">if</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">good</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">instances</span><span class="p">)]</span>
+            <span class="c1"># TODO end</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;blue&#39;</span> <span class="k">if</span> <span class="n">c</span> <span class="k">else</span> <span class="s1">&#39;red&#39;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">color</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> colors: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">color</span><span class="p">))</span>
+            <span class="n">source</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_color&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="n">source</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;default_color&#39;</span><span class="p">],</span> <span class="s1">&#39;color&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Define what appears in tooltips</span>
+        <span class="n">hover</span> <span class="o">=</span> <span class="n">HoverTool</span><span class="p">(</span><span class="n">tooltips</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;instance name&#39;</span><span class="p">,</span> <span class="s1">&#39;@instance_name&#39;</span><span class="p">),</span>
+                                    <span class="p">(</span><span class="s1">&#39;def cost&#39;</span><span class="p">,</span> <span class="s1">&#39;@default_cost&#39;</span><span class="p">),</span>
+                                    <span class="p">(</span><span class="s1">&#39;inc_cost&#39;</span><span class="p">,</span> <span class="s1">&#39;@incumbent_cost&#39;</span><span class="p">),</span>
+                                    <span class="p">(</span><span class="s1">&#39;set&#39;</span><span class="p">,</span> <span class="s1">&#39;@instance_set&#39;</span><span class="p">),</span>
+                                    <span class="p">])</span>
+
+        <span class="c1"># Add radio-button</span>
+        <span class="n">def_inc_callback</span> <span class="o">=</span> <span class="n">CustomJS</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">),</span> <span class="n">code</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            var data = source.data;</span>
+<span class="s2">            if (cb_obj.active == 0) {</span>
+<span class="s2">                data[&#39;color&#39;] = data[&#39;default_color&#39;];</span>
+<span class="s2">            } else {</span>
+<span class="s2">                data[&#39;color&#39;] = data[&#39;incumbent_color&#39;];</span>
+<span class="s2">            }</span>
+<span class="s2">            source.change.emit();</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="n">def_inc_radio_button</span> <span class="o">=</span> <span class="n">RadioButtonGroup</span><span class="p">(</span>
+                <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="s2">&quot;incumbent&quot;</span><span class="p">],</span> <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">callback</span><span class="o">=</span><span class="n">def_inc_callback</span><span class="p">)</span>
+
+        <span class="c1"># Plot</span>
+        <span class="n">x_range</span> <span class="o">=</span> <span class="n">DataRange1d</span><span class="p">(</span><span class="n">bounds</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">features</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">features</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">y_range</span> <span class="o">=</span> <span class="n">DataRange1d</span><span class="p">(</span><span class="n">bounds</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">features</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">features</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">plot_height</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">plot_width</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span>
+                   <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">hover</span><span class="p">,</span> <span class="s1">&#39;save&#39;</span><span class="p">,</span> <span class="s1">&#39;wheel_zoom&#39;</span><span class="p">,</span> <span class="s1">&#39;box_zoom&#39;</span><span class="p">,</span> <span class="s1">&#39;pan&#39;</span><span class="p">,</span> <span class="s1">&#39;reset&#39;</span><span class="p">],</span> <span class="n">active_drag</span><span class="o">=</span><span class="s1">&#39;box_zoom&#39;</span><span class="p">,</span>
+                   <span class="n">x_range</span><span class="o">=</span><span class="n">x_range</span><span class="p">,</span> <span class="n">y_range</span><span class="o">=</span><span class="n">y_range</span><span class="p">)</span>
+        <span class="c1"># Scatter train and test individually to toggle them</span>
+        <span class="n">train_view</span> <span class="o">=</span> <span class="n">CDSView</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="n">GroupFilter</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="s1">&#39;instance_set&#39;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)])</span>
+        <span class="n">test_view</span> <span class="o">=</span> <span class="n">CDSView</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="n">GroupFilter</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="s1">&#39;instance_set&#39;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)])</span>
+        <span class="n">train</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">train_view</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;color&#39;</span><span class="p">)</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">test_view</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;color&#39;</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">axis_label</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">axis_label</span> <span class="o">=</span> <span class="s1">&#39;principal component 1&#39;</span><span class="p">,</span> <span class="s1">&#39;principal component 2&#39;</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">axis_label_text_font_size</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">axis_label_text_font_size</span> <span class="o">=</span> <span class="s2">&quot;15pt&quot;</span>
+
+        <span class="n">train_test_callback</span> <span class="o">=</span> <span class="n">CustomJS</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">train_view</span><span class="o">=</span><span class="n">train</span><span class="p">,</span> <span class="n">test_view</span><span class="o">=</span><span class="n">test</span><span class="p">),</span> <span class="n">code</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            var data = source.data;</span>
+<span class="s2">            if (cb_obj.active == 0) {</span>
+<span class="s2">                train_view.visible = true;</span>
+<span class="s2">                test_view.visible = true;</span>
+<span class="s2">            } else if (cb_obj.active == 1) {</span>
+<span class="s2">                train_view.visible = true;</span>
+<span class="s2">                test_view.visible = false;</span>
+<span class="s2">            } else {</span>
+<span class="s2">                train_view.visible = false;</span>
+<span class="s2">                test_view.visible = true;</span>
+<span class="s2">            }</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="n">train_test_radio_button</span> <span class="o">=</span> <span class="n">RadioButtonGroup</span><span class="p">(</span>
+                <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">],</span> <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">callback</span><span class="o">=</span><span class="n">train_test_callback</span><span class="p">)</span>
+
+        <span class="c1"># Export and return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;content/images/algorithm_footprint.png&quot;</span><span class="p">)</span>
+            <span class="n">export_bokeh</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">column</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">row</span><span class="p">(</span><span class="n">widgetbox</span><span class="p">(</span><span class="n">def_inc_radio_button</span><span class="p">),</span> <span class="n">widgetbox</span><span class="p">(</span><span class="n">train_test_radio_button</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">layout</span></div>
+
+<div class="viewcode-block" id="AlgorithmFootprintPlotter.plot3d"><a class="viewcode-back" href="../../../apidoc/cave.plot.algorithm_footprint.html#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter.plot3d">[docs]</a>    <span class="k">def</span> <span class="nf">plot3d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Plot 3d-version of the algorithm footprint from four different</span>
+<span class="sd">        angles. &quot;&quot;&quot;</span>
+        <span class="n">plots</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithms</span><span class="p">:</span>
+            <span class="c1"># Plot without clustering (for all insts)</span>
+            <span class="n">out_fns</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;footprint_&#39;</span> <span class="o">+</span>
+                       <span class="bp">self</span><span class="o">.</span><span class="n">algo_name</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_3d_</span><span class="si">{}</span><span class="s1">.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Plot saved to &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span><span class="p">,</span> <span class="n">out_fns</span><span class="p">)</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+            <span class="n">good_idx</span><span class="p">,</span> <span class="n">bad_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_good_bad</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="n">good</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">features_3d</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">good_idx</span><span class="p">])</span>
+            <span class="n">bad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">features_3d</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">bad_idx</span><span class="p">])</span>
+            <span class="n">axes</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;principal component 1&#39;</span><span class="p">,</span>
+                    <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;principal component 2&#39;</span><span class="p">,</span>
+                    <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;principal component 3&#39;</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">out_fn</span><span class="p">,</span> <span class="n">axes_ordered</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">out_fns</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))[:</span><span class="nb">len</span><span class="p">(</span><span class="n">out_fns</span><span class="p">)]):</span>
+                <span class="c1"># Plot 3d</span>
+                <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+                <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+                <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">axes_ordered</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">good</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xs</span><span class="o">=</span><span class="n">good</span><span class="p">[:,</span> <span class="n">x</span><span class="p">],</span> <span class="n">ys</span><span class="o">=</span><span class="n">good</span><span class="p">[:,</span> <span class="n">y</span><span class="p">],</span> <span class="n">zs</span><span class="o">=</span><span class="n">good</span><span class="p">[:,</span> <span class="n">z</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bad</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xs</span><span class="o">=</span><span class="n">bad</span><span class="p">[:,</span> <span class="n">x</span><span class="p">],</span> <span class="n">ys</span><span class="o">=</span><span class="n">bad</span><span class="p">[:,</span> <span class="n">y</span><span class="p">],</span> <span class="n">zs</span><span class="o">=</span><span class="n">bad</span><span class="p">[:,</span> <span class="n">z</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="n">y</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="n">z</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+                <span class="c1"># for out_fn, angle in zip(out_fns, range(20, 381, 90)):</span>
+                <span class="c1">#     ax.view_init(30, angle)</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">out_fn</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+            <span class="n">plots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out_fns</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">plots</span></div>
+
+<span class="c1"># -~-~- CLUSTER</span>
+
+<div class="viewcode-block" id="AlgorithmFootprintPlotter.plot_points_per_cluster"><a class="viewcode-back" href="../../../apidoc/cave.plot.algorithm_footprint.html#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter.plot_points_per_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">plot_points_per_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Plot good versus bad for passed config per cluster.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        conf: Configuration</span>
+<span class="sd">            configuration for which to plot good vs bad</span>
+<span class="sd">        out: str</span>
+<span class="sd">            output path</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        outpaths: List[str]</span>
+<span class="sd">            output paths per cluster</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># For Development/Debug:</span>
+        <span class="n">algo_fp_debug</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;debug&#39;</span><span class="p">,</span> <span class="s1">&#39;algo_fp&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">algo_fp_debug</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">algo_fp_debug</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="o">.</span><span class="mi">95</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.96</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">)]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_label_instances</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithms</span><span class="p">:</span>
+                <span class="c1"># Plot without clustering (for all insts)</span>
+                <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;all_</span><span class="si">{:4.3f}</span><span class="s1">.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">algo_fp_debug</span><span class="p">,</span>
+                                    <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">algo_name</span><span class="p">[</span><span class="n">a</span><span class="p">],</span> <span class="n">suffix</span><span class="p">]))</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot2d</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Plot saved to &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_label_instances</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="c1"># Plot per cluster</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">algo_fp_debug</span><span class="p">,</span> <span class="s1">&#39;cluster_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_fp_&#39;</span> <span class="o">+</span>
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">algo_name</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_0.95.png&#39;</span><span class="p">)</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot2d</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_dict</span><span class="p">[</span><span class="n">c</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="AlgorithmFootprintPlotter.get_clusters"><a class="viewcode-back" href="../../../apidoc/cave.plot.algorithm_footprint.html#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter.get_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">get_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features_2d</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Mapping instances to clusters, using silhouette-scores to determine</span>
+<span class="sd">        number of cluster.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        paths: List[str]</span>
+<span class="sd">            paths to plots</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># get silhouette scores for k_means with 2 to 12 clusters</span>
+        <span class="c1"># use number of clusters with highest silhouette score</span>
+        <span class="n">best_score</span><span class="p">,</span> <span class="n">best_n_clusters</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">min_clusters</span><span class="p">,</span> <span class="n">max_clusters</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">features_2d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">12</span><span class="p">)</span>
+        <span class="n">clusters</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">n_clusters</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">min_clusters</span><span class="p">,</span> <span class="n">max_clusters</span><span class="p">):</span>
+            <span class="n">km</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">)</span>
+            <span class="n">y_pred</span> <span class="o">=</span> <span class="n">km</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">features_2d</span><span class="p">)</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="n">silhouette_score</span><span class="p">(</span><span class="n">features_2d</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;</span> <span class="n">best_score</span><span class="p">:</span>
+                <span class="n">best_n_clusters</span> <span class="o">=</span> <span class="n">n_clusters</span>
+                <span class="n">best_score</span> <span class="o">=</span> <span class="n">score</span>
+                <span class="n">clusters</span> <span class="o">=</span> <span class="n">y_pred</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> clusters detected using silhouette scores&quot;</span><span class="p">,</span>
+                          <span class="n">best_n_clusters</span><span class="p">)</span>
+
+        <span class="n">cluster_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">best_n_clusters</span><span class="p">)}</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">clusters</span><span class="p">):</span>
+            <span class="n">cluster_dict</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">insts</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Distribution over clusters: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                          <span class="nb">str</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cluster_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()}))</span>
+
+        <span class="k">return</span> <span class="n">clusters</span><span class="p">,</span> <span class="n">cluster_dict</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017-2018, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1112 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>cave.plot.configurator_footprint &mdash; CAVE 1.1.3_dev documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> CAVE
+          
+
+          
+            
+            <img src="../../../_static/cave.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.3_dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../manual.html">Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/commandline.html">Commandline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.analyzer.html">cave.analyzer package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.algorithm_footprint.html">cave.analyzer.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.base_analyzer.html">cave.analyzer.base_analyzer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.bohb_incumbents_per_budget.html">cave.analyzer.bohb_incumbents_per_budget module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.bohb_learning_curves.html">cave.analyzer.bohb_learning_curves module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.box_violin.html">cave.analyzer.box_violin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.budget_correlation.html">cave.analyzer.budget_correlation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cave_ablation.html">cave.analyzer.cave_ablation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cave_fanova.html">cave.analyzer.cave_fanova module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cave_forward_selection.html">cave.analyzer.cave_forward_selection module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cave_parameter_importance.html">cave.analyzer.cave_parameter_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.compare_default_incumbent.html">cave.analyzer.compare_default_incumbent module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.configurator_footprint.html">cave.analyzer.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cost_over_time.html">cave.analyzer.cost_over_time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_clustering.html">cave.analyzer.feature_clustering module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_correlation.html">cave.analyzer.feature_correlation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_importance.html">cave.analyzer.feature_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.local_parameter_importance.html">cave.analyzer.local_parameter_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.overview_table.html">cave.analyzer.overview_table module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.parallel_coordinates.html">cave.analyzer.parallel_coordinates module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.performance_table.html">cave.analyzer.performance_table module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.pimp_comparison_table.html">cave.analyzer.pimp_comparison_table module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.plot_ecdf.html">cave.analyzer.plot_ecdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.plot_scatter.html">cave.analyzer.plot_scatter module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.cave_cli.html">cave.cave_cli module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.cavefacade.html">cave.cavefacade module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.plot.html">cave.plot package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.html.html">cave.html package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.html.html_builder.html">cave.html.html_builder module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.html.html_helpers.html">cave.html.html_helpers module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.tooltips.html">cave.utils.tooltips module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contact.html">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CAVE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>cave.plot.configurator_footprint</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for cave.plot.configurator_footprint</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/bin/python</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Marius Lindauer &amp; Joshua Marben&quot;</span>
+<span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2016, ML4AAD&quot;</span>
+<span class="n">__license__</span> <span class="o">=</span> <span class="s2">&quot;BSD&quot;</span>
+<span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">&quot;Joshua Marben&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;marbenj@cs.uni-freiburg.de&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;0.0.1&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.manifold.mds</span> <span class="k">import</span> <span class="n">MDS</span>
+<span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="k">import</span> <span class="n">PCA</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">StandardScaler</span>
+
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">ColumnDataSource</span>
+<span class="kn">from</span> <span class="nn">bokeh.embed</span> <span class="k">import</span> <span class="n">components</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="n">ColorBar</span><span class="p">,</span> <span class="n">LinearColorMapper</span><span class="p">,</span> <span class="n">BasicTicker</span><span class="p">,</span> <span class="n">CustomJS</span><span class="p">,</span> <span class="n">Slider</span>
+<span class="kn">from</span> <span class="nn">bokeh.models.sources</span> <span class="k">import</span> <span class="n">CDSView</span>
+<span class="kn">from</span> <span class="nn">bokeh.models.filters</span> <span class="k">import</span> <span class="n">GroupFilter</span><span class="p">,</span> <span class="n">BooleanFilter</span>
+<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="k">import</span> <span class="n">column</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">widgetbox</span>
+
+<span class="n">cmd_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()))[</span><span class="mi">0</span><span class="p">]))</span>  <span class="c1"># noqa</span>
+<span class="n">cmd_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmd_folder</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span><span class="p">))</span>  <span class="c1"># noqa</span>
+<span class="k">if</span> <span class="n">cmd_folder</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>  <span class="c1"># noqa</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmd_folder</span><span class="p">)</span>  <span class="c1"># noqa</span>
+
+<span class="kn">from</span> <span class="nn">smac.scenario.scenario</span> <span class="k">import</span> <span class="n">Scenario</span>
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span>
+<span class="kn">from</span> <span class="nn">smac.optimizer.objective</span> <span class="k">import</span> <span class="n">average_cost</span>
+<span class="kn">from</span> <span class="nn">smac.epm.rf_with_instances</span> <span class="k">import</span> <span class="n">RandomForestWithInstances</span>
+<span class="kn">from</span> <span class="nn">smac.configspace</span> <span class="k">import</span> <span class="n">ConfigurationSpace</span>
+<span class="kn">from</span> <span class="nn">ConfigSpace.util</span> <span class="k">import</span> <span class="n">impute_inactive_values</span>
+<span class="kn">from</span> <span class="nn">ConfigSpace</span> <span class="k">import</span> <span class="n">CategoricalHyperparameter</span>
+
+<span class="kn">from</span> <span class="nn">cave.utils.convert_for_epm</span> <span class="k">import</span> <span class="n">convert_data_for_epm</span>
+<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">escape_parameter_name</span><span class="p">,</span> <span class="n">get_config_origin</span>
+<span class="kn">from</span> <span class="nn">cave.utils.timing</span> <span class="k">import</span> <span class="n">timing</span>
+<span class="kn">from</span> <span class="nn">cave.utils.io</span> <span class="k">import</span> <span class="n">export_bokeh</span>
+<span class="kn">from</span> <span class="nn">cave.utils.bokeh_routines</span> <span class="k">import</span> <span class="n">get_checkbox</span>
+
+
+<div class="viewcode-block" id="ConfiguratorFootprintPlotter"><a class="viewcode-back" href="../../../apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter">[docs]</a><span class="k">class</span> <span class="nc">ConfiguratorFootprintPlotter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+                 <span class="n">rh</span><span class="p">:</span> <span class="n">RunHistory</span><span class="p">,</span>
+                 <span class="n">incs</span><span class="p">:</span> <span class="nb">list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">max_plot</span><span class="p">:</span> <span class="nb">int</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">contour_step_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+                 <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">time_slider</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">num_quantiles</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                 <span class="n">configs_in_run</span><span class="p">:</span> <span class="nb">dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        scenario: Scenario</span>
+<span class="sd">            scenario</span>
+<span class="sd">        rh: RunHistory</span>
+<span class="sd">            runhistory from configurator run, only runs during optimization</span>
+<span class="sd">        incs: list</span>
+<span class="sd">            incumbents of best configurator run, last entry is final incumbent</span>
+<span class="sd">        max_plot: int</span>
+<span class="sd">            maximum number of configs to plot, if -1 plot all</span>
+<span class="sd">        contour_step_size: float</span>
+<span class="sd">            step size of meshgrid to compute contour of fitness landscape</span>
+<span class="sd">        output_dir: str</span>
+<span class="sd">            output directory</span>
+<span class="sd">        time_slider: bool</span>
+<span class="sd">            whether or not to have a time_slider-widget on cfp-plot</span>
+<span class="sd">            INCREASES FILE-SIZE DRAMATICALLY</span>
+<span class="sd">        num_quantiles: int</span>
+<span class="sd">            number of quantiles for the slider/ number of static pictures</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig_rh</span> <span class="o">=</span> <span class="n">rh</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">incs</span> <span class="o">=</span> <span class="n">incs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_plot</span> <span class="o">=</span> <span class="n">max_plot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_slider</span> <span class="o">=</span> <span class="n">time_slider</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_quantiles</span> <span class="o">=</span> <span class="n">num_quantiles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contour_step_size</span> <span class="o">=</span> <span class="n">contour_step_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">configs_in_run</span> <span class="o">=</span> <span class="n">configs_in_run</span> <span class="k">if</span> <span class="n">configs_in_run</span> <span class="k">else</span> <span class="p">{</span><span class="s1">&#39;all&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_rh</span><span class="o">.</span><span class="n">get_all_configs</span><span class="p">()}</span>
+
+<div class="viewcode-block" id="ConfiguratorFootprintPlotter.run"><a class="viewcode-back" href="../../../apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Uses available Configurator-data to perform a MDS, estimate performance</span>
+<span class="sd">        data and plot the configurator footprint.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="o">.</span><span class="n">get_default_configuration</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig_rh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduce_runhistory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orig_rh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_plot</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">incs</span><span class="o">+</span><span class="p">[</span><span class="n">default</span><span class="p">])</span>
+        <span class="n">conf_matrix</span><span class="p">,</span> <span class="n">conf_list</span><span class="p">,</span> <span class="n">runs_per_quantile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_conf_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orig_rh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">incs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Number of Configurations: </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">conf_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">dists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_distance</span><span class="p">(</span><span class="n">conf_matrix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="p">)</span>
+        <span class="n">red_dists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mds</span><span class="p">(</span><span class="n">dists</span><span class="p">)</span>
+
+        <span class="n">contour_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pred_surface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orig_rh</span><span class="p">,</span> <span class="n">X_scaled</span><span class="o">=</span><span class="n">red_dists</span><span class="p">,</span>
+                                             <span class="n">conf_list</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">conf_list</span><span class="p">),</span>
+                                             <span class="n">contour_step_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">contour_step_size</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">red_dists</span><span class="p">,</span>
+                         <span class="n">conf_list</span><span class="p">,</span>
+                         <span class="n">runs_per_quantile</span><span class="p">,</span>
+                         <span class="n">inc_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">incs</span><span class="p">,</span>
+                         <span class="n">contour_data</span><span class="o">=</span><span class="n">contour_data</span><span class="p">,</span>
+                         <span class="n">time_slider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">time_slider</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConfiguratorFootprintPlotter.get_pred_surface"><a class="viewcode-back" href="../../../apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_pred_surface">[docs]</a>    <span class="nd">@timing</span>
+    <span class="k">def</span> <span class="nf">get_pred_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">X_scaled</span><span class="p">,</span> <span class="n">conf_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">contour_step_size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;fit epm on the scaled input dimension and</span>
+<span class="sd">        return data to plot a contour plot of the empirical performance</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rh: RunHistory</span>
+<span class="sd">            runhistory</span>
+<span class="sd">        X_scaled: np.array</span>
+<span class="sd">            configurations in scaled 2dim</span>
+<span class="sd">        conf_list: list</span>
+<span class="sd">            list of Configuration objects</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        contour_data: (np.array, np.array, np.array)</span>
+<span class="sd">            x, y, Z for contour plots</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># use PCA to reduce features to also at most 2 dims</span>
+        <span class="n">scen</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">)</span>  <span class="c1"># pca changes feats</span>
+        <span class="k">if</span> <span class="n">scen</span><span class="o">.</span><span class="n">feature_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Use PCA to reduce features to from </span><span class="si">%d</span><span class="s2"> dim to 2 dim&quot;</span><span class="p">,</span> <span class="n">scen</span><span class="o">.</span><span class="n">feature_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="c1"># perform PCA</span>
+            <span class="n">insts</span> <span class="o">=</span> <span class="n">scen</span><span class="o">.</span><span class="n">feature_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="n">feature_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">scen</span><span class="o">.</span><span class="n">feature_dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">insts</span><span class="p">])</span>
+            <span class="n">feature_array</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">feature_array</span><span class="p">)</span>
+            <span class="n">feature_array</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">feature_array</span><span class="p">)</span>
+            <span class="c1"># inject in scenario-object</span>
+            <span class="n">scen</span><span class="o">.</span><span class="n">feature_array</span> <span class="o">=</span> <span class="n">feature_array</span>
+            <span class="n">scen</span><span class="o">.</span><span class="n">feature_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">inst</span><span class="p">,</span> <span class="n">feature_array</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:])</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">inst</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">insts</span><span class="p">)])</span>
+            <span class="n">scen</span><span class="o">.</span><span class="n">n_features</span> <span class="o">=</span> <span class="mi">2</span>
+
+        <span class="c1"># convert the data to train EPM on 2-dim featurespace (for contour-data)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Convert data for epm.&quot;</span><span class="p">)</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">types</span> <span class="o">=</span> <span class="n">convert_data_for_epm</span><span class="p">(</span><span class="n">scenario</span><span class="o">=</span><span class="n">scen</span><span class="p">,</span> <span class="n">runhistory</span><span class="o">=</span><span class="n">rh</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span> <span class="o">+</span> <span class="n">scen</span><span class="o">.</span><span class="n">feature_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span>
+        <span class="n">num_params</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scen</span><span class="o">.</span><span class="n">cs</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">())</span>
+
+        <span class="c1"># impute missing values in configs and insert MDS&#39;ed (2dim) configs to the right positions</span>
+        <span class="n">conf_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">conf_list</span><span class="p">):</span>
+            <span class="n">conf_list</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">impute_inactive_values</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="n">conf_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">conf_list</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">get_array</span><span class="p">())]</span> <span class="o">=</span> <span class="n">X_scaled</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="n">X_trans</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+            <span class="n">x_scaled_conf</span> <span class="o">=</span> <span class="n">conf_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="n">num_params</span><span class="p">])]</span>
+            <span class="c1"># append scaled config + pca&#39;ed features (total of 4 values) per config/feature-sample</span>
+            <span class="n">X_trans</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">x_scaled_conf</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">num_params</span><span class="p">:]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">X_trans</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X_trans</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Train random forest for contour-plot.&quot;</span><span class="p">)</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">RandomForestWithInstances</span><span class="p">(</span><span class="n">types</span><span class="o">=</span><span class="n">types</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span>
+                                          <span class="n">instance_features</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">scen</span><span class="o">.</span><span class="n">feature_array</span><span class="p">),</span>
+                                          <span class="n">ratio_features</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">X_trans</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Fitting random forest took </span><span class="si">%f</span><span class="s2"> time&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span>
+
+        <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="n">X_scaled</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">X_scaled</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="n">X_scaled</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">X_scaled</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">contour_step_size</span><span class="p">),</span>
+                             <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span> <span class="n">contour_step_size</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;x_min: </span><span class="si">%f</span><span class="s2">, x_max: </span><span class="si">%f</span><span class="s2">, y_min: </span><span class="si">%f</span><span class="s2">, y_max: </span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Predict on </span><span class="si">%d</span><span class="s2"> samples in grid to get surface (step-size: </span><span class="si">%f</span><span class="s2">)&quot;</span><span class="p">,</span>
+                          <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">xx</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">yy</span><span class="o">.</span><span class="n">ravel</span><span class="p">()]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">contour_step_size</span><span class="p">)</span>
+
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">Z</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_marginalized_over_instances</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">xx</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">yy</span><span class="o">.</span><span class="n">ravel</span><span class="p">()])</span>
+        <span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Predicting random forest took </span><span class="si">%f</span><span class="s2"> time&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">Z</span></div>
+
+<div class="viewcode-block" id="ConfiguratorFootprintPlotter.get_distance"><a class="viewcode-back" href="../../../apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_distance">[docs]</a>    <span class="nd">@timing</span>
+    <span class="k">def</span> <span class="nf">get_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf_matrix</span><span class="p">,</span> <span class="n">cs</span><span class="p">:</span> <span class="n">ConfigurationSpace</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the distance between all pairs of configurations.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        conf_matrx: np.array</span>
+<span class="sd">            numpy array with cols as parameter values</span>
+<span class="sd">        cs: ConfigurationSpace</span>
+<span class="sd">            ConfigurationSpace to get conditionalities</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dists: np.array</span>
+<span class="sd">            np.array with distances between configurations i,j in dists[i,j] or dists[j,i]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculate distance between configurations.&quot;</span><span class="p">)</span>
+        <span class="n">n_confs</span> <span class="o">=</span> <span class="n">conf_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_confs</span><span class="p">,</span> <span class="n">n_confs</span><span class="p">))</span>
+
+        <span class="n">is_cat</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">depth</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">cs</span><span class="o">.</span><span class="n">_hyperparameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">param</span><span class="p">)</span> <span class="o">==</span> <span class="n">CategoricalHyperparameter</span><span class="p">:</span>
+                <span class="n">is_cat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">is_cat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">depth</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_depth</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="n">param</span><span class="p">))</span>
+        <span class="n">is_cat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">is_cat</span><span class="p">)</span>
+        <span class="n">depth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">depth</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_confs</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_confs</span><span class="p">):</span>
+                <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">conf_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">conf_matrix</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="p">:])</span>
+                <span class="n">dist</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">dist</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">dist</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">is_cat</span><span class="p">,</span> <span class="n">dist</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">dist</span> <span class="o">/=</span> <span class="n">depth</span>
+                <span class="n">dists</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span>
+                <span class="n">dists</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span>
+            <span class="k">if</span> <span class="mi">5</span> <span class="o">&lt;</span> <span class="n">n_confs</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">%</span> <span class="p">(</span><span class="n">n_confs</span> <span class="o">//</span> <span class="mi">5</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.2f%%</span><span class="s2"> of all distances calculated...&quot;</span><span class="p">,</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="n">n_confs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dists</span></div>
+
+<div class="viewcode-block" id="ConfiguratorFootprintPlotter.get_depth"><a class="viewcode-back" href="../../../apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_depth">[docs]</a>    <span class="k">def</span> <span class="nf">get_depth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cs</span><span class="p">:</span> <span class="n">ConfigurationSpace</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get depth in configuration space of a given parameter name</span>
+<span class="sd">        breadth search until reaching a leaf for the first time</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cs: ConfigurationSpace</span>
+<span class="sd">            ConfigurationSpace to get parents of a parameter</span>
+<span class="sd">        param: str</span>
+<span class="sd">            name of parameter to inspect</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">parents</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">get_parents_of</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">parents</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="n">new_parents</span> <span class="o">=</span> <span class="n">parents</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="n">new_parents</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">old_parents</span> <span class="o">=</span> <span class="n">new_parents</span>
+            <span class="n">new_parents</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">old_parents</span><span class="p">:</span>
+                <span class="n">pp</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">get_parents_of</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">pp</span><span class="p">:</span>
+                    <span class="n">new_parents</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">d</span></div>
+
+<div class="viewcode-block" id="ConfiguratorFootprintPlotter.get_mds"><a class="viewcode-back" href="../../../apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_mds">[docs]</a>    <span class="nd">@timing</span>
+    <span class="k">def</span> <span class="nf">get_mds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dists</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute multi-dimensional scaling (using sklearn MDS) -- nonlinear scaling</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dists: np.array</span>
+<span class="sd">            full matrix of distances between all configurations</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.array</span>
+<span class="sd">            scaled coordinates in 2-dim room</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO there are ways to extend MDS to provide a transform-method. if</span>
+        <span class="c1">#   available, train on randomly sampled configs and plot all</span>
+        <span class="c1"># TODO MDS provides &#39;n_jobs&#39;-argument for parallel computing...</span>
+        <span class="n">mds</span> <span class="o">=</span> <span class="n">MDS</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dissimilarity</span><span class="o">=</span><span class="s2">&quot;precomputed&quot;</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
+        <span class="n">dists</span> <span class="o">=</span> <span class="n">mds</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">dists</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;MDS-stress: </span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">mds</span><span class="o">.</span><span class="n">stress_</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dists</span></div>
+
+<div class="viewcode-block" id="ConfiguratorFootprintPlotter.reduce_runhistory"><a class="viewcode-back" href="../../../apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.reduce_runhistory">[docs]</a>    <span class="k">def</span> <span class="nf">reduce_runhistory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                          <span class="n">rh</span><span class="p">:</span> <span class="n">RunHistory</span><span class="p">,</span>
+                          <span class="n">max_configs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                          <span class="n">keep</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reduce configs to desired number, by default just drop the configs with the</span>
+<span class="sd">        fewest runs.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rh: RunHistory</span>
+<span class="sd">            runhistory that is to be reduced</span>
+<span class="sd">        max_configs: int</span>
+<span class="sd">            if &gt; -1 reduce runhistory to at most max_configs</span>
+<span class="sd">        keep: List[Configuration]</span>
+<span class="sd">            list of configs that should be kept for sure (e.g. default,</span>
+<span class="sd">            incumbents)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        rh: RunHistory</span>
+<span class="sd">            reduced runhistory</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">configs</span> <span class="o">=</span> <span class="n">rh</span><span class="o">.</span><span class="n">get_all_configs</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">max_configs</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">max_configs</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">configs</span><span class="p">):</span>  <span class="c1"># keep all</span>
+            <span class="k">return</span> <span class="n">rh</span>
+
+        <span class="n">runs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">c</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rh</span><span class="o">.</span><span class="n">get_runs_for_config</span><span class="p">(</span><span class="n">c</span><span class="p">)))</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">keep</span><span class="p">:</span>
+            <span class="n">keep</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">runs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">runs</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">max_plot</span><span class="p">:]</span>
+        <span class="n">keep</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">]</span> <span class="o">+</span> <span class="n">keep</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reducing number of configs from </span><span class="si">%d</span><span class="s2"> to </span><span class="si">%d</span><span class="s2">, dropping from the fewest evaluations&quot;</span><span class="p">,</span>
+                         <span class="nb">len</span><span class="p">(</span><span class="n">configs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">keep</span><span class="p">))</span>
+
+        <span class="n">new_rh</span> <span class="o">=</span> <span class="n">RunHistory</span><span class="p">(</span><span class="n">average_cost</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">rh</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">rh</span><span class="o">.</span><span class="n">ids_config</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">config_id</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">:</span>
+                <span class="n">new_rh</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">rh</span><span class="o">.</span><span class="n">ids_config</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">config_id</span><span class="p">],</span>
+                           <span class="n">cost</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">cost</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+                           <span class="n">instance_id</span><span class="o">=</span><span class="n">k</span><span class="o">.</span><span class="n">instance_id</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">k</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_rh</span></div>
+
+<div class="viewcode-block" id="ConfiguratorFootprintPlotter.get_conf_matrix"><a class="viewcode-back" href="../../../apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_conf_matrix">[docs]</a>    <span class="nd">@timing</span>
+    <span class="k">def</span> <span class="nf">get_conf_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">incs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterates through runhistory to get a matrix of configurations (in</span>
+<span class="sd">        vector representation), a list of configurations and the number of</span>
+<span class="sd">        runs per configuration in a quantiled manner.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rh: RunHistory</span>
+<span class="sd">            smac.runhistory</span>
+<span class="sd">        incs: List[Configuration]</span>
+<span class="sd">            incumbents of this configurator run, last entry is final incumbent</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        conf_matrix: np.array</span>
+<span class="sd">            matrix of configurations in vector representation</span>
+<span class="sd">        conf_list: np.array</span>
+<span class="sd">            list of all Configuration objects that appeared in runhistory</span>
+<span class="sd">            the order of this list is used to determine all kinds of properties</span>
+<span class="sd">            in the plotting (but is arbitrarily determined)</span>
+<span class="sd">        runs_per_quantile: np.array</span>
+<span class="sd">            numpy array of runs per configuration per quantile</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get all configurations. Index of c in conf_list serves as identifier</span>
+        <span class="n">conf_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">conf_matrix</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">rh</span><span class="o">.</span><span class="n">get_all_configs</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">conf_list</span><span class="p">:</span>
+                <span class="n">conf_matrix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">get_array</span><span class="p">())</span>
+                <span class="n">conf_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">inc</span> <span class="ow">in</span> <span class="n">incs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">inc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">conf_list</span><span class="p">:</span>
+                <span class="n">conf_matrix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inc</span><span class="o">.</span><span class="n">get_array</span><span class="p">())</span>
+                <span class="n">conf_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inc</span><span class="p">)</span>
+
+        <span class="c1"># Sanity check, number quantiles must be smaller than the number of configs</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_quantiles</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">conf_list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Number of quantiles </span><span class="si">%d</span><span class="s2"> bigger than number of configs </span><span class="si">%d</span><span class="s2">, reducing to </span><span class="si">%d</span><span class="s2"> quantiles&quot;</span><span class="p">,</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">num_quantiles</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">conf_list</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">conf_list</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_quantiles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">conf_list</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="c1"># We want to visualize the development over time, so we take</span>
+        <span class="c1"># screenshots of the number of runs per config at different points</span>
+        <span class="c1"># in (i.e. different quantiles of) the runhistory, LAST quantile</span>
+        <span class="c1"># is full history!!</span>
+        <span class="n">runs_per_quantile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_runs_per_config_quantiled</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">conf_list</span><span class="p">,</span> <span class="n">quantiles</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_quantiles</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">runs_per_quantile</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_quantiles</span><span class="p">)</span>
+
+        <span class="c1"># Get minimum and maximum for sizes of dots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_runs_per_conf</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">runs_per_quantile</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_runs_per_conf</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">runs_per_quantile</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Min runs per conf: </span><span class="si">%d</span><span class="s2">, Max runs per conf: </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">min_runs_per_conf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_runs_per_conf</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Gathered </span><span class="si">%d</span><span class="s2"> configurations from 1 runhistories.&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">conf_list</span><span class="p">))</span>
+
+        <span class="n">runs_per_quantile</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">run</span><span class="p">)</span> <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs_per_quantile</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">conf_matrix</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">conf_list</span><span class="p">),</span> <span class="n">runs_per_quantile</span></div>
+
+    <span class="nd">@timing</span>
+    <span class="k">def</span> <span class="nf">_get_runs_per_config_quantiled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">conf_list</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a list of lists, each sublist representing the current state</span>
+<span class="sd">        at that timestep (quantile). The current state means a list of times</span>
+<span class="sd">        each config was evaluated at that timestep.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rh: RunHistory</span>
+<span class="sd">            rh to evaluate</span>
+<span class="sd">        conf_list: list</span>
+<span class="sd">            list of all Configuration objects that appeared in runhistory</span>
+<span class="sd">        quantiles: int</span>
+<span class="sd">            number of fractions to split rh into</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        --------</span>
+<span class="sd">        runs_per_quantile: np.array</span>
+<span class="sd">            numpy array of runs per configuration per quantile</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">runs_total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rh</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="c1"># Create LINEAR ranges. TODO do we want log? -&gt; this line</span>
+        <span class="n">ranges</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">runs_total</span><span class="p">,</span> <span class="n">quantiles</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating </span><span class="si">%d</span><span class="s2"> quantiles with a step of </span><span class="si">%.2f</span><span class="s2"> and a total &quot;</span>
+                          <span class="s2">&quot;runs of </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">,</span> <span class="n">runs_total</span><span class="o">/</span><span class="n">quantiles</span><span class="p">,</span> <span class="n">runs_total</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Ranges: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ranges</span><span class="p">))</span>
+
+        <span class="c1"># Iterate over the runhistory&#39;s entries in ranges and creating each</span>
+        <span class="c1"># sublist from a &quot;snapshot&quot;-runhistory</span>
+        <span class="n">r_p_q_p_c</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># runs per quantile per config</span>
+        <span class="n">as_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">rh</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="n">tmp_rh</span> <span class="o">=</span> <span class="n">RunHistory</span><span class="p">(</span><span class="n">average_cost</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ranges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+                <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">as_list</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+                <span class="n">tmp_rh</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">rh</span><span class="o">.</span><span class="n">ids_config</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">config_id</span><span class="p">],</span>
+                           <span class="n">cost</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">cost</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+                           <span class="n">instance_id</span><span class="o">=</span><span class="n">k</span><span class="o">.</span><span class="n">instance_id</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">k</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
+            <span class="n">r_p_q_p_c</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp_rh</span><span class="o">.</span><span class="n">get_runs_for_config</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">conf_list</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">r_p_q_p_c</span>
+
+    <span class="k">def</span> <span class="nf">_get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_p_c</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns size of scattered points in dependency of runs per config</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        r_p_c: list[int]</span>
+<span class="sd">            list with runs per config in order of self.conf_list</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        sizes: list[int]</span>
+<span class="sd">            list with appropriate sizes for dots</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">normalization_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_runs_per_conf</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_runs_per_conf</span>
+        <span class="n">min_size</span><span class="p">,</span> <span class="n">enlargement_factor</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">20</span>
+        <span class="k">if</span> <span class="n">normalization_factor</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># All configurations same size</span>
+            <span class="n">normalization_factor</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">min_size</span> <span class="o">=</span> <span class="mi">12</span>
+        <span class="n">sizes</span> <span class="o">=</span> <span class="n">min_size</span> <span class="o">+</span> <span class="p">((</span><span class="n">r_p_c</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_runs_per_conf</span><span class="p">)</span> <span class="o">/</span> <span class="n">normalization_factor</span><span class="p">)</span> <span class="o">*</span> <span class="n">enlargement_factor</span>
+        <span class="n">sizes</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span> <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">r_p_c</span><span class="p">])</span>  <span class="c1"># 0 size if 0 runs</span>
+        <span class="k">return</span> <span class="n">sizes</span>
+
+    <span class="k">def</span> <span class="nf">_get_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">types</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Determine appropriate color for all configurations</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        types: List[str]</span>
+<span class="sd">            type of configuration</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        --------</span>
+<span class="sd">        colors: list</span>
+<span class="sd">            list of color per config</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s2">&quot;Default&quot;</span><span class="p">:</span>
+                <span class="n">colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s2">&quot;Incumbent&quot;</span> <span class="ow">in</span> <span class="n">t</span><span class="p">:</span>
+                <span class="n">colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">colors</span>
+
+    <span class="k">def</span> <span class="nf">_plot_contour</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">contour_data</span><span class="p">,</span> <span class="n">x_range</span><span class="p">,</span> <span class="n">y_range</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot contour data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        p: bokeh.plotting.figure</span>
+<span class="sd">            figure to be drawn upon</span>
+<span class="sd">        contour_data: np.array</span>
+<span class="sd">            array with contour data</span>
+<span class="sd">        x_range: List[float, float]</span>
+<span class="sd">            min and max of x-axis</span>
+<span class="sd">        y_range: List[float, float]</span>
+<span class="sd">            min and max of y-axis</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        p: bokeh.plotting.figure</span>
+<span class="sd">            modified figure handle</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">min_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">contour_data</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+        <span class="n">max_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">contour_data</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+        <span class="n">color_mapper</span> <span class="o">=</span> <span class="n">LinearColorMapper</span><span class="p">(</span><span class="n">palette</span><span class="o">=</span><span class="s2">&quot;Viridis256&quot;</span><span class="p">,</span>
+                                         <span class="n">low</span><span class="o">=</span><span class="n">min_z</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">max_z</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">image</span><span class="o">=</span><span class="n">contour_data</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">y_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">dw</span><span class="o">=</span><span class="n">x_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dh</span><span class="o">=</span><span class="n">y_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">color_mapper</span><span class="o">=</span><span class="n">color_mapper</span><span class="p">)</span>
+        <span class="n">color_bar</span> <span class="o">=</span> <span class="n">ColorBar</span><span class="p">(</span><span class="n">color_mapper</span><span class="o">=</span><span class="n">color_mapper</span><span class="p">,</span>
+                             <span class="n">ticker</span><span class="o">=</span><span class="n">BasicTicker</span><span class="p">(</span><span class="n">desired_num_ticks</span><span class="o">=</span><span class="mi">15</span><span class="p">),</span>
+                             <span class="n">label_standoff</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+                             <span class="n">border_line_color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">color_bar</span><span class="o">.</span><span class="n">major_label_text_font_size</span> <span class="o">=</span> <span class="s1">&#39;12pt&#39;</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">add_layout</span><span class="p">(</span><span class="n">color_bar</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">p</span>
+
+    <span class="k">def</span> <span class="nf">_plot_create_views</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">used_configs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create views in order of plotting, so more interesting views are</span>
+<span class="sd">        plotted on top. Order of interest:</span>
+<span class="sd">        default &gt; final-incumbent &gt; incumbent &gt; candidate</span>
+<span class="sd">          local &gt; random</span>
+<span class="sd">            num_runs (ascending, more evaluated -&gt; more interesting)</span>
+<span class="sd">        Individual views are necessary, since bokeh can only plot one</span>
+<span class="sd">        marker-type (circle, triangle, ...) per &#39;scatter&#39;-call</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        source: ColumnDataSource</span>
+<span class="sd">            containing relevant information for plotting</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        views: List[CDSView]</span>
+<span class="sd">            views in order of plotting</span>
+<span class="sd">        markers: List[string]</span>
+<span class="sd">            markers (to the view with the same index)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">_get_marker</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot; returns marker according to type t and origin o &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s2">&quot;Default&quot;</span><span class="p">:</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="s1">&#39;triangle&#39;</span>
+            <span class="k">elif</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;Final Incumbent&#39;</span><span class="p">:</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="s1">&#39;inverted_triangle&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="s1">&#39;square&#39;</span> <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s2">&quot;Incumbent&quot;</span> <span class="k">else</span> <span class="s1">&#39;circle&#39;</span>
+                <span class="n">shape</span> <span class="o">+=</span> <span class="s1">&#39;_x&#39;</span> <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Acquisition Function&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">return</span> <span class="n">shape</span>
+
+        <span class="n">views</span><span class="p">,</span> <span class="n">markers</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="n">views_by_run</span> <span class="o">=</span> <span class="p">{</span><span class="n">run</span> <span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">configs_in_run</span><span class="p">}</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Candidate&#39;</span><span class="p">,</span> <span class="s1">&#39;Incumbent&#39;</span><span class="p">,</span> <span class="s1">&#39;Final Incumbent&#39;</span><span class="p">,</span> <span class="s1">&#39;Default&#39;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Unknown&#39;</span><span class="p">,</span> <span class="s1">&#39;Random&#39;</span><span class="p">,</span> <span class="s1">&#39;Acquisition Function&#39;</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;zorder&#39;</span><span class="p">])),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)):</span>
+                    <span class="k">for</span> <span class="n">run</span><span class="p">,</span> <span class="n">configs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">configs_in_run</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">booleans</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">configs</span> <span class="k">else</span> <span class="kc">False</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">used_configs</span><span class="p">]</span>
+                        <span class="n">view</span> <span class="o">=</span> <span class="n">CDSView</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[</span>
+                                <span class="n">GroupFilter</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">t</span><span class="p">),</span>
+                                <span class="n">GroupFilter</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="s1">&#39;origin&#39;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">o</span><span class="p">),</span>
+                                <span class="n">GroupFilter</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="s1">&#39;zorder&#39;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">z</span><span class="p">),</span>
+                                <span class="n">BooleanFilter</span><span class="p">(</span><span class="n">booleans</span><span class="p">)])</span>
+                        <span class="n">views</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>  <span class="c1"># all views</span>
+                        <span class="n">views_by_run</span><span class="p">[</span><span class="n">run</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>  <span class="c1"># views sorted by runs</span>
+                        <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="n">markers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_get_marker</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">o</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> different glyph renderers, </span><span class="si">%d</span><span class="s2"> different zorder-values&quot;</span><span class="p">,</span>
+                          <span class="nb">len</span><span class="p">(</span><span class="n">views</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;zorder&#39;</span><span class="p">])))</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">views</span><span class="p">,</span> <span class="n">views_by_run</span><span class="p">,</span> <span class="n">markers</span><span class="p">)</span>
+
+    <span class="nd">@timing</span>
+    <span class="k">def</span> <span class="nf">_plot_scatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">views</span><span class="p">,</span> <span class="n">markers</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        p: bokeh.plotting.figure</span>
+<span class="sd">            figure</span>
+<span class="sd">        source: ColumnDataSource</span>
+<span class="sd">            data container</span>
+<span class="sd">        views: List[CDSView]</span>
+<span class="sd">            list with views to be plotted (in order!)</span>
+<span class="sd">        markers: List[str]</span>
+<span class="sd">            corresponding markers to the views</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        scatter_handles: List[GlyphRenderer]</span>
+<span class="sd">            glyph renderer per view</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">scatter_handles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">view</span><span class="p">,</span> <span class="n">marker</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">views</span><span class="p">,</span> <span class="n">markers</span><span class="p">):</span>
+            <span class="n">scatter_handles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span>
+                                             <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+                                             <span class="n">view</span><span class="o">=</span><span class="n">view</span><span class="p">,</span>
+                                             <span class="n">color</span><span class="o">=</span><span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="n">line_color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
+                                             <span class="n">size</span><span class="o">=</span><span class="s1">&#39;size&#39;</span><span class="p">,</span>
+                                             <span class="n">marker</span><span class="o">=</span><span class="n">marker</span><span class="p">,</span>
+                                             <span class="p">))</span>
+
+        <span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">axis_label</span> <span class="o">=</span> <span class="s2">&quot;MDS-X&quot;</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">axis_label</span> <span class="o">=</span> <span class="s2">&quot;MDS-Y&quot;</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">axis_label_text_font_size</span> <span class="o">=</span> <span class="s2">&quot;15pt&quot;</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">axis_label_text_font_size</span> <span class="o">=</span> <span class="s2">&quot;15pt&quot;</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">major_label_text_font_size</span> <span class="o">=</span> <span class="s2">&quot;12pt&quot;</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">major_label_text_font_size</span> <span class="o">=</span> <span class="s2">&quot;12pt&quot;</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">text_font_size</span> <span class="o">=</span> <span class="s2">&quot;15pt&quot;</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">label_text_font_size</span> <span class="o">=</span> <span class="s2">&quot;15pt&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Scatter-handles: </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">scatter_handles</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">scatter_handles</span>
+
+    <span class="k">def</span> <span class="nf">_plot_get_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf_list</span><span class="p">,</span> <span class="n">runs</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">inc_list</span><span class="p">,</span> <span class="n">hp_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create ColumnDataSource with all the necessary data</span>
+<span class="sd">        Contains for each configuration evaluated on any run:</span>
+
+<span class="sd">          - all parameters and values</span>
+<span class="sd">          - origin (if conflicting, origin from best run counts)</span>
+<span class="sd">          - type (default, incumbent or candidate)</span>
+<span class="sd">          - # of runs</span>
+<span class="sd">          - size</span>
+<span class="sd">          - color</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        conf_list: list[Configuration]</span>
+<span class="sd">            configurations</span>
+<span class="sd">        runs: list[int]</span>
+<span class="sd">            runs per configuration (same order as conf_list)</span>
+<span class="sd">        X: np.array</span>
+<span class="sd">            configuration-parameters as 2-dimensional array</span>
+<span class="sd">        inc_list: list[Configuration]</span>
+<span class="sd">            incumbents for this conf-run</span>
+<span class="sd">        hp_names: list[str]</span>
+<span class="sd">            names of hyperparameters</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        source: ColumnDataSource</span>
+<span class="sd">            source with attributes as requested</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Remove all configurations without any runs</span>
+        <span class="n">keep</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">runs</span><span class="p">))</span> <span class="k">if</span> <span class="n">runs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">runs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">runs</span><span class="p">)[</span><span class="n">keep</span><span class="p">]</span>
+        <span class="n">conf_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">conf_list</span><span class="p">)[</span><span class="n">keep</span><span class="p">]</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+
+        <span class="n">source</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]))</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">hp_names</span><span class="p">:</span>  <span class="c1"># Add parameters for each config</span>
+            <span class="n">source</span><span class="o">.</span><span class="n">add</span><span class="p">([</span><span class="n">c</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">if</span> <span class="n">c</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;None&quot;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">conf_list</span><span class="p">],</span> <span class="n">escape_parameter_name</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="n">conf_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">configuration_space</span><span class="o">.</span><span class="n">get_default_configuration</span><span class="p">()</span>
+        <span class="n">conf_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Default&quot;</span> <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="n">default</span> <span class="k">else</span> <span class="s2">&quot;Final Incumbent&quot;</span> <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="n">inc_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                      <span class="k">else</span> <span class="s2">&quot;Incumbent&quot;</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">inc_list</span> <span class="k">else</span> <span class="s2">&quot;Candidate&quot;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">conf_list</span><span class="p">]</span>
+        <span class="c1"># We group &quot;Local Search&quot; and &quot;Random Search (sorted)&quot; both into local</span>
+        <span class="n">origins</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_config_origin</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">conf_list</span><span class="p">]</span>
+        <span class="n">source</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">conf_types</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">)</span>
+        <span class="n">source</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">origins</span><span class="p">,</span> <span class="s1">&#39;origin&#39;</span><span class="p">)</span>
+        <span class="n">sizes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_size</span><span class="p">(</span><span class="n">runs</span><span class="p">)</span>
+        <span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="o">*</span> <span class="mi">3</span> <span class="k">if</span> <span class="n">conf_types</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Default&quot;</span> <span class="k">else</span> <span class="n">s</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sizes</span><span class="p">)]</span>
+        <span class="n">source</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">)</span>
+        <span class="n">source</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_color</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]),</span> <span class="s1">&#39;color&#39;</span><span class="p">)</span>
+        <span class="n">source</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">runs</span><span class="p">,</span> <span class="s1">&#39;runs&#39;</span><span class="p">)</span>
+        <span class="c1"># To enforce zorder, we categorize all entries according to their size</span>
+        <span class="c1"># Since we plot all different zorder-levels sequentially, we use a</span>
+        <span class="c1"># manually defined level of influence</span>
+        <span class="n">num_bins</span> <span class="o">=</span> <span class="mi">20</span>  <span class="c1"># How fine-grained the size-ordering should be</span>
+        <span class="n">min_size</span><span class="p">,</span> <span class="n">max_size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]),</span> <span class="nb">max</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">])</span>
+        <span class="n">step_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_size</span> <span class="o">-</span> <span class="n">min_size</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_bins</span>
+        <span class="k">if</span> <span class="n">step_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">step_size</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">zorder</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">s</span> <span class="o">-</span> <span class="n">min_size</span><span class="p">)</span> <span class="o">/</span> <span class="n">step_size</span><span class="p">))</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]]</span>
+        <span class="n">source</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">zorder</span><span class="p">,</span> <span class="s1">&#39;zorder&#39;</span><span class="p">)</span>  <span class="c1"># string, so we can apply group filter</span>
+
+        <span class="k">return</span> <span class="n">source</span><span class="p">,</span> <span class="n">conf_list</span>
+
+    <span class="k">def</span> <span class="nf">_plot_get_timeslider</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scatter_glyph_render_groups</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a prerendered timeslider.</span>
+<span class="sd">        information for all quantiles is plotted in advance and only the</span>
+<span class="sd">        relevant source is visible.</span>
+
+<span class="sd">        +: faster interaction, no changes in data-source</span>
+<span class="sd">        -: larger(!) files, that take longer to load into browser</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        scatter_glyph_render_groups: List[List[bokeh-glyphs]]</span>
+<span class="sd">            list of lists, each sublist represents a quantile, a quantile is a</span>
+<span class="sd">            list of all relevant glyphs in that quantile</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        time_slider: bokeh-Slider</span>
+<span class="sd">            slider-widget, ready to register with plot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Create prerendered time-slider!&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Since runhistory doesn&#39;t contain a timestamp, but are ordered, we use quantiles</span>
+        <span class="n">num_glyph_subgroups</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="p">)</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">scatter_glyph_render_groups</span><span class="p">])</span>
+        <span class="n">glyph_renderers_flattened</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;glyph_renderer&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_glyph_subgroups</span><span class="p">)]</span>
+        <span class="n">glyph_renderers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">scatter_glyph_render_groups</span><span class="p">:</span>
+            <span class="n">glyph_renderers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">glyph_renderers_flattened</span><span class="p">[</span><span class="n">start</span><span class="p">:</span> <span class="n">start</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="p">)])</span>
+            <span class="n">start</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">, </span><span class="si">%d</span><span class="s2">, </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">scatter_glyph_render_groups</span><span class="p">),</span>
+                          <span class="nb">len</span><span class="p">(</span><span class="n">glyph_renderers</span><span class="p">),</span> <span class="n">num_glyph_subgroups</span><span class="p">)</span>
+        <span class="n">scatter_glyph_render_groups_flattened</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">scatter_glyph_render_groups</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">b</span><span class="p">]</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">glyph</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">glyph</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">glyph_renderers_flattened</span><span class="p">,</span>
+                                                   <span class="n">scatter_glyph_render_groups_flattened</span><span class="p">)}</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;glyph_renderers = [&quot;</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;[&#39;</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">group</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span> <span class="k">for</span>
+                                                 <span class="n">group</span> <span class="ow">in</span> <span class="n">glyph_renderers</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;];&#39;</span> <span class="o">+</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">lab_len = cb_obj.end;</span>
+<span class="s2">for (i = 0; i &lt; lab_len; i++) {</span>
+<span class="s2">    if (cb_obj.value == i + 1) {</span>
+<span class="s2">        // console.log(&#39;Setting to true: &#39; + i + &#39;(&#39; + glyph_renderers[i].length + &#39;)&#39;)</span>
+<span class="s2">        for (j = 0; j &lt; glyph_renderers[i].length; j++) {</span>
+<span class="s2">            glyph_renderers[i][j].visible = true;</span>
+<span class="s2">            // console.log(&#39;Setting to true: &#39; + i + &#39; : &#39; + j)</span>
+<span class="s2">        }</span>
+<span class="s2">    } else {</span>
+<span class="s2">        // console.log(&#39;Setting to false: &#39; + i + &#39;(&#39; + glyph_renderers[i].length + &#39;)&#39;)</span>
+<span class="s2">        for (j = 0; j &lt; glyph_renderers[i].length; j++) {</span>
+<span class="s2">            glyph_renderers[i][j].visible = false;</span>
+<span class="s2">            // console.log(&#39;Setting to false: &#39; + i + &#39; : &#39; + j)</span>
+<span class="s2">        }</span>
+<span class="s2">    }</span>
+<span class="s2">}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">callback</span> <span class="o">=</span> <span class="n">CustomJS</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">)</span>
+        <span class="n">num_quantiles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scatter_glyph_render_groups</span><span class="p">)</span>
+        <span class="n">slider</span> <span class="o">=</span> <span class="n">Slider</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">num_quantiles</span><span class="p">,</span>
+                        <span class="n">value</span><span class="o">=</span><span class="n">num_quantiles</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">slider</span>
+
+<div class="viewcode-block" id="ConfiguratorFootprintPlotter.plot"><a class="viewcode-back" href="../../../apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+             <span class="n">X</span><span class="p">,</span>
+             <span class="n">conf_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+             <span class="n">runs_per_quantile</span><span class="p">,</span>
+             <span class="n">inc_list</span><span class="p">:</span> <span class="nb">list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">contour_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">time_slider</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        plots sampled configuration in 2d-space;</span>
+<span class="sd">        uses bokeh for interactive plot</span>
+<span class="sd">        saves results in self.output, if set</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: np.array</span>
+<span class="sd">            np.array with 2-d coordinates for each configuration</span>
+<span class="sd">        conf_list: list</span>
+<span class="sd">            list of ALL configurations in the same order as X</span>
+<span class="sd">        runs_per_quantile: list[np.array]</span>
+<span class="sd">            configurator-run to be analyzed, as a np.array with</span>
+<span class="sd">            the number of target-algorithm-runs per config per quantile.</span>
+<span class="sd">        inc_list: list</span>
+<span class="sd">            list of incumbents (Configuration)</span>
+<span class="sd">        contour_data: list</span>
+<span class="sd">            contour data (xx,yy,Z)</span>
+<span class="sd">        time_slider: bool</span>
+<span class="sd">            whether or not to have a time_slider-widget on cfp-plot</span>
+<span class="sd">            INCREASES FILE-SIZE DRAMATICALLY</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        (script, div): str</span>
+<span class="sd">            script and div of the bokeh-figure</span>
+<span class="sd">        over_time_paths: List[str]</span>
+<span class="sd">            list with paths to the different quantiled timesteps of the</span>
+<span class="sd">            configurator run (for static evaluation)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">inc_list</span><span class="p">:</span>
+            <span class="n">inc_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">over_time_paths</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># development of the search space over time</span>
+
+        <span class="n">hp_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span>  <span class="c1"># Hyperparameter names</span>
+                    <span class="n">conf_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">configuration_space</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">()]</span>
+
+        <span class="c1"># Get individual sources for quantiles</span>
+        <span class="n">sources</span><span class="p">,</span> <span class="n">used_configs</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_plot_get_source</span><span class="p">(</span><span class="n">conf_list</span><span class="p">,</span> <span class="n">quantiled_run</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">inc_list</span><span class="p">,</span> <span class="n">hp_names</span><span class="p">)</span>
+                                      <span class="k">for</span> <span class="n">quantiled_run</span> <span class="ow">in</span> <span class="n">runs_per_quantile</span><span class="p">])</span>
+
+        <span class="c1"># Define what appears in tooltips</span>
+        <span class="c1"># TODO add only important parameters (needs to change order of exec pimp before conf-footprints)</span>
+        <span class="n">hover</span> <span class="o">=</span> <span class="n">HoverTool</span><span class="p">(</span><span class="n">tooltips</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;@type&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;origin&#39;</span><span class="p">,</span> <span class="s1">&#39;@origin&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;runs&#39;</span><span class="p">,</span> <span class="s1">&#39;@runs&#39;</span><span class="p">)]</span> <span class="o">+</span>
+                                   <span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="s1">&#39;@&#39;</span> <span class="o">+</span> <span class="n">escape_parameter_name</span><span class="p">(</span><span class="n">k</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">hp_names</span><span class="p">])</span>
+
+        <span class="c1"># bokeh-figure</span>
+        <span class="n">x_range</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">y_range</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">scatter_glyph_render_groups</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">views_by_run</span> <span class="o">=</span> <span class="p">{</span><span class="n">run</span> <span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">configs_in_run</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">u_cfgs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sources</span><span class="p">)),</span> <span class="n">sources</span><span class="p">,</span> <span class="n">used_configs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">time_slider</span> <span class="ow">or</span> <span class="n">idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Only plot all quantiles in one plot if timeslider is on</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">plot_height</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">plot_width</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">hover</span><span class="p">,</span> <span class="s1">&#39;save&#39;</span><span class="p">,</span> <span class="s1">&#39;box_zoom&#39;</span><span class="p">,</span> <span class="s1">&#39;wheel_zoom&#39;</span><span class="p">,</span> <span class="s1">&#39;reset&#39;</span><span class="p">],</span> <span class="n">x_range</span><span class="o">=</span><span class="n">x_range</span><span class="p">,</span> <span class="n">y_range</span><span class="o">=</span><span class="n">y_range</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">contour_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_contour</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">contour_data</span><span class="p">,</span> <span class="n">x_range</span><span class="p">,</span> <span class="n">y_range</span><span class="p">)</span>
+            <span class="n">views</span><span class="p">,</span> <span class="n">views_by_run_tmp</span><span class="p">,</span> <span class="n">markers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_create_views</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">u_cfgs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Plotting quantile </span><span class="si">%d</span><span class="s2">!&quot;</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
+            <span class="n">scatter_handles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_scatter</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">views</span><span class="p">,</span> <span class="n">markers</span><span class="p">)</span>
+            <span class="n">scatter_glyph_render_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scatter_handles</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">views_by_run_tmp</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">views_by_run</span><span class="p">[</span><span class="n">r</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">scatter_handles</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">v</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">:</span>
+                <span class="n">file_path</span> <span class="o">=</span> <span class="s2">&quot;cfp_over_time/configurator_footprint&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span>
+                <span class="n">over_time_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">file_path</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Saving plot to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">over_time_paths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">export_bokeh</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">over_time_paths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+
+        <span class="n">labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">views_by_run</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">glyphs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">views_by_run</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;checkboxing </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">glyphs</span><span class="p">]))))</span>
+        <span class="n">checkbox</span><span class="p">,</span> <span class="n">select_all</span><span class="p">,</span> <span class="n">select_none</span> <span class="o">=</span> <span class="n">get_checkbox</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">glyphs</span><span class="p">),</span> <span class="nb">list</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">time_slider</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding timeslider&quot;</span><span class="p">)</span>
+            <span class="n">slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_get_timeslider</span><span class="p">(</span><span class="n">scatter_glyph_render_groups</span><span class="p">)</span>
+            <span class="n">layout</span> <span class="o">=</span> <span class="n">column</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">widgetbox</span><span class="p">(</span><span class="n">slider</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Not adding timeslider&quot;</span><span class="p">)</span>
+            <span class="n">layout</span> <span class="o">=</span> <span class="n">row</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">widgetbox</span><span class="p">(</span><span class="n">checkbox</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">))</span>
+
+        <span class="n">script</span><span class="p">,</span> <span class="n">div</span> <span class="o">=</span> <span class="n">components</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;content/images/configurator_footprint.png&quot;</span><span class="p">)</span>
+            <span class="n">export_bokeh</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">layout</span><span class="p">,</span> <span class="n">over_time_paths</span></div></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017-2018, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
