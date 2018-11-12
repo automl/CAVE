@@ -25,6 +25,7 @@ from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, Cu
 from bokeh.models.sources import CDSView
 from bokeh.models.filters import GroupFilter, BooleanFilter
 from bokeh.layouts import column, row, widgetbox
+from bokeh.models.widgets import CheckboxButtonGroup, CheckboxGroup, Button, Select
 
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))  # noqa
 cmd_folder = os.path.realpath(os.path.join(cmd_folder, ".."))  # noqa
@@ -516,7 +517,7 @@ class ConfiguratorFootprintPlotter(object):
         p.add_layout(color_bar, 'right')
         return p
 
-    def _plot_create_views(self, source, used_configs):
+    def _create_views(self, source, used_configs):
         """Create views in order of plotting, so more interesting views are
         plotted on top. Order of interest:
         default > final-incumbent > incumbent > candidate
@@ -576,7 +577,7 @@ class ConfiguratorFootprintPlotter(object):
         return (views, views_by_run, markers)
 
     @timing
-    def _plot_scatter(self, p, source, views, markers):
+    def _scatter(self, p, source, views, markers):
         """
         Parameters
         ----------
@@ -603,15 +604,6 @@ class ConfiguratorFootprintPlotter(object):
                                              size='size',
                                              marker=marker,
                                              ))
-
-        p.xaxis.axis_label = "MDS-X"
-        p.yaxis.axis_label = "MDS-Y"
-        p.xaxis.axis_label_text_font_size = "15pt"
-        p.yaxis.axis_label_text_font_size = "15pt"
-        p.xaxis.major_label_text_font_size = "12pt"
-        p.yaxis.major_label_text_font_size = "12pt"
-        p.title.text_font_size = "15pt"
-        p.legend.label_text_font_size = "15pt"
         self.logger.debug("Scatter-handles: %d", len(scatter_handles))
         return scatter_handles
 
@@ -644,6 +636,8 @@ class ConfiguratorFootprintPlotter(object):
         -------
         source: ColumnDataSource
             source with attributes as requested
+        conf_list: List[Configuration]
+            filtered conf_list with only configs we actually plot (i.e. > 0 runs)
         """
         # Remove all configurations without any runs
         keep = [i for i in range(len(runs)) if runs[i] > 0]
@@ -678,66 +672,6 @@ class ConfiguratorFootprintPlotter(object):
         source.add(zorder, 'zorder')  # string, so we can apply group filter
 
         return source, conf_list
-
-    def _plot_get_timeslider(self, scatter_glyph_render_groups):
-        """Add a prerendered timeslider.
-        information for all quantiles is plotted in advance and only the
-        relevant source is visible.
-
-        +: faster interaction, no changes in data-source
-        -: larger(!) files, that take longer to load into browser
-
-        Parameters
-        ----------
-        scatter_glyph_render_groups: List[List[bokeh-glyphs]]
-            list of lists, each sublist represents a quantile, a quantile is a
-            list of all relevant glyphs in that quantile
-
-        Returns
-        -------
-        time_slider: bokeh-Slider
-            slider-widget, ready to register with plot
-        """
-        self.logger.debug("Create prerendered time-slider!")
-
-        # Since runhistory doesn't contain a timestamp, but are ordered, we use quantiles
-        num_glyph_subgroups = sum([len(group) for group in scatter_glyph_render_groups])
-        glyph_renderers_flattened = ['glyph_renderer' + str(i) for i in range(num_glyph_subgroups)]
-        glyph_renderers = []
-        start = 0
-        for group in scatter_glyph_render_groups:
-            glyph_renderers.append(glyph_renderers_flattened[start: start+len(group)])
-            start += len(group)
-        self.logger.debug("%d, %d, %d", len(scatter_glyph_render_groups),
-                          len(glyph_renderers), num_glyph_subgroups)
-        scatter_glyph_render_groups_flattened = [a for b in scatter_glyph_render_groups for a in b]
-        args = {name: glyph for name, glyph in zip(glyph_renderers_flattened,
-                                                   scatter_glyph_render_groups_flattened)}
-        code = "glyph_renderers = [" + ','.join(['[' + ','.join(group) + ']' for
-                                                 group in glyph_renderers]) + '];' + """
-lab_len = cb_obj.end;
-for (i = 0; i < lab_len; i++) {
-    if (cb_obj.value == i + 1) {
-        // console.log('Setting to true: ' + i + '(' + glyph_renderers[i].length + ')')
-        for (j = 0; j < glyph_renderers[i].length; j++) {
-            glyph_renderers[i][j].visible = true;
-            // console.log('Setting to true: ' + i + ' : ' + j)
-        }
-    } else {
-        // console.log('Setting to false: ' + i + '(' + glyph_renderers[i].length + ')')
-        for (j = 0; j < glyph_renderers[i].length; j++) {
-            glyph_renderers[i][j].visible = false;
-            // console.log('Setting to false: ' + i + ' : ' + j)
-        }
-    }
-}
-"""
-        callback = CustomJS(args=args, code=code)
-        num_quantiles = len(scatter_glyph_render_groups)
-        slider = Slider(start=1, end=num_quantiles,
-                        value=num_quantiles, step=1,
-                        callback=callback, title='Time')
-        return slider
 
     def plot(self,
              X,
@@ -786,10 +720,6 @@ for (i = 0; i < lab_len; i++) {
         hp_names = [k.name for k in  # Hyperparameter names
                     conf_list[0].configuration_space.get_hyperparameters()]
 
-        # Get individual sources for quantiles
-        sources, used_configs = zip(*[self._plot_get_source(conf_list, quantiled_run, X, inc_list, hp_names)
-                                      for quantiled_run in runs_per_quantile])
-
         # Define what appears in tooltips
         # TODO add only important parameters (needs to change order of exec pimp before conf-footprints)
         hover = HoverTool(tooltips=[('type', '@type'), ('origin', '@origin'), ('runs', '@runs')] +
@@ -799,39 +729,62 @@ for (i = 0; i < lab_len; i++) {
         x_range = [min(X[:, 0]) - 1, max(X[:, 0]) + 1]
         y_range = [min(X[:, 1]) - 1, max(X[:, 1]) + 1]
 
-        scatter_glyph_render_groups = []
-        views_by_run = {run : [] for run in self.configs_in_run.keys()}
-        for idx, source, u_cfgs in zip(range(len(sources)), sources, used_configs):
-            if not time_slider or idx == 0:
-                # Only plot all quantiles in one plot if timeslider is on
-                p = figure(plot_height=500, plot_width=600, tools=[hover, 'save', 'box_zoom', 'wheel_zoom', 'reset'], x_range=x_range, y_range=y_range)
-                if contour_data is not None:
-                    p = self._plot_contour(p, contour_data, x_range, y_range)
-            views, views_by_run_tmp, markers = self._plot_create_views(source, u_cfgs)
-            self.logger.debug("Plotting quantile %d!", idx)
-            scatter_handles = self._plot_scatter(p, source, views, markers)
-            scatter_glyph_render_groups.append(scatter_handles)
-            for r, v in views_by_run_tmp.items():
-                views_by_run[r].extend([scatter_handles[i] for i in v])
+        # Get individual sources for quantiles
+        sources, used_configs = zip(*[self._plot_get_source(conf_list, quantiled_run, X, inc_list, hp_names)
+                                      for quantiled_run in runs_per_quantile])
 
+        # We collect all glyphs in one list
+        # Then we have to dicts to identify groups of glyphs (for interactivity)
+        # They map the name of the group to a list of indices (of the respective glyphs that are in the group)
+        # Those indices refer to the main list of all glyphs
+        # This is necessary to enable interactivity for two inputs at the same time
+        all_glyphs = []
+        overtime_groups = {}
+        run_groups = {run : [] for run in self.configs_in_run.keys()}
+
+        # Iterate over quantiles (this updates overtime_groups)
+        for idx, source, u_cfgs in zip(range(len(sources)), sources, used_configs):
+            self.logger.debug("Plotting quantile %d!", idx)
+
+            # Create new plot if necessary (only plot all quantiles in one single plot if timeslider is on)
+            if not use_timeslider or idx == 0:
+                p = self._create_figure(x_range, y_range, hover)
+                if contour_data is not None:  # TODO
+                    p = self._plot_contour(p, contour_data, x_range, y_range)
+
+            # Create views and scatter
+            views, views_by_run, markers = self._create_views(source, u_cfgs)
+            scatter_handles = self._scatter(p, source, views, markers)
+            if len(scatter_handles) == 0:
+                self.logger.debug("No configs in quantile %d (?!)", idx)
+                continue
+
+            # Add to groups
+            start = len(all_glyphs)
+            all_glyphs.extend(scatter_handles)
+            overtime_groups[str(idx)] = [str(i) for i in range(start, len(all_glyphs))]
+            for run, indices in views_by_run.items():
+                run_groups[run].extend([str(start + i) for i in indices])
+
+            # Write to file
             if self.output_dir:
                 file_path = "cfp_over_time/configurator_footprint" + str(idx) + ".png"
                 over_time_paths.append(os.path.join(self.output_dir, file_path))
                 self.logger.debug("Saving plot to %s", over_time_paths[-1])
                 export_bokeh(p, over_time_paths[-1], self.logger)
 
-        labels = list(views_by_run.keys())
-        glyphs = [list(views_by_run[k]) for k in labels]
-        self.logger.debug("checkboxing %s" % str(list(zip(labels, [len(g) for g in glyphs]))))
-        checkbox, select_all, select_none = get_checkbox(list(glyphs), list(labels))
-
-        if time_slider:
+        # Build dashboard
+        timeslider, checkbox, select_all, select_none = self._get_widgets(all_glyphs, overtime_groups, run_groups)
+        layout = p
+        if use_timeslider:
             self.logger.debug("Adding timeslider")
-            slider = self._plot_get_timeslider(scatter_glyph_render_groups)
-            layout = column(p, widgetbox(slider))
-        else:
-            self.logger.debug("Not adding timeslider")
-            layout = row(p, widgetbox(checkbox, width=50))
+            layout = column(layout, widgetbox(timeslider))
+        if use_checkbox:
+            self.logger.debug("Adding checkboxes")
+            layout = row(layout,
+                         column(widgetbox(checkbox),
+                                row(widgetbox(select_all, width=100),
+                                    widgetbox(select_none, width=100))))
 
         script, div = components(layout)
 
@@ -841,3 +794,101 @@ for (i = 0; i < lab_len; i++) {
 
         return layout, over_time_paths
 
+    def _get_widgets(self, all_glyphs, overtime_groups, run_groups):
+        """Combine timeslider for quantiles and checkboxes for individual runs in a single javascript-snippet
+
+        Parameters
+        ----------
+        all_glyphs: List[Glyph]
+            togglable bokeh-glyphs
+        overtime_groups, run_groups: Dicŧ[str -> List[int]
+            mapping labels to indices of the all_glyphs-list
+
+        Returns
+        -------
+        time_slider, checkbox, select_all, select_none: Widget
+            desired interlayed bokeh-widgets
+        """
+        aliases = ['glyph' + str(idx) for idx, _ in enumerate(all_glyphs)]
+        labels_overtime = list(overtime_groups.keys())
+        labels_runs = list(run_groups.keys())
+
+        code = ""
+        # Define javascript variable with important arrays
+        code += "var glyphs = [" + ", ".join(aliases) + "];"
+        code += "var overtime = [" + ','.join(['[' + ','.join(overtime_groups[l]) + ']' for l in labels_overtime]) + '];'
+        code += "var runs = [" + ','.join(['[' + ','.join(run_groups[l]) + ']' for l in labels_runs]) + '];'
+        # Deactivate all glyphs
+        code += """
+        glyphs.forEach(function(g) {
+          g.visible = false;
+        })"""
+        # Add function for array-union (to combine all relevant glyphs for the different runs)
+        code += """
+        // union function
+        function union_arrays(x, y) {
+          var obj = {};
+          for (var i = x.length-1; i >= 0; -- i)
+             obj[x[i]] = x[i];
+          for (var i = y.length-1; i >= 0; -- i)
+             obj[y[i]] = y[i];
+          var res = []
+          for (var k in obj) {
+            if (obj.hasOwnProperty(k))  // <-- optional
+              res.push(obj[k]);
+          }
+          return res;
+        }"""
+        # Add logging
+        code += """
+        console.log("Timeslider: " + time_slider.value)
+        console.log("Checkbox: " + checkbox.active)"""
+        # Combine checkbox-arrays, intersect with time_slider and set all selected glyphs to true
+        code += """
+        var activate = [];
+        // if we want multiple checkboxes at the same time, we need to combine the thingies
+        checkbox.active.forEach(function(c) {
+          activate = union_arrays(activate, runs[c]);
+        })
+        activate = activate.filter(value => -1 !== overtime[time_slider.value - 1].indexOf(value));
+        activate.forEach(function(idx) {
+          glyphs[idx].visible = true;
+        })
+        """
+
+        num_quantiles = len(overtime_groups)
+        timeslider = Slider(start=1, end=num_quantiles,
+                            value=num_quantiles, step=1,
+                            title='Time')
+        checkbox = CheckboxGroup(labels=labels_runs,
+                                 active=list(range(len(labels_runs))),
+                                 )
+
+        args = {name: glyph for name, glyph in zip(aliases, all_glyphs)}
+        args['time_slider'] = timeslider
+        args['checkbox'] = checkbox
+        callback = CustomJS(args=args, code=code)
+        timeslider.js_on_change('value', callback)
+        checkbox.callback = callback
+
+        # Add all/none button to checkbox
+        code_all  = "checkbox.active = " + str(list(range(len(labels_runs)))) + ";" + code
+        code_none = "checkbox.active = [];" + code
+        select_all  = Button(label="All", callback=CustomJS(args=args, code=code_all))
+        select_none = Button(label="None", callback=CustomJS(args=args, code=code_none))
+
+        return timeslider, checkbox, select_all, select_none
+
+    def _create_figure(self, x_range, y_range, hover):
+        p = figure(plot_height=500, plot_width=600,
+                   tools=[hover, 'save', 'box_zoom', 'wheel_zoom', 'reset'],
+                   x_range=x_range, y_range=y_range)
+        p.xaxis.axis_label = "MDS-X"
+        p.yaxis.axis_label = "MDS-Y"
+        p.xaxis.axis_label_text_font_size = "15pt"
+        p.yaxis.axis_label_text_font_size = "15pt"
+        p.xaxis.major_label_text_font_size = "12pt"
+        p.yaxis.major_label_text_font_size = "12pt"
+        p.title.text_font_size = "15pt"
+        p.legend.label_text_font_size = "15pt"
+        return p
