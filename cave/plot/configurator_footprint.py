@@ -55,7 +55,7 @@ class ConfiguratorFootprintPlotter(object):
                  max_plot: int=-1,
                  contour_step_size=0.2,
                  output_dir: str=None,
-                 time_slider: bool=False,
+                 use_timeslider: bool=False,
                  num_quantiles: int=10,
                  configs_in_run: dict=None,
                  ):
@@ -76,7 +76,7 @@ class ConfiguratorFootprintPlotter(object):
             step size of meshgrid to compute contour of fitness landscape
         output_dir: str
             output directory
-        time_slider: bool
+        use_timeslider: bool
             whether or not to have a time_slider-widget on cfp-plot
             INCREASES FILE-SIZE DRAMATICALLY
         num_quantiles: int
@@ -88,7 +88,7 @@ class ConfiguratorFootprintPlotter(object):
         self.orig_rh = rh
         self.incs = incs
         self.max_plot = max_plot
-        self.time_slider = time_slider
+        self.use_timeslider = use_timeslider
         self.num_quantiles = num_quantiles
         self.contour_step_size = contour_step_size
         self.output_dir = output_dir
@@ -115,7 +115,7 @@ class ConfiguratorFootprintPlotter(object):
                          runs_per_quantile,
                          inc_list=self.incs,
                          contour_data=contour_data,
-                         time_slider=self.time_slider)
+                         use_timeslider=self.use_timeslider)
 
     @timing
     def get_pred_surface(self, rh, X_scaled, conf_list: list, contour_step_size):
@@ -526,14 +526,19 @@ class ConfiguratorFootprintPlotter(object):
         marker-type (circle, triangle, ...) per 'scatter'-call
 
         Parameters
-        ----------
+        ----------:
         source: ColumnDataSource
             containing relevant information for plotting
+        used_configs: List[Configuration]
+            configs that are contained in this source. necessary to plot glyphs for the independent runs so they can be
+            toggled. not all configs are in every source because of efficiency: no need to have 0-runs configs
 
         Returns
         -------
         views: List[CDSView]
             views in order of plotting
+        views_by_run: Dict[ConfiguratorRun -> List[int]]
+            maps each run to a list of indices of the related glyphs in the returned 'views'-list
         markers: List[string]
             markers (to the view with the same index)
         """
@@ -740,7 +745,8 @@ for (i = 0; i < lab_len; i++) {
              runs_per_quantile,
              inc_list: list=None,
              contour_data=None,
-             time_slider=False):
+             use_timeslider=False,
+             use_checkbox=True):
         """
         plots sampled configuration in 2d-space;
         uses bokeh for interactive plot
@@ -759,9 +765,11 @@ for (i = 0; i < lab_len; i++) {
             list of incumbents (Configuration)
         contour_data: list
             contour data (xx,yy,Z)
-        time_slider: bool
+        use_timeslider: bool
             whether or not to have a time_slider-widget on cfp-plot
             INCREASES FILE-SIZE DRAMATICALLY
+        use_checkbox: bool
+            have checkboxes to toggle individual runs
 
         Returns
         -------
