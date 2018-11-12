@@ -36,3 +36,5 @@ deploy:
     all_branches: true
     condition: $doc_result = "success"
   local_dir: doc/$TRAVIS_BRANCH
+  commands:
+    - bash ci_scripts/push_doc.sh
