@@ -1,29 +1,31 @@
 #!/usr/bin/env sh
 
 set -euo pipefail
+echo "Starting Doc Push"
 
 # Check if DOCPUSH is set
 if ! [[ -z ${DOCPUSH+x} ]]; then
-
+    
     if [[ "$DOCPUSH" == "true" ]]; then
-
+        
+        echo "DOCPUSH is TRUE"
         # install documentation building dependencies
         pip install --upgrade matplotlib pillow sphinx sphinx-gallery sphinx_bootstrap_theme
 
         # $1 is the branch name
         # $2 is the global variable where we set the script status
-
-        if ! { [ $1 = "master" ]; }; then
+        
+        if ! { [ $1 = "master" ] || [ $1 = "development" ]; }; then
             { echo "Not one of the allowed branches"; exit 0; }
         fi
 
         # delete any previous documentation folder
-        if [ -d docs/$1 ]; then
-            rm -rf docs/$1
+        if [ -d doc/$1 ]; then
+            rm -rf doc/$1
         fi
 
         # create the documentation
-        cd docs && make html 2>&1
+        cd doc && make html 2>&1
 
         # create directory with branch name
         # the documentation for dev/stable from git will be stored here
