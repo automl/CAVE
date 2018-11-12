@@ -44,8 +44,16 @@ if ! [[ -z ${DOCPUSH+x} ]]; then
         fi
 
         # copy the updated documentation for this branch
-        mkdir $1/$1
-        cp -r build/html/. $1/$1
+        if { [ $1 = "master" ]; }; then
+            { folder="stable" }
+        fi
+        
+        if { [$1 = "development" ]; }; then
+            { folder="dev"}
+        fi
+        
+        mkdir $1/$folder
+        cp -r build/html/. $1/$folder
 
         # takes a variable name as an argument and assigns the script outcome to a
         # variable with the given name. If it got this far, the script was successful
