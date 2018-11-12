@@ -20,8 +20,6 @@ install:
   - source ci_scripts/install.sh
 
 # command to run tests, e.g. python setup.py test
-script:
-  - nosetests -sv --with-coverage --cover-package=cave
 
 after_success:
   - source ci_scripts/create_doc.sh $TRAVIS_BRANCH "doc_result"
@@ -38,5 +36,4 @@ deploy:
   local_dir: doc/$TRAVIS_BRANCH
 
 after_deploy:
-  commands:
-    - bash ci_scripts/push_doc.sh
+  - bash ci_scripts/push_doc.sh
