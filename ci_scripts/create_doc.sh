@@ -44,12 +44,12 @@ if ! [[ -z ${DOCPUSH+x} ]]; then
         fi
 
         # copy the updated documentation for this branch
-        if { [ $1 = "master" ]; }; then
-            { folder="stable" }
+        if [ $1 = "master" ]; then
+            folder="stable"
         fi
         
-        if { [$1 = "development" ]; }; then
-            { folder="dev"}
+        if [ $1 = "development" ]; then
+            folder="dev"
         fi
         
         mkdir $1/$folder
