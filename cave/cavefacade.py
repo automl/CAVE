@@ -496,7 +496,9 @@ class CAVE(object):
             if cfp:  # Configurator Footprint
                 self.configurator_footprint(d=self._get_dict(self.website["Configurators Behavior"], "Configurator Footprint"),
                                             run=None,
-                                            time_slider=cfp_time_slider, max_confs=cfp_max_plot, num_quantiles=cfp_number_quantiles)
+                                            use_timeslider=cfp_time_slider,
+                                            max_confs=cfp_max_plot,
+                                            num_quantiles=cfp_number_quantiles)
                 self.website["Configurators Behavior"]["Configurator Footprint"]["tooltip"] = self._get_tooltip(self.configurator_footprint)
             if cost_over_time:
                 self.cost_over_time(d=self._get_dict(self.website["Configurators Behavior"], "Cost Over Time"), run=None)
@@ -752,7 +754,7 @@ class CAVE(object):
 
     @_analyzer_type
     def configurator_footprint(self, cave,
-                               time_slider=False, max_confs=1000, num_quantiles=8):
+                               use_timeslider=False, max_confs=1000, num_quantiles=8):
         """
         Analysis of the iteratively sampled configurations during the optimization procedure.  Multi-dimensional scaling
         (MDS) is used to reduce dimensionality of the search space and plot the distribution of evaluated
@@ -764,7 +766,7 @@ class CAVE(object):
 
         Parameters
         ----------
-        time_slider: bool
+        use_timeslider: bool
             whether to generate time-slíder widget in bokehplot (cool, but time-consuming)
         max_confs: int
             maximum number of configurations to consider for the plot
@@ -780,7 +782,7 @@ class CAVE(object):
                  cave.global_original_rh,
                  output_dir=cave.output_dir,
                  max_confs=max_confs,
-                 time_slider=time_slider,
+                 use_timeslider=use_timeslider,
                  num_quantiles=num_quantiles)
 
     def configurators_behavior(self,
@@ -798,7 +800,7 @@ class CAVE(object):
             d["Cost Over Time"]["tooltip"] = self._get_tooltip(self.cost_over_time)
         if cfp:  # Configurator Footprint
             self.configurator_footprint(d=self._get_dict(d, "Configurator Footprint", run=run), run=run,
-                                        time_slider=cfp_time_slider, max_confs=cfp_max_plot, num_quantiles=cfp_number_quantiles)
+                                        use_timeslider=cfp_time_slider, max_confs=cfp_max_plot, num_quantiles=cfp_number_quantiles)
             d["Configurator Footprint"]["tooltip"] = self._get_tooltip(self.configurator_footprint)
         if parallel_coordinates:
             # Should be after parameter importance, if performed.
