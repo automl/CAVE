@@ -38,14 +38,22 @@ if ! [[ -z ${DOCPUSH+x} ]]; then
         cp -r CAVE/. $1
         rm -rf CAVE
 
-        # if the documentation for the branch exists, remove it
-        if [ -d $1/$1 ]; then
-            rm -rf $1/$1
-        fi
-
         # copy the updated documentation for this branch
-        mkdir $1/$1
-        cp -r build/html/. $1/$1
+        if [ $1 = "master" ]; then
+            folder="stable"
+        fi
+        
+        if [ $1 = "development" ]; then
+            folder="dev"
+        fi
+        
+        # if the documentation for the branch exists, remove it
+        if [ -d $folder ]; then
+            rm -rf $folder
+        fi
+        
+        mkdir $folder
+        cp -r build/html/. ./$folder
 
         # takes a variable name as an argument and assigns the script outcome to a
         # variable with the given name. If it got this far, the script was successful
