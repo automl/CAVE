@@ -11,7 +11,7 @@ george
 psutil
 pyrfr
 pyDOE
-statsmodel
+statsmodels
 smac>=0.8.0
 configspace>=0.4.6
 fanova>=2.0.11
