@@ -7,6 +7,7 @@ bokeh==0.12.14
 scipy
 sklearn
 emcee
+george
 smac>=0.8.0
 configspace>=0.4.6
 fanova>=2.0.11
