@@ -3,7 +3,7 @@ Quickstart
 CAVE is designed to adapt to any given workflow. While it's possible to generate a HTML-report via the commandline on a
 given result-folder, CAVE may also run in interactive mode, running `individual analysis-methods <apidoc/cave.cavefacade.html>`_ on demand. We provide a
 few examples to demonstrate this.
-Make sure you followed the `installation <installation.html>`_ before starting.
+Make sure you followed the `installation details <installation.html>`_ before starting.
 
 Analyse existing results via the commandline
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

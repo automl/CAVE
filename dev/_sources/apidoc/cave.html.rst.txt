@@ -11,4 +11,5 @@ cave.html package
 .. toctree::
 
    cave.html.html_builder
+   cave.html.html_helpers
 
