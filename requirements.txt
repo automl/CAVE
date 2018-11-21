@@ -9,6 +9,7 @@ sklearn
 emcee
 george
 psutil
+pyrfr
 pyDOE
 smac>=0.8.0
 configspace>=0.4.6
