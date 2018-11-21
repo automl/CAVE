@@ -38,6 +38,7 @@ if ! [[ -z ${DOCPUSH+x} ]]; then
         cp -r CAVE/. $1
         rm -rf CAVE
 
+
         if [ "$1" == "master" ]
         then
             output_folder="stable"
