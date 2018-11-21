@@ -3,6 +3,8 @@ Cython
 numpy
 pandas
 matplotlib
+scipy
+sklearn
 bokeh==0.12.14
 smac==0.8.0
 configspace>=0.4.6
