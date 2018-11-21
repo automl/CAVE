@@ -91,15 +91,15 @@ class HTMLBuilder(object):
 <link href="html/css/back-to-top.css" rel="stylesheet" />
 <link href="html/css/tabs.css" rel="stylesheet" />
 
-<link href="html/css/bokeh-0.12.14.min.css" rel="stylesheet" type="text/css">
-<link href="html/css/bokeh-widgets-0.12.14.min.css" rel="stylesheet" type="text/css">
-<link href="html/css/bokeh-tables-0.12.14.min.css" rel="stylesheet" type="text/css">
+<link href="html/css/bokeh-1.0.1.min.css" rel="stylesheet" type="text/css">
+<link href="html/css/bokeh-widgets-1.0.1.min.css" rel="stylesheet" type="text/css">
+<link href="html/css/bokeh-tables-1.0.1.min.css" rel="stylesheet" type="text/css">
 
 <script src="html/js/tabs.js"></script>
 
-<script src="html/js/bokeh-0.12.14.min.js"></script>
-<script src="html/js/bokeh-widgets-0.12.14.min.js"></script>
-<script src="html/js/bokeh-tables-0.12.14.min.js"></script>
+<script src="html/js/bokeh-1.0.1.min.js"></script>
+<script src="html/js/bokeh-widgets-1.0.1.min.js"></script>
+<script src="html/js/bokeh-tables-1.0.1.min.js"></script>
 
 <!--Below here are the includes of scripts for the report (e.g. bokeh)-->
 '''

@@ -20,7 +20,7 @@ class ConfiguratorFootprint(BaseAnalyzer):
                  runhistory,
                  output_dir,
                  max_confs=1000,
-                 time_slider=False,
+                 use_timeslider=False,
                  num_quantiles=10):
         """Plot the visualization of configurations, highlighting the
         incumbents. Using original rh, so the explored configspace can be
@@ -36,11 +36,11 @@ class ConfiguratorFootprint(BaseAnalyzer):
             with maximum number of real (not estimated) runs to train best-possible epm
         max_confs: int
             maximum number of data-points to plot
-        time_slider: bool
+        use_timeslider: bool
             whether or not to have a time_slider-widget on cfp-plot
             INCREASES FILE-SIZE DRAMATICALLY
         num_quantiles: int
-            if time_slider is not off, defines the number of quantiles for the
+            if use_timeslider is not off, defines the number of quantiles for the
             slider/ number of static pictures
 
         Returns
@@ -62,7 +62,7 @@ class ConfiguratorFootprint(BaseAnalyzer):
         self.runhistory = runhistory if runhistory else combine_runhistories([r.combined_runhistory for r in runs])
         self.output_dir = output_dir
         self.max_confs = max_confs
-        self.time_slider = time_slider
+        self.use_timeslider = use_timeslider
         self.num_quantiles = num_quantiles
 
         if scenario.feature_array is None:
@@ -79,7 +79,7 @@ class ConfiguratorFootprint(BaseAnalyzer):
                        rh=self.runhistory,
                        incs=incumbents,
                        max_plot=self.max_confs,
-                       time_slider=self.time_slider and self.num_quantiles > 1,
+                       use_timeslider=self.use_timeslider and self.num_quantiles > 1,
                        num_quantiles=self.num_quantiles,
                        configs_in_run=configs_in_run,
                        output_dir=self.output_dir)
@@ -103,7 +103,7 @@ class ConfiguratorFootprint(BaseAnalyzer):
     def get_html(self, d=None, tooltip=None):
         bokeh_components = self.script, self.div
         if d is not None:
-            if self.num_quantiles == 1 or self.time_slider:  # Only one plot, no need for "Static"-field
+            if self.num_quantiles == 1 or self.use_timeslider:  # Only one plot, no need for "Static"-field
                 d["bokeh"] = (bokeh_components)
                 d["tooltip"] = tooltip
             else:

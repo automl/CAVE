@@ -32,12 +32,11 @@ if ! [[ -z ${DOCPUSH+x} ]]; then
         mkdir $1
 
         # get previous documentation from github
-        git clone https://github.com/PhMueller/CAVE.git --branch gh-pages --single-branch
+        git clone https://github.com/automl/CAVE.git --branch gh-pages --single-branch
 
         # copy previous documentation
         cp -r CAVE/. $1
         rm -rf CAVE
-
 
         if [ "$1" == "master" ]
         then
@@ -55,6 +54,7 @@ if ! [[ -z ${DOCPUSH+x} ]]; then
         # copy the updated documentation for this branch
         mkdir $1/$output_folder
         cp -r build/html/. $1/$output_folder
+
 
         # takes a variable name as an argument and assigns the script outcome to a
         # variable with the given name. If it got this far, the script was successful
