@@ -102,7 +102,7 @@ class ConfiguratorFootprintPlotter(object):
         """
         default = self.scenario.cs.get_default_configuration()
         self.orig_rh = self.reduce_runhistory(self.orig_rh, self.max_plot, keep=self.incs+[default])
-        conf_matrix, conf_list, runs_per_quantile = self.get_conf_matrix(self.orig_rh, self.incs)
+        conf_matrix, conf_list, runs_per_quantile, timeslider_labels = self.get_conf_matrix(self.orig_rh, self.incs)
         self.logger.debug("Number of Configurations: %d", conf_matrix.shape[0])
         dists = self.get_distance(conf_matrix, self.scenario.cs)
         red_dists = self.get_mds(dists)
@@ -116,7 +116,8 @@ class ConfiguratorFootprintPlotter(object):
                          runs_per_quantile,
                          inc_list=self.incs,
                          contour_data=contour_data,
-                         use_timeslider=self.use_timeslider)
+                         use_timeslider=self.use_timeslider,
+                         timeslider_labels=timeslider_labels)
 
     @timing
     def get_pred_surface(self, rh, X_scaled, conf_list: list, contour_step_size):
@@ -360,6 +361,8 @@ class ConfiguratorFootprintPlotter(object):
             in the plotting (but is arbitrarily determined)
         runs_per_quantile: np.array
             numpy array of runs per configuration per quantile
+        labels: List[str]
+            labels for timeslider (i.e. wallclock-times)
         """
         # Get all configurations. Index of c in conf_list serves as identifier
         conf_list = []
@@ -383,7 +386,7 @@ class ConfiguratorFootprintPlotter(object):
         # screenshots of the number of runs per config at different points
         # in (i.e. different quantiles of) the runhistory, LAST quantile
         # is full history!!
-        runs_per_quantile = self._get_runs_per_config_quantiled(rh, conf_list, quantiles=self.num_quantiles)
+        labels, runs_per_quantile = self._get_runs_per_config_quantiled(rh, conf_list, quantiles=self.num_quantiles)
         assert(len(runs_per_quantile) == self.num_quantiles)
 
         # Get minimum and maximum for sizes of dots
@@ -395,7 +398,7 @@ class ConfiguratorFootprintPlotter(object):
         self.logger.debug("Gathered %d configurations from 1 runhistories." % len(conf_list))
 
         runs_per_quantile = np.array([np.array(run) for run in runs_per_quantile])
-        return np.array(conf_matrix), np.array(conf_list), runs_per_quantile
+        return np.array(conf_matrix), np.array(conf_list), runs_per_quantile, labels
 
     @timing
     def _get_runs_per_config_quantiled(self, rh, conf_list, quantiles):
@@ -406,14 +409,16 @@ class ConfiguratorFootprintPlotter(object):
         Parameters
         ----------
         rh: RunHistory
-            rh to evaluate
+            rh to be split up
         conf_list: list
-            list of all Configuration objects that appeared in runhistory
+            list of all Configuration objects that appear in runhistory
         quantiles: int
             number of fractions to split rh into
 
         Returns:
         --------
+        labels: List[str]
+            labels for timeslider (i.e. wallclock-times)
         runs_per_quantile: np.array
             numpy array of runs per configuration per quantile
         """
@@ -426,8 +431,9 @@ class ConfiguratorFootprintPlotter(object):
 
         # Iterate over the runhistory's entries in ranges and creating each
         # sublist from a "snapshot"-runhistory
+        labels, last_time_seen = [], -1  # label, means wallclocktime at splitting points
         r_p_q_p_c = []  # runs per quantile per config
-        as_list = list(rh.data.items())
+        as_list = sorted(list(rh.data.items()), key=lambda x: x[1].time)
         tmp_rh = RunHistory(average_cost)
         for i, j in zip(ranges[:-1], ranges[1:]):
             for idx in range(i, j):
@@ -435,8 +441,15 @@ class ConfiguratorFootprintPlotter(object):
                 tmp_rh.add(config=rh.ids_config[k.config_id],
                            cost=v.cost, time=v.time, status=v.status,
                            instance_id=k.instance_id, seed=k.seed)
+                if last_time_seen <= float(v.time):
+                    self.logger.debug("last_time_seen: {}, v.time: {}".format(last_time_seen, v.time))
+                    last_time_seen = float(v.time)
+                else:
+                    raise ValueError("Sanity check: is runhistory ordered? last_time_seen: {}, v.time: {}".format(last_time_seen, v.time))
+            labels.append("{0:.2f}".format(last_time_seen))
             r_p_q_p_c.append([len(tmp_rh.get_runs_for_config(c)) for c in conf_list])
-        return r_p_q_p_c
+        self.logger.debug("Labels: " + str(labels))
+        return labels, r_p_q_p_c
 
     def _get_size(self, r_p_c):
         """Returns size of scattered points in dependency of runs per config
@@ -680,7 +693,8 @@ class ConfiguratorFootprintPlotter(object):
              inc_list: list=None,
              contour_data=None,
              use_timeslider=False,
-             use_checkbox=True):
+             use_checkbox=True,
+             timeslider_labels=None):
         """
         plots sampled configuration in 2d-space;
         uses bokeh for interactive plot
@@ -774,7 +788,8 @@ class ConfiguratorFootprintPlotter(object):
                 export_bokeh(p, over_time_paths[-1], self.logger)
 
         # Build dashboard
-        timeslider, checkbox, select_all, select_none = self._get_widgets(all_glyphs, overtime_groups, run_groups)
+        timeslider, checkbox, select_all, select_none = self._get_widgets(all_glyphs, overtime_groups, run_groups,
+                                                                          slider_labels=timeslider_labels)
         layout = p
         if use_timeslider:
             self.logger.debug("Adding timeslider")
@@ -794,7 +809,7 @@ class ConfiguratorFootprintPlotter(object):
 
         return layout, over_time_paths
 
-    def _get_widgets(self, all_glyphs, overtime_groups, run_groups):
+    def _get_widgets(self, all_glyphs, overtime_groups, run_groups, slider_labels=None):
         """Combine timeslider for quantiles and checkboxes for individual runs in a single javascript-snippet
 
         Parameters
@@ -803,6 +818,8 @@ class ConfiguratorFootprintPlotter(object):
             togglable bokeh-glyphs
         overtime_groups, run_groups: Dicŧ[str -> List[int]
             mapping labels to indices of the all_glyphs-list
+        slider_labels: Union[None, List[str]]
+            if provided, used as labels for timeslider-widget
 
         Returns
         -------
@@ -841,15 +858,23 @@ class ConfiguratorFootprintPlotter(object):
         }"""
         # Add logging
         code += """
-        console.log("Timeslider: " + time_slider.value)
-        console.log("Checkbox: " + checkbox.active)"""
+        console.log("Timeslider: " + time_slider.value);
+        console.log("Checkbox: " + checkbox.active);"""
+        # Set timeslider title (to enable log-scale and print wallclocktime-labels)
+        if slider_labels:
+            code += "var slider_labels = " + str(slider_labels) + ";"
+            code += "console.log(\"Detected slider_labels: \" + slider_labels);"
+            code += """
+            time_slider.title = "Until wallclocktime " + slider_labels[time_slider.value - 1] + "Quantile no. ";
+            """
         # Combine checkbox-arrays, intersect with time_slider and set all selected glyphs to true
         code += """
         var activate = [];
-        // if we want multiple checkboxes at the same time, we need to combine the thingies
+        // if we want multiple checkboxes at the same time, we need to combine the arrays
         checkbox.active.forEach(function(c) {
           activate = union_arrays(activate, runs[c]);
         })
+        // now the intersection of timeslider-activated and checkbox-activated
         activate = activate.filter(value => -1 !== overtime[time_slider.value - 1].indexOf(value));
         activate.forEach(function(idx) {
           glyphs[idx].visible = true;
