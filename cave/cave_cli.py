@@ -72,11 +72,17 @@ class CaveCLI(object):
                                   "INFO",
                                   "DEBUG",
                                   "DEV_DEBUG",
+                                  "WARNING",
                                   "OFF"
                               ],
                               help="verbose level. use DEV_DEBUG for development to filter boilerplate-logs from "
                                    "imported modules, use DEBUG for full logging. full debug-log always in "
                                    "'output/debug/debug.log' ")
+        opt_opts.add_argument("--jupyter",
+                              default='off',
+                              choices=['on', 'off'],
+                              help="output everything to jupyter, if available."
+                              )
         opt_opts.add_argument("--validation",
                               default="epm",
                               choices=[
@@ -262,6 +268,7 @@ class CaveCLI(object):
         algorithm_footprints = args_.algorithm_footprints
         pimp_sort_table_by = args_.pimp_sort_table_by
         verbose_level = args_.verbose_level
+        show_jupyter = args_.jupyter == 'on'
 
         if file_format == 'BOHB':
             logging.getLogger().info("File format is BOHB, performing special nested analysis for budget-based optimizer!")
@@ -282,6 +289,7 @@ class CaveCLI(object):
                     pimp_max_samples=pimp_max_samples,
                     fanova_pairwise=fanova_pairwise,
                     use_budgets=file_format=='BOHB',
+                    show_jupyter=show_jupyter,
                     seed=seed,
                     verbose_level=verbose_level)
 

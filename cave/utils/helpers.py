@@ -1,5 +1,6 @@
 import typing
 import numpy as np
+import logging
 
 from ConfigSpace.configuration_space import Configuration
 from smac.runhistory.runhistory import RunHistory, RunKey
@@ -54,8 +55,8 @@ def get_cost_dict_for_config(rh: RunHistory,
     """
     Aggregates loss for configuration on evaluated instances over seeds.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     rh: RunHistory
         runhistory with data
     conf: Configuration
@@ -65,8 +66,8 @@ def get_cost_dict_for_config(rh: RunHistory,
     cutoff: float
         cutoff of scenario - used to penalize costs if par != 1
 
-    Returns:
-    --------
+    Returns
+    -------
     cost: dict(instance->cost)
         cost per instance (aggregated or as list per seed)
     """
@@ -135,3 +136,26 @@ class MissingInstancesError(Exception):
     """Exception indicating that instances are missing."""
     pass
 
+def get_config_origin(c):
+    """Return appropriate configuration origin
+
+    Parameters
+    ----------
+    c: Configuration
+        configuration to be examined
+
+    Returns
+    -------
+    origin: str
+        origin of configuration (e.g. "Local", "Random", etc.)
+    """
+    if not c.origin:
+        origin = "Unknown"
+    elif c.origin.startswith("Local") or c.origin == 'Model based pick' or "sorted" in c.origin:
+        origin = "Acquisition Function"
+    elif c.origin.startswith("Random"):
+        origin = "Random"
+    else:
+        logging.getLogger("cave.utils.helpers").debug("Cannot interpret origin: %s", c.origin)
+        origin = "Unknown"
+    return origin

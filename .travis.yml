@@ -1,28 +1,7 @@
 language: python
 
-matrix:
-
-  include:
-  - os: linux
-    env: PYTHON_VERSION="3.5" COVERAGE="true" MINICONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-4.3.21-Linux-x86_64.sh"
-  - os: linux
-    env: PYTHON_VERSION="3.6" COVERAGE="true" MINICONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-4.3.21-Linux-x86_64.sh"
-
-  # Disable OSX building because it takes too long and hinders progress
-  # Set language to generic to not break travis-ci
-  # https://github.com/travis-ci/travis-ci/issues/2312#issuecomment-195620855
-  # so far, this issue is still open and there is no good solution
-  # python will then be installed by anaconda
-  #- os: osx
-  #  sudo: required
-  #  language: generic
-  #  env: PYTHON_VERSION="3.5" MINICONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-4.3.21-MacOSX-x86_64.sh"
-  #- os: osx
-  #  sudo: required
-  #  language: generic
-  #  env: PYTHON_VERSION="3.6" MINICONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-4.3.21-MacOSX-x86_64.sh"
-
 cache:
+  apt: true
   directories:
     - $HOME/.cache/pip
   pip: true
@@ -32,32 +11,28 @@ sudo: false
 before_cache:
   - rm -f $HOME/.cache/pip/log/debug.log
 
-before_install:
-  - wget $MINICONDA_URL -O miniconda.sh
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - export PATH="$HOME/miniconda/bin:$PATH"
-  - if [[ `which conda` ]]; then echo 'Conda installation successful'; else exit 1; fi
-  - conda create -n testenv --yes python=$PYTHON_VERSION pip wheel nose
-  - source activate testenv
-  - conda install --yes gcc swig
-  - export CC=`which gcc`
+env:
+  matrix:
+    - DISTRIB='conda' COVERAGE="true" PYTHON_VERSION="3.5"
+    - DISTRIB="conda" COVERAGE="true" PYTHON_VERSION="3.6" DOCPUSH="true"
 
 install:
-  - pip install pep8 codecov
-  - cat requirements.txt | xargs -n 1 -L 1 pip install
-  - python setup.py install
+  - source ci_scripts/install.sh
 
 # command to run tests, e.g. python setup.py test
 script:
   - nosetests -sv --with-coverage --cover-package=cave
+
 after_success:
-  - codecov
+  - source ci_scripts/create_doc.sh $TRAVIS_BRANCH "doc_result"
+
 deploy:
-  master:
-    branch: master
-    commands:
-      - bash ci_scripts/push_doc.sh 'stable'
-  development:
-    branch: development
-    commands:
-      - bash ci_scripts/push_doc.sh 'dev'
+  provider: pages
+  skip-cleanup: true
+  github-token: $CAVE_TOKEN
+  keep-history: true
+  committer-from-gh: true
+  on:
+    all_branches: true
+    condition: $doc_result = "success"
+  local_dir: doc/$TRAVIS_BRANCH

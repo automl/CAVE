@@ -1,7 +1,7 @@
-cave.plot.cost\_over\_time module
+cave.utils.bokeh\_routines module
 =================================
 
-.. automodule:: cave.plot.cost_over_time
+.. automodule:: cave.utils.bokeh_routines
     :members:
     :undoc-members:
     :show-inheritance:

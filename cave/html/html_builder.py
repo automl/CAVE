@@ -26,7 +26,21 @@ class HTMLBuilder(object):
                  logo_fn: str,
                  logo_custom: bool=False):
         '''
-        Constructor
+        The dictionary structure in the HTML-Builder follows the following syntax:
+        ::
+
+          {"top1" : {
+                    "tooltip": str|None,
+                    "subtop1: {  # generates a further bottom if it is dictionary
+                            "tooltip": str|None,
+                            ...
+                            }
+                    "table": str|None (html table)
+                    "figure" : str|None (file name)
+                    "bokeh" : (str, str)|None  # (script, div as returned by components())
+                    }
+           "top2: { ... }
+          }
 
         Arguments
         ---------
@@ -54,6 +68,16 @@ class HTMLBuilder(object):
         self.budget = ''
         # todo make relative dirs again
 
+        # Copy subfolders
+        subfolders = ["css", "images", "js", "font"]
+        for sf in subfolders:
+            try:
+                shutil.rmtree(os.path.join(self.output_dn, "html", sf), ignore_errors=True)
+                shutil.copytree(os.path.join(self.own_folder, "web_files", sf),
+                                os.path.join(self.output_dn, "html", sf))
+            except OSError:
+                print_exc()
+
         self.header_part_1 = '''
 <!DOCTYPE html>
 <html>
@@ -67,15 +91,15 @@ class HTMLBuilder(object):
 <link href="html/css/back-to-top.css" rel="stylesheet" />
 <link href="html/css/tabs.css" rel="stylesheet" />
 
-<link href="html/css/bokeh-0.12.14.min.css" rel="stylesheet" type="text/css">
-<link href="html/css/bokeh-widgets-0.12.14.min.css" rel="stylesheet" type="text/css">
-<link href="html/css/bokeh-tables-0.12.14.min.css" rel="stylesheet" type="text/css">
+<link href="html/css/bokeh-1.0.1.min.css" rel="stylesheet" type="text/css">
+<link href="html/css/bokeh-widgets-1.0.1.min.css" rel="stylesheet" type="text/css">
+<link href="html/css/bokeh-tables-1.0.1.min.css" rel="stylesheet" type="text/css">
 
 <script src="html/js/tabs.js"></script>
 
-<script src="html/js/bokeh-0.12.14.min.js"></script>
-<script src="html/js/bokeh-widgets-0.12.14.min.js"></script>
-<script src="html/js/bokeh-tables-0.12.14.min.js"></script>
+<script src="html/js/bokeh-1.0.1.min.js"></script>
+<script src="html/js/bokeh-widgets-1.0.1.min.js"></script>
+<script src="html/js/bokeh-tables-1.0.1.min.js"></script>
 
 <!--Below here are the includes of scripts for the report (e.g. bokeh)-->
 '''
@@ -125,17 +149,7 @@ for (i = 0; i < acc.length; i++) {
         Arguments
         ---------
         data_dict : OrderedDict
-            {"top1" : {
-                        "tooltip": str|None,
-                        "subtop1: {  # generates a further bottom if it is dictionary
-                                "tooltip": str|None,
-                                ...
-                                }
-                        "table": str|None (html table)
-                        "figure" : str|None (file name)
-                        "bokeh" : ( str,str)|None  # (script, div)
-                        }
-            "top2: { ... }
+            see constructor
         '''
         html_head, html_body = "", ""
         html_head += self.header_part_1
@@ -158,14 +172,6 @@ for (i = 0; i < acc.length; i++) {
         with open(os.path.join(self.output_dn, "report.html"), "w") as fp:
             fp.write(html)
 
-        subfolders = ["css", "images", "js", "font"]
-        for sf in subfolders:
-            try:
-                if not os.path.isdir(os.path.join(self.output_dn, "html", sf)):
-                    shutil.copytree(os.path.join(self.own_folder, "web_files", sf),
-                                    os.path.join(self.output_dn, "html", sf))
-            except OSError:
-                print_exc()
         if self.logo_custom:
             original_path = self.logo_fn
             self.logo_fn = os.path.join(self.output_dn, "html", 'images', 'custom_logo.png')
@@ -182,18 +188,7 @@ for (i = 0; i < acc.length; i++) {
         layer_name: str
             name of the layer
         data_dict : OrderedDict
-            {"top1" : {
-                        "tooltip": str|None,
-                        "subtop1": {  # generates a further bottom if it is dictionary
-                                "tooltip": str|None,
-                                ...
-                                }
-                        "table": str|None (html table)
-                        "figure" : str|None (file name)
-                        "bokeh" : ( str,str)|None  # (script, div)
-                        }
-            "top2": { ... }
-            }
+            see constructor
         is_tab: bool
             if True, don't use accordion but tab-structure to wrap content
 

@@ -10,8 +10,10 @@ cave.utils package
 
 .. toctree::
 
+   cave.utils.bokeh_routines
    cave.utils.convert_for_epm
    cave.utils.helpers
+   cave.utils.hpbandster2smac
    cave.utils.html_helpers
    cave.utils.io
    cave.utils.statistical_tests

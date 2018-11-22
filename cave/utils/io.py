@@ -37,14 +37,18 @@ def export_bokeh(plot, path, logger):
             for w in list_of_warnings:
                 logger.debug("During export a %s was raised: %s", str(w.category), w.message)
     except (RuntimeError, TypeError) as err:
-        logger.exception("Exporting failed with message \"%s\"", err)
-        logger.warning("To activate automatic png-export, please follow instructions on CAVE's GitHub (install selenium and phantomjs-prebuilt).")
+        logger.debug("Exporting failed", exc_info=1)
+        logger.warning("Exporting bokeh-plot to \"%s\" failed. "
+                       "To activate automatic png-export, please follow instructions on CAVE's GitHub "
+                       "(install selenium and phantomjs-prebuilt).", path)
     except (SystemError) as err:
-        logger.exception("Exporting failed with message \"%s\"", err)
-        logger.warning("This issue is known, but not yet solved. However it seems to appear with too few data-points. "
-                       "Feel free to report your example on https://github.com/automl/CAVE/issues.")
+        logger.debug("Exporting failed", exc_info=1)
+        logger.warning("Exporting bokeh-plot to \"%s\" failed. "
+                       "This issue is known, but not yet solved. However it seems to appear with too few data-points. "
+                       "Feel free to report your example on https://github.com/automl/CAVE/issues.", path)
     except Exception as err:
-        logger.exception("Exporting failed with message \"%s\"", err)
+        logger.debug("Exporting failed", exc_info=1)
+        logger.warning("Exporting bokeh-plot to \"%s\" failed. (run --verbose DEBUG for more info)", path)
 
 
 def load_csv_to_pandaframe(csv_path, logger, apply_numeric=True, delimiter=','):

@@ -44,6 +44,8 @@ from cave.analyzer.feature_clustering import FeatureClustering
 from cave.analyzer.overview_table import OverviewTable
 from cave.analyzer.compare_default_incumbent import CompareDefaultIncumbent
 from cave.analyzer.bohb_learning_curves import BohbLearningCurves
+from cave.analyzer.bohb_incumbents_per_budget import BohbIncumbentsPerBudget
+from cave.analyzer.budget_correlation import BudgetCorrelation
 from cave.__version__ import __version__ as v
 
 __author__ = "Joshua Marben"
@@ -180,7 +182,8 @@ class CAVE(object):
         self.logger.debug("Running CAVE version %s", v)
         self.show_jupyter = show_jupyter
         # Methods that are never per-run, because they are inter-run-analysis by nature
-        self.always_aggregated = ['bohb_learning_curves']  # these function-names will always be aggregated
+        self.always_aggregated = ['bohb_learning_curves', 'bohb_incumbents_per_budget', 'configurator_footprint',
+                                  'budget_correlation', 'cost_over_time']  # these function-names will always be aggregated
 
         for d in os.listdir():
             if d.startswith('run_1'):
@@ -201,6 +204,7 @@ class CAVE(object):
         self.param_imp = OrderedDict()
         self.feature_imp = OrderedDict()
         self.evaluators = []
+        self.validator = None
 
         self.feature_names = None
 
@@ -294,7 +298,7 @@ class CAVE(object):
                             fanova_pairwise=self.fanova_pairwise,
                             use_budgets=False,
                             seed=self.seed,
-                            verbose_level=self.verbose_level)
+                            verbose_level='OFF')
 
     def _init_helper_no_budgets(self):
         """
@@ -352,7 +356,9 @@ class CAVE(object):
                                seed=self.rng.randint(1, 100000),
                                max_sample_size=self.pimp_max_samples,
                                fANOVA_pairwise=self.fanova_pairwise,
-                               preprocess=False)
+                               preprocess=False,
+                               verbose=self.verbose_level != 'OFF',  # disable progressbars
+                               )
         self.model = self.pimp.model
 
         # Validator (initialize without trajectory)
@@ -470,14 +476,36 @@ class CAVE(object):
             # The individual configurator runs are not directory comparable and cannot be aggregated.
             # Nevertheless they need to be combined in one comprehensive report and some metrics are to be compared over
             # the individual runs.
+            # TODO: Currently, the code below is configured for bohb... if we extend ot other budget-driven
+            # configurators, review!
 
             # Perform analysis for each run
             if self.bohb_result:
+                self.website["Budget Correlation"] = OrderedDict()
+                self.budget_correlation(d=self.website["Budget Correlation"])
                 self.bohb_learning_curves(d=self.website)
+                self.website["Incumbents Over Budgets"] = OrderedDict()
+                self.bohb_incumbents_per_budget(d=self.website["Incumbents Over Budgets"])
+                # Move to second position
+                self.website.move_to_end("Budget Correlation", last=False)
+                self.website.move_to_end("BOHB Learning Curves", last=False)
+                self.website.move_to_end("Incumbents Over Budgets", last=False)
+                self.website.move_to_end("Meta Data", last=False)
+
+            # Configurator Footprint always aggregated
+            if cfp:  # Configurator Footprint
+                self.configurator_footprint(d=self._get_dict(self.website["Configurators Behavior"], "Configurator Footprint"),
+                                            run=None,
+                                            use_timeslider=cfp_time_slider,
+                                            max_confs=cfp_max_plot,
+                                            num_quantiles=cfp_number_quantiles)
+                self.website["Configurators Behavior"]["Configurator Footprint"]["tooltip"] = self._get_tooltip(self.configurator_footprint)
+            if cost_over_time:
+                self.cost_over_time(d=self._get_dict(self.website["Configurators Behavior"], "Cost Over Time"), run=None)
+                self.website["Configurators Behavior"]["Cost Over Time"]["tooltip"] = self._get_tooltip(self.cost_over_time)
+
             for run in self.runs:
                 sub_sec = os.path.basename(run.folder)
-                for h in headings:
-                    self.website[h][sub_sec] = OrderedDict()
                 # Set paths for each budget individual to avoid path-conflicts
                 sub_output_dir = os.path.join(self.output_dir, 'content', sub_sec)
                 os.makedirs(sub_output_dir, exist_ok=True)
@@ -494,20 +522,16 @@ class CAVE(object):
                 self.best_run = run
                 # Perform analysis
                 self.overview_table(d=self._get_dict(self.website, "Meta Data", sub_sec), run=sub_sec)
-                self.compare_default_incumbent(d=self._get_dict(self.website, "Best Configuration", sub_sec), run=sub_sec)
                 self.website["Meta Data"]["tooltip"] = self._get_tooltip(self.overview_table)
-                self.website["Best Configuration"]["tooltip"] = self._get_tooltip(self.compare_default_incumbent)
-                self.performance_analysis(self.website["Performance Analysis"], sub_sec,
-                                          performance, cdf, scatter, algo_footprint)
                 self.parameter_importance(self.website["Parameter Importance"], sub_sec,
-                                          ablation='ablation' in param_importance,
+                                          ablation=False, #'ablation' in param_importance,
                                           fanova='fanova' in param_importance,
                                           forward_selection='forward_selection' in param_importance,
                                           lpi='lpi' in param_importance,
                                           pimp_sort_table_by=pimp_sort_table_by)
                 self.configurators_behavior(self.website["Configurators Behavior"], sub_sec,
-                                            cost_over_time,
-                                            cfp, cfp_max_plot, cfp_time_slider, cfp_number_quantiles,
+                                            False,
+                                            False, cfp_max_plot, cfp_time_slider, cfp_number_quantiles,
                                             parallel_coordinates)
                 if self.feature_names:
                     self.feature_analysis(self.website["Feature Analysis"], sub_sec,
@@ -585,13 +609,8 @@ class CAVE(object):
         """
 
         if performance:
-            if self.use_budgets:
-                self.logger.debug("Skipping extra accordion for Performance Table and other performance analysis")
-                self.performance_table(d=self._get_dict(self.website, "Performance Analysis", run=run), run=run)
-                return
-            else:
-                self.performance_table(d=self._get_dict(d, "Performance Table", run=run), run=run)
-                d["Performance Table"]["tooltip"] = self._get_tooltip(self.performance_table)
+            self.performance_table(d=self._get_dict(d, "Performance Table", run=run), run=run)
+            d["Performance Table"]["tooltip"] = self._get_tooltip(self.performance_table)
         if cdf:
             self.plot_ecdf(d=self._get_dict(d, "empirical Cumulative Distribution Function (eCDF)", run=run), run=run)
             d["empirical Cumulative Distribution Function (eCDF)"]["tooltip"] = self._get_tooltip(self.plot_ecdf)
@@ -683,7 +702,13 @@ class CAVE(object):
         that is still improving at the end of the budget indicates that one should increase the configuration budget.
         The plotted standard deviation gives the uncertainty over multiple configurator runs.
         """
-        return CostOverTime(cave.scenario, cave.output_dir, cave.global_validated_rh, cave.runs, validator=cave.validator)
+        return CostOverTime(cave.scenario,
+                            cave.output_dir,
+                            cave.global_validated_rh,
+                            self.runs,
+                            block_epm=self.use_budgets,  # blocking epms if bohb is analyzed
+                            bohb_result=self.bohb_result,
+                            validator=cave.validator)
 
     @_analyzer_type
     def parallel_coordinates(self, cave,
@@ -729,7 +754,7 @@ class CAVE(object):
 
     @_analyzer_type
     def configurator_footprint(self, cave,
-                               time_slider=False, max_confs=1000, num_quantiles=8):
+                               use_timeslider=False, max_confs=1000, num_quantiles=8):
         """
         Analysis of the iteratively sampled configurations during the optimization procedure.  Multi-dimensional scaling
         (MDS) is used to reduce dimensionality of the search space and plot the distribution of evaluated
@@ -741,7 +766,7 @@ class CAVE(object):
 
         Parameters
         ----------
-        time_slider: bool
+        use_timeslider: bool
             whether to generate time-slíder widget in bokehplot (cool, but time-consuming)
         max_confs: int
             maximum number of configurations to consider for the plot
@@ -757,7 +782,7 @@ class CAVE(object):
                  cave.global_original_rh,
                  output_dir=cave.output_dir,
                  max_confs=max_confs,
-                 time_slider=time_slider,
+                 use_timeslider=use_timeslider,
                  num_quantiles=num_quantiles)
 
     def configurators_behavior(self,
@@ -775,7 +800,7 @@ class CAVE(object):
             d["Cost Over Time"]["tooltip"] = self._get_tooltip(self.cost_over_time)
         if cfp:  # Configurator Footprint
             self.configurator_footprint(d=self._get_dict(d, "Configurator Footprint", run=run), run=run,
-                                        time_slider=cfp_time_slider, max_confs=cfp_max_plot, num_quantiles=cfp_number_quantiles)
+                                        use_timeslider=cfp_time_slider, max_confs=cfp_max_plot, num_quantiles=cfp_number_quantiles)
             d["Configurator Footprint"]["tooltip"] = self._get_tooltip(self.configurator_footprint)
         if parallel_coordinates:
             # Should be after parameter importance, if performed.
@@ -946,10 +971,31 @@ class CAVE(object):
 
     @_analyzer_type
     def bohb_learning_curves(self, cave):
+        """Visualizing the learning curves of the individual Hyperband-iterations. Model based picks are marked with a
+        cross. The config-id tuple denotes (HB_iteration, SH_iteration, id_within_SH_iteration), so it can be
+        interpreted as a nested index-identifier."""
         return BohbLearningCurves(self.scenario.cs.get_hyperparameter_names(), result_object=self.bohb_result)
 
-############################################################################
-############################################################################
+    @_analyzer_type
+    def bohb_incumbents_per_budget(self, cave):
+        return BohbIncumbentsPerBudget([b.incumbent for b in self.runs],
+                                       [b.folder for b in self.runs],
+                                       [b.epm_runhistory for b in self.runs])
+
+    @_analyzer_type
+    def budget_correlation(self, cave):
+        """
+        Use spearman correlation, to get a correlation-value and a p-value for every pairwise combination of budgets.
+        First value is the correlation, second is the p-value (the p-value roughly estimates the likelihood to obtain
+        this correlation coefficient with uncorrelated datasets).
+        """
+        return BudgetCorrelation(self.runs)
+
+
+###########################################################################
+# HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS #
+###########################################################################
+
     def print_budgets(self):
         """If the analyzed configurator uses budgets, print a list of available budgets."""
         if self.use_budgets:
@@ -988,6 +1034,7 @@ class CAVE(object):
         self.builder.generate_html(self.website)
 
     def set_verbosity(self, level):
+        # TODO add custom level with logging.addLevelName (e.g. DEV_DEBUG)
         # Log to stream (console)
         logging.getLogger().setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
@@ -998,7 +1045,6 @@ class CAVE(object):
         elif level == "WARNING":
             stdout_handler.setLevel(logging.WARNING)
         elif level == "OFF":
-            sys.stdout = open(os.devnull, 'w')
             stdout_handler.setLevel(logging.ERROR)
         elif level in ["DEBUG", "DEV_DEBUG"]:
             stdout_handler.setLevel(logging.DEBUG)

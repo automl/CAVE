@@ -6,6 +6,7 @@ import numpy as np
 from bokeh.embed import components
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
+from cave.utils.helpers import scenario_sanity_check, combine_runhistories
 from cave.plot.configurator_footprint import ConfiguratorFootprintPlotter
 
 from bokeh.plotting import show
@@ -19,7 +20,7 @@ class ConfiguratorFootprint(BaseAnalyzer):
                  runhistory,
                  output_dir,
                  max_confs=1000,
-                 time_slider=False,
+                 use_timeslider=False,
                  num_quantiles=10):
         """Plot the visualization of configurations, highlighting the
         incumbents. Using original rh, so the explored configspace can be
@@ -35,11 +36,11 @@ class ConfiguratorFootprint(BaseAnalyzer):
             with maximum number of real (not estimated) runs to train best-possible epm
         max_confs: int
             maximum number of data-points to plot
-        time_slider: bool
+        use_timeslider: bool
             whether or not to have a time_slider-widget on cfp-plot
             INCREASES FILE-SIZE DRAMATICALLY
         num_quantiles: int
-            if time_slider is not off, defines the number of quantiles for the
+            if use_timeslider is not off, defines the number of quantiles for the
             slider/ number of static pictures
 
         Returns
@@ -58,10 +59,10 @@ class ConfiguratorFootprint(BaseAnalyzer):
 
         self.scenario = scenario
         self.runs = runs
-        self.runhistory = runhistory
+        self.runhistory = runhistory if runhistory else combine_runhistories([r.combined_runhistory for r in runs])
         self.output_dir = output_dir
         self.max_confs = max_confs
-        self.time_slider = time_slider
+        self.use_timeslider = use_timeslider
         self.num_quantiles = num_quantiles
 
         if scenario.feature_array is None:
@@ -71,14 +72,17 @@ class ConfiguratorFootprint(BaseAnalyzer):
         incumbents = list(map(lambda x: x['incumbent'], runs[0].traj))
         assert(incumbents[-1] == runs[0].traj[-1]['incumbent'])
 
+        configs_in_run = {os.path.basename(r.folder) : r.combined_runhistory.get_all_configs() for r in runs}
+
         cfp = ConfiguratorFootprintPlotter(
-                       scenario=scenario,
-                       rh=runhistory,
+                       scenario=self.scenario,
+                       rh=self.runhistory,
                        incs=incumbents,
-                       max_plot=max_confs,
-                       time_slider=time_slider and num_quantiles > 1,
-                       num_quantiles=num_quantiles,
-                       output_dir=output_dir)
+                       max_plot=self.max_confs,
+                       use_timeslider=self.use_timeslider and self.num_quantiles > 1,
+                       num_quantiles=self.num_quantiles,
+                       configs_in_run=configs_in_run,
+                       output_dir=self.output_dir)
         try:
             res = cfp.run()
         except MemoryError as err:
@@ -99,7 +103,7 @@ class ConfiguratorFootprint(BaseAnalyzer):
     def get_html(self, d=None, tooltip=None):
         bokeh_components = self.script, self.div
         if d is not None:
-            if self.num_quantiles == 1 or self.time_slider:  # Only one plot, no need for "Static"-field
+            if self.num_quantiles == 1 or self.use_timeslider:  # Only one plot, no need for "Static"-field
                 d["bokeh"] = (bokeh_components)
                 d["tooltip"] = tooltip
             else:

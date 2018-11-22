@@ -28,8 +28,8 @@ class SMAC3Reader(BaseReader):
 
     def get_runhistory(self, cs):
         """
-        Returns:
-        --------
+        Returns
+        -------
         rh: RunHistory
             runhistory
         """
@@ -47,8 +47,8 @@ class SMAC3Reader(BaseReader):
 
     def get_validated_runhistory(self, cs):
         """
-        Returns:
-        --------
+        Returns
+        -------
         validated_rh: RunHistory
             runhistory with validation-data, if available
         """
