@@ -79,7 +79,7 @@ class BudgetCorrelation(BaseAnalyzer):
         columns = [TableColumn(field='Budget', title="Budget", sortable=False, width=20)] + [
                    TableColumn(field=header, title=header, default_sort='descending', width=10) for header in columns
                   ]
-        bokeh_table = DataTable(source=table_source, columns=columns, row_headers=False, sortable=False,
+        bokeh_table = DataTable(source=table_source, columns=columns, header_row=False, sortable=False,
                                height=20 + 30 * len(data["Budget"]))
 
         # Create CDS for scatter-plot

@@ -5,7 +5,6 @@ __copyright__ = "Copyright 2016, ML4AAD"
 __license__ = "BSD"
 __maintainer__ = "Joshua Marben"
 __email__ = "marbenj@cs.uni-freiburg.de"
-__version__ = "0.0.1"
 
 import os
 import sys
