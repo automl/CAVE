@@ -76,17 +76,15 @@ class ConfiguratorFootprint(BaseAnalyzer):
         incumbents = list(map(lambda x: x['incumbent'], runs[0].traj))
         assert(incumbents[-1] == runs[0].traj[-1]['incumbent'])
 
-        configs_in_run = {os.path.basename(r.folder) : r.combined_runhistory.get_all_configs() for r in runs}
-
         cfp = ConfiguratorFootprintPlotter(
                        scenario=self.scenario,
                        rhs=[r.original_runhistory for r in self.runs],
                        incs=[[entry['incumbent'] for entry in r.traj] for r in self.runs],
                        final_incumbent=self.final_incumbent,
+                       rh_labels=[os.path.basename(r.folder).replace('_', ' ') for r in self.runs],
                        max_plot=self.max_confs,
                        use_timeslider=self.use_timeslider and self.num_quantiles > 1,
                        num_quantiles=self.num_quantiles,
-                       #configs_in_run=configs_in_run,
                        output_dir=self.output_dir)
         try:
             res = cfp.run()

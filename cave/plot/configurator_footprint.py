@@ -105,8 +105,9 @@ class ConfiguratorFootprintPlotter(object):
         self.contour_step_size = contour_step_size
         self.output_dir = output_dir
 
-        self.timeslider_log = True;
+        self.timeslider_log = False;
 
+        # Preprocess input
         self.default = scenario.cs.get_default_configuration()
         self.final_incumbent = final_incumbent
 
@@ -464,7 +465,8 @@ class ConfiguratorFootprintPlotter(object):
                 #    last_time_seen = float(v.time)
                 #else:
                 #    raise ValueError("Sanity check: is runhistory ordered? last_time_seen: {}, v.time: {}".format(last_time_seen, v.time))
-            labels.append("{0:.2f}".format(last_time_seen))
+            if last_time_seen >= 0:
+                labels.append("{0:.2f}".format(last_time_seen))
             r_p_q_p_c.append([len(tmp_rh.get_runs_for_config(c)) for c in conf_list])
         self.logger.debug("Labels: " + str(labels))
         return labels, r_p_q_p_c
@@ -893,11 +895,10 @@ class ConfiguratorFootprintPlotter(object):
         if slider_labels:
             code += "var slider_labels = " + str(slider_labels) + ";"
             code += "console.log(\"Detected slider_labels: \" + slider_labels);"
-            code += """
-            time_slider.title = "Until wallclocktime " + slider_labels[time_slider.value - 1] + ". Step no. ";
-            """
+            title = "Until wallclocktime " + slider_labels[time_slider.value - 1] + ". Step no. ";
         else:
-            code += "time_slider.title = \"Quantile on {} scale\"".format("logarithmic" if self.timeslider_log else "linear");
+            title = "Quantile on {} scale".format("logarithmic" if self.timeslider_log else "linear");
+        code += "time_slider.title = \"{}\";".format(title);
         # Combine checkbox-arrays, intersect with time_slider and set all selected glyphs to true
         code += """
         var activate = [];
@@ -915,7 +916,7 @@ class ConfiguratorFootprintPlotter(object):
         num_quantiles = len(overtime_groups)
         timeslider = Slider(start=1, end=num_quantiles,
                             value=num_quantiles, step=1,
-                            title='Time')
+                            title=title)
         checkbox = CheckboxGroup(labels=labels_runs,
                                  active=list(range(len(labels_runs))),
                                  )
