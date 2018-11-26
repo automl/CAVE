@@ -40,7 +40,7 @@ from ConfigSpace.util import impute_inactive_values
 from ConfigSpace import CategoricalHyperparameter
 
 from cave.utils.convert_for_epm import convert_data_for_epm
-from cave.utils.helpers import escape_parameter_name, get_config_origin
+from cave.utils.helpers import escape_parameter_name, get_config_origin, combine_runhistories
 from cave.utils.timing import timing
 from cave.utils.io import export_bokeh
 from cave.utils.bokeh_routines import get_checkbox
@@ -50,49 +50,67 @@ class ConfiguratorFootprintPlotter(object):
 
     def __init__(self,
                  scenario: Scenario,
-                 rh: RunHistory,
+                 rhs: RunHistory,
                  incs: list=None,
+                 final_incumbent=None,
+                 rh_timestamps=None,
+                 rh_labels=None,
                  max_plot: int=-1,
                  contour_step_size=0.2,
-                 output_dir: str=None,
                  use_timeslider: bool=False,
                  num_quantiles: int=10,
-                 configs_in_run: dict=None,
+                 output_dir: str=None,
                  ):
         '''
-        Constructor
+        Creating an interactive plot, visualizing the configuration search space.
+        The runhistories are correlated to the individual runs.
+        Each run consists of a runhistory (in the smac-format), a list of incumbents, an optional dict mapping RunKeys
+        to timestamps for each runhistory.
 
         Parameters
         ----------
         scenario: Scenario
             scenario
-        rh: RunHistory
-            runhistory from configurator run, only runs during optimization
-        incs: list
-            incumbents of best configurator run, last entry is final incumbent
+        rhs: List[RunHistory]
+            runhistories from configurator runs, only data collected during optimization (no validation!)
+        incs: List[List[Configuration]]
+            incumbents per run, last entry is final incumbent
+        final_incumbent: Configuration
+            final configuration (best of all runs)
+        rh_timestamps: List[Dict[RunKey -> float]]
+            timestamps for individual runs
         max_plot: int
             maximum number of configs to plot, if -1 plot all
         contour_step_size: float
             step size of meshgrid to compute contour of fitness landscape
-        output_dir: str
-            output directory
         use_timeslider: bool
             whether or not to have a time_slider-widget on cfp-plot
             INCREASES FILE-SIZE DRAMATICALLY
         num_quantiles: int
             number of quantiles for the slider/ number of static pictures
+        output_dir: str
+            output directory
         '''
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
 
         self.scenario = scenario
-        self.orig_rh = rh
+        self.rhs = rhs
+        self.combined_rh = combine_runhistories(self.rhs)
         self.incs = incs
+        self.rh_timestamps = rh_timestamps
+        self.rh_labels = rh_labels if rh_labels else [str(idx) for idx in range(len(self.rhs))]
         self.max_plot = max_plot
         self.use_timeslider = use_timeslider
         self.num_quantiles = num_quantiles
         self.contour_step_size = contour_step_size
         self.output_dir = output_dir
-        self.configs_in_run = configs_in_run if configs_in_run else {'all' : self.orig_rh.get_all_configs()}
+
+        self.timeslider_log = True;
+
+        self.default = scenario.cs.get_default_configuration()
+        self.final_incumbent = final_incumbent
+
+        self.configs_in_run = {label : rh.get_all_configs() for label, rh in zip(self.rh_labels, self.rhs)}
 
     def run(self):
         """
@@ -100,13 +118,13 @@ class ConfiguratorFootprintPlotter(object):
         data and plot the configurator footprint.
         """
         default = self.scenario.cs.get_default_configuration()
-        self.orig_rh = self.reduce_runhistory(self.orig_rh, self.max_plot, keep=self.incs+[default])
-        conf_matrix, conf_list, runs_per_quantile, timeslider_labels = self.get_conf_matrix(self.orig_rh, self.incs)
+        self.combined_rh = self.reduce_runhistory(self.combined_rh, self.max_plot, keep=[a for b in self.incs for a in b]+[default])
+        conf_matrix, conf_list, runs_per_quantile, timeslider_labels = self.get_conf_matrix(self.combined_rh, self.incs)
         self.logger.debug("Number of Configurations: %d", conf_matrix.shape[0])
         dists = self.get_distance(conf_matrix, self.scenario.cs)
         red_dists = self.get_mds(dists)
 
-        contour_data = self.get_pred_surface(self.orig_rh, X_scaled=red_dists,
+        contour_data = self.get_pred_surface(self.combined_rh, X_scaled=red_dists,
                                              conf_list=copy.deepcopy(conf_list),
                                              contour_step_size=self.contour_step_size)
 
@@ -131,6 +149,8 @@ class ConfiguratorFootprintPlotter(object):
             configurations in scaled 2dim
         conf_list: list
             list of Configuration objects
+        contour_step_size: float
+            step-size for contour
 
         Returns
         -------
@@ -228,6 +248,7 @@ class ConfiguratorFootprintPlotter(object):
         is_cat = np.array(is_cat)
         depth = np.array(depth)
 
+        # TODO tqdm
         for i in range(n_confs):
             for j in range(i + 1, n_confs):
                 dist = np.abs(conf_matrix[i, :] - conf_matrix[j, :])
@@ -297,8 +318,7 @@ class ConfiguratorFootprintPlotter(object):
                           max_configs: int,
                           keep=None):
         """
-        Reduce configs to desired number, by default just drop the configs with the
-        fewest runs.
+        Reduce configs to desired number, by default just drop the configs with the fewest runs.
 
         Parameters
         ----------
@@ -307,8 +327,7 @@ class ConfiguratorFootprintPlotter(object):
         max_configs: int
             if > -1 reduce runhistory to at most max_configs
         keep: List[Configuration]
-            list of configs that should be kept for sure (e.g. default,
-            incumbents)
+            list of configs that should be kept for sure (e.g. default, incumbents)
 
         Returns
         -------
@@ -347,8 +366,8 @@ class ConfiguratorFootprintPlotter(object):
         ----------
         rh: RunHistory
             smac.runhistory
-        incs: List[Configuration]
-            incumbents of this configurator run, last entry is final incumbent
+        incs: List[List[Configuration]]
+            incumbents of configurator runs, last entry is final incumbent
 
         Returns
         -------
@@ -363,14 +382,15 @@ class ConfiguratorFootprintPlotter(object):
         labels: List[str]
             labels for timeslider (i.e. wallclock-times)
         """
-        # Get all configurations. Index of c in conf_list serves as identifier
         conf_list = []
         conf_matrix = []
+        # Get all configurations. Index of c in conf_list serves as identifier
+        #TODO: works? list(set(rh.get_all_configs()))
         for c in rh.get_all_configs():
             if c not in conf_list:
                 conf_matrix.append(c.get_array())
                 conf_list.append(c)
-        for inc in incs:
+        for inc in [a for b in incs for a in b]:
             if inc not in conf_list:
                 conf_matrix.append(inc.get_array())
                 conf_list.append(inc)
@@ -391,9 +411,7 @@ class ConfiguratorFootprintPlotter(object):
         # Get minimum and maximum for sizes of dots
         self.min_runs_per_conf = min([i for i in runs_per_quantile[-1] if i > 0])
         self.max_runs_per_conf = max(runs_per_quantile[-1])
-        self.logger.debug("Min runs per conf: %d, Max runs per conf: %d",
-                          self.min_runs_per_conf, self.max_runs_per_conf)
-
+        self.logger.debug("Min runs per conf: %d, Max runs per conf: %d", self.min_runs_per_conf, self.max_runs_per_conf)
         self.logger.debug("Gathered %d configurations from 1 runhistories." % len(conf_list))
 
         runs_per_quantile = np.array([np.array(run) for run in runs_per_quantile])
@@ -432,7 +450,8 @@ class ConfiguratorFootprintPlotter(object):
         # sublist from a "snapshot"-runhistory
         labels, last_time_seen = [], -1  # label, means wallclocktime at splitting points
         r_p_q_p_c = []  # runs per quantile per config
-        as_list = sorted(list(rh.data.items()), key=lambda x: x[1].time)
+        as_list = list(rh.data.items())
+        #as_list = sorted(as_list, key=lambda x: x[1].time)
         tmp_rh = RunHistory(average_cost)
         for i, j in zip(ranges[:-1], ranges[1:]):
             for idx in range(i, j):
@@ -440,15 +459,21 @@ class ConfiguratorFootprintPlotter(object):
                 tmp_rh.add(config=rh.ids_config[k.config_id],
                            cost=v.cost, time=v.time, status=v.status,
                            instance_id=k.instance_id, seed=k.seed)
-                if last_time_seen <= float(v.time):
-                    self.logger.debug("last_time_seen: {}, v.time: {}".format(last_time_seen, v.time))
-                    last_time_seen = float(v.time)
-                else:
-                    raise ValueError("Sanity check: is runhistory ordered? last_time_seen: {}, v.time: {}".format(last_time_seen, v.time))
+                #if last_time_seen <= float(v.time):
+                #    self.logger.debug("last_time_seen: {}, v.time: {}".format(last_time_seen, v.time))
+                #    last_time_seen = float(v.time)
+                #else:
+                #    raise ValueError("Sanity check: is runhistory ordered? last_time_seen: {}, v.time: {}".format(last_time_seen, v.time))
             labels.append("{0:.2f}".format(last_time_seen))
             r_p_q_p_c.append([len(tmp_rh.get_runs_for_config(c)) for c in conf_list])
         self.logger.debug("Labels: " + str(labels))
         return labels, r_p_q_p_c
+
+##################################################################################
+##################################################################################
+### PLOTTING # PLOTTING # PLOTTING # PLOTTING # PLOTTING # PLOTTING # PLOTTING ###
+##################################################################################
+##################################################################################
 
     def _get_size(self, r_p_c):
         """Returns size of scattered points in dependency of runs per config
@@ -616,10 +641,14 @@ class ConfiguratorFootprintPlotter(object):
                                              size='size',
                                              marker=marker,
                                              ))
-        self.logger.debug("Scatter-handles: %d", len(scatter_handles))
         return scatter_handles
 
-    def _plot_get_source(self, conf_list, runs, X, inc_list, hp_names):
+    def _plot_get_source(self,
+                         conf_list,
+                         runs,
+                         X,
+                         inc_list,
+                         hp_names):
         """
         Create ColumnDataSource with all the necessary data
         Contains for each configuration evaluated on any run:
@@ -656,12 +685,12 @@ class ConfiguratorFootprintPlotter(object):
         runs = np.array(runs)[keep]
         conf_list = np.array(conf_list)[keep]
         X = X[keep]
+        inc_list = [a for b in inc_list for a in b]
 
         source = ColumnDataSource(data=dict(x=X[:, 0], y=X[:, 1]))
         for k in hp_names:  # Add parameters for each config
             source.add([c[k] if c[k] else "None" for c in conf_list], escape_parameter_name(k))
-        default = conf_list[0].configuration_space.get_default_configuration()
-        conf_types = ["Default" if c == default else "Final Incumbent" if c == inc_list[-1]
+        conf_types = ["Default" if c == self.default else "Final Incumbent" if c == self.final_incumbent
                       else "Incumbent" if c in inc_list else "Candidate" for c in conf_list]
         # We group "Local Search" and "Random Search (sorted)" both into local
         origins = [get_config_origin(c) for c in conf_list]
@@ -733,11 +762,6 @@ class ConfiguratorFootprintPlotter(object):
         hp_names = [k.name for k in  # Hyperparameter names
                     conf_list[0].configuration_space.get_hyperparameters()]
 
-        # Define what appears in tooltips
-        # TODO add only important parameters (needs to change order of exec pimp before conf-footprints)
-        hover = HoverTool(tooltips=[('type', '@type'), ('origin', '@origin'), ('runs', '@runs')] +
-                                   [(k, '@' + escape_parameter_name(k)) for k in hp_names])
-
         # bokeh-figure
         x_range = [min(X[:, 0]) - 1, max(X[:, 0]) + 1]
         y_range = [min(X[:, 1]) - 1, max(X[:, 1]) + 1]
@@ -757,17 +781,16 @@ class ConfiguratorFootprintPlotter(object):
 
         # Iterate over quantiles (this updates overtime_groups)
         for idx, source, u_cfgs in zip(range(len(sources)), sources, used_configs):
-            self.logger.debug("Plotting quantile %d!", idx)
-
             # Create new plot if necessary (only plot all quantiles in one single plot if timeslider is on)
             if not use_timeslider or idx == 0:
-                p = self._create_figure(x_range, y_range, hover)
+                p = self._create_figure(x_range, y_range)
                 if contour_data is not None:  # TODO
                     p = self._plot_contour(p, contour_data, x_range, y_range)
 
             # Create views and scatter
             views, views_by_run, markers = self._create_views(source, u_cfgs)
             scatter_handles = self._scatter(p, source, views, markers)
+            self.logger.debug("Quantile %d: %d scatter-handles", idx, len(scatter_handles))
             if len(scatter_handles) == 0:
                 self.logger.debug("No configs in quantile %d (?!)", idx)
                 continue
@@ -785,6 +808,13 @@ class ConfiguratorFootprintPlotter(object):
                 over_time_paths.append(os.path.join(self.output_dir, file_path))
                 self.logger.debug("Saving plot to %s", over_time_paths[-1])
                 export_bokeh(p, over_time_paths[-1], self.logger)
+
+        # Add hovertool (define what appears in tooltips)
+        # TODO add only important parameters (needs to change order of exec pimp before conf-footprints)
+        hover = HoverTool(tooltips=[('type', '@type'), ('origin', '@origin'), ('runs', '@runs')] +
+                                   [(k, '@' + escape_parameter_name(k)) for k in hp_names],
+                          renderers=all_glyphs)
+        p.add_tools(hover)
 
         # Build dashboard
         timeslider, checkbox, select_all, select_none = self._get_widgets(all_glyphs, overtime_groups, run_groups,
@@ -864,8 +894,10 @@ class ConfiguratorFootprintPlotter(object):
             code += "var slider_labels = " + str(slider_labels) + ";"
             code += "console.log(\"Detected slider_labels: \" + slider_labels);"
             code += """
-            time_slider.title = "Until wallclocktime " + slider_labels[time_slider.value - 1] + "Quantile no. ";
+            time_slider.title = "Until wallclocktime " + slider_labels[time_slider.value - 1] + ". Step no. ";
             """
+        else:
+            code += "time_slider.title = \"Quantile on {} scale\"".format("logarithmic" if self.timeslider_log else "linear");
         # Combine checkbox-arrays, intersect with time_slider and set all selected glyphs to true
         code += """
         var activate = [];
@@ -903,9 +935,9 @@ class ConfiguratorFootprintPlotter(object):
 
         return timeslider, checkbox, select_all, select_none
 
-    def _create_figure(self, x_range, y_range, hover):
+    def _create_figure(self, x_range, y_range):
         p = figure(plot_height=500, plot_width=600,
-                   tools=[hover, 'save', 'box_zoom', 'wheel_zoom', 'reset'],
+                   tools=['save', 'box_zoom', 'wheel_zoom', 'reset'],
                    x_range=x_range, y_range=y_range)
         p.xaxis.axis_label = "MDS-X"
         p.yaxis.axis_label = "MDS-Y"
