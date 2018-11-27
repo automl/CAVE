@@ -46,7 +46,7 @@ class CaveFanova(CaveParameterImportance):
             self.parameter_importance("fanova")
         except RuntimeError as e:
             err = "Encountered error '%s' in fANOVA, this can e.g. happen with too few data-points." % e
-            self.logger.exception(err)
+            self.logger.info(err, exc_info=1)
             self.error = err
             return
         parameter_imp = {k: v * 100 for k, v in self.pimp.evaluator.evaluated_parameter_importance.items()}

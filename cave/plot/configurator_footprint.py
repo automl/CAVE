@@ -947,5 +947,4 @@ class ConfiguratorFootprintPlotter(object):
         p.xaxis.major_label_text_font_size = "12pt"
         p.yaxis.major_label_text_font_size = "12pt"
         p.title.text_font_size = "15pt"
-        p.legend.label_text_font_size = "15pt"
         return p

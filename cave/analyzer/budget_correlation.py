@@ -1,6 +1,7 @@
 import os
 import logging
 from collections import OrderedDict
+import warnings
 
 import numpy as np
 from pandas import DataFrame
@@ -89,7 +90,14 @@ class BudgetCorrelation(BaseAnalyzer):
                                                 None for c in all_configs] for run in runs}
         data['x'] = []
         data['y'] = []
-        scatter_source = ColumnDataSource(data=data)
+
+        with warnings.catch_warnings(record=True) as list_of_warnings:
+            # Catch unmatching column lengths warning
+            warnings.simplefilter('always')
+            scatter_source = ColumnDataSource(data=data)
+            for w in list_of_warnings:
+                self.logger.debug("During budget correlation a %s was raised: %s", str(w.category), w.message)
+
         # Create figure and dynamically updating plot (linked with table)
         min_val = min([min([v for v in val if v]) for val in data.values() if len(val) > 0])
         max_val = max([max([v for v in val if v]) for val in data.values() if len(val) > 0])
