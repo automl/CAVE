@@ -18,6 +18,7 @@ class ConfiguratorFootprint(BaseAnalyzer):
                  scenario,
                  runs,
                  runhistory,
+                 final_incumbent,
                  output_dir,
                  max_confs=1000,
                  use_timeslider=False,
@@ -34,6 +35,8 @@ class ConfiguratorFootprint(BaseAnalyzer):
             holding information about original runhistories, trajectories, incumbents, etc.
         runhistory: RunHistory
             with maximum number of real (not estimated) runs to train best-possible epm
+        final_incumbent: Configuration
+            final incumbent (best of all (highest budget) runs)
         max_confs: int
             maximum number of data-points to plot
         use_timeslider: bool
@@ -60,6 +63,7 @@ class ConfiguratorFootprint(BaseAnalyzer):
         self.scenario = scenario
         self.runs = runs
         self.runhistory = runhistory if runhistory else combine_runhistories([r.combined_runhistory for r in runs])
+        self.final_incumbent = final_incumbent
         self.output_dir = output_dir
         self.max_confs = max_confs
         self.use_timeslider = use_timeslider
@@ -72,16 +76,15 @@ class ConfiguratorFootprint(BaseAnalyzer):
         incumbents = list(map(lambda x: x['incumbent'], runs[0].traj))
         assert(incumbents[-1] == runs[0].traj[-1]['incumbent'])
 
-        configs_in_run = {os.path.basename(r.folder) : r.combined_runhistory.get_all_configs() for r in runs}
-
         cfp = ConfiguratorFootprintPlotter(
                        scenario=self.scenario,
-                       rh=self.runhistory,
-                       incs=incumbents,
+                       rhs=[r.original_runhistory for r in self.runs],
+                       incs=[[entry['incumbent'] for entry in r.traj] for r in self.runs],
+                       final_incumbent=self.final_incumbent,
+                       rh_labels=[os.path.basename(r.folder).replace('_', ' ') for r in self.runs],
                        max_plot=self.max_confs,
                        use_timeslider=self.use_timeslider and self.num_quantiles > 1,
                        num_quantiles=self.num_quantiles,
-                       configs_in_run=configs_in_run,
                        output_dir=self.output_dir)
         try:
             res = cfp.run()

@@ -299,6 +299,7 @@ class CAVE(object):
                             use_budgets=False,
                             seed=self.seed,
                             verbose_level='OFF')
+        self.incumbent = self.runs[-1].incumbent
 
     def _init_helper_no_budgets(self):
         """
@@ -780,6 +781,7 @@ class CAVE(object):
                  cave.scenario,
                  cave.runs,
                  cave.global_original_rh,
+                 final_incumbent=self.incumbent,
                  output_dir=cave.output_dir,
                  max_confs=max_confs,
                  use_timeslider=use_timeslider,
