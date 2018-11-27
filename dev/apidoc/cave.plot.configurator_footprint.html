@@ -235,23 +235,28 @@
 <span id="cave-plot-configurator-footprint-module"></span><h1>cave.plot.configurator_footprint module<a class="headerlink" href="#module-cave.plot.configurator_footprint" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter">
-<em class="property">class </em><code class="descclassname">cave.plot.configurator_footprint.</code><code class="descname">ConfiguratorFootprintPlotter</code><span class="sig-paren">(</span><em>scenario: smac.scenario.scenario.Scenario</em>, <em>rh: smac.runhistory.runhistory.RunHistory</em>, <em>incs: list = None</em>, <em>max_plot: int = -1</em>, <em>contour_step_size=0.2</em>, <em>output_dir: str = None</em>, <em>use_timeslider: bool = False</em>, <em>num_quantiles: int = 10</em>, <em>configs_in_run: dict = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">cave.plot.configurator_footprint.</code><code class="descname">ConfiguratorFootprintPlotter</code><span class="sig-paren">(</span><em>scenario: smac.scenario.scenario.Scenario</em>, <em>rhs: smac.runhistory.runhistory.RunHistory</em>, <em>incs: list = None</em>, <em>final_incumbent=None</em>, <em>rh_timestamps=None</em>, <em>rh_labels=None</em>, <em>max_plot: int = -1</em>, <em>contour_step_size=0.2</em>, <em>use_timeslider: bool = False</em>, <em>num_quantiles: int = 10</em>, <em>output_dir: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Constructor</p>
+<p>Creating an interactive plot, visualizing the configuration search space.
+The runhistories are correlated to the individual runs.
+Each run consists of a runhistory (in the smac-format), a list of incumbents, an optional dict mapping RunKeys
+to timestamps for each runhistory.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>scenario</strong> (<em>Scenario</em>) – scenario</li>
-<li><strong>rh</strong> (<em>RunHistory</em>) – runhistory from configurator run, only runs during optimization</li>
-<li><strong>incs</strong> (<em>list</em>) – incumbents of best configurator run, last entry is final incumbent</li>
+<li><strong>rhs</strong> (<em>List</em><em>[</em><em>RunHistory</em><em>]</em>) – runhistories from configurator runs, only data collected during optimization (no validation!)</li>
+<li><strong>incs</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><em>Configuration</em><em>]</em><em>]</em>) – incumbents per run, last entry is final incumbent</li>
+<li><strong>final_incumbent</strong> (<em>Configuration</em>) – final configuration (best of all runs)</li>
+<li><strong>rh_timestamps</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>RunKey -&gt; float</em><em>]</em><em>]</em>) – timestamps for individual runs</li>
 <li><strong>max_plot</strong> (<em>int</em>) – maximum number of configs to plot, if -1 plot all</li>
 <li><strong>contour_step_size</strong> (<em>float</em>) – step size of meshgrid to compute contour of fitness landscape</li>
-<li><strong>output_dir</strong> (<em>str</em>) – output directory</li>
 <li><strong>use_timeslider</strong> (<em>bool</em>) – whether or not to have a time_slider-widget on cfp-plot
 INCREASES FILE-SIZE DRAMATICALLY</li>
 <li><strong>num_quantiles</strong> (<em>int</em>) – number of quantiles for the slider/ number of static pictures</li>
+<li><strong>output_dir</strong> (<em>str</em>) – output directory</li>
 </ul>
 </td>
 </tr>
@@ -269,7 +274,7 @@ runs per configuration in a quantiled manner.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>rh</strong> (<em>RunHistory</em>) – smac.runhistory</li>
-<li><strong>incs</strong> (<em>List</em><em>[</em><em>Configuration</em><em>]</em>) – incumbents of this configurator run, last entry is final incumbent</li>
+<li><strong>incs</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><em>Configuration</em><em>]</em><em>]</em>) – incumbents of configurator runs, last entry is final incumbent</li>
 </ul>
 </td>
 </tr>
@@ -279,6 +284,7 @@ runs per configuration in a quantiled manner.</p>
 the order of this list is used to determine all kinds of properties
 in the plotting (but is arbitrarily determined)</li>
 <li><strong>runs_per_quantile</strong> (<em>np.array</em>) – numpy array of runs per configuration per quantile</li>
+<li><strong>labels</strong> (<em>List[str]</em>) – labels for timeslider (i.e. wallclock-times)</li>
 </ul>
 </p>
 </td>
@@ -361,6 +367,7 @@ return data to plot a contour plot of the empirical performance</p>
 <li><strong>rh</strong> (<em>RunHistory</em>) – runhistory</li>
 <li><strong>X_scaled</strong> (<em>np.array</em>) – configurations in scaled 2dim</li>
 <li><strong>conf_list</strong> (<em>list</em>) – list of Configuration objects</li>
+<li><strong>contour_step_size</strong> (<em>float</em>) – step-size for contour</li>
 </ul>
 </td>
 </tr>
@@ -376,7 +383,7 @@ return data to plot a contour plot of the empirical performance</p>
 
 <dl class="method">
 <dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.plot">
-<code class="descname">plot</code><span class="sig-paren">(</span><em>X</em>, <em>conf_list: list</em>, <em>runs_per_quantile</em>, <em>inc_list: list = None</em>, <em>contour_data=None</em>, <em>use_timeslider=False</em>, <em>use_checkbox=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.plot" title="Permalink to this definition">¶</a></dt>
+<code class="descname">plot</code><span class="sig-paren">(</span><em>X</em>, <em>conf_list: list</em>, <em>runs_per_quantile</em>, <em>inc_list: list = None</em>, <em>contour_data=None</em>, <em>use_timeslider=False</em>, <em>use_checkbox=True</em>, <em>timeslider_labels=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>plots sampled configuration in 2d-space;
 uses bokeh for interactive plot
 saves results in self.output, if set</p>
@@ -412,8 +419,7 @@ configurator run (for static evaluation)</li>
 <dl class="method">
 <dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.reduce_runhistory">
 <code class="descname">reduce_runhistory</code><span class="sig-paren">(</span><em>rh: smac.runhistory.runhistory.RunHistory</em>, <em>max_configs: int</em>, <em>keep=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.reduce_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.reduce_runhistory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reduce configs to desired number, by default just drop the configs with the
-fewest runs.</p>
+<dd><p>Reduce configs to desired number, by default just drop the configs with the fewest runs.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -421,8 +427,7 @@ fewest runs.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>rh</strong> (<em>RunHistory</em>) – runhistory that is to be reduced</li>
 <li><strong>max_configs</strong> (<em>int</em>) – if &gt; -1 reduce runhistory to at most max_configs</li>
-<li><strong>keep</strong> (<em>List</em><em>[</em><em>Configuration</em><em>]</em>) – list of configs that should be kept for sure (e.g. default,
-incumbents)</li>
+<li><strong>keep</strong> (<em>List</em><em>[</em><em>Configuration</em><em>]</em>) – list of configs that should be kept for sure (e.g. default, incumbents)</li>
 </ul>
 </td>
 </tr>

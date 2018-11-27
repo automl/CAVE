@@ -231,7 +231,6 @@
 <span class="n">__license__</span> <span class="o">=</span> <span class="s2">&quot;BSD&quot;</span>
 <span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">&quot;Joshua Marben&quot;</span>
 <span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;marbenj@cs.uni-freiburg.de&quot;</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;0.0.1&quot;</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
@@ -267,7 +266,7 @@
 <span class="kn">from</span> <span class="nn">ConfigSpace</span> <span class="k">import</span> <span class="n">CategoricalHyperparameter</span>
 
 <span class="kn">from</span> <span class="nn">cave.utils.convert_for_epm</span> <span class="k">import</span> <span class="n">convert_data_for_epm</span>
-<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">escape_parameter_name</span><span class="p">,</span> <span class="n">get_config_origin</span>
+<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">escape_parameter_name</span><span class="p">,</span> <span class="n">get_config_origin</span><span class="p">,</span> <span class="n">combine_runhistories</span>
 <span class="kn">from</span> <span class="nn">cave.utils.timing</span> <span class="k">import</span> <span class="n">timing</span>
 <span class="kn">from</span> <span class="nn">cave.utils.io</span> <span class="k">import</span> <span class="n">export_bokeh</span>
 <span class="kn">from</span> <span class="nn">cave.utils.bokeh_routines</span> <span class="k">import</span> <span class="n">get_checkbox</span>
@@ -277,49 +276,68 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
-                 <span class="n">rh</span><span class="p">:</span> <span class="n">RunHistory</span><span class="p">,</span>
+                 <span class="n">rhs</span><span class="p">:</span> <span class="n">RunHistory</span><span class="p">,</span>
                  <span class="n">incs</span><span class="p">:</span> <span class="nb">list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">final_incumbent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">rh_timestamps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">rh_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">max_plot</span><span class="p">:</span> <span class="nb">int</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
                  <span class="n">contour_step_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
-                 <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">use_timeslider</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">num_quantiles</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                 <span class="n">configs_in_run</span><span class="p">:</span> <span class="nb">dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Constructor</span>
+<span class="sd">        Creating an interactive plot, visualizing the configuration search space.</span>
+<span class="sd">        The runhistories are correlated to the individual runs.</span>
+<span class="sd">        Each run consists of a runhistory (in the smac-format), a list of incumbents, an optional dict mapping RunKeys</span>
+<span class="sd">        to timestamps for each runhistory.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        scenario: Scenario</span>
 <span class="sd">            scenario</span>
-<span class="sd">        rh: RunHistory</span>
-<span class="sd">            runhistory from configurator run, only runs during optimization</span>
-<span class="sd">        incs: list</span>
-<span class="sd">            incumbents of best configurator run, last entry is final incumbent</span>
+<span class="sd">        rhs: List[RunHistory]</span>
+<span class="sd">            runhistories from configurator runs, only data collected during optimization (no validation!)</span>
+<span class="sd">        incs: List[List[Configuration]]</span>
+<span class="sd">            incumbents per run, last entry is final incumbent</span>
+<span class="sd">        final_incumbent: Configuration</span>
+<span class="sd">            final configuration (best of all runs)</span>
+<span class="sd">        rh_timestamps: List[Dict[RunKey -&gt; float]]</span>
+<span class="sd">            timestamps for individual runs</span>
 <span class="sd">        max_plot: int</span>
 <span class="sd">            maximum number of configs to plot, if -1 plot all</span>
 <span class="sd">        contour_step_size: float</span>
 <span class="sd">            step size of meshgrid to compute contour of fitness landscape</span>
-<span class="sd">        output_dir: str</span>
-<span class="sd">            output directory</span>
 <span class="sd">        use_timeslider: bool</span>
 <span class="sd">            whether or not to have a time_slider-widget on cfp-plot</span>
 <span class="sd">            INCREASES FILE-SIZE DRAMATICALLY</span>
 <span class="sd">        num_quantiles: int</span>
 <span class="sd">            number of quantiles for the slider/ number of static pictures</span>
+<span class="sd">        output_dir: str</span>
+<span class="sd">            output directory</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">orig_rh</span> <span class="o">=</span> <span class="n">rh</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="o">=</span> <span class="n">rhs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combined_rh</span> <span class="o">=</span> <span class="n">combine_runhistories</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">incs</span> <span class="o">=</span> <span class="n">incs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rh_timestamps</span> <span class="o">=</span> <span class="n">rh_timestamps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rh_labels</span> <span class="o">=</span> <span class="n">rh_labels</span> <span class="k">if</span> <span class="n">rh_labels</span> <span class="k">else</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">))]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_plot</span> <span class="o">=</span> <span class="n">max_plot</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_timeslider</span> <span class="o">=</span> <span class="n">use_timeslider</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_quantiles</span> <span class="o">=</span> <span class="n">num_quantiles</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">contour_step_size</span> <span class="o">=</span> <span class="n">contour_step_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">configs_in_run</span> <span class="o">=</span> <span class="n">configs_in_run</span> <span class="k">if</span> <span class="n">configs_in_run</span> <span class="k">else</span> <span class="p">{</span><span class="s1">&#39;all&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_rh</span><span class="o">.</span><span class="n">get_all_configs</span><span class="p">()}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeslider_log</span> <span class="o">=</span> <span class="kc">False</span><span class="p">;</span>
+
+        <span class="c1"># Preprocess input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="o">.</span><span class="n">get_default_configuration</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_incumbent</span> <span class="o">=</span> <span class="n">final_incumbent</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">configs_in_run</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span> <span class="p">:</span> <span class="n">rh</span><span class="o">.</span><span class="n">get_all_configs</span><span class="p">()</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">rh</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rh_labels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">)}</span>
 
 <div class="viewcode-block" id="ConfiguratorFootprintPlotter.run"><a class="viewcode-back" href="../../../apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -327,13 +345,13 @@
 <span class="sd">        data and plot the configurator footprint.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="o">.</span><span class="n">get_default_configuration</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">orig_rh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduce_runhistory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orig_rh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_plot</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">incs</span><span class="o">+</span><span class="p">[</span><span class="n">default</span><span class="p">])</span>
-        <span class="n">conf_matrix</span><span class="p">,</span> <span class="n">conf_list</span><span class="p">,</span> <span class="n">runs_per_quantile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_conf_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orig_rh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">incs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combined_rh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduce_runhistory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combined_rh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_plot</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">incs</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">b</span><span class="p">]</span><span class="o">+</span><span class="p">[</span><span class="n">default</span><span class="p">])</span>
+        <span class="n">conf_matrix</span><span class="p">,</span> <span class="n">conf_list</span><span class="p">,</span> <span class="n">runs_per_quantile</span><span class="p">,</span> <span class="n">timeslider_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_conf_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combined_rh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">incs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Number of Configurations: </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">conf_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">dists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_distance</span><span class="p">(</span><span class="n">conf_matrix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="p">)</span>
         <span class="n">red_dists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mds</span><span class="p">(</span><span class="n">dists</span><span class="p">)</span>
 
-        <span class="n">contour_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pred_surface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orig_rh</span><span class="p">,</span> <span class="n">X_scaled</span><span class="o">=</span><span class="n">red_dists</span><span class="p">,</span>
+        <span class="n">contour_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pred_surface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combined_rh</span><span class="p">,</span> <span class="n">X_scaled</span><span class="o">=</span><span class="n">red_dists</span><span class="p">,</span>
                                              <span class="n">conf_list</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">conf_list</span><span class="p">),</span>
                                              <span class="n">contour_step_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">contour_step_size</span><span class="p">)</span>
 
@@ -342,7 +360,8 @@
                          <span class="n">runs_per_quantile</span><span class="p">,</span>
                          <span class="n">inc_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">incs</span><span class="p">,</span>
                          <span class="n">contour_data</span><span class="o">=</span><span class="n">contour_data</span><span class="p">,</span>
-                         <span class="n">use_timeslider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_timeslider</span><span class="p">)</span></div>
+                         <span class="n">use_timeslider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_timeslider</span><span class="p">,</span>
+                         <span class="n">timeslider_labels</span><span class="o">=</span><span class="n">timeslider_labels</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ConfiguratorFootprintPlotter.get_pred_surface"><a class="viewcode-back" href="../../../apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_pred_surface">[docs]</a>    <span class="nd">@timing</span>
     <span class="k">def</span> <span class="nf">get_pred_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">X_scaled</span><span class="p">,</span> <span class="n">conf_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">contour_step_size</span><span class="p">):</span>
@@ -357,6 +376,8 @@
 <span class="sd">            configurations in scaled 2dim</span>
 <span class="sd">        conf_list: list</span>
 <span class="sd">            list of Configuration objects</span>
+<span class="sd">        contour_step_size: float</span>
+<span class="sd">            step-size for contour</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -454,6 +475,7 @@
         <span class="n">is_cat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">is_cat</span><span class="p">)</span>
         <span class="n">depth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">depth</span><span class="p">)</span>
 
+        <span class="c1"># TODO tqdm</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_confs</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_confs</span><span class="p">):</span>
                 <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">conf_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">conf_matrix</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="p">:])</span>
@@ -523,8 +545,7 @@
                           <span class="n">max_configs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
                           <span class="n">keep</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Reduce configs to desired number, by default just drop the configs with the</span>
-<span class="sd">        fewest runs.</span>
+<span class="sd">        Reduce configs to desired number, by default just drop the configs with the fewest runs.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -533,8 +554,7 @@
 <span class="sd">        max_configs: int</span>
 <span class="sd">            if &gt; -1 reduce runhistory to at most max_configs</span>
 <span class="sd">        keep: List[Configuration]</span>
-<span class="sd">            list of configs that should be kept for sure (e.g. default,</span>
-<span class="sd">            incumbents)</span>
+<span class="sd">            list of configs that should be kept for sure (e.g. default, incumbents)</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -573,8 +593,8 @@
 <span class="sd">        ----------</span>
 <span class="sd">        rh: RunHistory</span>
 <span class="sd">            smac.runhistory</span>
-<span class="sd">        incs: List[Configuration]</span>
-<span class="sd">            incumbents of this configurator run, last entry is final incumbent</span>
+<span class="sd">        incs: List[List[Configuration]]</span>
+<span class="sd">            incumbents of configurator runs, last entry is final incumbent</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -586,15 +606,18 @@
 <span class="sd">            in the plotting (but is arbitrarily determined)</span>
 <span class="sd">        runs_per_quantile: np.array</span>
 <span class="sd">            numpy array of runs per configuration per quantile</span>
+<span class="sd">        labels: List[str]</span>
+<span class="sd">            labels for timeslider (i.e. wallclock-times)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Get all configurations. Index of c in conf_list serves as identifier</span>
         <span class="n">conf_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">conf_matrix</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Get all configurations. Index of c in conf_list serves as identifier</span>
+        <span class="c1">#TODO: works? list(set(rh.get_all_configs()))</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">rh</span><span class="o">.</span><span class="n">get_all_configs</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">conf_list</span><span class="p">:</span>
                 <span class="n">conf_matrix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">get_array</span><span class="p">())</span>
                 <span class="n">conf_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">inc</span> <span class="ow">in</span> <span class="n">incs</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">inc</span> <span class="ow">in</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">incs</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">b</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">inc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">conf_list</span><span class="p">:</span>
                 <span class="n">conf_matrix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inc</span><span class="o">.</span><span class="n">get_array</span><span class="p">())</span>
                 <span class="n">conf_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inc</span><span class="p">)</span>
@@ -609,19 +632,17 @@
         <span class="c1"># screenshots of the number of runs per config at different points</span>
         <span class="c1"># in (i.e. different quantiles of) the runhistory, LAST quantile</span>
         <span class="c1"># is full history!!</span>
-        <span class="n">runs_per_quantile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_runs_per_config_quantiled</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">conf_list</span><span class="p">,</span> <span class="n">quantiles</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_quantiles</span><span class="p">)</span>
+        <span class="n">labels</span><span class="p">,</span> <span class="n">runs_per_quantile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_runs_per_config_quantiled</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">conf_list</span><span class="p">,</span> <span class="n">quantiles</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_quantiles</span><span class="p">)</span>
         <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">runs_per_quantile</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_quantiles</span><span class="p">)</span>
 
         <span class="c1"># Get minimum and maximum for sizes of dots</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min_runs_per_conf</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">runs_per_quantile</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_runs_per_conf</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">runs_per_quantile</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Min runs per conf: </span><span class="si">%d</span><span class="s2">, Max runs per conf: </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span>
-                          <span class="bp">self</span><span class="o">.</span><span class="n">min_runs_per_conf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_runs_per_conf</span><span class="p">)</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Min runs per conf: </span><span class="si">%d</span><span class="s2">, Max runs per conf: </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_runs_per_conf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_runs_per_conf</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Gathered </span><span class="si">%d</span><span class="s2"> configurations from 1 runhistories.&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">conf_list</span><span class="p">))</span>
 
         <span class="n">runs_per_quantile</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">run</span><span class="p">)</span> <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs_per_quantile</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">conf_matrix</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">conf_list</span><span class="p">),</span> <span class="n">runs_per_quantile</span></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">conf_matrix</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">conf_list</span><span class="p">),</span> <span class="n">runs_per_quantile</span><span class="p">,</span> <span class="n">labels</span></div>
 
     <span class="nd">@timing</span>
     <span class="k">def</span> <span class="nf">_get_runs_per_config_quantiled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">conf_list</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">):</span>
@@ -632,14 +653,16 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        rh: RunHistory</span>
-<span class="sd">            rh to evaluate</span>
+<span class="sd">            rh to be split up</span>
 <span class="sd">        conf_list: list</span>
-<span class="sd">            list of all Configuration objects that appeared in runhistory</span>
+<span class="sd">            list of all Configuration objects that appear in runhistory</span>
 <span class="sd">        quantiles: int</span>
 <span class="sd">            number of fractions to split rh into</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">        --------</span>
+<span class="sd">        labels: List[str]</span>
+<span class="sd">            labels for timeslider (i.e. wallclock-times)</span>
 <span class="sd">        runs_per_quantile: np.array</span>
 <span class="sd">            numpy array of runs per configuration per quantile</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -652,8 +675,10 @@
 
         <span class="c1"># Iterate over the runhistory&#39;s entries in ranges and creating each</span>
         <span class="c1"># sublist from a &quot;snapshot&quot;-runhistory</span>
+        <span class="n">labels</span><span class="p">,</span> <span class="n">last_time_seen</span> <span class="o">=</span> <span class="p">[],</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># label, means wallclocktime at splitting points</span>
         <span class="n">r_p_q_p_c</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># runs per quantile per config</span>
         <span class="n">as_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">rh</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="c1">#as_list = sorted(as_list, key=lambda x: x[1].time)</span>
         <span class="n">tmp_rh</span> <span class="o">=</span> <span class="n">RunHistory</span><span class="p">(</span><span class="n">average_cost</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ranges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
             <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
@@ -661,8 +686,22 @@
                 <span class="n">tmp_rh</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">rh</span><span class="o">.</span><span class="n">ids_config</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">config_id</span><span class="p">],</span>
                            <span class="n">cost</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">cost</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
                            <span class="n">instance_id</span><span class="o">=</span><span class="n">k</span><span class="o">.</span><span class="n">instance_id</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">k</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
+                <span class="c1">#if last_time_seen &lt;= float(v.time):</span>
+                <span class="c1">#    self.logger.debug(&quot;last_time_seen: {}, v.time: {}&quot;.format(last_time_seen, v.time))</span>
+                <span class="c1">#    last_time_seen = float(v.time)</span>
+                <span class="c1">#else:</span>
+                <span class="c1">#    raise ValueError(&quot;Sanity check: is runhistory ordered? last_time_seen: {}, v.time: {}&quot;.format(last_time_seen, v.time))</span>
+            <span class="k">if</span> <span class="n">last_time_seen</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">last_time_seen</span><span class="p">))</span>
             <span class="n">r_p_q_p_c</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp_rh</span><span class="o">.</span><span class="n">get_runs_for_config</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">conf_list</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">r_p_q_p_c</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Labels: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">labels</span><span class="p">,</span> <span class="n">r_p_q_p_c</span>
+
+<span class="c1">##################################################################################</span>
+<span class="c1">##################################################################################</span>
+<span class="c1">### PLOTTING # PLOTTING # PLOTTING # PLOTTING # PLOTTING # PLOTTING # PLOTTING ###</span>
+<span class="c1">##################################################################################</span>
+<span class="c1">##################################################################################</span>
 
     <span class="k">def</span> <span class="nf">_get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_p_c</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns size of scattered points in dependency of runs per config</span>
@@ -830,10 +869,14 @@
                                              <span class="n">size</span><span class="o">=</span><span class="s1">&#39;size&#39;</span><span class="p">,</span>
                                              <span class="n">marker</span><span class="o">=</span><span class="n">marker</span><span class="p">,</span>
                                              <span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Scatter-handles: </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">scatter_handles</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">scatter_handles</span>
 
-    <span class="k">def</span> <span class="nf">_plot_get_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf_list</span><span class="p">,</span> <span class="n">runs</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">inc_list</span><span class="p">,</span> <span class="n">hp_names</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_plot_get_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                         <span class="n">conf_list</span><span class="p">,</span>
+                         <span class="n">runs</span><span class="p">,</span>
+                         <span class="n">X</span><span class="p">,</span>
+                         <span class="n">inc_list</span><span class="p">,</span>
+                         <span class="n">hp_names</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create ColumnDataSource with all the necessary data</span>
 <span class="sd">        Contains for each configuration evaluated on any run:</span>
@@ -870,12 +913,12 @@
         <span class="n">runs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">runs</span><span class="p">)[</span><span class="n">keep</span><span class="p">]</span>
         <span class="n">conf_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">conf_list</span><span class="p">)[</span><span class="n">keep</span><span class="p">]</span>
         <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+        <span class="n">inc_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">inc_list</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">b</span><span class="p">]</span>
 
         <span class="n">source</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]))</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">hp_names</span><span class="p">:</span>  <span class="c1"># Add parameters for each config</span>
             <span class="n">source</span><span class="o">.</span><span class="n">add</span><span class="p">([</span><span class="n">c</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">if</span> <span class="n">c</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;None&quot;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">conf_list</span><span class="p">],</span> <span class="n">escape_parameter_name</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
-        <span class="n">default</span> <span class="o">=</span> <span class="n">conf_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">configuration_space</span><span class="o">.</span><span class="n">get_default_configuration</span><span class="p">()</span>
-        <span class="n">conf_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Default&quot;</span> <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="n">default</span> <span class="k">else</span> <span class="s2">&quot;Final Incumbent&quot;</span> <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="n">inc_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">conf_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Default&quot;</span> <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="k">else</span> <span class="s2">&quot;Final Incumbent&quot;</span> <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_incumbent</span>
                       <span class="k">else</span> <span class="s2">&quot;Incumbent&quot;</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">inc_list</span> <span class="k">else</span> <span class="s2">&quot;Candidate&quot;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">conf_list</span><span class="p">]</span>
         <span class="c1"># We group &quot;Local Search&quot; and &quot;Random Search (sorted)&quot; both into local</span>
         <span class="n">origins</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_config_origin</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">conf_list</span><span class="p">]</span>
@@ -906,7 +949,8 @@
              <span class="n">inc_list</span><span class="p">:</span> <span class="nb">list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
              <span class="n">contour_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
              <span class="n">use_timeslider</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-             <span class="n">use_checkbox</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+             <span class="n">use_checkbox</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+             <span class="n">timeslider_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        plots sampled configuration in 2d-space;</span>
 <span class="sd">        uses bokeh for interactive plot</span>
@@ -946,11 +990,6 @@
         <span class="n">hp_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span>  <span class="c1"># Hyperparameter names</span>
                     <span class="n">conf_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">configuration_space</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">()]</span>
 
-        <span class="c1"># Define what appears in tooltips</span>
-        <span class="c1"># TODO add only important parameters (needs to change order of exec pimp before conf-footprints)</span>
-        <span class="n">hover</span> <span class="o">=</span> <span class="n">HoverTool</span><span class="p">(</span><span class="n">tooltips</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;@type&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;origin&#39;</span><span class="p">,</span> <span class="s1">&#39;@origin&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;runs&#39;</span><span class="p">,</span> <span class="s1">&#39;@runs&#39;</span><span class="p">)]</span> <span class="o">+</span>
-                                   <span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="s1">&#39;@&#39;</span> <span class="o">+</span> <span class="n">escape_parameter_name</span><span class="p">(</span><span class="n">k</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">hp_names</span><span class="p">])</span>
-
         <span class="c1"># bokeh-figure</span>
         <span class="n">x_range</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
         <span class="n">y_range</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
@@ -970,17 +1009,16 @@
 
         <span class="c1"># Iterate over quantiles (this updates overtime_groups)</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">u_cfgs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sources</span><span class="p">)),</span> <span class="n">sources</span><span class="p">,</span> <span class="n">used_configs</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Plotting quantile </span><span class="si">%d</span><span class="s2">!&quot;</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
-
             <span class="c1"># Create new plot if necessary (only plot all quantiles in one single plot if timeslider is on)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">use_timeslider</span> <span class="ow">or</span> <span class="n">idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_figure</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="n">y_range</span><span class="p">,</span> <span class="n">hover</span><span class="p">)</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_figure</span><span class="p">(</span><span class="n">x_range</span><span class="p">,</span> <span class="n">y_range</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">contour_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># TODO</span>
                     <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_contour</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">contour_data</span><span class="p">,</span> <span class="n">x_range</span><span class="p">,</span> <span class="n">y_range</span><span class="p">)</span>
 
             <span class="c1"># Create views and scatter</span>
             <span class="n">views</span><span class="p">,</span> <span class="n">views_by_run</span><span class="p">,</span> <span class="n">markers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_views</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">u_cfgs</span><span class="p">)</span>
             <span class="n">scatter_handles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scatter</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">views</span><span class="p">,</span> <span class="n">markers</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Quantile </span><span class="si">%d</span><span class="s2">: </span><span class="si">%d</span><span class="s2"> scatter-handles&quot;</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">scatter_handles</span><span class="p">))</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scatter_handles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No configs in quantile </span><span class="si">%d</span><span class="s2"> (?!)&quot;</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
                 <span class="k">continue</span>
@@ -999,8 +1037,16 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Saving plot to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">over_time_paths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
                 <span class="n">export_bokeh</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">over_time_paths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
 
+        <span class="c1"># Add hovertool (define what appears in tooltips)</span>
+        <span class="c1"># TODO add only important parameters (needs to change order of exec pimp before conf-footprints)</span>
+        <span class="n">hover</span> <span class="o">=</span> <span class="n">HoverTool</span><span class="p">(</span><span class="n">tooltips</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;@type&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;origin&#39;</span><span class="p">,</span> <span class="s1">&#39;@origin&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;runs&#39;</span><span class="p">,</span> <span class="s1">&#39;@runs&#39;</span><span class="p">)]</span> <span class="o">+</span>
+                                   <span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="s1">&#39;@&#39;</span> <span class="o">+</span> <span class="n">escape_parameter_name</span><span class="p">(</span><span class="n">k</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">hp_names</span><span class="p">],</span>
+                          <span class="n">renderers</span><span class="o">=</span><span class="n">all_glyphs</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">add_tools</span><span class="p">(</span><span class="n">hover</span><span class="p">)</span>
+
         <span class="c1"># Build dashboard</span>
-        <span class="n">timeslider</span><span class="p">,</span> <span class="n">checkbox</span><span class="p">,</span> <span class="n">select_all</span><span class="p">,</span> <span class="n">select_none</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_widgets</span><span class="p">(</span><span class="n">all_glyphs</span><span class="p">,</span> <span class="n">overtime_groups</span><span class="p">,</span> <span class="n">run_groups</span><span class="p">)</span>
+        <span class="n">timeslider</span><span class="p">,</span> <span class="n">checkbox</span><span class="p">,</span> <span class="n">select_all</span><span class="p">,</span> <span class="n">select_none</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_widgets</span><span class="p">(</span><span class="n">all_glyphs</span><span class="p">,</span> <span class="n">overtime_groups</span><span class="p">,</span> <span class="n">run_groups</span><span class="p">,</span>
+                                                                          <span class="n">slider_labels</span><span class="o">=</span><span class="n">timeslider_labels</span><span class="p">)</span>
         <span class="n">layout</span> <span class="o">=</span> <span class="n">p</span>
         <span class="k">if</span> <span class="n">use_timeslider</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding timeslider&quot;</span><span class="p">)</span>
@@ -1020,7 +1066,7 @@
 
         <span class="k">return</span> <span class="n">layout</span><span class="p">,</span> <span class="n">over_time_paths</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_widgets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_glyphs</span><span class="p">,</span> <span class="n">overtime_groups</span><span class="p">,</span> <span class="n">run_groups</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_widgets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_glyphs</span><span class="p">,</span> <span class="n">overtime_groups</span><span class="p">,</span> <span class="n">run_groups</span><span class="p">,</span> <span class="n">slider_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Combine timeslider for quantiles and checkboxes for individual runs in a single javascript-snippet</span>
 
 <span class="sd">        Parameters</span>
@@ -1029,6 +1075,8 @@
 <span class="sd">            togglable bokeh-glyphs</span>
 <span class="sd">        overtime_groups, run_groups: Dicŧ[str -&gt; List[int]</span>
 <span class="sd">            mapping labels to indices of the all_glyphs-list</span>
+<span class="sd">        slider_labels: Union[None, List[str]]</span>
+<span class="sd">            if provided, used as labels for timeslider-widget</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1067,15 +1115,24 @@
 <span class="s2">        }&quot;&quot;&quot;</span>
         <span class="c1"># Add logging</span>
         <span class="n">code</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        console.log(&quot;Timeslider: &quot; + time_slider.value)</span>
-<span class="s2">        console.log(&quot;Checkbox: &quot; + checkbox.active)&quot;&quot;&quot;</span>
+<span class="s2">        console.log(&quot;Timeslider: &quot; + time_slider.value);</span>
+<span class="s2">        console.log(&quot;Checkbox: &quot; + checkbox.active);&quot;&quot;&quot;</span>
+        <span class="c1"># Set timeslider title (to enable log-scale and print wallclocktime-labels)</span>
+        <span class="k">if</span> <span class="n">slider_labels</span><span class="p">:</span>
+            <span class="n">code</span> <span class="o">+=</span> <span class="s2">&quot;var slider_labels = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">slider_labels</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;;&quot;</span>
+            <span class="n">code</span> <span class="o">+=</span> <span class="s2">&quot;console.log(</span><span class="se">\&quot;</span><span class="s2">Detected slider_labels: </span><span class="se">\&quot;</span><span class="s2"> + slider_labels);&quot;</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Until wallclocktime &quot;</span> <span class="o">+</span> <span class="n">slider_labels</span><span class="p">[</span><span class="n">time_slider</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;. Step no. &quot;</span><span class="p">;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Quantile on </span><span class="si">{}</span><span class="s2"> scale&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;logarithmic&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeslider_log</span> <span class="k">else</span> <span class="s2">&quot;linear&quot;</span><span class="p">);</span>
+        <span class="n">code</span> <span class="o">+=</span> <span class="s2">&quot;time_slider.title = </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2">;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="p">);</span>
         <span class="c1"># Combine checkbox-arrays, intersect with time_slider and set all selected glyphs to true</span>
         <span class="n">code</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        var activate = [];</span>
-<span class="s2">        // if we want multiple checkboxes at the same time, we need to combine the thingies</span>
+<span class="s2">        // if we want multiple checkboxes at the same time, we need to combine the arrays</span>
 <span class="s2">        checkbox.active.forEach(function(c) {</span>
 <span class="s2">          activate = union_arrays(activate, runs[c]);</span>
 <span class="s2">        })</span>
+<span class="s2">        // now the intersection of timeslider-activated and checkbox-activated</span>
 <span class="s2">        activate = activate.filter(value =&gt; -1 !== overtime[time_slider.value - 1].indexOf(value));</span>
 <span class="s2">        activate.forEach(function(idx) {</span>
 <span class="s2">          glyphs[idx].visible = true;</span>
@@ -1085,7 +1142,7 @@
         <span class="n">num_quantiles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">overtime_groups</span><span class="p">)</span>
         <span class="n">timeslider</span> <span class="o">=</span> <span class="n">Slider</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">num_quantiles</span><span class="p">,</span>
                             <span class="n">value</span><span class="o">=</span><span class="n">num_quantiles</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+                            <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
         <span class="n">checkbox</span> <span class="o">=</span> <span class="n">CheckboxGroup</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">labels_runs</span><span class="p">,</span>
                                  <span class="n">active</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">labels_runs</span><span class="p">))),</span>
                                  <span class="p">)</span>
@@ -1105,9 +1162,9 @@
 
         <span class="k">return</span> <span class="n">timeslider</span><span class="p">,</span> <span class="n">checkbox</span><span class="p">,</span> <span class="n">select_all</span><span class="p">,</span> <span class="n">select_none</span>
 
-    <span class="k">def</span> <span class="nf">_create_figure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_range</span><span class="p">,</span> <span class="n">y_range</span><span class="p">,</span> <span class="n">hover</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_create_figure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_range</span><span class="p">,</span> <span class="n">y_range</span><span class="p">):</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">plot_height</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">plot_width</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span>
-                   <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">hover</span><span class="p">,</span> <span class="s1">&#39;save&#39;</span><span class="p">,</span> <span class="s1">&#39;box_zoom&#39;</span><span class="p">,</span> <span class="s1">&#39;wheel_zoom&#39;</span><span class="p">,</span> <span class="s1">&#39;reset&#39;</span><span class="p">],</span>
+                   <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;save&#39;</span><span class="p">,</span> <span class="s1">&#39;box_zoom&#39;</span><span class="p">,</span> <span class="s1">&#39;wheel_zoom&#39;</span><span class="p">,</span> <span class="s1">&#39;reset&#39;</span><span class="p">],</span>
                    <span class="n">x_range</span><span class="o">=</span><span class="n">x_range</span><span class="p">,</span> <span class="n">y_range</span><span class="o">=</span><span class="n">y_range</span><span class="p">)</span>
         <span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">axis_label</span> <span class="o">=</span> <span class="s2">&quot;MDS-X&quot;</span>
         <span class="n">p</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">axis_label</span> <span class="o">=</span> <span class="s2">&quot;MDS-Y&quot;</span>
