@@ -182,6 +182,11 @@ class CAVE(object):
         self.set_verbosity(verbose_level.upper())
         self.logger.debug("Running CAVE version %s", v)
         self.show_jupyter = show_jupyter
+        if self.show_jupyter:
+            # Reset logging module
+            logging.shutdown()
+            reload(logging)
+
         # Methods that are never per-run, because they are inter-run-analysis by nature
         self.always_aggregated = ['bohb_learning_curves', 'bohb_incumbents_per_budget', 'configurator_footprint',
                                   'budget_correlation', 'cost_over_time']  # these function-names will always be aggregated
@@ -298,6 +303,7 @@ class CAVE(object):
                             pimp_max_samples=self.pimp_max_samples,
                             fanova_pairwise=self.fanova_pairwise,
                             use_budgets=False,
+                            show_jupyter=False,
                             seed=self.seed,
                             verbose_level='OFF')
         self.incumbent = self.runs[-1].incumbent
@@ -1038,9 +1044,6 @@ class CAVE(object):
 
     def set_verbosity(self, level):
         # TODO add custom level with logging.addLevelName (e.g. DEV_DEBUG)
-        # Reset logging module
-        logging.shutdown()
-        reload(logging)
         # Log to stream (console)
         logging.getLogger().setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
