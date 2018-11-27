@@ -86,7 +86,7 @@ class PimpComparisonTable(BaseAnalyzer):
         columns = [TableColumn(field='Parameters', title="Parameters", sortable=False, width=150)] + [
                    TableColumn(field=header, title=header, default_sort='descending', width=100) for header in columns
                   ]
-        data_table = DataTable(source=source, columns=columns, row_headers=False, height=20 + 30 * len(data["Parameters"]))
+        data_table = DataTable(source=source, columns=columns, header_row=False, height=20 + 30 * len(data["Parameters"]))
         return data_table
 
     def get_html(self, d=None, tooltip=None):

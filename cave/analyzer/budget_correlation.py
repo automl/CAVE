@@ -79,7 +79,7 @@ class BudgetCorrelation(BaseAnalyzer):
         columns = [TableColumn(field='Budget', title="Budget", sortable=False, width=20)] + [
                    TableColumn(field=header, title=header, default_sort='descending', width=10) for header in columns
                   ]
-        bokeh_table = DataTable(source=table_source, columns=columns, row_headers=False, sortable=False,
+        bokeh_table = DataTable(source=table_source, columns=columns, index_position=None, sortable=False,
                                height=20 + 30 * len(data["Budget"]))
 
         # Create CDS for scatter-plot
@@ -124,7 +124,7 @@ class BudgetCorrelation(BaseAnalyzer):
             col = col - 1;
             console.log('row', row, budgets[row]);
             console.log('col', col, budgets[col]);
-            cb_obj.selected['1d'].indices = [];  // Reset, so gets triggered again when clicked again
+            table_source.selected.indices = [];  // Reset, so gets triggered again when clicked again
 
             // This is the actual updating of the plot
             if (row =>  0 && col > 0) {
@@ -159,7 +159,7 @@ class BudgetCorrelation(BaseAnalyzer):
             }
         } catch(err) {
             console.log(err.message);
-            }
+        }
         """
 
         callback = CustomJS(args=dict(table_source=table_source,
@@ -169,7 +169,7 @@ class BudgetCorrelation(BaseAnalyzer):
                                       xr=p.x_range,
                                       yr=p.y_range,
                                       ), code=code)
-        table_source.js_on_change('selected', callback)
+        table_source.selected.js_on_change('indices', callback)
 
         self.bokeh_plot = column(bokeh_table, p)
         self.script, self.div = components(self.bokeh_plot)

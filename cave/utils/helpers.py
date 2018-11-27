@@ -121,11 +121,24 @@ def scenario_sanity_check(s, logger):
         raise ValueError("Detected train- and test-instances, but only train-features. Either\n  (a) remove train-"
                          "features\n  (b) add test-features or\n  (c) remove test-instances.")
 
-def combine_runhistories(rhs):
-    """Combine list of given runhistories"""
+def combine_runhistories(rhs, logger=None):
+    """Combine list of given runhistories. interleaving to best approximate execution order"""
     combi_rh = RunHistory(average_cost)
-    for rh in rhs:
-        combi_rh.update(rh)
+    rh_to_runs = {rh : list(rh.data.items()) for rh in rhs}
+    if logger:
+        logger.debug("number of elements: " + str({k : len(v) for k, v in rh_to_runs}))
+    idx = 0
+    while len(rh_to_runs) > 0:
+        for rh in list(rh_to_runs.keys()):
+            try:
+                k, v = rh_to_runs[rh][idx]
+                combi_rh.add(rh.ids_config[k.config_id], v.cost, v.time, v.status, k.instance_id, k.seed, v.additional_info)
+            except IndexError:
+                rh_to_runs.pop(rh)
+        idx += 1
+    if logger:
+        logger.debug("number of elements in individual rhs: " + str({k : len(v) for k, v in rh_to_runs}))
+        logger.debug("number of elements in combined rh: " + str(len(combi_rh.data)))
     return combi_rh
 
 class NotApplicableError(Exception):
