@@ -3,6 +3,7 @@ import os
 import logging
 from collections import OrderedDict
 from contextlib import contextmanager
+from importlib import reload
 import typing
 from typing import Union, List
 import copy
@@ -1037,6 +1038,9 @@ class CAVE(object):
 
     def set_verbosity(self, level):
         # TODO add custom level with logging.addLevelName (e.g. DEV_DEBUG)
+        # Reset logging module
+        logging.shutdown()
+        reload(logging)
         # Log to stream (console)
         logging.getLogger().setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
