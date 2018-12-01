@@ -24,7 +24,7 @@ from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, Cu
 from bokeh.models.sources import CDSView
 from bokeh.models.filters import GroupFilter, BooleanFilter
 from bokeh.layouts import column, row, widgetbox
-from bokeh.models.widgets import CheckboxButtonGroup, CheckboxGroup, Button, Select
+from bokeh.models.widgets import CheckboxButtonGroup, CheckboxGroup, RadioButtonGroup, Button, Select, Div
 
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))  # noqa
 cmd_folder = os.path.realpath(os.path.join(cmd_folder, ".."))  # noqa
@@ -43,7 +43,7 @@ from cave.utils.convert_for_epm import convert_data_for_epm
 from cave.utils.helpers import escape_parameter_name, get_config_origin, combine_runhistories
 from cave.utils.timing import timing
 from cave.utils.io import export_bokeh
-from cave.utils.bokeh_routines import get_checkbox
+from cave.utils.bokeh_routines import get_checkbox, get_radiobuttongroup
 
 
 class ConfiguratorFootprintPlotter(object):
@@ -125,9 +125,14 @@ class ConfiguratorFootprintPlotter(object):
         dists = self.get_distance(conf_matrix, self.scenario.cs)
         red_dists = self.get_mds(dists)
 
-        contour_data = self.get_pred_surface(self.combined_rh, X_scaled=red_dists,
-                                             conf_list=copy.deepcopy(conf_list),
-                                             contour_step_size=self.contour_step_size)
+        contour_data = {}
+        contour_data['combined'] = self.get_pred_surface(self.combined_rh, X_scaled=red_dists,
+                                                         conf_list=copy.deepcopy(conf_list),
+                                                         contour_step_size=self.contour_step_size)
+        for label, rh in zip(self.rh_labels, self.rhs):
+            contour_data[label] = self.get_pred_surface(rh, X_scaled=red_dists,
+                                                        conf_list=copy.deepcopy(conf_list),
+                                                        contour_step_size=self.contour_step_size)
 
         return self.plot(red_dists,
                          conf_list,
@@ -522,6 +527,7 @@ class ConfiguratorFootprintPlotter(object):
                 colors.append('white')
         return colors
 
+    @timing
     def _plot_contour(self, p, contour_data, x_range, y_range):
         """Plot contour data.
 
@@ -529,8 +535,8 @@ class ConfiguratorFootprintPlotter(object):
         ----------
         p: bokeh.plotting.figure
             figure to be drawn upon
-        contour_data: np.array
-            array with contour data
+        contour_data: Dict[str -> np.array]
+            dict from labels to array with contour data
         x_range: List[float, float]
             min and max of x-axis
         y_range: List[float, float]
@@ -538,23 +544,28 @@ class ConfiguratorFootprintPlotter(object):
 
         Returns
         -------
-        p: bokeh.plotting.figure
-            modified figure handle
+        handles: dict[str -> tuple(ImageGlyph, tuple(float, float))]
+            mapping from label to image glyph and min/max-tuple
         """
-        min_z = np.min(np.unique(contour_data[2]))
-        max_z = np.max(np.unique(contour_data[2]))
-        color_mapper = LinearColorMapper(palette="Viridis256",
-                                         low=min_z, high=max_z)
-        p.image(image=contour_data, x=x_range[0], y=y_range[0],
-                dw=x_range[1] - x_range[0], dh=y_range[1] - y_range[0],
-                color_mapper=color_mapper)
+        unique = np.unique(np.concatenate([contour_data[label][2] for label in contour_data.keys()]))
+        color_mapper = LinearColorMapper(palette="Viridis256", low=np.min(unique), high=np.max(unique))
+        handles = {}
+        for label, data in contour_data.items():
+            unique = np.unique(contour_data[label][2])
+            handles[label] = (p.image(image=contour_data[label], x=x_range[0], y=y_range[0],
+                                      dw=x_range[1] - x_range[0], dh=y_range[1] - y_range[0],
+                                      color_mapper=color_mapper),
+                              (np.min(unique), np.max(unique)))
+
+            if not label == 'combined' and len(contour_data) > 1:
+                handles[label][0].visible = False
         color_bar = ColorBar(color_mapper=color_mapper,
                              ticker=BasicTicker(desired_num_ticks=15),
                              label_standoff=12,
                              border_line_color=None, location=(0, 0))
         color_bar.major_label_text_font_size = '12pt'
         p.add_layout(color_bar, 'right')
-        return p
+        return handles, color_mapper
 
     def _create_views(self, source, used_configs):
         """Create views in order of plotting, so more interesting views are
@@ -787,7 +798,7 @@ class ConfiguratorFootprintPlotter(object):
             if not use_timeslider or idx == 0:
                 p = self._create_figure(x_range, y_range)
                 if contour_data is not None:  # TODO
-                    p = self._plot_contour(p, contour_data, x_range, y_range)
+                    contour_handles, color_mapper = self._plot_contour(p, contour_data, x_range, y_range)
 
             # Create views and scatter
             views, views_by_run, markers = self._create_views(source, u_cfgs)
@@ -819,8 +830,9 @@ class ConfiguratorFootprintPlotter(object):
         p.add_tools(hover)
 
         # Build dashboard
-        timeslider, checkbox, select_all, select_none = self._get_widgets(all_glyphs, overtime_groups, run_groups,
-                                                                          slider_labels=timeslider_labels)
+        timeslider, checkbox, select_all, select_none, checkbox_title = self._get_widgets(all_glyphs, overtime_groups, run_groups,
+                                                                                          slider_labels=timeslider_labels)
+        contour_checkbox, contour_title = self._contour_radiobuttongroup(contour_handles, color_mapper)
         layout = p
         if use_timeslider:
             self.logger.debug("Adding timeslider")
@@ -828,9 +840,12 @@ class ConfiguratorFootprintPlotter(object):
         if use_checkbox:
             self.logger.debug("Adding checkboxes")
             layout = row(layout,
-                         column(widgetbox(checkbox),
+                         column(widgetbox(checkbox_title),
+                                widgetbox(checkbox),
                                 row(widgetbox(select_all, width=100),
-                                    widgetbox(select_none, width=100))))
+                                    widgetbox(select_none, width=100)),
+                                widgetbox(contour_title),
+                                widgetbox(contour_checkbox)))
 
         script, div = components(layout)
 
@@ -856,6 +871,8 @@ class ConfiguratorFootprintPlotter(object):
         -------
         time_slider, checkbox, select_all, select_none: Widget
             desired interlayed bokeh-widgets
+        checkbox_title: Div
+            text-element to "show title" of checkbox
         """
         aliases = ['glyph' + str(idx) for idx, _ in enumerate(all_glyphs)]
         labels_overtime = list(overtime_groups.keys())
@@ -917,9 +934,8 @@ class ConfiguratorFootprintPlotter(object):
         timeslider = Slider(start=1, end=num_quantiles,
                             value=num_quantiles, step=1,
                             title=title)
-        checkbox = CheckboxGroup(labels=labels_runs,
-                                 active=list(range(len(labels_runs))),
-                                 )
+        checkbox = CheckboxButtonGroup(labels=labels_runs,
+                                       active=list(range(len(labels_runs))))
 
         args = {name: glyph for name, glyph in zip(aliases, all_glyphs)}
         args['time_slider'] = timeslider
@@ -927,6 +943,7 @@ class ConfiguratorFootprintPlotter(object):
         callback = CustomJS(args=args, code=code)
         timeslider.js_on_change('value', callback)
         checkbox.callback = callback
+        checkbox_title = Div(text="Showing only configurations evaluated in:")
 
         # Add all/none button to checkbox
         code_all  = "checkbox.active = " + str(list(range(len(labels_runs)))) + ";" + code
@@ -934,7 +951,50 @@ class ConfiguratorFootprintPlotter(object):
         select_all  = Button(label="All", callback=CustomJS(args=args, code=code_all))
         select_none = Button(label="None", callback=CustomJS(args=args, code=code_none))
 
-        return timeslider, checkbox, select_all, select_none
+        return timeslider, checkbox, select_all, select_none, checkbox_title
+
+    def _contour_radiobuttongroup(self, contour_data, color_mapper):
+        """
+        Returns
+        -------
+        radiobuttongroup: RadioButtonGroup
+            radiobuttongroup widget to select one of the elements
+        title: Div
+            text-element to "show title" of widget
+        """
+        labels = list(contour_data.keys())
+        aliases = ['glyph' + str(i) for i in range(len(labels))]
+        values = list(contour_data.values())
+        glyphs = [v[0] for v in values]
+        mins = [v[1][0] for v in values]
+        maxs = [v[1][1] for v in values]
+        args = {name: glyph for name, glyph in zip(aliases, glyphs)}
+        args['colormapper'] = color_mapper
+
+        # Create javascript-code
+        code = "var len_labels = " + str(len(aliases)) + ","
+        code += "glyphs = [ " + ','.join(aliases) + '],'
+        code += "mins = " + str(mins) + ','
+        code += "maxs = " + str(maxs) + ';'
+
+        code += """
+            for (i = 0; i < len_labels; i++) {
+                if (cb_obj.active === i) {
+                    // console.log('Setting to true: ' + i);
+                    glyphs[i].visible = true;
+                    colormapper.low = mins[i];
+                    colormapper.high = maxs[i];
+                } else {
+                    // console.log('Setting to false: ' + i);
+                    glyphs[i].visible = false;
+                }
+            }
+            """
+        # Create the actual checkbox-widget
+        callback = CustomJS(args=args, code=code)
+        radio = RadioButtonGroup(labels=labels, active=0, callback=callback)
+        title = Div(text="Data used to estimate contour-plot")
+        return radio, title
 
     def _create_figure(self, x_range, y_range):
         p = figure(plot_height=500, plot_width=600,
