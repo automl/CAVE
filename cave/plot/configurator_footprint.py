@@ -53,7 +53,6 @@ class ConfiguratorFootprintPlotter(object):
                  rhs: RunHistory,
                  incs: list=None,
                  final_incumbent=None,
-                 rh_timestamps=None,
                  rh_labels=None,
                  max_plot: int=-1,
                  contour_step_size=0.2,
@@ -64,8 +63,7 @@ class ConfiguratorFootprintPlotter(object):
         '''
         Creating an interactive plot, visualizing the configuration search space.
         The runhistories are correlated to the individual runs.
-        Each run consists of a runhistory (in the smac-format), a list of incumbents, an optional dict mapping RunKeys
-        to timestamps for each runhistory.
+        Each run consists of a runhistory (in the smac-format), a list of incumbents
 
         Parameters
         ----------
@@ -77,8 +75,6 @@ class ConfiguratorFootprintPlotter(object):
             incumbents per run, last entry is final incumbent
         final_incumbent: Configuration
             final configuration (best of all runs)
-        rh_timestamps: List[Dict[RunKey -> float]]
-            timestamps for individual runs
         max_plot: int
             maximum number of configs to plot, if -1 plot all
         contour_step_size: float
@@ -97,7 +93,6 @@ class ConfiguratorFootprintPlotter(object):
         self.rhs = rhs
         self.combined_rh = combine_runhistories(self.rhs)
         self.incs = incs
-        self.rh_timestamps = rh_timestamps
         self.rh_labels = rh_labels if rh_labels else [str(idx) for idx in range(len(self.rhs))]
         self.max_plot = max_plot
         self.use_timeslider = use_timeslider
@@ -457,19 +452,26 @@ class ConfiguratorFootprintPlotter(object):
         labels, last_time_seen = [], -1  # label, means wallclocktime at splitting points
         r_p_q_p_c = []  # runs per quantile per config
         as_list = list(rh.data.items())
-        #as_list = sorted(as_list, key=lambda x: x[1].time)
+        try:
+            as_list = sorted(as_list, key=lambda x: x[1].additional_info['timestamps']['finished'])
+        except KeyError as err:
+            self.logger.debug(err)
+            self.logger.debug("Failed to sort by timestamps... only a reason to worry if this is BOHB-analysis")
         tmp_rh = RunHistory(average_cost)
         for i, j in zip(ranges[:-1], ranges[1:]):
             for idx in range(i, j):
                 k, v = as_list[idx]
                 tmp_rh.add(config=rh.ids_config[k.config_id],
                            cost=v.cost, time=v.time, status=v.status,
-                           instance_id=k.instance_id, seed=k.seed)
-                #if last_time_seen <= float(v.time):
-                #    self.logger.debug("last_time_seen: {}, v.time: {}".format(last_time_seen, v.time))
-                #    last_time_seen = float(v.time)
-                #else:
-                #    raise ValueError("Sanity check: is runhistory ordered? last_time_seen: {}, v.time: {}".format(last_time_seen, v.time))
+                           instance_id=k.instance_id, seed=k.seed,
+                           additional_info=v.additional_info)
+                if 'timestamps' in v.additional_info:
+                    time = v.additional_info['timestamps']['finished']
+                    if last_time_seen <= time:
+                        self.logger.debug("last_time_seen: {}, time: {}".format(last_time_seen, time))
+                        last_time_seen = time
+                    else:
+                        raise ValueError("Sanity check: is runhistory ordered? last_time_seen: {}, v.time: {}".format(last_time_seen, time))
             if last_time_seen >= 0:
                 labels.append("{0:.2f}".format(last_time_seen))
             r_p_q_p_c.append([len(tmp_rh.get_runs_for_config(c)) for c in conf_list])
@@ -912,10 +914,11 @@ class ConfiguratorFootprintPlotter(object):
         if slider_labels:
             code += "var slider_labels = " + str(slider_labels) + ";"
             code += "console.log(\"Detected slider_labels: \" + slider_labels);"
-            title = "Until wallclocktime " + slider_labels[time_slider.value - 1] + ". Step no. ";
+            code += "time_slider.title = \"Until wallclocktime \" + slider_labels[time_slider.value - 1] + \". Step no.\"; "
+            title = "Until wallclocktime " + slider_labels[-1] + ". Step no. "
         else:
-            title = "Quantile on {} scale".format("logarithmic" if self.timeslider_log else "linear");
-        code += "time_slider.title = \"{}\";".format(title);
+            title = "Quantile on {} scale".format("logarithmic" if self.timeslider_log else "linear")
+            code += "time_slider.title = \"{}\";".format(title);
         # Combine checkbox-arrays, intersect with time_slider and set all selected glyphs to true
         code += """
         var activate = [];

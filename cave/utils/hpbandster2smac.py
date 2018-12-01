@@ -76,7 +76,7 @@ class HpBandSter2SMAC(object):
                    time=run.time_stamps['finished'] - run.time_stamps['started'],
                    status=StatusType.SUCCESS,
                    seed=0,
-                   additional_info={'info' : run.info})
+                   additional_info={'info' : run.info, 'timestamps': run.time_stamps})
 
         # Write to disk
         budget2path = {}  # paths to individual budgets
