@@ -248,7 +248,9 @@
                  <span class="n">output_dir</span><span class="p">,</span>
                  <span class="n">max_confs</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
                  <span class="n">use_timeslider</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">num_quantiles</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+                 <span class="n">num_quantiles</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                 <span class="n">timeslider_log</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Plot the visualization of configurations, highlighting the</span>
 <span class="sd">        incumbents. Using original rh, so the explored configspace can be</span>
 <span class="sd">        estimated.</span>
@@ -271,6 +273,8 @@
 <span class="sd">        num_quantiles: int</span>
 <span class="sd">            if use_timeslider is not off, defines the number of quantiles for the</span>
 <span class="sd">            slider/ number of static pictures</span>
+<span class="sd">        timeslider_log: bool</span>
+<span class="sd">            whether to use a logarithmic scale for the timeslider/quantiles</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -294,6 +298,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">max_confs</span> <span class="o">=</span> <span class="n">max_confs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_timeslider</span> <span class="o">=</span> <span class="n">use_timeslider</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_quantiles</span> <span class="o">=</span> <span class="n">num_quantiles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeslider_log</span> <span class="o">=</span> <span class="n">timeslider_log</span>
 
         <span class="k">if</span> <span class="n">scenario</span><span class="o">.</span><span class="n">feature_array</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">scenario</span><span class="o">.</span><span class="n">feature_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[]])</span>
@@ -311,6 +316,7 @@
                        <span class="n">max_plot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_confs</span><span class="p">,</span>
                        <span class="n">use_timeslider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_timeslider</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_quantiles</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span>
                        <span class="n">num_quantiles</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_quantiles</span><span class="p">,</span>
+                       <span class="n">timeslider_log</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeslider_log</span><span class="p">,</span>
                        <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">res</span> <span class="o">=</span> <span class="n">cfp</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
