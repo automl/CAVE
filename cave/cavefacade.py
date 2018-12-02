@@ -21,33 +21,33 @@ from smac.utils.validate import Validator
 
 from pimp.importance.importance import Importance
 
+from cave.__version__ import __version__ as v
+from cave.analyzer.algorithm_footprint import AlgorithmFootprint
+from cave.analyzer.bohb_incumbents_per_budget import BohbIncumbentsPerBudget
+from cave.analyzer.bohb_learning_curves import BohbLearningCurves
+from cave.analyzer.box_violin import BoxViolin
+from cave.analyzer.budget_correlation import BudgetCorrelation
+from cave.analyzer.cave_ablation import CaveAblation
+from cave.analyzer.cave_fanova import CaveFanova
+from cave.analyzer.cave_forward_selection import CaveForwardSelection
+from cave.analyzer.compare_default_incumbent import CompareDefaultIncumbent
+from cave.analyzer.configurator_footprint import ConfiguratorFootprint
+from cave.analyzer.cost_over_time import CostOverTime
+from cave.analyzer.feature_clustering import FeatureClustering
+from cave.analyzer.feature_correlation import FeatureCorrelation
+from cave.analyzer.feature_importance import FeatureImportance
+from cave.analyzer.local_parameter_importance import LocalParameterImportance
+from cave.analyzer.overview_table import OverviewTable
+from cave.analyzer.parallel_coordinates import ParallelCoordinates
+from cave.analyzer.performance_table import PerformanceTable
+from cave.analyzer.pimp_comparison_table import PimpComparisonTable
+from cave.analyzer.plot_ecdf import PlotECDF
+from cave.analyzer.plot_scatter import PlotScatter
 from cave.html.html_builder import HTMLBuilder
 from cave.reader.configurator_run import ConfiguratorRun
 from cave.utils.helpers import scenario_sanity_check, combine_runhistories
-from cave.utils.timing import timing
 from cave.utils.hpbandster2smac import HpBandSter2SMAC
-from cave.analyzer.cost_over_time import CostOverTime
-from cave.analyzer.parallel_coordinates import ParallelCoordinates
-from cave.analyzer.configurator_footprint import ConfiguratorFootprint
-from cave.analyzer.performance_table import PerformanceTable
-from cave.analyzer.plot_ecdf import PlotECDF
-from cave.analyzer.plot_scatter import PlotScatter
-from cave.analyzer.algorithm_footprint import AlgorithmFootprint
-from cave.analyzer.cave_fanova import CaveFanova
-from cave.analyzer.cave_ablation import CaveAblation
-from cave.analyzer.cave_forward_selection import CaveForwardSelection
-from cave.analyzer.local_parameter_importance import LocalParameterImportance
-from cave.analyzer.pimp_comparison_table import PimpComparisonTable
-from cave.analyzer.feature_importance import FeatureImportance
-from cave.analyzer.box_violin import BoxViolin
-from cave.analyzer.feature_correlation import FeatureCorrelation
-from cave.analyzer.feature_clustering import FeatureClustering
-from cave.analyzer.overview_table import OverviewTable
-from cave.analyzer.compare_default_incumbent import CompareDefaultIncumbent
-from cave.analyzer.bohb_learning_curves import BohbLearningCurves
-from cave.analyzer.bohb_incumbents_per_budget import BohbIncumbentsPerBudget
-from cave.analyzer.budget_correlation import BudgetCorrelation
-from cave.__version__ import __version__ as v
+from cave.utils.timing import timing
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -468,6 +468,15 @@ class CAVE(object):
             if f not in ["box_violin", "correlation", "importance", "clustering", "feature_cdf"]:
                 raise ValueError("%s not a valid option for feature analysis!" % f)
 
+        # Deactivate pimp for less configs than parameters
+        num_configs = len(combine_runhistories([r.original_runhistory for r in self.runs]).get_all_configs())
+        num_params = len(self.scenario.cs.get_hyperparameters())
+        if num_configs < num_params:
+            self.logger.info("Deactivating parameter importance, since there are less configs than parameters (%d < %d)"
+                             % (num_configs, num_params))
+            param_importance = []
+
+
         # Start analysis
         headings = ["Meta Data",
                     "Best Configuration",
@@ -484,8 +493,7 @@ class CAVE(object):
             # The individual configurator runs are not directory comparable and cannot be aggregated.
             # Nevertheless they need to be combined in one comprehensive report and some metrics are to be compared over
             # the individual runs.
-            # TODO: Currently, the code below is configured for bohb... if we extend ot other budget-driven
-            # configurators, review!
+            # TODO: Currently, the code below is configured for bohb... if we extend to other budget-driven configurators, review!
 
             # Perform analysis for each run
             if self.bohb_result:
