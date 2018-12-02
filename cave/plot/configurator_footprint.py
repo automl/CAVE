@@ -957,11 +957,11 @@ class ConfiguratorFootprintPlotter(object):
         """
 
         num_quantiles = len(overtime_groups)
-        timeslider = Slider(start=1, end=num_quantiles,
-                            value=num_quantiles, step=1,
-                            title=title)
-        checkbox = CheckboxButtonGroup(labels=labels_runs,
-                                       active=list(range(len(labels_runs))))
+        if num_quantiles > 1:
+            timeslider = Slider(start=1, end=num_quantiles, value=num_quantiles, step=1, title=title)
+        else:
+            timeslider = Slider(start=1, end=2, value=1)
+        checkbox = CheckboxButtonGroup(labels=labels_runs, active=list(range(len(labels_runs))))
 
         args = {name: glyph for name, glyph in zip(aliases, all_glyphs)}
         args['time_slider'] = timeslider

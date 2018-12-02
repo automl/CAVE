@@ -233,8 +233,6 @@ class CaveCLI(object):
 
         logging.getLogger().debug("CAVE is called with arguments: " + str(args_))
 
-        logging.getLogger().debug("CAVE is called with arguments: " + str(args_))
-
         # Configuration results to be analyzed
         folders = []
         for f in args_.folders:

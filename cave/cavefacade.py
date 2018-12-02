@@ -484,8 +484,7 @@ class CAVE(object):
             # The individual configurator runs are not directory comparable and cannot be aggregated.
             # Nevertheless they need to be combined in one comprehensive report and some metrics are to be compared over
             # the individual runs.
-            # TODO: Currently, the code below is configured for bohb... if we extend ot other budget-driven
-            # configurators, review!
+            # TODO: Currently, the code below is configured for bohb... if we extend to other budget-driven configurators, review!
 
             # Perform analysis for each run
             if self.bohb_result:
