@@ -41,9 +41,7 @@ def get_checkbox(glyph_renderers, labels):
 
     # Create the actual checkbox-widget
     callback = CustomJS(args=args_checkbox, code=code)
-    # TODO Use the CheckboxButtonGroup code after upgrading bokeh to >0.12.14 (it's prettier)    
-    #checkbox = CheckboxButtonGroup(
-    checkbox = CheckboxGroup(labels=labels, active=list(range(len(labels))), callback=callback)
+    checkbox = CheckboxButtonGroup(labels=labels, active=list(range(len(labels))), callback=callback)
 
     # Select all/none:
     handle_list_as_string = str(list(range(len(glyph_renderers))))

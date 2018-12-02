@@ -6,7 +6,7 @@ import itertools
 from bokeh.io import output_notebook
 from bokeh.plotting import show, figure, ColumnDataSource
 from bokeh.embed import components
-from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider
+from bokeh.models import HoverTool, ColorBar, Range1d, LinearColorMapper, BasicTicker, CustomJS, Slider
 from bokeh.models.sources import CDSView
 from bokeh.models.filters import GroupFilter
 from bokeh.layouts import column, row, widgetbox
@@ -136,10 +136,23 @@ class BohbLearningCurves(BaseAnalyzer):
         color_mapper = LinearColorMapper(palette=Spectral11, low=min_perf, high=max_perf)
 
         # Create plot
+        y_axis_type = "log" if len([a for a in scatter_data['losses'] if a <= 0]) == 0 else 'linear'
+
+        x_min, x_max = min(scatter_data['times']), max(scatter_data['times'])
+        x_pad = (x_max - x_min) / 10
+        x_min -= x_pad
+        x_max += x_pad
+        y_min, y_max = min(scatter_data['losses']), max(scatter_data['losses'])
+        y_pad = (y_max - y_min) / 10
+        y_min -= (y_min / 10) if y_axis_type == 'log' else y_pad  # because this must not fall below 0 if it's a logscale
+        y_max += y_pad * 10 if y_axis_type == 'log' else y_pad
         p = figure(plot_height=500, plot_width=600,
-                   y_axis_type="log" if len([a for a in scatter_data['losses'] if a <= 0]) == 0 else 'linear',
+                   y_axis_type=y_axis_type,
                    tools=[hover, 'save', 'pan', 'wheel_zoom', 'box_zoom', 'reset'],
-                   x_axis_label='Time', y_axis_label='Quality')
+                   x_axis_label='Time', y_axis_label='Quality',
+                   x_range=Range1d(x_min, x_max, bounds='auto'),
+                   y_range=Range1d(y_min, y_max, bounds='auto'),
+                   )
 
         # Plot per HB_iteration, each config individually
         HB_iterations = sorted(set(data['HB_iteration']))
@@ -180,7 +193,7 @@ class BohbLearningCurves(BaseAnalyzer):
                                       ))
             HB_handles.append(line_handles)
 
-        iteration_labels = ['warmstart data' if l == -1 or l == '-1' else str(l) for l in HB_iterations]
+        iteration_labels = sorted(['warmstart data' if l in [-1, '-1'] else '{:02d}'.format(int(l)) for l in HB_iterations])
         self.logger.debug("iteration_labels: %s", str(iteration_labels))
         self.logger.debug("HB_iterations: %s", str(HB_iterations))
 
@@ -213,7 +226,7 @@ class BohbLearningCurves(BaseAnalyzer):
 
 
         # Put it all together
-        layout = column(p, row(widgetbox(select_all, select_none, width=100), widgetbox(checkbox, width=100),
+        layout = column(p, row(widgetbox(select_all, select_none, width=100), widgetbox(checkbox, width=500),
                                widgetbox(select_color, width=200)))
         return layout
 
