@@ -275,7 +275,7 @@ class CaveCLI(object):
             cdf = False
             scatter = False
             algo_footprint = False
-            param_importance = param_imp
+            param_imp = [p for p in param_imp if not p == 'forward_selection']
             feature_analysis = []
 
         cave = CAVE(folders,
