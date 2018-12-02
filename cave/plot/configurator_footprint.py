@@ -53,19 +53,20 @@ class ConfiguratorFootprintPlotter(object):
                  rhs: RunHistory,
                  incs: list=None,
                  final_incumbent=None,
-                 rh_timestamps=None,
                  rh_labels=None,
                  max_plot: int=-1,
                  contour_step_size=0.2,
                  use_timeslider: bool=False,
                  num_quantiles: int=10,
+                 timeslider_log: bool=True,
                  output_dir: str=None,
                  ):
         '''
         Creating an interactive plot, visualizing the configuration search space.
         The runhistories are correlated to the individual runs.
-        Each run consists of a runhistory (in the smac-format), a list of incumbents, an optional dict mapping RunKeys
-        to timestamps for each runhistory.
+        Each run consists of a runhistory (in the smac-format), a list of incumbents
+        If the dict "additional_info" in the RunValues of the runhistory contains a nested dict with
+        additional_info["timestamps"]["finished"], using those timestamps to sort data
 
         Parameters
         ----------
@@ -77,8 +78,6 @@ class ConfiguratorFootprintPlotter(object):
             incumbents per run, last entry is final incumbent
         final_incumbent: Configuration
             final configuration (best of all runs)
-        rh_timestamps: List[Dict[RunKey -> float]]
-            timestamps for individual runs
         max_plot: int
             maximum number of configs to plot, if -1 plot all
         contour_step_size: float
@@ -88,6 +87,8 @@ class ConfiguratorFootprintPlotter(object):
             INCREASES FILE-SIZE DRAMATICALLY
         num_quantiles: int
             number of quantiles for the slider/ number of static pictures
+        timeslider_log: bool
+            whether to use a logarithmic scale for the timeslider/quantiles
         output_dir: str
             output directory
         '''
@@ -97,15 +98,13 @@ class ConfiguratorFootprintPlotter(object):
         self.rhs = rhs
         self.combined_rh = combine_runhistories(self.rhs)
         self.incs = incs
-        self.rh_timestamps = rh_timestamps
         self.rh_labels = rh_labels if rh_labels else [str(idx) for idx in range(len(self.rhs))]
         self.max_plot = max_plot
         self.use_timeslider = use_timeslider
         self.num_quantiles = num_quantiles
         self.contour_step_size = contour_step_size
         self.output_dir = output_dir
-
-        self.timeslider_log = False;
+        self.timeslider_log = timeslider_log
 
         # Preprocess input
         self.default = scenario.cs.get_default_configuration()
@@ -391,7 +390,6 @@ class ConfiguratorFootprintPlotter(object):
         conf_list = []
         conf_matrix = []
         # Get all configurations. Index of c in conf_list serves as identifier
-        #TODO: works? list(set(rh.get_all_configs()))
         for c in rh.get_all_configs():
             if c not in conf_list:
                 conf_matrix.append(c.get_array())
@@ -446,32 +444,59 @@ class ConfiguratorFootprintPlotter(object):
             numpy array of runs per configuration per quantile
         """
         runs_total = len(rh.data)
-        # Create LINEAR ranges. TODO do we want log? -> this line
-        ranges = [int(r) for r in np.linspace(0, runs_total, quantiles + 1)]
-        self.logger.debug("Creating %d quantiles with a step of %.2f and a total "
-                          "runs of %d", quantiles, runs_total/quantiles, runs_total)
-        self.logger.debug("Ranges: %s", str(ranges))
-
         # Iterate over the runhistory's entries in ranges and creating each
         # sublist from a "snapshot"-runhistory
         labels, last_time_seen = [], -1  # label, means wallclocktime at splitting points
         r_p_q_p_c = []  # runs per quantile per config
         as_list = list(rh.data.items())
-        #as_list = sorted(as_list, key=lambda x: x[1].time)
+        scale = np.geomspace if self.timeslider_log else np.linspace
+
+        # Trying to work with timestamps if they are available
+        timestamps = None
+        try:
+            as_list = sorted(as_list, key=lambda x: x[1].additional_info['timestamps']['finished'])
+            timestamps = [x[1].additional_info['timestamps']['finished'] for x in as_list]
+            time_ranges = scale(timestamps[0], timestamps[-1], num=quantiles+1, endpoint=True)
+            ranges = []
+            idx = 0
+            for time_idx, time in enumerate(time_ranges):
+                while len(timestamps) - 1 > idx and (timestamps[idx] < time or idx <= time_idx):
+                    idx += 1
+                ranges.append(idx)
+        except KeyError as err:
+            self.logger.debug(err)
+            self.logger.debug("Failed to sort by timestamps... only a reason to worry if this is BOHB-analysis")
+            ranges = [int(x) for x in scale(0, runs_total, num=quantiles+1)]
+        # Fix possible wrong values
+        ranges[0] = 0
+        ranges[-1] = len(as_list)
+
+        self.logger.debug("Creating %d quantiles with a total number of runs of %d", quantiles, runs_total)
+        self.logger.debug("Ranges: %s", str(ranges))
+
+        for r in range(len(ranges))[1:]:
+            if ranges[r] <= ranges[r-1]:
+                if ranges[r-1] + 1 >= len(as_list):
+                    raise RuntimeError("There was a problem with the quantiles of the configuration footprint. "
+                                       "Please report this Error on \"https://github.com/automl/CAVE/issues\" and provide the debug.txt-file.")
+                ranges[r] = ranges[r-1] + 1
+                self.logger.debug("Fixed ranges to: %s", str(ranges))
+
+        # Sanity check
+        if not ranges[0] == 0 or not ranges[-1] == len(as_list) or not len(ranges) == quantiles + 1:
+            raise RuntimeError("Sanity check on range-creation in configurator footprint went wrong. "
+                               "Please report this Error on \"https://github.com/automl/CAVE/issues\" and provide the debug.txt-file.")
+
         tmp_rh = RunHistory(average_cost)
         for i, j in zip(ranges[:-1], ranges[1:]):
             for idx in range(i, j):
                 k, v = as_list[idx]
                 tmp_rh.add(config=rh.ids_config[k.config_id],
                            cost=v.cost, time=v.time, status=v.status,
-                           instance_id=k.instance_id, seed=k.seed)
-                #if last_time_seen <= float(v.time):
-                #    self.logger.debug("last_time_seen: {}, v.time: {}".format(last_time_seen, v.time))
-                #    last_time_seen = float(v.time)
-                #else:
-                #    raise ValueError("Sanity check: is runhistory ordered? last_time_seen: {}, v.time: {}".format(last_time_seen, v.time))
-            if last_time_seen >= 0:
-                labels.append("{0:.2f}".format(last_time_seen))
+                           instance_id=k.instance_id, seed=k.seed,
+                           additional_info=v.additional_info)
+            if timestamps:
+                labels.append("{0:.2f}".format(timestamps[j - 1]))
             r_p_q_p_c.append([len(tmp_rh.get_runs_for_config(c)) for c in conf_list])
         self.logger.debug("Labels: " + str(labels))
         return labels, r_p_q_p_c
@@ -912,10 +937,11 @@ class ConfiguratorFootprintPlotter(object):
         if slider_labels:
             code += "var slider_labels = " + str(slider_labels) + ";"
             code += "console.log(\"Detected slider_labels: \" + slider_labels);"
-            title = "Until wallclocktime " + slider_labels[time_slider.value - 1] + ". Step no. ";
+            code += "time_slider.title = \"Until wallclocktime \" + slider_labels[time_slider.value - 1] + \". Step no.\"; "
+            title = "Until wallclocktime " + slider_labels[-1] + ". Step no. "
         else:
-            title = "Quantile on {} scale".format("logarithmic" if self.timeslider_log else "linear");
-        code += "time_slider.title = \"{}\";".format(title);
+            title = "Quantile on {} scale".format("logarithmic" if self.timeslider_log else "linear")
+            code += "time_slider.title = \"{}\";".format(title);
         # Combine checkbox-arrays, intersect with time_slider and set all selected glyphs to true
         code += """
         var activate = [];

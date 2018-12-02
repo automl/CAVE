@@ -22,7 +22,9 @@ class ConfiguratorFootprint(BaseAnalyzer):
                  output_dir,
                  max_confs=1000,
                  use_timeslider=False,
-                 num_quantiles=10):
+                 num_quantiles=10,
+                 timeslider_log: bool=True,
+                 ):
         """Plot the visualization of configurations, highlighting the
         incumbents. Using original rh, so the explored configspace can be
         estimated.
@@ -45,6 +47,8 @@ class ConfiguratorFootprint(BaseAnalyzer):
         num_quantiles: int
             if use_timeslider is not off, defines the number of quantiles for the
             slider/ number of static pictures
+        timeslider_log: bool
+            whether to use a logarithmic scale for the timeslider/quantiles
 
         Returns
         -------
@@ -68,6 +72,7 @@ class ConfiguratorFootprint(BaseAnalyzer):
         self.max_confs = max_confs
         self.use_timeslider = use_timeslider
         self.num_quantiles = num_quantiles
+        self.timeslider_log = timeslider_log
 
         if scenario.feature_array is None:
             scenario.feature_array = np.array([[]])
@@ -85,6 +90,7 @@ class ConfiguratorFootprint(BaseAnalyzer):
                        max_plot=self.max_confs,
                        use_timeslider=self.use_timeslider and self.num_quantiles > 1,
                        num_quantiles=self.num_quantiles,
+                       timeslider_log=self.timeslider_log,
                        output_dir=self.output_dir)
         try:
             res = cfp.run()
