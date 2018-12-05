@@ -235,12 +235,13 @@
 <span id="cave-plot-configurator-footprint-module"></span><h1>cave.plot.configurator_footprint module<a class="headerlink" href="#module-cave.plot.configurator_footprint" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter">
-<em class="property">class </em><code class="descclassname">cave.plot.configurator_footprint.</code><code class="descname">ConfiguratorFootprintPlotter</code><span class="sig-paren">(</span><em>scenario: smac.scenario.scenario.Scenario</em>, <em>rhs: smac.runhistory.runhistory.RunHistory</em>, <em>incs: list = None</em>, <em>final_incumbent=None</em>, <em>rh_timestamps=None</em>, <em>rh_labels=None</em>, <em>max_plot: int = -1</em>, <em>contour_step_size=0.2</em>, <em>use_timeslider: bool = False</em>, <em>num_quantiles: int = 10</em>, <em>output_dir: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">cave.plot.configurator_footprint.</code><code class="descname">ConfiguratorFootprintPlotter</code><span class="sig-paren">(</span><em>scenario: smac.scenario.scenario.Scenario</em>, <em>rhs: smac.runhistory.runhistory.RunHistory</em>, <em>incs: list = None</em>, <em>final_incumbent=None</em>, <em>rh_labels=None</em>, <em>max_plot: int = -1</em>, <em>contour_step_size=0.2</em>, <em>use_timeslider: bool = False</em>, <em>num_quantiles: int = 10</em>, <em>timeslider_log: bool = True</em>, <em>output_dir: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Creating an interactive plot, visualizing the configuration search space.
 The runhistories are correlated to the individual runs.
-Each run consists of a runhistory (in the smac-format), a list of incumbents, an optional dict mapping RunKeys
-to timestamps for each runhistory.</p>
+Each run consists of a runhistory (in the smac-format), a list of incumbents
+If the dict “additional_info” in the RunValues of the runhistory contains a nested dict with
+additional_info[“timestamps”][“finished”], using those timestamps to sort data</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -250,12 +251,12 @@ to timestamps for each runhistory.</p>
 <li><strong>rhs</strong> (<em>List</em><em>[</em><em>RunHistory</em><em>]</em>) – runhistories from configurator runs, only data collected during optimization (no validation!)</li>
 <li><strong>incs</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><em>Configuration</em><em>]</em><em>]</em>) – incumbents per run, last entry is final incumbent</li>
 <li><strong>final_incumbent</strong> (<em>Configuration</em>) – final configuration (best of all runs)</li>
-<li><strong>rh_timestamps</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>RunKey -&gt; float</em><em>]</em><em>]</em>) – timestamps for individual runs</li>
 <li><strong>max_plot</strong> (<em>int</em>) – maximum number of configs to plot, if -1 plot all</li>
 <li><strong>contour_step_size</strong> (<em>float</em>) – step size of meshgrid to compute contour of fitness landscape</li>
 <li><strong>use_timeslider</strong> (<em>bool</em>) – whether or not to have a time_slider-widget on cfp-plot
 INCREASES FILE-SIZE DRAMATICALLY</li>
 <li><strong>num_quantiles</strong> (<em>int</em>) – number of quantiles for the slider/ number of static pictures</li>
+<li><strong>timeslider_log</strong> (<em>bool</em>) – whether to use a logarithmic scale for the timeslider/quantiles</li>
 <li><strong>output_dir</strong> (<em>str</em>) – output directory</li>
 </ul>
 </td>

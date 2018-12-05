@@ -247,33 +247,33 @@
 
 <span class="kn">from</span> <span class="nn">pimp.importance.importance</span> <span class="k">import</span> <span class="n">Importance</span>
 
+<span class="kn">from</span> <span class="nn">cave.__version__</span> <span class="k">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">v</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.algorithm_footprint</span> <span class="k">import</span> <span class="n">AlgorithmFootprint</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.bohb_incumbents_per_budget</span> <span class="k">import</span> <span class="n">BohbIncumbentsPerBudget</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.bohb_learning_curves</span> <span class="k">import</span> <span class="n">BohbLearningCurves</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.box_violin</span> <span class="k">import</span> <span class="n">BoxViolin</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.budget_correlation</span> <span class="k">import</span> <span class="n">BudgetCorrelation</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.cave_ablation</span> <span class="k">import</span> <span class="n">CaveAblation</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.cave_fanova</span> <span class="k">import</span> <span class="n">CaveFanova</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.cave_forward_selection</span> <span class="k">import</span> <span class="n">CaveForwardSelection</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.compare_default_incumbent</span> <span class="k">import</span> <span class="n">CompareDefaultIncumbent</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.configurator_footprint</span> <span class="k">import</span> <span class="n">ConfiguratorFootprint</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.cost_over_time</span> <span class="k">import</span> <span class="n">CostOverTime</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.feature_clustering</span> <span class="k">import</span> <span class="n">FeatureClustering</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.feature_correlation</span> <span class="k">import</span> <span class="n">FeatureCorrelation</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.feature_importance</span> <span class="k">import</span> <span class="n">FeatureImportance</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.local_parameter_importance</span> <span class="k">import</span> <span class="n">LocalParameterImportance</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.overview_table</span> <span class="k">import</span> <span class="n">OverviewTable</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.parallel_coordinates</span> <span class="k">import</span> <span class="n">ParallelCoordinates</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.performance_table</span> <span class="k">import</span> <span class="n">PerformanceTable</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.pimp_comparison_table</span> <span class="k">import</span> <span class="n">PimpComparisonTable</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.plot_ecdf</span> <span class="k">import</span> <span class="n">PlotECDF</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.plot_scatter</span> <span class="k">import</span> <span class="n">PlotScatter</span>
 <span class="kn">from</span> <span class="nn">cave.html.html_builder</span> <span class="k">import</span> <span class="n">HTMLBuilder</span>
 <span class="kn">from</span> <span class="nn">cave.reader.configurator_run</span> <span class="k">import</span> <span class="n">ConfiguratorRun</span>
 <span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">scenario_sanity_check</span><span class="p">,</span> <span class="n">combine_runhistories</span>
-<span class="kn">from</span> <span class="nn">cave.utils.timing</span> <span class="k">import</span> <span class="n">timing</span>
 <span class="kn">from</span> <span class="nn">cave.utils.hpbandster2smac</span> <span class="k">import</span> <span class="n">HpBandSter2SMAC</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.cost_over_time</span> <span class="k">import</span> <span class="n">CostOverTime</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.parallel_coordinates</span> <span class="k">import</span> <span class="n">ParallelCoordinates</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.configurator_footprint</span> <span class="k">import</span> <span class="n">ConfiguratorFootprint</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.performance_table</span> <span class="k">import</span> <span class="n">PerformanceTable</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.plot_ecdf</span> <span class="k">import</span> <span class="n">PlotECDF</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.plot_scatter</span> <span class="k">import</span> <span class="n">PlotScatter</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.algorithm_footprint</span> <span class="k">import</span> <span class="n">AlgorithmFootprint</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.cave_fanova</span> <span class="k">import</span> <span class="n">CaveFanova</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.cave_ablation</span> <span class="k">import</span> <span class="n">CaveAblation</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.cave_forward_selection</span> <span class="k">import</span> <span class="n">CaveForwardSelection</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.local_parameter_importance</span> <span class="k">import</span> <span class="n">LocalParameterImportance</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.pimp_comparison_table</span> <span class="k">import</span> <span class="n">PimpComparisonTable</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.feature_importance</span> <span class="k">import</span> <span class="n">FeatureImportance</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.box_violin</span> <span class="k">import</span> <span class="n">BoxViolin</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.feature_correlation</span> <span class="k">import</span> <span class="n">FeatureCorrelation</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.feature_clustering</span> <span class="k">import</span> <span class="n">FeatureClustering</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.overview_table</span> <span class="k">import</span> <span class="n">OverviewTable</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.compare_default_incumbent</span> <span class="k">import</span> <span class="n">CompareDefaultIncumbent</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.bohb_learning_curves</span> <span class="k">import</span> <span class="n">BohbLearningCurves</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.bohb_incumbents_per_budget</span> <span class="k">import</span> <span class="n">BohbIncumbentsPerBudget</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.budget_correlation</span> <span class="k">import</span> <span class="n">BudgetCorrelation</span>
-<span class="kn">from</span> <span class="nn">cave.__version__</span> <span class="k">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">v</span>
+<span class="kn">from</span> <span class="nn">cave.utils.timing</span> <span class="k">import</span> <span class="n">timing</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Joshua Marben&quot;</span>
 <span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2017, ML4AAD&quot;</span>
@@ -694,6 +694,15 @@
             <span class="k">if</span> <span class="n">f</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;box_violin&quot;</span><span class="p">,</span> <span class="s2">&quot;correlation&quot;</span><span class="p">,</span> <span class="s2">&quot;importance&quot;</span><span class="p">,</span> <span class="s2">&quot;clustering&quot;</span><span class="p">,</span> <span class="s2">&quot;feature_cdf&quot;</span><span class="p">]:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> not a valid option for feature analysis!&quot;</span> <span class="o">%</span> <span class="n">f</span><span class="p">)</span>
 
+        <span class="c1"># Deactivate pimp for less configs than parameters</span>
+        <span class="n">num_configs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">combine_runhistories</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">original_runhistory</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">])</span><span class="o">.</span><span class="n">get_all_configs</span><span class="p">())</span>
+        <span class="n">num_params</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">num_configs</span> <span class="o">&lt;</span> <span class="n">num_params</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Deactivating parameter importance, since there are less configs than parameters (</span><span class="si">%d</span><span class="s2"> &lt; </span><span class="si">%d</span><span class="s2">)&quot;</span>
+                             <span class="o">%</span> <span class="p">(</span><span class="n">num_configs</span><span class="p">,</span> <span class="n">num_params</span><span class="p">))</span>
+            <span class="n">param_importance</span> <span class="o">=</span> <span class="p">[]</span>
+
+
         <span class="c1"># Start analysis</span>
         <span class="n">headings</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Meta Data&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;Best Configuration&quot;</span><span class="p">,</span>
@@ -710,8 +719,7 @@
             <span class="c1"># The individual configurator runs are not directory comparable and cannot be aggregated.</span>
             <span class="c1"># Nevertheless they need to be combined in one comprehensive report and some metrics are to be compared over</span>
             <span class="c1"># the individual runs.</span>
-            <span class="c1"># TODO: Currently, the code below is configured for bohb... if we extend ot other budget-driven</span>
-            <span class="c1"># configurators, review!</span>
+            <span class="c1"># TODO: Currently, the code below is configured for bohb... if we extend to other budget-driven configurators, review!</span>
 
             <span class="c1"># Perform analysis for each run</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bohb_result</span><span class="p">:</span>
