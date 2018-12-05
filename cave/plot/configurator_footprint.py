@@ -24,7 +24,7 @@ from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, Cu
 from bokeh.models.sources import CDSView
 from bokeh.models.filters import GroupFilter, BooleanFilter
 from bokeh.layouts import column, row, widgetbox
-from bokeh.models.widgets import CheckboxButtonGroup, CheckboxGroup, Button, Select
+from bokeh.models.widgets import CheckboxButtonGroup, CheckboxGroup, RadioButtonGroup, Button, Select, Div
 
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))  # noqa
 cmd_folder = os.path.realpath(os.path.join(cmd_folder, ".."))  # noqa
@@ -43,7 +43,7 @@ from cave.utils.convert_for_epm import convert_data_for_epm
 from cave.utils.helpers import escape_parameter_name, get_config_origin, combine_runhistories
 from cave.utils.timing import timing
 from cave.utils.io import export_bokeh
-from cave.utils.bokeh_routines import get_checkbox
+from cave.utils.bokeh_routines import get_checkbox, get_radiobuttongroup
 
 
 class ConfiguratorFootprintPlotter(object):
@@ -53,19 +53,20 @@ class ConfiguratorFootprintPlotter(object):
                  rhs: RunHistory,
                  incs: list=None,
                  final_incumbent=None,
-                 rh_timestamps=None,
                  rh_labels=None,
                  max_plot: int=-1,
                  contour_step_size=0.2,
                  use_timeslider: bool=False,
                  num_quantiles: int=10,
+                 timeslider_log: bool=True,
                  output_dir: str=None,
                  ):
         '''
         Creating an interactive plot, visualizing the configuration search space.
         The runhistories are correlated to the individual runs.
-        Each run consists of a runhistory (in the smac-format), a list of incumbents, an optional dict mapping RunKeys
-        to timestamps for each runhistory.
+        Each run consists of a runhistory (in the smac-format), a list of incumbents
+        If the dict "additional_info" in the RunValues of the runhistory contains a nested dict with
+        additional_info["timestamps"]["finished"], using those timestamps to sort data
 
         Parameters
         ----------
@@ -77,8 +78,6 @@ class ConfiguratorFootprintPlotter(object):
             incumbents per run, last entry is final incumbent
         final_incumbent: Configuration
             final configuration (best of all runs)
-        rh_timestamps: List[Dict[RunKey -> float]]
-            timestamps for individual runs
         max_plot: int
             maximum number of configs to plot, if -1 plot all
         contour_step_size: float
@@ -88,6 +87,8 @@ class ConfiguratorFootprintPlotter(object):
             INCREASES FILE-SIZE DRAMATICALLY
         num_quantiles: int
             number of quantiles for the slider/ number of static pictures
+        timeslider_log: bool
+            whether to use a logarithmic scale for the timeslider/quantiles
         output_dir: str
             output directory
         '''
@@ -97,15 +98,13 @@ class ConfiguratorFootprintPlotter(object):
         self.rhs = rhs
         self.combined_rh = combine_runhistories(self.rhs)
         self.incs = incs
-        self.rh_timestamps = rh_timestamps
         self.rh_labels = rh_labels if rh_labels else [str(idx) for idx in range(len(self.rhs))]
         self.max_plot = max_plot
         self.use_timeslider = use_timeslider
         self.num_quantiles = num_quantiles
         self.contour_step_size = contour_step_size
         self.output_dir = output_dir
-
-        self.timeslider_log = False;
+        self.timeslider_log = timeslider_log
 
         # Preprocess input
         self.default = scenario.cs.get_default_configuration()
@@ -125,9 +124,14 @@ class ConfiguratorFootprintPlotter(object):
         dists = self.get_distance(conf_matrix, self.scenario.cs)
         red_dists = self.get_mds(dists)
 
-        contour_data = self.get_pred_surface(self.combined_rh, X_scaled=red_dists,
-                                             conf_list=copy.deepcopy(conf_list),
-                                             contour_step_size=self.contour_step_size)
+        contour_data = {}
+        contour_data['combined'] = self.get_pred_surface(self.combined_rh, X_scaled=red_dists,
+                                                         conf_list=copy.deepcopy(conf_list),
+                                                         contour_step_size=self.contour_step_size)
+        for label, rh in zip(self.rh_labels, self.rhs):
+            contour_data[label] = self.get_pred_surface(rh, X_scaled=red_dists,
+                                                        conf_list=copy.deepcopy(conf_list),
+                                                        contour_step_size=self.contour_step_size)
 
         return self.plot(red_dists,
                          conf_list,
@@ -386,7 +390,6 @@ class ConfiguratorFootprintPlotter(object):
         conf_list = []
         conf_matrix = []
         # Get all configurations. Index of c in conf_list serves as identifier
-        #TODO: works? list(set(rh.get_all_configs()))
         for c in rh.get_all_configs():
             if c not in conf_list:
                 conf_matrix.append(c.get_array())
@@ -441,32 +444,59 @@ class ConfiguratorFootprintPlotter(object):
             numpy array of runs per configuration per quantile
         """
         runs_total = len(rh.data)
-        # Create LINEAR ranges. TODO do we want log? -> this line
-        ranges = [int(r) for r in np.linspace(0, runs_total, quantiles + 1)]
-        self.logger.debug("Creating %d quantiles with a step of %.2f and a total "
-                          "runs of %d", quantiles, runs_total/quantiles, runs_total)
-        self.logger.debug("Ranges: %s", str(ranges))
-
         # Iterate over the runhistory's entries in ranges and creating each
         # sublist from a "snapshot"-runhistory
         labels, last_time_seen = [], -1  # label, means wallclocktime at splitting points
         r_p_q_p_c = []  # runs per quantile per config
         as_list = list(rh.data.items())
-        #as_list = sorted(as_list, key=lambda x: x[1].time)
+        scale = np.geomspace if self.timeslider_log else np.linspace
+
+        # Trying to work with timestamps if they are available
+        timestamps = None
+        try:
+            as_list = sorted(as_list, key=lambda x: x[1].additional_info['timestamps']['finished'])
+            timestamps = [x[1].additional_info['timestamps']['finished'] for x in as_list]
+            time_ranges = scale(timestamps[0], timestamps[-1], num=quantiles+1, endpoint=True)
+            ranges = []
+            idx = 0
+            for time_idx, time in enumerate(time_ranges):
+                while len(timestamps) - 1 > idx and (timestamps[idx] < time or idx <= time_idx):
+                    idx += 1
+                ranges.append(idx)
+        except KeyError as err:
+            self.logger.debug(err)
+            self.logger.debug("Failed to sort by timestamps... only a reason to worry if this is BOHB-analysis")
+            ranges = [int(x) for x in scale(0, runs_total, num=quantiles+1)]
+        # Fix possible wrong values
+        ranges[0] = 0
+        ranges[-1] = len(as_list)
+
+        self.logger.debug("Creating %d quantiles with a total number of runs of %d", quantiles, runs_total)
+        self.logger.debug("Ranges: %s", str(ranges))
+
+        for r in range(len(ranges))[1:]:
+            if ranges[r] <= ranges[r-1]:
+                if ranges[r-1] + 1 >= len(as_list):
+                    raise RuntimeError("There was a problem with the quantiles of the configuration footprint. "
+                                       "Please report this Error on \"https://github.com/automl/CAVE/issues\" and provide the debug.txt-file.")
+                ranges[r] = ranges[r-1] + 1
+                self.logger.debug("Fixed ranges to: %s", str(ranges))
+
+        # Sanity check
+        if not ranges[0] == 0 or not ranges[-1] == len(as_list) or not len(ranges) == quantiles + 1:
+            raise RuntimeError("Sanity check on range-creation in configurator footprint went wrong. "
+                               "Please report this Error on \"https://github.com/automl/CAVE/issues\" and provide the debug.txt-file.")
+
         tmp_rh = RunHistory(average_cost)
         for i, j in zip(ranges[:-1], ranges[1:]):
             for idx in range(i, j):
                 k, v = as_list[idx]
                 tmp_rh.add(config=rh.ids_config[k.config_id],
                            cost=v.cost, time=v.time, status=v.status,
-                           instance_id=k.instance_id, seed=k.seed)
-                #if last_time_seen <= float(v.time):
-                #    self.logger.debug("last_time_seen: {}, v.time: {}".format(last_time_seen, v.time))
-                #    last_time_seen = float(v.time)
-                #else:
-                #    raise ValueError("Sanity check: is runhistory ordered? last_time_seen: {}, v.time: {}".format(last_time_seen, v.time))
-            if last_time_seen >= 0:
-                labels.append("{0:.2f}".format(last_time_seen))
+                           instance_id=k.instance_id, seed=k.seed,
+                           additional_info=v.additional_info)
+            if timestamps:
+                labels.append("{0:.2f}".format(timestamps[j - 1]))
             r_p_q_p_c.append([len(tmp_rh.get_runs_for_config(c)) for c in conf_list])
         self.logger.debug("Labels: " + str(labels))
         return labels, r_p_q_p_c
@@ -522,6 +552,7 @@ class ConfiguratorFootprintPlotter(object):
                 colors.append('white')
         return colors
 
+    @timing
     def _plot_contour(self, p, contour_data, x_range, y_range):
         """Plot contour data.
 
@@ -529,8 +560,8 @@ class ConfiguratorFootprintPlotter(object):
         ----------
         p: bokeh.plotting.figure
             figure to be drawn upon
-        contour_data: np.array
-            array with contour data
+        contour_data: Dict[str -> np.array]
+            dict from labels to array with contour data
         x_range: List[float, float]
             min and max of x-axis
         y_range: List[float, float]
@@ -538,23 +569,28 @@ class ConfiguratorFootprintPlotter(object):
 
         Returns
         -------
-        p: bokeh.plotting.figure
-            modified figure handle
+        handles: dict[str -> tuple(ImageGlyph, tuple(float, float))]
+            mapping from label to image glyph and min/max-tuple
         """
-        min_z = np.min(np.unique(contour_data[2]))
-        max_z = np.max(np.unique(contour_data[2]))
-        color_mapper = LinearColorMapper(palette="Viridis256",
-                                         low=min_z, high=max_z)
-        p.image(image=contour_data, x=x_range[0], y=y_range[0],
-                dw=x_range[1] - x_range[0], dh=y_range[1] - y_range[0],
-                color_mapper=color_mapper)
+        unique = np.unique(np.concatenate([contour_data[label][2] for label in contour_data.keys()]))
+        color_mapper = LinearColorMapper(palette="Viridis256", low=np.min(unique), high=np.max(unique))
+        handles = {}
+        for label, data in contour_data.items():
+            unique = np.unique(contour_data[label][2])
+            handles[label] = (p.image(image=contour_data[label], x=x_range[0], y=y_range[0],
+                                      dw=x_range[1] - x_range[0], dh=y_range[1] - y_range[0],
+                                      color_mapper=color_mapper),
+                              (np.min(unique), np.max(unique)))
+
+            if not label == 'combined' and len(contour_data) > 1:
+                handles[label][0].visible = False
         color_bar = ColorBar(color_mapper=color_mapper,
                              ticker=BasicTicker(desired_num_ticks=15),
                              label_standoff=12,
                              border_line_color=None, location=(0, 0))
         color_bar.major_label_text_font_size = '12pt'
         p.add_layout(color_bar, 'right')
-        return p
+        return handles, color_mapper
 
     def _create_views(self, source, used_configs):
         """Create views in order of plotting, so more interesting views are
@@ -787,7 +823,7 @@ class ConfiguratorFootprintPlotter(object):
             if not use_timeslider or idx == 0:
                 p = self._create_figure(x_range, y_range)
                 if contour_data is not None:  # TODO
-                    p = self._plot_contour(p, contour_data, x_range, y_range)
+                    contour_handles, color_mapper = self._plot_contour(p, contour_data, x_range, y_range)
 
             # Create views and scatter
             views, views_by_run, markers = self._create_views(source, u_cfgs)
@@ -819,8 +855,9 @@ class ConfiguratorFootprintPlotter(object):
         p.add_tools(hover)
 
         # Build dashboard
-        timeslider, checkbox, select_all, select_none = self._get_widgets(all_glyphs, overtime_groups, run_groups,
-                                                                          slider_labels=timeslider_labels)
+        timeslider, checkbox, select_all, select_none, checkbox_title = self._get_widgets(all_glyphs, overtime_groups, run_groups,
+                                                                                          slider_labels=timeslider_labels)
+        contour_checkbox, contour_title = self._contour_radiobuttongroup(contour_handles, color_mapper)
         layout = p
         if use_timeslider:
             self.logger.debug("Adding timeslider")
@@ -828,9 +865,12 @@ class ConfiguratorFootprintPlotter(object):
         if use_checkbox:
             self.logger.debug("Adding checkboxes")
             layout = row(layout,
-                         column(widgetbox(checkbox),
+                         column(widgetbox(checkbox_title),
+                                widgetbox(checkbox),
                                 row(widgetbox(select_all, width=100),
-                                    widgetbox(select_none, width=100))))
+                                    widgetbox(select_none, width=100)),
+                                widgetbox(contour_title),
+                                widgetbox(contour_checkbox)))
 
         script, div = components(layout)
 
@@ -856,6 +896,8 @@ class ConfiguratorFootprintPlotter(object):
         -------
         time_slider, checkbox, select_all, select_none: Widget
             desired interlayed bokeh-widgets
+        checkbox_title: Div
+            text-element to "show title" of checkbox
         """
         aliases = ['glyph' + str(idx) for idx, _ in enumerate(all_glyphs)]
         labels_overtime = list(overtime_groups.keys())
@@ -895,10 +937,11 @@ class ConfiguratorFootprintPlotter(object):
         if slider_labels:
             code += "var slider_labels = " + str(slider_labels) + ";"
             code += "console.log(\"Detected slider_labels: \" + slider_labels);"
-            title = "Until wallclocktime " + slider_labels[time_slider.value - 1] + ". Step no. ";
+            code += "time_slider.title = \"Until wallclocktime \" + slider_labels[time_slider.value - 1] + \". Step no.\"; "
+            title = "Until wallclocktime " + slider_labels[-1] + ". Step no. "
         else:
-            title = "Quantile on {} scale".format("logarithmic" if self.timeslider_log else "linear");
-        code += "time_slider.title = \"{}\";".format(title);
+            title = "Quantile on {} scale".format("logarithmic" if self.timeslider_log else "linear")
+            code += "time_slider.title = \"{}\";".format(title);
         # Combine checkbox-arrays, intersect with time_slider and set all selected glyphs to true
         code += """
         var activate = [];
@@ -914,12 +957,11 @@ class ConfiguratorFootprintPlotter(object):
         """
 
         num_quantiles = len(overtime_groups)
-        timeslider = Slider(start=1, end=num_quantiles,
-                            value=num_quantiles, step=1,
-                            title=title)
-        checkbox = CheckboxGroup(labels=labels_runs,
-                                 active=list(range(len(labels_runs))),
-                                 )
+        if num_quantiles > 1:
+            timeslider = Slider(start=1, end=num_quantiles, value=num_quantiles, step=1, title=title)
+        else:
+            timeslider = Slider(start=1, end=2, value=1)
+        checkbox = CheckboxButtonGroup(labels=labels_runs, active=list(range(len(labels_runs))))
 
         args = {name: glyph for name, glyph in zip(aliases, all_glyphs)}
         args['time_slider'] = timeslider
@@ -927,6 +969,7 @@ class ConfiguratorFootprintPlotter(object):
         callback = CustomJS(args=args, code=code)
         timeslider.js_on_change('value', callback)
         checkbox.callback = callback
+        checkbox_title = Div(text="Showing only configurations evaluated in:")
 
         # Add all/none button to checkbox
         code_all  = "checkbox.active = " + str(list(range(len(labels_runs)))) + ";" + code
@@ -934,7 +977,50 @@ class ConfiguratorFootprintPlotter(object):
         select_all  = Button(label="All", callback=CustomJS(args=args, code=code_all))
         select_none = Button(label="None", callback=CustomJS(args=args, code=code_none))
 
-        return timeslider, checkbox, select_all, select_none
+        return timeslider, checkbox, select_all, select_none, checkbox_title
+
+    def _contour_radiobuttongroup(self, contour_data, color_mapper):
+        """
+        Returns
+        -------
+        radiobuttongroup: RadioButtonGroup
+            radiobuttongroup widget to select one of the elements
+        title: Div
+            text-element to "show title" of widget
+        """
+        labels = list(contour_data.keys())
+        aliases = ['glyph' + str(i) for i in range(len(labels))]
+        values = list(contour_data.values())
+        glyphs = [v[0] for v in values]
+        mins = [v[1][0] for v in values]
+        maxs = [v[1][1] for v in values]
+        args = {name: glyph for name, glyph in zip(aliases, glyphs)}
+        args['colormapper'] = color_mapper
+
+        # Create javascript-code
+        code = "var len_labels = " + str(len(aliases)) + ","
+        code += "glyphs = [ " + ','.join(aliases) + '],'
+        code += "mins = " + str(mins) + ','
+        code += "maxs = " + str(maxs) + ';'
+
+        code += """
+            for (i = 0; i < len_labels; i++) {
+                if (cb_obj.active === i) {
+                    // console.log('Setting to true: ' + i);
+                    glyphs[i].visible = true;
+                    colormapper.low = mins[i];
+                    colormapper.high = maxs[i];
+                } else {
+                    // console.log('Setting to false: ' + i);
+                    glyphs[i].visible = false;
+                }
+            }
+            """
+        # Create the actual checkbox-widget
+        callback = CustomJS(args=args, code=code)
+        radio = RadioButtonGroup(labels=labels, active=0, callback=callback)
+        title = Div(text="Data used to estimate contour-plot")
+        return radio, title
 
     def _create_figure(self, x_range, y_range):
         p = figure(plot_height=500, plot_width=600,

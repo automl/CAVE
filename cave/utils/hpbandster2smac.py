@@ -2,8 +2,8 @@ import os
 import logging
 import tempfile
 
-from ConfigSpace.read_and_write import pcs_new
-from smac.configspace import Configuration, ConfigurationSpace
+from ConfigSpace.read_and_write import json as pcs_json
+from ConfigSpace.configuration_space import Configuration, ConfigurationSpace
 from smac.tae.execute_ta_run import StatusType
 from smac.runhistory.runhistory import RunHistory
 from smac.optimizer.objective import average_cost
@@ -26,11 +26,11 @@ class HpBandSter2SMAC(object):
 
         result = logged_results_to_HBS_result(folder)
 
-        cs_fn = os.path.join(folder, 'configspace.pcs')
+        cs_fn = os.path.join(folder, 'configspace.json')
         if not os.path.exists(cs_fn):
             raise ValueError("Missing pcs-file at '%s'!" % cs_fn)
         with open(cs_fn, 'r') as fh:
-            cs = pcs_new.read(fh.readlines())
+            cs = pcs_json.read(fh.read())
 
         # Using temporary files for the intermediate smac-result-like format
         tmp_dir = tempfile.mkdtemp()
@@ -76,7 +76,7 @@ class HpBandSter2SMAC(object):
                    time=run.time_stamps['finished'] - run.time_stamps['started'],
                    status=StatusType.SUCCESS,
                    seed=0,
-                   additional_info={'info' : run.info})
+                   additional_info={'info' : run.info, 'timestamps': run.time_stamps})
 
         # Write to disk
         budget2path = {}  # paths to individual budgets
