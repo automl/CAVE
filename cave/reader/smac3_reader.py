@@ -29,7 +29,7 @@ class SMAC3Reader(BaseReader):
         if os.path.exists(cs_json):
             self.logger.debug("Detected '%s'", cs_json)
             with open(cs_json, 'r') as fh:
-                pcs_fn = scen_dict.pop('pcs_fn')
+                pcs_fn = scen_dict.pop('pcs_fn', 'no pcs_fn in scenario')
                 self.logger.debug("Ignoring %s", pcs_fn)
                 scen_dict['cs'] = pcs_json.read(fh.read())
 

@@ -229,7 +229,9 @@ class CAVE(object):
             self.bohb_result, folders = HpBandSter2SMAC().convert(folders[0])
             if "DEBUG" in self.verbose_level:
                 for f in folders:
-                    shutil.copytree(f, os.path.join(output_dir, 'debug', os.path.basename(f)))
+                    debug_f = os.path.join(output_dir, 'debug', os.path.basename(f))
+                    shutil.rmtree(debug_f, ignore_errors=True)
+                    shutil.copytree(f, debug_f)
 
             file_format = 'SMAC3'
 
