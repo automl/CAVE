@@ -60,11 +60,6 @@ class HpBandSter2SMAC(object):
                     result.append([True, False])
                 if all([c.isdigit() for c in choices]):
                     result.append([int(c) for c in choices])
-                # Else try floats
-                try:
-                    result.append([float(c) for c in choices])
-                except ValueError:
-                    pass
                 result.append(choices)
                 return result
 
@@ -82,6 +77,7 @@ class HpBandSter2SMAC(object):
                 backup_cs.append(bcs)
 
             self.logger.debug("Sampled %d interpretations of \"%s\"", len(backup_cs), cs_fn_pcs)
+            self.logger.debug(choices_per_cat)
         else:
             raise ValueError("Missing pcs-file at '%s.[pcs|json]'!" % os.path.join(folder, 'configspace'))
         return cs, backup_cs
@@ -132,10 +128,11 @@ class HpBandSter2SMAC(object):
                         cs = bcs
                         break
                     except ValueError:
+                        self.logger.debug("", exc_info=1)
                         pass
                 else:
                     self.logger.debug("None of the alternatives worked...")
-                    raise ValueError("Your configspace seems to be corrupt. If you use ints or bools as categoricals, "
+                    raise ValueError("Your configspace seems to be corrupt. If you use floats (or mix up ints, bools and strings) as categoricals, "
                                      "please consider using the .json-format, as the .pcs-format cannot recover the type "
                                      "of categoricals. Otherwise please report this to "
                                      "https://github.com/automl/CAVE/issues (and attach the debug.log)")
