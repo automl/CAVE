@@ -1,9 +1,12 @@
 import os
 import logging
 import tempfile
+import itertools
 
 from ConfigSpace.read_and_write import json as pcs_json
+from ConfigSpace.read_and_write import pcs_new
 from ConfigSpace.configuration_space import Configuration, ConfigurationSpace
+from ConfigSpace.hyperparameters import CategoricalHyperparameter
 from smac.tae.execute_ta_run import StatusType
 from smac.runhistory.runhistory import RunHistory
 from smac.optimizer.objective import average_cost
@@ -26,16 +29,59 @@ class HpBandSter2SMAC(object):
 
         result = logged_results_to_HBS_result(folder)
 
-        cs_fn = os.path.join(folder, 'configspace.json')
-        if not os.path.exists(cs_fn):
-            raise ValueError("Missing pcs-file at '%s'!" % cs_fn)
-        with open(cs_fn, 'r') as fh:
-            cs = pcs_json.read(fh.read())
+        # backup_cs is a list with alternative interpretations of the configspace-file (if it's a .pcs-file)
+        cs, backup_cs = self.load_configspace(folder)
 
         # Using temporary files for the intermediate smac-result-like format
         tmp_dir = tempfile.mkdtemp()
-        paths = list(self.hpbandster2smac(result, cs, tmp_dir).values())
+        paths = list(self.hpbandster2smac(result, cs, backup_cs, tmp_dir).values())
         return result, paths
+
+    def load_configspace(self, folder):
+        """Will try to load the configspace. If it's a pcs-file, backup_cs will be a list containing all possible
+        combinations of interpretation for Categoricals. If this issue will be fixed, we can drop this procedure."""
+        cs_fn_json = os.path.join(folder, 'configspace.json')
+        cs_fn_pcs = os.path.join(folder, 'configspace.pcs')
+        if os.path.exists(cs_fn_json):
+            with open(cs_fn_json, 'r') as fh:
+                cs = pcs_json.read(fh.read())
+                backup_cs = []
+            self.logger.debug("Detected and loaded \"%s\". No backup-cs necessary", cs_fn_json)
+        elif os.path.exists(cs_fn_pcs):
+            with open(cs_fn_pcs, 'r') as fh:
+                cs = pcs_new.read(fh.readlines())
+            # Create alternative interpretations
+            categoricals = [hp for hp in cs.get_hyperparameters() if isinstance(hp, CategoricalHyperparameter)]
+            non_categoricals = [hp for hp in cs.get_hyperparameters() if not isinstance(hp, CategoricalHyperparameter)]
+
+            def _get_interpretations(choices):
+                result = []
+                if set(choices) == {"True", "False"}:
+                    result.append([True, False])
+                if all([c.isdigit() for c in choices]):
+                    result.append([int(c) for c in choices])
+                result.append(choices)
+                return result
+
+            choices_per_cat = [_get_interpretations(hp.choices) for hp in categoricals]
+            combinations = itertools.product(*choices_per_cat)
+            self.logger.debug(combinations)
+            backup_cs = []
+            for combi in combinations:
+                bcs = ConfigurationSpace()
+                for hp in non_categoricals:
+                    bcs.add_hyperparameter(hp)
+                for name, choices in zip([hp.name for hp in categoricals], combi):
+                    bcs.add_hyperparameter(CategoricalHyperparameter(name, choices))
+                bcs.add_conditions(cs.get_conditions())
+                backup_cs.append(bcs)
+
+            self.logger.debug("Sampled %d interpretations of \"%s\"", len(backup_cs), cs_fn_pcs)
+            self.logger.debug(choices_per_cat)
+        else:
+            raise ValueError("Missing pcs-file at '%s.[pcs|json]'!" % os.path.join(folder, 'configspace'))
+        return cs, backup_cs
+
 
     def _get_config(self, config_id, id2config, cs):
         config = Configuration(cs, id2config[config_id]['config'])
@@ -46,7 +92,7 @@ class HpBandSter2SMAC(object):
             self.logger.debug("No origin for config!", exc_info=True)
         return config
 
-    def hpbandster2smac(self, result, cs: ConfigurationSpace, output_dir: str):
+    def hpbandster2smac(self, result, cs: ConfigurationSpace, backup_cs, output_dir: str):
         """Reading hpbandster-result-object and creating RunHistory and
         trajectory...
         treats each budget as an individual 'smac'-run, creates an
@@ -58,6 +104,8 @@ class HpBandSter2SMAC(object):
             bohb's result-object
         cs: ConfigurationSpace
             the configuration space
+        backup_cs: List[ConfigurationSpace]
+            if loading a configuration fails, try configspaces from this list until succeed
         output_dir: str
             the output-dir to save the smac-runs to
         """
@@ -69,7 +117,26 @@ class HpBandSter2SMAC(object):
                 budget2rh[run.budget] = RunHistory(average_cost)
             rh = budget2rh[run.budget]
 
-            config = self._get_config(run.config_id, id2config_mapping, cs)
+            # Load config...
+            try:
+                config = self._get_config(run.config_id, id2config_mapping, cs)
+            except ValueError as err:
+                self.logger.debug("Loading configuration failed... trying alternatives", exc_info=1)
+                for bcs in backup_cs:
+                    try:
+                        config = self._get_config(run.config_id, id2config_mapping, bcs)
+                        cs = bcs
+                        break
+                    except ValueError:
+                        self.logger.debug("", exc_info=1)
+                        pass
+                else:
+                    self.logger.debug("None of the alternatives worked...")
+                    raise ValueError("Your configspace seems to be corrupt. If you use floats (or mix up ints, bools and strings) as categoricals, "
+                                     "please consider using the .json-format, as the .pcs-format cannot recover the type "
+                                     "of categoricals. Otherwise please report this to "
+                                     "https://github.com/automl/CAVE/issues (and attach the debug.log)")
+
 
             rh.add(config=config,
                    cost=run.loss,
@@ -89,8 +156,10 @@ class HpBandSter2SMAC(object):
             scenario.write()
             rh.save_json(fn=os.path.join(output_path, 'runhistory.json'))
 
-            self.get_trajectory(result, output_path, scenario, rh, budget=b)
+            with open(os.path.join(output_path, 'configspace.json'), 'w') as fh:
+                fh.write(pcs_json.write(cs))
 
+            self.get_trajectory(result, output_path, scenario, rh, budget=b)
 
         return budget2path
 

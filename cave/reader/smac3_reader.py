@@ -1,5 +1,10 @@
 import os
 import shutil
+import typing
+
+from ConfigSpace.read_and_write import json as pcs_json
+from ConfigSpace.configuration_space import ConfigurationSpace, Configuration
+from ConfigSpace.hyperparameters import FloatHyperparameter, IntegerHyperparameter, CategoricalHyperparameter
 
 from smac.optimizer.objective import average_cost
 from smac.utils.io.input_reader import InputReader
@@ -18,6 +23,16 @@ class SMAC3Reader(BaseReader):
         scen_fn = os.path.join(self.folder, 'scenario.txt')
         scen_dict = in_reader.read_scenario_file(scen_fn)
         scen_dict['output_dir'] = ""
+
+        # We always prefer the less error-prone json-format if available:
+        cs_json = os.path.join(self.folder, 'configspace.json')
+        if os.path.exists(cs_json):
+            self.logger.debug("Detected '%s'", cs_json)
+            with open(cs_json, 'r') as fh:
+                pcs_fn = scen_dict.pop('pcs_fn')
+                self.logger.debug("Ignoring %s", pcs_fn)
+                scen_dict['cs'] = pcs_json.read(fh.read())
+
         with changedir(self.ta_exec_dir):
             self.logger.debug("Creating scenario from \"%s\"", self.ta_exec_dir)
             scen = Scenario(scen_dict)
@@ -64,6 +79,36 @@ class SMAC3Reader(BaseReader):
         return rh
 
     def get_trajectory(self, cs):
+        def alternative_configuration_recovery(config_list: typing.List[str], cs: ConfigurationSpace):
+            """ Used to recover ints and bools as categoricals from trajectory """
+            config_dict = {}
+            for param in config_list:
+                k,v = param.split("=")
+                v = v.strip("'")
+                hp = cs.get_hyperparameter(k)
+                print(hp)
+                if isinstance(hp, FloatHyperparameter):
+                    v = float(v)
+                elif isinstance(hp, IntegerHyperparameter):
+                    v = int(v)
+                ################# DIFFERENCE: ################
+                elif isinstance(hp, CategoricalHyperparameter):
+                    if isinstance(hp.choices[0], bool):
+                        v = True if v == 'True' else False
+                    elif isinstance(hp.choices[0], int):
+                        v = int(v)
+                    else:
+                        v = v
+                ##############################################
+                config_dict[k] = v
+            config = Configuration(configuration_space=cs, values=config_dict)
+            config.origin = "External Trajectory"
+            return config
+
+        TrajLogger._convert_dict_to_config = alternative_configuration_recovery
+
+
         traj_fn = os.path.join(self.folder, 'traj_aclib2.json')
         traj = TrajLogger.read_traj_aclib_format(fn=traj_fn, cs=cs)
         return traj
+

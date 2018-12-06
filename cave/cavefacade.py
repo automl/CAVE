@@ -833,7 +833,12 @@ class CAVE(object):
         random forest is trained as an empirical performance model on the available empirical data from the available
         runhistories.
         """
-        fanova = CaveFanova(cave.pimp, cave.incumbent, cave.output_dir)
+        try:
+            fanova = CaveFanova(cave.pimp, cave.incumbent, cave.output_dir)
+        except IndexError as err:
+            self.logger.debug("Error in fANOVA", exc_info=1)
+            raise IndexError("Error in fANOVA - please run with --pimp_no_fanova_pairs (this is due to a known issue "
+                             "with ints and bools in categorical hyperparameters, see issue #192).")
         cave.evaluators.append(cave.pimp.evaluator)
         cave.param_imp["fanova"] = cave.pimp.evaluator.evaluated_parameter_importance
 
