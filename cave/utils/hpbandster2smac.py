@@ -137,13 +137,13 @@ class HpBandSter2SMAC(object):
                                      "of categoricals. Otherwise please report this to "
                                      "https://github.com/automl/CAVE/issues (and attach the debug.log)")
 
-
-            rh.add(config=config,
-                   cost=run.loss,
-                   time=run.time_stamps['finished'] - run.time_stamps['started'],
-                   status=StatusType.SUCCESS,
-                   seed=0,
-                   additional_info={'info' : run.info, 'timestamps': run.time_stamps})
+            if run.loss is not None:
+                rh.add(config=config,
+                       cost=run.loss,
+                       time=run.time_stamps['finished'] - run.time_stamps['started'],
+                       status=StatusType.SUCCESS,
+                       seed=0,
+                       additional_info={'info' : run.info, 'timestamps': run.time_stamps})
 
         # Write to disk
         budget2path = {}  # paths to individual budgets
