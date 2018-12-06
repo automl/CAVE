@@ -156,8 +156,10 @@ class HpBandSter2SMAC(object):
             scenario.write()
             rh.save_json(fn=os.path.join(output_path, 'runhistory.json'))
 
-            self.get_trajectory(result, output_path, scenario, rh, budget=b)
+            with open(os.path.join(output_path, 'configspace.json'), 'w') as fh:
+                fh.write(pcs_json.write(cs))
 
+            self.get_trajectory(result, output_path, scenario, rh, budget=b)
 
         return budget2path
 

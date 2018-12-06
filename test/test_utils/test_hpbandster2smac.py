@@ -15,9 +15,12 @@ class TestHpbandster2Smac(unittest.TestCase):
 
     def test_mixed_categorical(self):
         """ Having ints and bools as categoricals """
-        hpbandster2smac = HpBandSter2SMAC()
-        hpbandster2smac.convert(self.path_to_result_mixed_categorical_json)
-        hpbandster2smac.convert(self.path_to_result_mixed_categorical_pcs)
-        # Missing configfile
-        self.assertRaises(ValueError, hpbandster2smac.convert, self.path_to_result_mixed_categorical_missing)
+        try:
+            hpbandster2smac = HpBandSter2SMAC()
+            hpbandster2smac.convert(self.path_to_result_mixed_categorical_json)
+            hpbandster2smac.convert(self.path_to_result_mixed_categorical_pcs)
+            # Missing configfile
+            self.assertRaises(ValueError, hpbandster2smac.convert, self.path_to_result_mixed_categorical_missing)
+        except ImportError:
+            pass
 
