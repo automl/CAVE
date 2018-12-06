@@ -466,7 +466,7 @@ class ConfiguratorFootprintPlotter(object):
         except KeyError as err:
             self.logger.debug(err)
             self.logger.debug("Failed to sort by timestamps... only a reason to worry if this is BOHB-analysis")
-            ranges = [int(x) for x in scale(0, runs_total, num=quantiles+1)]
+            ranges = [int(x) for x in scale(1, runs_total, num=quantiles+1)]
         # Fix possible wrong values
         ranges[0] = 0
         ranges[-1] = len(as_list)
