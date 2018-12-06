@@ -275,7 +275,7 @@ finished, their respective budgets, and corresponding losses</p>
 
 <dl class="method">
 <dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.hpbandster2smac">
-<code class="descname">hpbandster2smac</code><span class="sig-paren">(</span><em>result</em>, <em>cs: ConfigSpace.configuration_space.ConfigurationSpace</em>, <em>output_dir: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.hpbandster2smac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.hpbandster2smac" title="Permalink to this definition">¶</a></dt>
+<code class="descname">hpbandster2smac</code><span class="sig-paren">(</span><em>result</em>, <em>cs: ConfigSpace.configuration_space.ConfigurationSpace</em>, <em>backup_cs</em>, <em>output_dir: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.hpbandster2smac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.hpbandster2smac" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reading hpbandster-result-object and creating RunHistory and
 trajectory…
 treats each budget as an individual ‘smac’-run, creates an
@@ -287,12 +287,20 @@ output-directory with subdirectories for each budget.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>result</strong> (<em>hpbandster.core.result.Result</em>) – bohb’s result-object</li>
 <li><strong>cs</strong> (<em>ConfigurationSpace</em>) – the configuration space</li>
+<li><strong>backup_cs</strong> (<em>List</em><em>[</em><em>ConfigurationSpace</em><em>]</em>) – if loading a configuration fails, try configspaces from this list until succeed</li>
 <li><strong>output_dir</strong> (<em>str</em>) – the output-dir to save the smac-runs to</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.load_configspace">
+<code class="descname">load_configspace</code><span class="sig-paren">(</span><em>folder</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.load_configspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.load_configspace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will try to load the configspace. If it’s a pcs-file, backup_cs will be a list containing all possible
+combinations of interpretation for Categoricals. If this issue will be fixed, we can drop this procedure.</p>
 </dd></dl>
 
 </dd></dl>
