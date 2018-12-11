@@ -4,7 +4,7 @@ import typing
 
 from ConfigSpace.read_and_write import json as pcs_json
 from ConfigSpace.configuration_space import ConfigurationSpace, Configuration
-from ConfigSpace.hyperparameters import FloatHyperparameter, IntegerHyperparameter, CategoricalHyperparameter
+from ConfigSpace.hyperparameters import FloatHyperparameter, IntegerHyperparameter, Constant, CategoricalHyperparameter
 
 from smac.optimizer.objective import average_cost
 from smac.utils.io.input_reader import InputReader
@@ -80,7 +80,7 @@ class SMAC3Reader(BaseReader):
 
     def get_trajectory(self, cs):
         def alternative_configuration_recovery(config_list: typing.List[str], cs: ConfigurationSpace):
-            """ Used to recover ints and bools as categoricals from trajectory """
+            """ Used to recover ints and bools as categoricals or constants from trajectory """
             config_dict = {}
             for param in config_list:
                 k,v = param.split("=")
@@ -92,10 +92,10 @@ class SMAC3Reader(BaseReader):
                 elif isinstance(hp, IntegerHyperparameter):
                     v = int(v)
                 ################# DIFFERENCE: ################
-                elif isinstance(hp, CategoricalHyperparameter):
-                    if isinstance(hp.choices[0], bool):
+                elif isinstance(hp, CategoricalHyperparameter) or isinstance(hp, Constant):
+                    if isinstance(hp.default_value, bool):
                         v = True if v == 'True' else False
-                    elif isinstance(hp.choices[0], int):
+                    elif isinstance(hp.default_value, int):
                         v = int(v)
                     else:
                         v = v
