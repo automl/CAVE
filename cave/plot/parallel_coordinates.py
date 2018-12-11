@@ -12,7 +12,7 @@ import matplotlib.cm as cmx
 import matplotlib.patheffects as path_efx
 from matplotlib.pyplot import setp
 
-from ConfigSpace.hyperparameters import CategoricalHyperparameter, IntegerHyperparameter, FloatHyperparameter
+from ConfigSpace.hyperparameters import CategoricalHyperparameter, IntegerHyperparameter, FloatHyperparameter, Constant
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -184,6 +184,8 @@ class ParallelCoordinatesPlotter():
                     new_entry[p] = float(value)
                 elif isinstance(param, CategoricalHyperparameter):
                     new_entry[p] = param.choices.index(value)
+                elif isinstance(param, Constant):
+                    new_entry[p] = float(value)
                 else:
                     raise RuntimeError('No rule for parametertype %s' % str(type(param)))
             data.append(pd.Series(new_entry))
@@ -211,8 +213,13 @@ class ParallelCoordinatesPlotter():
             #    lower, upper = self.cs.get_hyperparameter(p).lower, self.cs.get_hyperparameter(p).upper
             # min_max_diff[p] = [lower, upper, upper - lower]
             # data[p] = np.true_divide(data[p] - lower, upper - lower)
+
+            # Check if explored values are more than one
+            if len(set(data[p])) <= 1:
+                data[p] = np.ones(data[p].shape)
+            else:
+                data[p] = np.true_divide(data[p] - data[p].min(), np.ptp(data[p]))
             min_max_diff[p] = [data[p].min(), data[p].max(), np.ptp(data[p])]
-            data[p] = np.true_divide(data[p] - data[p].min(), np.ptp(data[p]))
 
         # setup colormap
         cm = plt.get_cmap('winter')
@@ -259,6 +266,9 @@ class ParallelCoordinatesPlotter():
                     ticks = [round(norm_min + norm_step * i, 2) for i in range(num_ticks)]
                 else:
                     ticks = [1]
+            elif isinstance(hyper, Constant):
+                ticks = [1]
+                tick_labels = [hyper.value]
             else:
                 step = param_range / float(num_ticks)
                 if isinstance(hyper, IntegerHyperparameter):

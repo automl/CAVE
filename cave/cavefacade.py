@@ -734,7 +734,7 @@ class CAVE(object):
 
     @_analyzer_type
     def parallel_coordinates(self, cave,
-                             params: Union[int, List[str]]=10,
+                             params: Union[int, List[str]]=5,
                              n_configs: int=100,
                              max_runs_epm: int=300000):
         """

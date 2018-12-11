@@ -106,6 +106,8 @@ class ParallelCoordinates(BaseAnalyzer):
             epm_rh.update(timing(validator.validate_epm)(all_configs, 'train+test', 1, runhistory=validated_rh))
         self.config_to_cost = {c : epm_rh.get_cost(c) for c in all_configs}
 
+        self.params = self.get_params(params)
+
         self.pcp = ParallelCoordinatesPlotter(self.config_to_cost, output_dir, cs, runtime)
 
     def get_params(self, params):
@@ -116,9 +118,9 @@ class ParallelCoordinates(BaseAnalyzer):
                 method, importance = list(self.param_imp.items())[0]
                 self.logger.debug("Choosing visualized parameters in parallel coordinates "
                                   "according to parameter importance method %s" % method)
-                n_param = min(n_param, max(3, len([x for x in importance.values() if x > 0.05])))
+                n_param = min(params, max(3, len([x for x in importance.values() if x > 0.05])))
                 # Some importance methods add "--source--" or similar to the parameter names -> filter them in next line
-                params = [p for p in importance.keys() if p in self.cs.get_hyperparameter_names()][:params]
+                params = [p for p in importance.keys() if p in self.cs.get_hyperparameter_names()][:n_param]
             else:
                 self.logger.info("No parameter importance performed. Plotting random parameters in parallel coordinates.")
                 params = list(self.default.keys())[:params]
@@ -135,8 +137,8 @@ class ParallelCoordinates(BaseAnalyzer):
             what parameters to plot
         """
         params = self.get_params(params)
-        if not params:
-            params = list(list(self.config_to_cost.keys())[0].keys())
+        if not params and not self.params:
+            raise ValueError("Define what params to plot!")
         if not self.plots:
             try:
                 self.plots = [self.pcp.plot_n_configs(n_configs, params if params else self.params)]
@@ -165,13 +167,14 @@ class ParallelCoordinates(BaseAnalyzer):
             d["figure"] = self.get_plots(n_configs, params)
             d["tooltip"] = tooltip
 
-        div = "<div class=\"panel\">\n"
-        div += "<div align=\"center\">\n"
-        div += ("<a href=\"{0}\" data-lightbox=\"{0}\" "
-                "data-title=\"{0}\"><img src=\"{0}\" alt=\"Plot\" "
-                "width=\"600px\"></a>\n".format(self.plots[0]))
-        div += "</div>"
-        div += "</div>"
+        div = """
+           <div class=\"panel\">
+             <div align=\"center\">
+               <a href=\"{0}\" data-lightbox=\"{0}\"
+                data-title=\"{0}\"><img src=\"{0}\" alt=\"Plot\"
+                width=\"600px\"></a>
+             </div>
+           </div>""".format(self.plots[0])
         return "", div
 
     def get_jupyter(self, n_configs=50, params=None):
