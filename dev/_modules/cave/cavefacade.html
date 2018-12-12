@@ -985,8 +985,7 @@
 <span class="sd">        max_runs_epm: int</span>
 <span class="sd">            this is a maximum of runs to be used for training of the epm. use to avoid MemoryErrors</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;    plotting </span><span class="si">%s</span><span class="s2"> parameters for (max) </span><span class="si">%s</span><span class="s2"> configurations&quot;</span><span class="p">,</span> <span class="n">params</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-                                                                                   <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">),</span> <span class="n">n_configs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;    plotting </span><span class="si">%s</span><span class="s2"> parameters for (max) </span><span class="si">%s</span><span class="s2"> configurations&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">n_configs</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">ParallelCoordinates</span><span class="p">(</span><span class="n">original_rh</span><span class="o">=</span><span class="n">cave</span><span class="o">.</span><span class="n">global_original_rh</span><span class="p">,</span>
                                    <span class="n">validated_rh</span><span class="o">=</span><span class="n">cave</span><span class="o">.</span><span class="n">global_validated_rh</span><span class="p">,</span>
@@ -995,6 +994,7 @@
                                    <span class="n">default</span><span class="o">=</span><span class="n">cave</span><span class="o">.</span><span class="n">default</span><span class="p">,</span> <span class="n">incumbent</span><span class="o">=</span><span class="n">cave</span><span class="o">.</span><span class="n">incumbent</span><span class="p">,</span>
                                    <span class="n">param_imp</span><span class="o">=</span><span class="n">cave</span><span class="o">.</span><span class="n">param_imp</span><span class="p">,</span>
                                    <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+                                   <span class="n">n_configs</span><span class="o">=</span><span class="n">n_configs</span><span class="p">,</span>
                                    <span class="n">max_runs_epm</span><span class="o">=</span><span class="n">max_runs_epm</span><span class="p">,</span>
                                    <span class="n">output_dir</span><span class="o">=</span><span class="n">cave</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
                                    <span class="n">cs</span><span class="o">=</span><span class="n">cave</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="p">,</span>
