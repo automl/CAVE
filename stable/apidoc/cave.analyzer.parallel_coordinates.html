@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.parallel_coordinates module &mdash; CAVE 1.1.3 documentation</title>
+  <title>cave.analyzer.parallel_coordinates module &mdash; CAVE 1.1.4_dev documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.3
+                1.1.4_dev
               </div>
             
           
@@ -235,7 +235,7 @@
 <span id="cave-analyzer-parallel-coordinates-module"></span><h1>cave.analyzer.parallel_coordinates module<a class="headerlink" href="#module-cave.analyzer.parallel_coordinates" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.analyzer.parallel_coordinates.ParallelCoordinates">
-<em class="property">class </em><code class="descclassname">cave.analyzer.parallel_coordinates.</code><code class="descname">ParallelCoordinates</code><span class="sig-paren">(</span><em>original_rh: smac.runhistory.runhistory.RunHistory, validated_rh: smac.runhistory.runhistory.RunHistory, validator: smac.utils.validate.Validator, scenario: smac.scenario.scenario.Scenario, default: ConfigSpace.configuration_space.Configuration, incumbent: ConfigSpace.configuration_space.Configuration, param_imp: Union[None, Dict[str, float]], params: Union[int, List[str]], output_dir: str, cs: ConfigSpace.configuration_space.ConfigurationSpace, runtime: bool = False, max_runs_epm: int = 3000000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/parallel_coordinates.html#ParallelCoordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.parallel_coordinates.ParallelCoordinates" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">cave.analyzer.parallel_coordinates.</code><code class="descname">ParallelCoordinates</code><span class="sig-paren">(</span><em>original_rh: smac.runhistory.runhistory.RunHistory, validated_rh: smac.runhistory.runhistory.RunHistory, validator: smac.utils.validate.Validator, scenario: smac.scenario.scenario.Scenario, default: ConfigSpace.configuration_space.Configuration, incumbent: ConfigSpace.configuration_space.Configuration, param_imp: Union[None, Dict[str, float]], params: Union[int, List[str]], n_configs: int, output_dir: str, cs: ConfigSpace.configuration_space.ConfigurationSpace, runtime: bool = False, max_runs_epm: int = 3000000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/parallel_coordinates.html#ParallelCoordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.parallel_coordinates.ParallelCoordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer" title="cave.analyzer.base_analyzer.BaseAnalyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">cave.analyzer.base_analyzer.BaseAnalyzer</span></code></a></p>
 <p>“This function prepares the data from a SMAC-related
 format (using runhistories and parameters) to a more general format
@@ -255,6 +255,7 @@ this runhistory will be used to build the EPM</li>
 <li><strong>param_imp</strong> (<em>Union</em><em>[</em><em>None</em><em>, </em><em>Dict</em><em>[</em><em>str-&gt;float</em><em>]</em>) – if given, maps parameter-names to importance</li>
 <li><strong>params</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) – either directly the parameters to displayed or the number of parameters (will try to define the most
 important ones</li>
+<li><strong>n_configs</strong> (<em>int</em>) – number of configs to be plotted</li>
 <li><strong>max_runs_epm</strong> (<em>int</em>) – maximum number of runs to train the epm with. this should prevent MemoryErrors</li>
 <li><strong>output_dir</strong> (<em>str</em>) – output directory for plots</li>
 <li><strong>cs</strong> (<em>ConfigurationSpace</em>) – parameter configuration space to be visualized</li>
@@ -266,7 +267,7 @@ important ones</li>
 </table>
 <dl class="method">
 <dt id="cave.analyzer.parallel_coordinates.ParallelCoordinates.get_html">
-<code class="descname">get_html</code><span class="sig-paren">(</span><em>d=None</em>, <em>tooltip=None</em>, <em>n_configs=500</em>, <em>params=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/parallel_coordinates.html#ParallelCoordinates.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.parallel_coordinates.ParallelCoordinates.get_html" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_html</code><span class="sig-paren">(</span><em>d=None</em>, <em>tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/parallel_coordinates.html#ParallelCoordinates.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.parallel_coordinates.ParallelCoordinates.get_html" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -283,7 +284,7 @@ important ones</li>
 
 <dl class="method">
 <dt id="cave.analyzer.parallel_coordinates.ParallelCoordinates.get_jupyter">
-<code class="descname">get_jupyter</code><span class="sig-paren">(</span><em>n_configs=50</em>, <em>params=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/parallel_coordinates.html#ParallelCoordinates.get_jupyter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.parallel_coordinates.ParallelCoordinates.get_jupyter" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_jupyter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/parallel_coordinates.html#ParallelCoordinates.get_jupyter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.parallel_coordinates.ParallelCoordinates.get_jupyter" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -305,7 +306,7 @@ important ones</li>
 
 <dl class="method">
 <dt id="cave.analyzer.parallel_coordinates.ParallelCoordinates.get_plots">
-<code class="descname">get_plots</code><span class="sig-paren">(</span><em>n_configs=500</em>, <em>params=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/parallel_coordinates.html#ParallelCoordinates.get_plots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.parallel_coordinates.ParallelCoordinates.get_plots" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/parallel_coordinates.html#ParallelCoordinates.get_plots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.parallel_coordinates.ParallelCoordinates.get_plots" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
