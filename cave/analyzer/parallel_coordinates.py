@@ -38,6 +38,7 @@ class ParallelCoordinates(BaseAnalyzer):
             incumbent: Configuration,
             param_imp: Union[None, Dict[str, float]],
             params: Union[int, List[str]],
+            n_configs: int,
             output_dir: str,
             cs: ConfigurationSpace,
             runtime: bool=False,
@@ -66,6 +67,8 @@ class ParallelCoordinates(BaseAnalyzer):
         params: Union[int, List[str]]
             either directly the parameters to displayed or the number of parameters (will try to define the most
             important ones
+        n_configs: int
+            number of configs to be plotted
         max_runs_epm: int
             maximum number of runs to train the epm with. this should prevent MemoryErrors
         output_dir: str
@@ -82,6 +85,14 @@ class ParallelCoordinates(BaseAnalyzer):
         self.default = default
         self.param_imp = param_imp
         self.cs = cs
+
+        # Sorting by importance, if possible (choose first executed parameter-importance
+        self.method, self.importance = "", {}
+        for m, i in list(self.param_imp.items()):
+            if i:
+                self.method, self.importance = m, i
+        self.hp_names = sorted([hp for hp in self.cs.get_hyperparameter_names()],
+                               key=lambda x: self.importance.get(x, 0))
 
         # To be set
         self.plots = []
@@ -106,26 +117,22 @@ class ParallelCoordinates(BaseAnalyzer):
             epm_rh.update(timing(validator.validate_epm)(all_configs, 'train+test', 1, runhistory=validated_rh))
         self.config_to_cost = {c : epm_rh.get_cost(c) for c in all_configs}
 
+        self.params = self.get_params(params)
+        self.n_configs = n_configs
+
         self.pcp = ParallelCoordinatesPlotter(self.config_to_cost, output_dir, cs, runtime)
 
     def get_params(self, params):
         # Define what parameters to be plotted (using importance, if available)
         if isinstance(params, int):
-            if self.param_imp:
-                # Use the first applied parameter importance analysis to choose
-                method, importance = list(self.param_imp.items())[0]
-                self.logger.debug("Choosing visualized parameters in parallel coordinates "
-                                  "according to parameter importance method %s" % method)
-                n_param = min(n_param, max(3, len([x for x in importance.values() if x > 0.05])))
-                # Some importance methods add "--source--" or similar to the parameter names -> filter them in next line
-                params = [p for p in importance.keys() if p in self.cs.get_hyperparameter_names()][:params]
-            else:
-                self.logger.info("No parameter importance performed. Plotting random parameters in parallel coordinates.")
-                params = list(self.default.keys())[:params]
+            if self.importance:
+                params = min(params, max(3, len([x for x in self.importance.values() if x > 0.05])))
+            params = self.hp_names[:params]
+        self.logger.debug("Reduced to %s", str(params))
         return params
 
 
-    def get_plots(self, n_configs=500, params=None):
+    def get_plots(self):
         """
         Parameters
         ----------
@@ -134,17 +141,14 @@ class ParallelCoordinates(BaseAnalyzer):
         params: List[str]
             what parameters to plot
         """
-        params = self.get_params(params)
-        if not params:
-            params = list(list(self.config_to_cost.keys())[0].keys())
         if not self.plots:
             try:
-                self.plots = [self.pcp.plot_n_configs(n_configs, params if params else self.params)]
+                self.plots = [self.pcp.plot_n_configs(self.n_configs, self.params)]
             except ValueError as err:
                 self.error = str(err)
         return self.plots
 
-    def get_html(self, d=None, tooltip=None, n_configs=500, params=None):
+    def get_html(self, d=None, tooltip=None):
         """
         Parameters
         ----------
@@ -154,7 +158,7 @@ class ParallelCoordinates(BaseAnalyzer):
             what parameters to plot
         """
         if not self.plots:
-            self.get_plots(n_configs, params)
+            self.get_plots()
 
         if self.error:
             if d is not None:
@@ -162,19 +166,20 @@ class ParallelCoordinates(BaseAnalyzer):
             return "", self.error
 
         if d is not None:
-            d["figure"] = self.get_plots(n_configs, params)
+            d["figure"] = self.get_plots()
             d["tooltip"] = tooltip
 
-        div = "<div class=\"panel\">\n"
-        div += "<div align=\"center\">\n"
-        div += ("<a href=\"{0}\" data-lightbox=\"{0}\" "
-                "data-title=\"{0}\"><img src=\"{0}\" alt=\"Plot\" "
-                "width=\"600px\"></a>\n".format(self.plots[0]))
-        div += "</div>"
-        div += "</div>"
+        div = """
+           <div class=\"panel\">
+             <div align=\"center\">
+               <a href=\"{0}\" data-lightbox=\"{0}\"
+                data-title=\"{0}\"><img src=\"{0}\" alt=\"Plot\"
+                width=\"600px\"></a>
+             </div>
+           </div>""".format(self.plots[0])
         return "", div
 
-    def get_jupyter(self, n_configs=50, params=None):
+    def get_jupyter(self):
         """
         Parameters
         ----------
@@ -184,7 +189,7 @@ class ParallelCoordinates(BaseAnalyzer):
             what parameters to plot
         """
         if not self.plots:
-            self.get_plots(n_configs, params)
+            self.get_plots()
 
         from IPython.core.display import HTML, Image, display
         if self.plots:

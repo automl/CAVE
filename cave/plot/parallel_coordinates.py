@@ -12,7 +12,7 @@ import matplotlib.cm as cmx
 import matplotlib.patheffects as path_efx
 from matplotlib.pyplot import setp
 
-from ConfigSpace.hyperparameters import CategoricalHyperparameter, IntegerHyperparameter, FloatHyperparameter
+from ConfigSpace.hyperparameters import CategoricalHyperparameter, IntegerHyperparameter, FloatHyperparameter, Constant
 
 __author__ = "Joshua Marben"
 __copyright__ = "Copyright 2017, ML4AAD"
@@ -184,6 +184,8 @@ class ParallelCoordinatesPlotter():
                     new_entry[p] = float(value)
                 elif isinstance(param, CategoricalHyperparameter):
                     new_entry[p] = param.choices.index(value)
+                elif isinstance(param, Constant):
+                    new_entry[p] = float(value)
                 else:
                     raise RuntimeError('No rule for parametertype %s' % str(type(param)))
             data.append(pd.Series(new_entry))
@@ -211,8 +213,14 @@ class ParallelCoordinatesPlotter():
             #    lower, upper = self.cs.get_hyperparameter(p).lower, self.cs.get_hyperparameter(p).upper
             # min_max_diff[p] = [lower, upper, upper - lower]
             # data[p] = np.true_divide(data[p] - lower, upper - lower)
+
+            # Check if explored values are more than one
             min_max_diff[p] = [data[p].min(), data[p].max(), np.ptp(data[p])]
-            data[p] = np.true_divide(data[p] - data[p].min(), np.ptp(data[p]))
+            if len(np.unique(data[p])) <= 1:
+                self.logger.debug("%s has only one explored value (%s)", p, np.unique(data[p]))
+                data[p] = np.ones(data[p].shape)
+            else:
+                data[p] = np.true_divide(data[p] - data[p].min(), np.ptp(data[p]))
 
         # setup colormap
         cm = plt.get_cmap('winter')
@@ -237,6 +245,7 @@ class ParallelCoordinatesPlotter():
                 if idx in [0, 1, 2, 3, 4, len(data) - 1, len(data) - 2, len(data) - 3, len(data) - 4, len(data) - 5]:
                     alpha = 1
                     path_effects = [path_efx.withStroke(linewidth=5, foreground='k')]
+                #self.logger.debug(data.loc[idx, params])
                 ax.plot(range(len(params)), data.loc[idx, params], color=cval,
                         alpha=alpha, linewidth=3, zorder=zorder, path_effects=path_effects)
             ax.set_xlim([i, i + 1])
@@ -259,6 +268,9 @@ class ParallelCoordinatesPlotter():
                     ticks = [round(norm_min + norm_step * i, 2) for i in range(num_ticks)]
                 else:
                     ticks = [1]
+            elif isinstance(hyper, Constant):
+                ticks = [1]
+                tick_labels = [hyper.value]
             else:
                 step = param_range / float(num_ticks)
                 if isinstance(hyper, IntegerHyperparameter):
