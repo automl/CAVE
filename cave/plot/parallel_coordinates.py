@@ -215,11 +215,12 @@ class ParallelCoordinatesPlotter():
             # data[p] = np.true_divide(data[p] - lower, upper - lower)
 
             # Check if explored values are more than one
-            if len(set(data[p])) <= 1:
+            min_max_diff[p] = [data[p].min(), data[p].max(), np.ptp(data[p])]
+            if len(np.unique(data[p])) <= 1:
+                self.logger.debug("%s has only one explored value (%s)", p, np.unique(data[p]))
                 data[p] = np.ones(data[p].shape)
             else:
                 data[p] = np.true_divide(data[p] - data[p].min(), np.ptp(data[p]))
-            min_max_diff[p] = [data[p].min(), data[p].max(), np.ptp(data[p])]
 
         # setup colormap
         cm = plt.get_cmap('winter')
@@ -244,6 +245,7 @@ class ParallelCoordinatesPlotter():
                 if idx in [0, 1, 2, 3, 4, len(data) - 1, len(data) - 2, len(data) - 3, len(data) - 4, len(data) - 5]:
                     alpha = 1
                     path_effects = [path_efx.withStroke(linewidth=5, foreground='k')]
+                #self.logger.debug(data.loc[idx, params])
                 ax.plot(range(len(params)), data.loc[idx, params], color=cval,
                         alpha=alpha, linewidth=3, zorder=zorder, path_effects=path_effects)
             ax.set_xlim([i, i + 1])

@@ -759,8 +759,7 @@ class CAVE(object):
         max_runs_epm: int
             this is a maximum of runs to be used for training of the epm. use to avoid MemoryErrors
         """
-        self.logger.info("    plotting %s parameters for (max) %s configurations", params if isinstance(params, int)
-                                                                                   else len(params), n_configs)
+        self.logger.info("    plotting %s parameters for (max) %s configurations", params, n_configs)
 
         return ParallelCoordinates(original_rh=cave.global_original_rh,
                                    validated_rh=cave.global_validated_rh,
@@ -769,6 +768,7 @@ class CAVE(object):
                                    default=cave.default, incumbent=cave.incumbent,
                                    param_imp=cave.param_imp,
                                    params=params,
+                                   n_configs=n_configs,
                                    max_runs_epm=max_runs_epm,
                                    output_dir=cave.output_dir,
                                    cs=cave.scenario.cs,
