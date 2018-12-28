@@ -1000,12 +1000,17 @@ class CAVE(object):
     @_analyzer_type
     def bohb_learning_curves(self, cave):
         """Visualizing the learning curves of the individual Hyperband-iterations. Model based picks are marked with a
-        cross. The config-id tuple denotes (HB_iteration, SH_iteration, id_within_SH_iteration), so it can be
-        interpreted as a nested index-identifier."""
+        cross. The config-id tuple denotes (iteration, stage, id_within_stage), where the iteration is a hyperband
+        iteration and the stage is the index of the budget used. It can be interpreted as a nested index-identifier.
+        """
         return BohbLearningCurves(self.scenario.cs.get_hyperparameter_names(), result_object=self.bohb_result)
 
     @_analyzer_type
     def bohb_incumbents_per_budget(self, cave):
+        """
+        Show the incumbents for each budget (i.e. the best configuration by kernel-estimation using data from that
+        budget).
+        """
         return BohbIncumbentsPerBudget([b.incumbent for b in self.runs],
                                        [b.folder for b in self.runs],
                                        [b.epm_runhistory for b in self.runs])
