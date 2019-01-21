@@ -1,3 +1,14 @@
+# 1.1.4
+
+## Bug fixes
+
+* Enforcing smac version 0.10.0 to fix pcs-loading issues for booleans
+
+## Minor changes
+
+* Make nomenclature for BOHB clearer
+* Add BOHB to extensive-testing-suite
+
 # 1.1.1
 
 ## Major changes
