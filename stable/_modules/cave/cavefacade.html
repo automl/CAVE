@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.cavefacade &mdash; CAVE 1.1.4_dev documentation</title>
+  <title>cave.cavefacade &mdash; CAVE 1.1.4 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                1.1.4_dev
+                1.1.4
               </div>
             
           
@@ -1226,12 +1226,17 @@
 <div class="viewcode-block" id="CAVE.bohb_learning_curves"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.bohb_learning_curves">[docs]</a>    <span class="nd">@_analyzer_type</span>
     <span class="k">def</span> <span class="nf">bohb_learning_curves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cave</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Visualizing the learning curves of the individual Hyperband-iterations. Model based picks are marked with a</span>
-<span class="sd">        cross. The config-id tuple denotes (HB_iteration, SH_iteration, id_within_SH_iteration), so it can be</span>
-<span class="sd">        interpreted as a nested index-identifier.&quot;&quot;&quot;</span>
+<span class="sd">        cross. The config-id tuple denotes (iteration, stage, id_within_stage), where the iteration is a hyperband</span>
+<span class="sd">        iteration and the stage is the index of the budget used. It can be interpreted as a nested index-identifier.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">BohbLearningCurves</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="o">.</span><span class="n">get_hyperparameter_names</span><span class="p">(),</span> <span class="n">result_object</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bohb_result</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CAVE.bohb_incumbents_per_budget"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.bohb_incumbents_per_budget">[docs]</a>    <span class="nd">@_analyzer_type</span>
     <span class="k">def</span> <span class="nf">bohb_incumbents_per_budget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cave</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show the incumbents for each budget (i.e. the best configuration by kernel-estimation using data from that</span>
+<span class="sd">        budget).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">BohbIncumbentsPerBudget</span><span class="p">([</span><span class="n">b</span><span class="o">.</span><span class="n">incumbent</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">],</span>
                                        <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">folder</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">],</span>
                                        <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">epm_runhistory</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">])</span></div>
@@ -1340,7 +1345,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2018, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+        &copy; Copyright 2017-2019, Marius Lindauer, Joshua Marben, Andre Biedenkapp
 
     </p>
   </div>
@@ -1365,6 +1370,7 @@
         <script type="text/javascript" src="../../_static/jquery.js"></script>
         <script type="text/javascript" src="../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
     
 
   
