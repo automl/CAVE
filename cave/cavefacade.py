@@ -1091,6 +1091,9 @@ class CAVE(object):
                                    # Other (mostly bokeh)
                                    "PIL.PngImagePlugin",
                                    "matplotlib.font_manager",
+                                   "matplotlib.ticker",
+                                   "matplotlib.axes",
+                                   "matplotlib.colorbar",
                                    "urllib3.connectionpool",
                                    "selenium.webdriver.remote.remote_connection"]
                 for logger in disable_loggers:
