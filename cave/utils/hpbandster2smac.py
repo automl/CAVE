@@ -3,6 +3,8 @@ import logging
 import tempfile
 import itertools
 
+import numpy as np
+
 from ConfigSpace.read_and_write import json as pcs_json
 from ConfigSpace.read_and_write import pcs_new
 from ConfigSpace.configuration_space import Configuration, ConfigurationSpace
@@ -112,6 +114,7 @@ class HpBandSter2SMAC(object):
         # Create runhistories (one per budget)
         id2config_mapping = result.get_id2config_mapping()
         budget2rh = {}
+        skipped = {'None' : 0, 'NaN' : 0}
         for run in result.get_all_runs():
             if not run.budget in budget2rh:
                 budget2rh[run.budget] = RunHistory(average_cost)
@@ -137,13 +140,21 @@ class HpBandSter2SMAC(object):
                                      "of categoricals. Otherwise please report this to "
                                      "https://github.com/automl/CAVE/issues (and attach the debug.log)")
 
-            if run.loss is not None:
-                rh.add(config=config,
-                       cost=run.loss,
-                       time=run.time_stamps['finished'] - run.time_stamps['started'],
-                       status=StatusType.SUCCESS,
-                       seed=0,
-                       additional_info={'info' : run.info, 'timestamps': run.time_stamps})
+            if run.loss is None:
+                skipped['None'] += 1
+                continue
+            if np.isnan(run.loss):
+                skipped['NaN'] += 1
+                continue
+
+            rh.add(config=config,
+                   cost=run.loss,
+                   time=run.time_stamps['finished'] - run.time_stamps['started'],
+                   status=StatusType.SUCCESS,
+                   seed=0,
+                   additional_info={'info' : run.info, 'timestamps': run.time_stamps})
+
+        self.logger.debug("Skipped %d None- and %d NaN-loss-values in BOHB-result", skipped['None'], skipped['NaN'])
 
         # Write to disk
         budget2path = {}  # paths to individual budgets
