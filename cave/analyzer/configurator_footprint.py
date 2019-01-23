@@ -81,7 +81,7 @@ class ConfiguratorFootprint(BaseAnalyzer):
         incumbents = list(map(lambda x: x['incumbent'], runs[0].traj))
         assert(incumbents[-1] == runs[0].traj[-1]['incumbent'])
 
-        cfp = ConfiguratorFootprintPlotter(
+        self.cfp = ConfiguratorFootprintPlotter(
                        scenario=self.scenario,
                        rhs=[r.original_runhistory for r in self.runs],
                        incs=[[entry['incumbent'] for entry in r.traj] for r in self.runs],
@@ -92,27 +92,30 @@ class ConfiguratorFootprint(BaseAnalyzer):
                        num_quantiles=self.num_quantiles,
                        timeslider_log=self.timeslider_log,
                        output_dir=self.output_dir)
+
+
+    def plot(self):
         try:
-            res = cfp.run()
+            res = self.cfp.run()
         except MemoryError as err:
             self.logger.exception(err)
             raise MemoryError("Memory Error occured in configurator footprint. "
                               "You may want to reduce the number of plotted "
                               "configs (using the '--cfp_max_plot'-argument)")
 
-        self.bokeh_plot, self.cfp_paths = res
-        self.script, self.div = components(self.bokeh_plot)
+        bokeh_plot, self.cfp_paths = res
+        return bokeh_plot
+        #self.script, self.div = components(self.bokeh_plot)
 
     def get_jupyter(self):
+        bokeh_plot = self.plot()
         output_notebook()
-        if not self.bokeh_plot:
-            self.bokeh_plot = self._plot()
-        show(self.bokeh_plot)
+        show(bokeh_plot)
 
     def get_html(self, d=None, tooltip=None):
-        bokeh_components = self.script, self.div
+        bokeh_components = components(self.plot())
         if d is not None:
-            if self.num_quantiles == 1 or self.use_timeslider:  # Only one plot, no need for "Static"-field
+            if self.num_quantiles == 1 or self.use_timeslider:  # No need for "Static" with one plot / time slider activated
                 d["bokeh"] = (bokeh_components)
                 d["tooltip"] = tooltip
             else:

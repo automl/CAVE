@@ -892,8 +892,9 @@ class CAVE(object):
     def pimp_comparison_table(self, cave,
                               pimp_sort_table_by="average"):
         """
-        Parameters are sorted by pimp_sort_table_by. Note, that the values are not directly comparable, since the
-        different techniques provide different metrics (see respective tooltips for details on the differences)."""
+        Parameters are initially sorted by pimp_sort_table_by. Only parameters with an importance greater than 5 in any
+        of the methods are shown.  Note, that the values of the used methods are not directly comparable. For more
+        information on the metrics, see respective tooltips."""
         return PimpComparisonTable(cave.pimp,
                                    cave.evaluators,
                                    sort_table_by=pimp_sort_table_by,
@@ -1091,6 +1092,9 @@ class CAVE(object):
                                    # Other (mostly bokeh)
                                    "PIL.PngImagePlugin",
                                    "matplotlib.font_manager",
+                                   "matplotlib.ticker",
+                                   "matplotlib.axes",
+                                   "matplotlib.colorbar",
                                    "urllib3.connectionpool",
                                    "selenium.webdriver.remote.remote_connection"]
                 for logger in disable_loggers:

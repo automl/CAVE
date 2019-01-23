@@ -46,10 +46,15 @@ class BohbLearningCurves(BaseAnalyzer):
             result_object = logged_results_to_HBS_result(result_path)
 
         incumbent_trajectory = result_object.get_incumbent_trajectory()
-        lcs = result_object.get_learning_curves(lc_extractor=extract_HBS_learning_curves)
-        self.bokeh_plot = self.bohb_plot(result_object, lcs, hp_names)
 
-    def bohb_plot(self, result_object, learning_curves, hyperparameter_names, reset_times=False):
+        self.hp_names = hp_names
+        self.result_object = result_object
+        self.lcs = result_object.get_learning_curves(lc_extractor=extract_HBS_learning_curves)
+
+    def plot(self, reset_times=False):
+        return self._plot(self.result_object, self.lcs, self.hp_names, reset_times=reset_times)
+
+    def _plot(self, result_object, learning_curves, hyperparameter_names, reset_times=False):
         # Extract information from learning-curve-dict
         times, losses, config_ids, = [], [], []
         for conf_id, learning_curves in learning_curves.items():
@@ -243,11 +248,11 @@ class BohbLearningCurves(BaseAnalyzer):
 
     def get_jupyter(self):
         output_notebook()
-        show(self.bokeh_plot)
+        show(self.plot())
 
     def get_html(self, d=None, tooltip=None):
-        bokeh_components = components(self.bokeh_plot)
+        script, div = components(self.plot())
         if d is not None:
-            d["BOHB Learning Curves"] = {"bokeh" : bokeh_components, "tooltip" : tooltip}
-        return bokeh_components
+            d["BOHB Learning Curves"] = {"bokeh" : (script, div), "tooltip" : tooltip}
+        return script, div
 

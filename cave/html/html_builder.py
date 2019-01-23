@@ -259,7 +259,7 @@ for (i = 0; i < acc.length; i++) {
             elif k == "bokeh":
                 # Escape path for URL (replace   and ' with   . ;)
                 path_script = os.path.join(self.relative_content_js, '_'.join([layer_name, self.budget,
-                                                                              self.get_unique_id(), 'script.js']))
+                                                                               self.get_unique_id(), 'script.js']))
                 path_script = path_script.translate({ord(c): None for c in ' \''})
 
                 # Write script to file
