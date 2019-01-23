@@ -229,6 +229,8 @@
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
 <span class="kn">from</span> <span class="nn">ConfigSpace.read_and_write</span> <span class="k">import</span> <span class="n">json</span> <span class="k">as</span> <span class="n">pcs_json</span>
 <span class="kn">from</span> <span class="nn">ConfigSpace.read_and_write</span> <span class="k">import</span> <span class="n">pcs_new</span>
 <span class="kn">from</span> <span class="nn">ConfigSpace.configuration_space</span> <span class="k">import</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">ConfigurationSpace</span>
@@ -338,6 +340,7 @@
         <span class="c1"># Create runhistories (one per budget)</span>
         <span class="n">id2config_mapping</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get_id2config_mapping</span><span class="p">()</span>
         <span class="n">budget2rh</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">skipped</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;None&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NaN&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">get_all_runs</span><span class="p">():</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">run</span><span class="o">.</span><span class="n">budget</span> <span class="ow">in</span> <span class="n">budget2rh</span><span class="p">:</span>
                 <span class="n">budget2rh</span><span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">budget</span><span class="p">]</span> <span class="o">=</span> <span class="n">RunHistory</span><span class="p">(</span><span class="n">average_cost</span><span class="p">)</span>
@@ -363,13 +366,21 @@
                                      <span class="s2">&quot;of categoricals. Otherwise please report this to &quot;</span>
                                      <span class="s2">&quot;https://github.com/automl/CAVE/issues (and attach the debug.log)&quot;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">run</span><span class="o">.</span><span class="n">loss</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">rh</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
-                       <span class="n">cost</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">loss</span><span class="p">,</span>
-                       <span class="n">time</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;finished&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">run</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;started&#39;</span><span class="p">],</span>
-                       <span class="n">status</span><span class="o">=</span><span class="n">StatusType</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">,</span>
-                       <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                       <span class="n">additional_info</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;info&#39;</span> <span class="p">:</span> <span class="n">run</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="s1">&#39;timestamps&#39;</span><span class="p">:</span> <span class="n">run</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">})</span>
+            <span class="k">if</span> <span class="n">run</span><span class="o">.</span><span class="n">loss</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">skipped</span><span class="p">[</span><span class="s1">&#39;None&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">loss</span><span class="p">):</span>
+                <span class="n">skipped</span><span class="p">[</span><span class="s1">&#39;NaN&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+
+            <span class="n">rh</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+                   <span class="n">cost</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">loss</span><span class="p">,</span>
+                   <span class="n">time</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;finished&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">run</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;started&#39;</span><span class="p">],</span>
+                   <span class="n">status</span><span class="o">=</span><span class="n">StatusType</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">,</span>
+                   <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                   <span class="n">additional_info</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;info&#39;</span> <span class="p">:</span> <span class="n">run</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="s1">&#39;timestamps&#39;</span><span class="p">:</span> <span class="n">run</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipped </span><span class="si">%d</span><span class="s2"> None- and </span><span class="si">%d</span><span class="s2"> NaN-loss-values in BOHB-result&quot;</span><span class="p">,</span> <span class="n">skipped</span><span class="p">[</span><span class="s1">&#39;None&#39;</span><span class="p">],</span> <span class="n">skipped</span><span class="p">[</span><span class="s1">&#39;NaN&#39;</span><span class="p">])</span>
 
         <span class="c1"># Write to disk</span>
         <span class="n">budget2path</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># paths to individual budgets</span>
