@@ -26,20 +26,24 @@ class AlgorithmFootprint(BaseAnalyzer):
             raise ValueError("Could not detect any instances.")
 
         self.logger.info("... algorithm footprints for: {}".format(",".join([a[1] for a in algorithms])))
-        footprint = AlgorithmFootprintPlotter(epm_rh,
+        self.footprint = AlgorithmFootprintPlotter(epm_rh,
                                               train_feats, test_feats,
                                               algorithms,
                                               cutoff,
                                               output_dir,
                                               rng=rng)
+
+    def _plot(self):
         # Plot footprints
-        self.bokeh_plot = footprint.plot_interactive_footprint()
-        self.script, self.div = components(self.bokeh_plot)
-        self.plots3d = footprint.plot3d()
+        bokeh_plot = self.footprint.plot_interactive_footprint()
+        #self.script, self.div = components(self.bokeh_plot)
+        self.plots3d = self.footprint.plot3d()
+        return bokeh_plot
 
     def get_jupyter(self):
+        bokeh_plot = self._plot()
         output_notebook()
-        show(self.bokeh_plot)
+        show(bokeh_plot)
 
     def get_html(self, d=None, tooltip=None):
         bokeh_components = self.script, self.div

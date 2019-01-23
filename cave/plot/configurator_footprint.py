@@ -872,7 +872,7 @@ class ConfiguratorFootprintPlotter(object):
                                 widgetbox(contour_title),
                                 widgetbox(contour_checkbox)))
 
-        script, div = components(layout)
+        #script, div = components(layout)
 
         if self.output_dir:
             path = os.path.join(self.output_dir, "content/images/configurator_footprint.png")
