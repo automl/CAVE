@@ -110,14 +110,12 @@ class ConfiguratorFootprint(BaseAnalyzer):
     def get_jupyter(self):
         bokeh_plot = self.plot()
         output_notebook()
-        #if not self.bokeh_plot:
-        #    self.bokeh_plot = self._plot()
         show(bokeh_plot)
 
     def get_html(self, d=None, tooltip=None):
-        bokeh_components = self.script, self.div
+        bokeh_components = components(self.plot())
         if d is not None:
-            if self.num_quantiles == 1 or self.use_timeslider:  # Only one plot, no need for "Static"-field
+            if self.num_quantiles == 1 or self.use_timeslider:  # No need for "Static" with one plot / time slider activated
                 d["bokeh"] = (bokeh_components)
                 d["tooltip"] = tooltip
             else:

@@ -19,7 +19,6 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 from bokeh.plotting import figure, ColumnDataSource
-from bokeh.embed import components
 from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider
 from bokeh.models.sources import CDSView
 from bokeh.models.filters import GroupFilter, BooleanFilter
@@ -871,8 +870,6 @@ class ConfiguratorFootprintPlotter(object):
                                     widgetbox(select_none, width=100)),
                                 widgetbox(contour_title),
                                 widgetbox(contour_checkbox)))
-
-        #script, div = components(layout)
 
         if self.output_dir:
             path = os.path.join(self.output_dir, "content/images/configurator_footprint.png")

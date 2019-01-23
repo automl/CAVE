@@ -40,10 +40,10 @@ class BudgetCorrelation(BaseAnalyzer):
             estimated runhistories for budgets, same length and order as incumbents"""
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
 
+        self.runs = runs
+
         # To be set
-        self.bokeh_plot = None
         self.dataframe = None
-        self.plot(runs)
 
     def _get_table(self, runs):
         table = []
@@ -62,7 +62,12 @@ class BudgetCorrelation(BaseAnalyzer):
         budget_names = [os.path.basename(run.folder) for run in runs]
         return DataFrame(data=table, columns=budget_names, index=budget_names)
 
-    def plot(self, runs):
+    def plot(self):
+        """Create table and plot that reacts to selection of cells by updating the plotted data to visualize
+        correlation."""
+        return self._plot(self.runs)
+
+    def _plot(self, runs):
         """Create table and plot that reacts to selection of cells by updating the plotted data to visualize correlation.
 
         Parameters
@@ -172,21 +177,20 @@ class BudgetCorrelation(BaseAnalyzer):
 
         callback = CustomJS(args=dict(table_source=table_source,
                                       scatter_source=scatter_source,
-                                      xaxis=p.xaxis[0],
-                                      yaxis=p.yaxis[0],
-                                      xr=p.x_range,
-                                      yr=p.y_range,
+                                      xaxis=p.xaxis[0], yaxis=p.yaxis[0],
+                                      xr=p.x_range, yr=p.y_range,
                                       ), code=code)
         table_source.selected.js_on_change('indices', callback)
 
-        self.bokeh_plot = column(bokeh_table, p)
-        self.script, self.div = components(self.bokeh_plot)
+        layout = column(bokeh_table, p)
+        return layout
 
     def get_html(self, d=None, tooltip=None):
+        script, div = components(self.plot())
         if d is not None:
-            d["bokeh"] = self.script, self.div
-        return self.script, self.div
+            d["bokeh"] = script, div
+        return script, div
 
     def get_jupyter(self):
         output_notebook()
-        show(self.bokeh_plot)
+        show(self.plot())

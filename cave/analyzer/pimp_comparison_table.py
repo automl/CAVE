@@ -26,43 +26,51 @@ class PimpComparisonTable(BaseAnalyzer):
         """Create a html-table over all evaluated parameter-importance-methods.
         Parameters are sorted after their average importance."""
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
+
+        self.pimp = pimp
+        self.evaluators = evaluators
         self.sort_table_by = sort_table_by
+        self.cs = cs
+        self.out_fn = out_fn
+        self.threshold = threshold
 
-        pimp.table_for_comparison(evaluators, out_fn, style='latex')
-        self.logger.info('Creating pimp latex table at %s' % out_fn)
 
-        parameters = [p.name for p in cs.get_hyperparameters()]
+    def plot(self):
+        self.pimp.table_for_comparison(self.evaluators, self.out_fn, style='latex')
+        self.logger.info('Creating pimp latex table at %s' % self.out_fn)
+
+        parameters = [p.name for p in self.cs.get_hyperparameters()]
         index, values, columns = [], [], []
-        columns = [e.name for e in evaluators]
+        columns = [e.name for e in self.evaluators]
         columns_lower = [c.lower() for c in columns]
 
         # SORT
-        self.logger.debug("Sort pimp-table by %s" % sort_table_by)
-        if sort_table_by == "average":
+        self.logger.debug("Sort pimp-table by %s" % self.sort_table_by)
+        if self.sort_table_by == "average":
             # Sort parameters after average importance
             p_avg = {}
             for p in parameters:
-                imps = [e.evaluated_parameter_importance[p] for e in evaluators if p in e.evaluated_parameter_importance]
+                imps = [e.evaluated_parameter_importance[p] for e in self.evaluators if p in e.evaluated_parameter_importance]
                 p_avg[p] = np.mean(imps) if imps else  0
             p_order = sorted(parameters, key=lambda p: p_avg[p], reverse=True)
-        elif sort_table_by in columns_lower:
+        elif self.sort_table_by in columns_lower:
             def __get_key(p):
-                imp = evaluators[columns_lower.index(sort_table_by)].evaluated_parameter_importance
+                imp = self.evaluators[columns_lower.index(self.sort_table_by)].evaluated_parameter_importance
                 return imp[p] if p in imp else 0
             p_order = sorted(parameters, key=__get_key, reverse=True)
         else:
             raise ValueError("Trying to sort importance table after {}, which "
-                             "was not evaluated.".format(sort_table_by))
+                             "was not evaluated.".format(self.sort_table_by))
 
         # PREPROCESS
         for p in p_order:
             values_for_p = [p]
             add_parameter = False  # Only add parameters where at least one evaluator shows importance > threshold
-            for e in evaluators:
+            for e in self.evaluators:
                 if p in e.evaluated_parameter_importance:
                     # Check for threshold
                     value_to_add = e.evaluated_parameter_importance[p]
-                    if value_to_add > threshold:
+                    if value_to_add > self.threshold:
                         add_parameter = True
                     # All but forward-selection use values between 0 and 1
                     if e.name != 'Forward-Selection':
@@ -82,17 +90,17 @@ class PimpComparisonTable(BaseAnalyzer):
         self.comp_table = DataFrame(values, columns=['Parameters'] + columns)
         sortable = {c : True for c in columns}
         width = {**{'Parameters' : 150}, **{c : 100 for c in columns}}
-        self.bokeh_plot = array_to_bokeh_table(self.comp_table, sortable=sortable, width=width, logger=self.logger)
 
-        self.script, self.div = components(self.bokeh_plot)
+        bokeh_table = array_to_bokeh_table(self.comp_table, sortable=sortable, width=width, logger=self.logger)
+        return bokeh_table
 
     def get_html(self, d=None, tooltip=None):
-        table = self.comp_table.to_html()
+        script, div = components(self.plot())
         if d is not None:
-            d["bokeh"] = self.script, self.div
-        return self.script, self.div
+            d["bokeh"] = script, div
+        return script, div
 
     def get_jupyter(self):
         output_notebook()
-        show(self.bokeh_plot)
+        show(self.plot())
 
