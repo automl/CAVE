@@ -192,10 +192,6 @@ class CAVE(object):
                                   'budget_correlation', 'cost_over_time',
                                   'overview_table']  # these function-names will always be aggregated
 
-        for d in os.listdir():
-            if d.startswith('run_1'):
-                shutil.rmtree(d)
-
         self.verbose_level = verbose_level
         self.seed = seed
         self.rng = np.random.RandomState(seed)
