@@ -157,6 +157,7 @@ class BohbLearningCurves(BaseAnalyzer):
         # Plot per HB_iteration, each config individually
         HB_iterations = sorted(set(data['HB_iteration']))
         HB_handles = []
+        self.logger.debug("Assuming config_info to be either \"model_based_pick=True\" or \"model_based_pick=False\"")
         for it in HB_iterations:
             line_handles = []
             view = CDSView(source=source_multiline, filters=[GroupFilter(column_name='HB_iteration', group=str(it))])
@@ -168,7 +169,6 @@ class BohbLearningCurves(BaseAnalyzer):
                                           line_width=5,
                                       ))
             # Separate modelbased and random
-            self.logger.debug("Assuming config_info to be either \"model_based_pick=True\" or \"(...)=False\"")
             view = CDSView(source=source_scatter, filters=[GroupFilter(column_name='HB_iteration', group=str(it)),
                                                            GroupFilter(column_name='config_info',
                                                            group="model_based_pick=True")])

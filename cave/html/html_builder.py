@@ -82,6 +82,9 @@ class HTMLBuilder(object):
 <!DOCTYPE html>
 <html>
 <head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+
 <title>CAVE</title>
 <link href="html/css/accordion.css" rel="stylesheet" />
 <link href="html/css/table.css" rel="stylesheet" />

@@ -158,11 +158,16 @@ class HpBandSter2SMAC(object):
 
         # Write to disk
         budget2path = {}  # paths to individual budgets
+        self.logger.info("Assuming BOHB treats target algorithms as deterministic (and does not re-evaluate)")
         for b, rh in budget2rh.items():
             output_path = os.path.join(output_dir, 'budget_' + str(b))
             budget2path[b] = output_path
 
-            scenario = Scenario({'run_obj' : 'quality', 'cs' : cs, 'output_dir' : output_dir})
+            scenario = Scenario({'run_obj' : 'quality',
+                                 'cs' : cs,
+                                 'output_dir' : output_dir,
+                                 'deterministic' : True,  # At the time of writing, BOHB is always treating ta's as deterministic
+                                 })
             scenario.output_dir_for_this_run = output_path
             scenario.write()
             rh.save_json(fn=os.path.join(output_path, 'runhistory.json'))

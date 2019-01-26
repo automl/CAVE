@@ -160,5 +160,9 @@ def array_to_bokeh_table(df, sortable=None, width=None, logger=None):
                            default_sort='descending',
                            width=width.get(header, 100)) for header in columns
               ]
-    data_table = DataTable(source=source, columns=columns, height=20 + 30 * len(list(data.values())[0]))
+    data_table = DataTable(source=source,
+                           columns=columns,
+                           height=20 + 30 * len(list(data.values())[0]),
+                           index_position=None,  # Disable index-column
+                           )
     return data_table
