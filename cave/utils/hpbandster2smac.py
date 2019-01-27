@@ -22,7 +22,7 @@ class HpBandSter2SMAC(object):
     def __init__(self):
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
 
-    def convert(self, folder):
+    def convert(self, folder, output_dir=None):
         try:
             from hpbandster.core.result import Result as HPBResult
             from hpbandster.core.result import logged_results_to_HBS_result
@@ -35,9 +35,11 @@ class HpBandSter2SMAC(object):
         cs, backup_cs = self.load_configspace(folder)
 
         # Using temporary files for the intermediate smac-result-like format
-        tmp_dir = tempfile.mkdtemp()
-        paths = list(self.hpbandster2smac(result, cs, backup_cs, tmp_dir).values())
-        return result, paths
+        if not output_dir:
+            output_dir = tempfile.mkdtemp()
+        budgets, paths = zip(*self.hpbandster2smac(result, cs, backup_cs, output_dir).items())
+
+        return result, paths, budgets
 
     def load_configspace(self, folder):
         """Will try to load the configspace. If it's a pcs-file, backup_cs will be a list containing all possible
