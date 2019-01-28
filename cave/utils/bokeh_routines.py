@@ -1,5 +1,9 @@
-from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider
-from bokeh.models.widgets import RadioButtonGroup, CheckboxButtonGroup, CheckboxGroup, Button, Select
+import logging
+
+from bokeh.models import (HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider,
+                          ColumnDataSource)
+from bokeh.models.widgets import (RadioButtonGroup, CheckboxButtonGroup, CheckboxGroup, Button, Select,
+                                  DataTable, TableColumn)
 
 def get_checkbox(glyph_renderers, labels):
     """
@@ -112,3 +116,53 @@ def _prepare_nested_glyphs(glyph_renderers):
     code += "glyph_renderers = [" + ','.join(['[' + ','.join([str(idx) for idx in group]) + ']' for group in aliases]) + '];'
     return code, args
 
+def array_to_bokeh_table(df, sortable=None, width=None, logger=None):
+    """
+    Create bokeh-table from array.
+
+    Parameters
+    ----------
+    array: pandas.DataFrame
+        dataframe with columns and index set
+    sortable: dict(str : boolean)
+        columns that should be sortable, default none
+    width: dict(str : int)
+        width of columns, default 100 for all
+    logger: logging.Logger
+        logger to use, if not set use default
+
+    Returns
+    -------
+    bokeh_table: bokeh.models.widgets.DataTable
+        bokeh object
+    """
+    if logger is None:
+        logger = logging.getLogger('cave.utils.bokeh_routines.array_to_bokeh_table')
+    if sortable is None:
+        sortable = {}
+    if width is None:
+        width = {}
+
+    columns = list(df.columns.values)
+    data = dict(df[columns])
+
+    # Sanity checks
+    for attr, d in {'width' : width, 'sortable' : sortable}.items():
+        diff = set(d.keys()).difference(set(columns))
+        if len(diff) > 0:
+            logger.debug("For attr %s with value %s and columns %s there is a diff %s", attr, d, columns, diff)
+            raise ValueError("Illegal table description! Trying to specify '%s' for the following columns, but they "
+                             "are not present in DataFrame: %s!" % (attr, diff))
+
+    source = ColumnDataSource(data)
+    columns = [TableColumn(field=header, title=header,
+                           sortable=sortable.get(header, False),
+                           default_sort='descending',
+                           width=width.get(header, 100)) for header in columns
+              ]
+    data_table = DataTable(source=source,
+                           columns=columns,
+                           height=20 + 30 * len(list(data.values())[0]),
+                           index_position=None,  # Disable index-column
+                           )
+    return data_table

@@ -189,11 +189,8 @@ class CAVE(object):
 
         # Methods that are never per-run, because they are inter-run-analysis by nature
         self.always_aggregated = ['bohb_learning_curves', 'bohb_incumbents_per_budget', 'configurator_footprint',
-                                  'budget_correlation', 'cost_over_time']  # these function-names will always be aggregated
-
-        for d in os.listdir():
-            if d.startswith('run_1'):
-                shutil.rmtree(d)
+                                  'budget_correlation', 'cost_over_time',
+                                  'overview_table']  # these function-names will always be aggregated
 
         self.verbose_level = verbose_level
         self.seed = seed
@@ -223,10 +220,8 @@ class CAVE(object):
             os.makedirs(output_dir)
 
         if file_format == 'BOHB':
-            if len(folders) != 1:
-                raise ValueError("For file format BOHB you can only specify one folder.")
             self.use_budgets = True
-            self.bohb_result, folders = HpBandSter2SMAC().convert(folders[0])
+            self.bohb_result, folders, budgets = HpBandSter2SMAC().convert(folders, output_dir)
             if "DEBUG" in self.verbose_level:
                 for f in folders:
                     debug_f = os.path.join(output_dir, 'debug', os.path.basename(f))
@@ -525,6 +520,8 @@ class CAVE(object):
             if cost_over_time:
                 self.cost_over_time(d=self._get_dict(self.website["Configurators Behavior"], "Cost Over Time"), run=None)
                 self.website["Configurators Behavior"]["Cost Over Time"]["tooltip"] = self._get_tooltip(self.cost_over_time)
+            self.overview_table(d=self._get_dict(self.website, "Meta Data"), run=None)
+            self.website["Meta Data"]["tooltip"] = self._get_tooltip(self.overview_table)
 
             for run in self.runs:
                 sub_sec = os.path.basename(run.folder)
@@ -543,7 +540,6 @@ class CAVE(object):
                 run.epm_rh = self.global_epm_rh
                 self.best_run = run
                 # Perform analysis
-                self.overview_table(d=self._get_dict(self.website, "Meta Data", sub_sec), run=sub_sec)
                 self.website["Meta Data"]["tooltip"] = self._get_tooltip(self.overview_table)
                 self.parameter_importance(self.website["Parameter Importance"], sub_sec,
                                           ablation=False, #'ablation' in param_importance,
@@ -605,12 +601,7 @@ class CAVE(object):
         """ Meta data, i.e. number of instances and parameters as well as configuration budget. Statistics apply to the
         best run, if multiple configurator runs are compared.
         """
-        return OverviewTable(cave.scenario,
-                             cave.global_original_rh,
-                             cave.runs[0],
-                             len(cave.runs),
-                             cave.default,
-                             cave.incumbent,
+        return OverviewTable(cave.runs,
                              cave.output_dir)
 
     @_analyzer_type
@@ -892,8 +883,9 @@ class CAVE(object):
     def pimp_comparison_table(self, cave,
                               pimp_sort_table_by="average"):
         """
-        Parameters are sorted by pimp_sort_table_by. Note, that the values are not directly comparable, since the
-        different techniques provide different metrics (see respective tooltips for details on the differences)."""
+        Parameters are initially sorted by pimp_sort_table_by. Only parameters with an importance greater than 5 in any
+        of the methods are shown.  Note, that the values of the used methods are not directly comparable. For more
+        information on the metrics, see respective tooltips."""
         return PimpComparisonTable(cave.pimp,
                                    cave.evaluators,
                                    sort_table_by=pimp_sort_table_by,
@@ -1091,6 +1083,9 @@ class CAVE(object):
                                    # Other (mostly bokeh)
                                    "PIL.PngImagePlugin",
                                    "matplotlib.font_manager",
+                                   "matplotlib.ticker",
+                                   "matplotlib.axes",
+                                   "matplotlib.colorbar",
                                    "urllib3.connectionpool",
                                    "selenium.webdriver.remote.remote_connection"]
                 for logger in disable_loggers:

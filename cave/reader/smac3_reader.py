@@ -86,7 +86,6 @@ class SMAC3Reader(BaseReader):
                 k,v = param.split("=")
                 v = v.strip("'")
                 hp = cs.get_hyperparameter(k)
-                print(hp)
                 if isinstance(hp, FloatHyperparameter):
                     v = float(v)
                 elif isinstance(hp, IntegerHyperparameter):

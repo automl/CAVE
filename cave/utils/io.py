@@ -124,5 +124,4 @@ def load_config_csv(path, cs, logger):
     for index, row in config_data.iterrows():
         values = {name: row[name] for name in config_data.columns if row[name]}
         id_to_config[index] = deactivate_inactive_hyperparameters(fix_types(values, cs), cs)
-        print(index)
     return config_data.columns, id_to_config
