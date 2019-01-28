@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.algorithm_footprint &mdash; CAVE 1.1.3 documentation</title>
+  <title>cave.analyzer.algorithm_footprint &mdash; CAVE 1.1.4 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                1.1.3
+                1.1.4
               </div>
             
           
@@ -252,27 +252,31 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Could not detect any instances.&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;... algorithm footprints for: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">algorithms</span><span class="p">])))</span>
-        <span class="n">footprint</span> <span class="o">=</span> <span class="n">AlgorithmFootprintPlotter</span><span class="p">(</span><span class="n">epm_rh</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">footprint</span> <span class="o">=</span> <span class="n">AlgorithmFootprintPlotter</span><span class="p">(</span><span class="n">epm_rh</span><span class="p">,</span>
                                               <span class="n">train_feats</span><span class="p">,</span> <span class="n">test_feats</span><span class="p">,</span>
                                               <span class="n">algorithms</span><span class="p">,</span>
                                               <span class="n">cutoff</span><span class="p">,</span>
                                               <span class="n">output_dir</span><span class="p">,</span>
                                               <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Plot footprints</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bokeh_plot</span> <span class="o">=</span> <span class="n">footprint</span><span class="o">.</span><span class="n">plot_interactive_footprint</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">div</span> <span class="o">=</span> <span class="n">components</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bokeh_plot</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">plots3d</span> <span class="o">=</span> <span class="n">footprint</span><span class="o">.</span><span class="n">plot3d</span><span class="p">()</span>
+        <span class="n">bokeh_plot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">footprint</span><span class="o">.</span><span class="n">plot_interactive_footprint</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plots3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">footprint</span><span class="o">.</span><span class="n">plot3d</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">bokeh_plot</span>
 
 <div class="viewcode-block" id="AlgorithmFootprint.get_jupyter"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.algorithm_footprint.html#cave.analyzer.algorithm_footprint.AlgorithmFootprint.get_jupyter">[docs]</a>    <span class="k">def</span> <span class="nf">get_jupyter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">bokeh_plot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot</span><span class="p">()</span>
         <span class="n">output_notebook</span><span class="p">()</span>
-        <span class="n">show</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bokeh_plot</span><span class="p">)</span></div>
+        <span class="n">show</span><span class="p">(</span><span class="n">bokeh_plot</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AlgorithmFootprint.get_html"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.algorithm_footprint.html#cave.analyzer.algorithm_footprint.AlgorithmFootprint.get_html">[docs]</a>    <span class="k">def</span> <span class="nf">get_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">bokeh_components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">div</span>
+        <span class="n">script</span><span class="p">,</span> <span class="n">div</span> <span class="o">=</span> <span class="n">components</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plot</span><span class="p">())</span>
+        <span class="n">bokeh_components</span> <span class="o">=</span> <span class="n">script</span><span class="p">,</span> <span class="n">div</span>
         <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">d</span><span class="p">[</span><span class="s2">&quot;tooltip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tooltip</span>
             <span class="c1"># Interactive bokeh-plot</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Interactive Algorithm Footprint&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;bokeh&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">div</span><span class="p">)}</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Interactive Algorithm Footprint&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;bokeh&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="n">div</span><span class="p">)}</span>
             <span class="k">for</span> <span class="n">plots</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots3d</span><span class="p">:</span>
                 <span class="n">header</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">plots</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">][</span><span class="mi">10</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
                 <span class="n">header</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">header</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>

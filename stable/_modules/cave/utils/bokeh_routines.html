@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.utils.bokeh_routines &mdash; CAVE 1.1.3 documentation</title>
+  <title>cave.utils.bokeh_routines &mdash; CAVE 1.1.4 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                1.1.3
+                1.1.4
               </div>
             
           
@@ -224,8 +224,12 @@
            <div itemprop="articleBody">
             
   <h1>Source code for cave.utils.bokeh_routines</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="n">ColorBar</span><span class="p">,</span> <span class="n">LinearColorMapper</span><span class="p">,</span> <span class="n">BasicTicker</span><span class="p">,</span> <span class="n">CustomJS</span><span class="p">,</span> <span class="n">Slider</span>
-<span class="kn">from</span> <span class="nn">bokeh.models.widgets</span> <span class="k">import</span> <span class="n">RadioButtonGroup</span><span class="p">,</span> <span class="n">CheckboxButtonGroup</span><span class="p">,</span> <span class="n">CheckboxGroup</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">Select</span>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="p">(</span><span class="n">HoverTool</span><span class="p">,</span> <span class="n">ColorBar</span><span class="p">,</span> <span class="n">LinearColorMapper</span><span class="p">,</span> <span class="n">BasicTicker</span><span class="p">,</span> <span class="n">CustomJS</span><span class="p">,</span> <span class="n">Slider</span><span class="p">,</span>
+                          <span class="n">ColumnDataSource</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">bokeh.models.widgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">RadioButtonGroup</span><span class="p">,</span> <span class="n">CheckboxButtonGroup</span><span class="p">,</span> <span class="n">CheckboxGroup</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">Select</span><span class="p">,</span>
+                                  <span class="n">DataTable</span><span class="p">,</span> <span class="n">TableColumn</span><span class="p">)</span>
 
 <div class="viewcode-block" id="get_checkbox"><a class="viewcode-back" href="../../../apidoc/cave.utils.bokeh_routines.html#cave.utils.bokeh_routines.get_checkbox">[docs]</a><span class="k">def</span> <span class="nf">get_checkbox</span><span class="p">(</span><span class="n">glyph_renderers</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -338,6 +342,56 @@
     <span class="n">code</span> <span class="o">+=</span> <span class="s2">&quot;glyph_renderers = [&quot;</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;[&#39;</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">group</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">aliases</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;];&#39;</span>
     <span class="k">return</span> <span class="n">code</span><span class="p">,</span> <span class="n">args</span>
 
+<div class="viewcode-block" id="array_to_bokeh_table"><a class="viewcode-back" href="../../../apidoc/cave.utils.bokeh_routines.html#cave.utils.bokeh_routines.array_to_bokeh_table">[docs]</a><span class="k">def</span> <span class="nf">array_to_bokeh_table</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">sortable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create bokeh-table from array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array: pandas.DataFrame</span>
+<span class="sd">        dataframe with columns and index set</span>
+<span class="sd">    sortable: dict(str : boolean)</span>
+<span class="sd">        columns that should be sortable, default none</span>
+<span class="sd">    width: dict(str : int)</span>
+<span class="sd">        width of columns, default 100 for all</span>
+<span class="sd">    logger: logging.Logger</span>
+<span class="sd">        logger to use, if not set use default</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bokeh_table: bokeh.models.widgets.DataTable</span>
+<span class="sd">        bokeh object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">logger</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;cave.utils.bokeh_routines.array_to_bokeh_table&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sortable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sortable</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">width</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">])</span>
+
+    <span class="c1"># Sanity checks</span>
+    <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;width&#39;</span> <span class="p">:</span> <span class="n">width</span><span class="p">,</span> <span class="s1">&#39;sortable&#39;</span> <span class="p">:</span> <span class="n">sortable</span><span class="p">}</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">columns</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;For attr </span><span class="si">%s</span><span class="s2"> with value </span><span class="si">%s</span><span class="s2"> and columns </span><span class="si">%s</span><span class="s2"> there is a diff </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">diff</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Illegal table description! Trying to specify &#39;</span><span class="si">%s</span><span class="s2">&#39; for the following columns, but they &quot;</span>
+                             <span class="s2">&quot;are not present in DataFrame: </span><span class="si">%s</span><span class="s2">!&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">diff</span><span class="p">))</span>
+
+    <span class="n">source</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">TableColumn</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
+                           <span class="n">sortable</span><span class="o">=</span><span class="n">sortable</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+                           <span class="n">default_sort</span><span class="o">=</span><span class="s1">&#39;descending&#39;</span><span class="p">,</span>
+                           <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span> <span class="k">for</span> <span class="n">header</span> <span class="ow">in</span> <span class="n">columns</span>
+              <span class="p">]</span>
+    <span class="n">data_table</span> <span class="o">=</span> <span class="n">DataTable</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+                           <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span>
+                           <span class="n">height</span><span class="o">=</span><span class="mi">20</span> <span class="o">+</span> <span class="mi">30</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]),</span>
+                           <span class="n">index_position</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># Disable index-column</span>
+                           <span class="p">)</span>
+    <span class="k">return</span> <span class="n">data_table</span></div>
 </pre></div>
 
            </div>

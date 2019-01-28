@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.utils.hpbandster2smac module &mdash; CAVE 1.1.3 documentation</title>
+  <title>cave.utils.hpbandster2smac module &mdash; CAVE 1.1.4 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.3
+                1.1.4
               </div>
             
           
@@ -239,8 +239,30 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.convert">
-<code class="descname">convert</code><span class="sig-paren">(</span><em>folder</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.convert" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">convert</code><span class="sig-paren">(</span><em>folders</em>, <em>output_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.convert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert hpbandster-results into smac-format, aggregating parallel runs along the budgets, so it is treated as
+one run with the same budgets. Throws ValueError when budgets of individual runs dont match.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>folders</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of runs to consider</li>
+<li><strong>output_dir</strong> (<em>str</em>) – path to CAVE’s output-directory</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>result</strong> (<em>hpbandster.core.result</em>) – BOHB-result in original format</li>
+<li><strong>paths</strong> (<em>List[str]</em>) – paths to converted data</li>
+<li><strong>budgets</strong> (<em>List[int]</em>) – budgets, corresponding to paths</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.get_incumbent_trajectory_for_budget">
@@ -269,15 +291,15 @@ finished, their respective budgets, and corresponding losses</p>
 
 <dl class="method">
 <dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.get_trajectory">
-<code class="descname">get_trajectory</code><span class="sig-paren">(</span><em>result</em>, <em>output_path</em>, <em>scenario</em>, <em>rh</em>, <em>budget=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.get_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.get_trajectory" title="Permalink to this definition">¶</a></dt>
-<dd><p>If budget is specified, get trajectory for only that budget. Else use hpbandster’s averaging.</p>
+<code class="descname">get_trajectory</code><span class="sig-paren">(</span><em>folder2result</em>, <em>output_path</em>, <em>scenario</em>, <em>rh</em>, <em>budget=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.get_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.get_trajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>If budget is specified, get trajectory for only that budget. Else use hpbandster’s averaging.
+If multiple results are specified, sort by times_finished and only add to combined trajectory if loss is better</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.hpbandster2smac">
-<code class="descname">hpbandster2smac</code><span class="sig-paren">(</span><em>result</em>, <em>cs: ConfigSpace.configuration_space.ConfigurationSpace</em>, <em>backup_cs</em>, <em>output_dir: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.hpbandster2smac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.hpbandster2smac" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reading hpbandster-result-object and creating RunHistory and
-trajectory…
+<code class="descname">hpbandster2smac</code><span class="sig-paren">(</span><em>folder2result</em>, <em>cs: ConfigSpace.configuration_space.ConfigurationSpace</em>, <em>backup_cs</em>, <em>output_dir: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.hpbandster2smac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.hpbandster2smac" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reading hpbandster-result-object and creating RunHistory and trajectory…
 treats each budget as an individual ‘smac’-run, creates an
 output-directory with subdirectories for each budget.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -285,7 +307,7 @@ output-directory with subdirectories for each budget.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>result</strong> (<em>hpbandster.core.result.Result</em>) – bohb’s result-object</li>
+<li><strong>folder2result</strong> (<em>Dict</em><em>(</em><em>str : hpbandster.core.result.Result</em><em>)</em>) – folder mapping to bohb’s result-objects</li>
 <li><strong>cs</strong> (<em>ConfigurationSpace</em>) – the configuration space</li>
 <li><strong>backup_cs</strong> (<em>List</em><em>[</em><em>ConfigurationSpace</em><em>]</em>) – if loading a configuration fails, try configspaces from this list until succeed</li>
 <li><strong>output_dir</strong> (<em>str</em>) – the output-dir to save the smac-runs to</li>

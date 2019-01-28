@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.utils.bokeh_routines module &mdash; CAVE 1.1.3 documentation</title>
+  <title>cave.utils.bokeh_routines module &mdash; CAVE 1.1.4 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.3
+                1.1.4
               </div>
             
           
@@ -233,6 +233,32 @@
             
   <div class="section" id="module-cave.utils.bokeh_routines">
 <span id="cave-utils-bokeh-routines-module"></span><h1>cave.utils.bokeh_routines module<a class="headerlink" href="#module-cave.utils.bokeh_routines" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="cave.utils.bokeh_routines.array_to_bokeh_table">
+<code class="descclassname">cave.utils.bokeh_routines.</code><code class="descname">array_to_bokeh_table</code><span class="sig-paren">(</span><em>df</em>, <em>sortable=None</em>, <em>width=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/bokeh_routines.html#array_to_bokeh_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.bokeh_routines.array_to_bokeh_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create bokeh-table from array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>array</strong> (<em>pandas.DataFrame</em>) – dataframe with columns and index set</li>
+<li><strong>sortable</strong> (<em>dict</em><em>(</em><em>str : boolean</em><em>)</em>) – columns that should be sortable, default none</li>
+<li><strong>width</strong> (<em>dict</em><em>(</em><em>str : int</em><em>)</em>) – width of columns, default 100 for all</li>
+<li><strong>logger</strong> (<em>logging.Logger</em>) – logger to use, if not set use default</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>bokeh_table</strong> – bokeh object</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bokeh.models.widgets.DataTable</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="function">
 <dt id="cave.utils.bokeh_routines.get_checkbox">
 <code class="descclassname">cave.utils.bokeh_routines.</code><code class="descname">get_checkbox</code><span class="sig-paren">(</span><em>glyph_renderers</em>, <em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/bokeh_routines.html#get_checkbox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.bokeh_routines.get_checkbox" title="Permalink to this definition">¶</a></dt>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.cavefacade module &mdash; CAVE 1.1.3 documentation</title>
+  <title>cave.cavefacade module &mdash; CAVE 1.1.4 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.3
+                1.1.4
               </div>
             
           
@@ -531,8 +531,9 @@ seen) and aggregates over them.</p>
 <dl class="method">
 <dt id="cave.cavefacade.CAVE.pimp_comparison_table">
 <code class="descname">pimp_comparison_table</code><span class="sig-paren">(</span><em>cave</em>, <em>pimp_sort_table_by='average'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.pimp_comparison_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.pimp_comparison_table" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parameters are sorted by pimp_sort_table_by. Note, that the values are not directly comparable, since the
-different techniques provide different metrics (see respective tooltips for details on the differences).</p>
+<dd><p>Parameters are initially sorted by pimp_sort_table_by. Only parameters with an importance greater than 5 in any
+of the methods are shown.  Note, that the values of the used methods are not directly comparable. For more
+information on the metrics, see respective tooltips.</p>
 </dd></dl>
 
 <dl class="method">
