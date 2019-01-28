@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 def figure_to_html(figure, prefix=None, max_in_a_row=None, true_break_between_rows=False):
     """ Turns filepaths to nice html-figures
 
@@ -53,3 +55,30 @@ def figure_to_html(figure, prefix=None, max_in_a_row=None, true_break_between_ro
         div += "<p style=\"clear: both;\">"
     div += "</div>\n"
     return div
+
+def _split_table(table: OrderedDict):
+    """Splits an OrderedDict into a list of tuples that can be turned into a
+    HTML-table with pandas DataFrame
+
+    Parameters
+    ----------
+    table: OrderedDict
+        table that is to be split into two columns
+
+    Returns
+    -------
+    table_split: List[tuple(key, value, key, value)]
+        list with two key-value pairs per entry that can be used by pandas
+        df.to_html()
+    """
+    table_split = []
+    keys = list(table.keys())
+    half_size = len(keys) // 2
+    for i in range(half_size):
+        j = i + half_size
+        table_split.append(("<b>" + keys[i] + "</b>", table[keys[i]],
+                            "<b>" + keys[j] + "</b>", table[keys[j]]))
+    if len(keys) % 2 == 1:
+        table_split.append(("<b>"+keys[-1]+"</b>", table[keys[-1]], '', ''))
+    return table_split
+
