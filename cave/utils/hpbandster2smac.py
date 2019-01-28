@@ -22,22 +22,44 @@ class HpBandSter2SMAC(object):
     def __init__(self):
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
 
-    def convert(self, folder):
+    def convert(self, folders, output_dir=None):
+        """Convert hpbandster-results into smac-format, aggregating parallel runs along the budgets, so it is treated as
+        one run with the same budgets. Throws ValueError when budgets of individual runs dont match.
+
+        Parameters
+        ----------
+        folders: List[str]
+            list of runs to consider
+        output_dir: str
+            path to CAVE's output-directory
+
+        Returns
+        -------
+        result: hpbandster.core.result
+            BOHB-result in original format
+        paths: List[str]
+            paths to converted data
+        budgets: List[int]
+            budgets, corresponding to paths
+        """
         try:
             from hpbandster.core.result import Result as HPBResult
             from hpbandster.core.result import logged_results_to_HBS_result
         except ImportError as e:
             raise ImportError("To analyze BOHB-data, please install hpbandster (e.g. `pip install hpbandster`)")
 
-        result = logged_results_to_HBS_result(folder)
+        folder2result = {f : logged_results_to_HBS_result(f) for f in folders}
 
         # backup_cs is a list with alternative interpretations of the configspace-file (if it's a .pcs-file)
-        cs, backup_cs = self.load_configspace(folder)
+        cs, backup_cs = self.load_configspace(folders[0])
 
         # Using temporary files for the intermediate smac-result-like format
-        tmp_dir = tempfile.mkdtemp()
-        paths = list(self.hpbandster2smac(result, cs, backup_cs, tmp_dir).values())
-        return result, paths
+        if not output_dir:
+            self.logger.debug("New outputdir")
+            output_dir = tempfile.mkdtemp()
+        budgets, paths = zip(*self.hpbandster2smac(folder2result, cs, backup_cs, output_dir).items())
+
+        return list(folder2result.values())[0], paths, budgets
 
     def load_configspace(self, folder):
         """Will try to load the configspace. If it's a pcs-file, backup_cs will be a list containing all possible
@@ -94,16 +116,15 @@ class HpBandSter2SMAC(object):
             self.logger.debug("No origin for config!", exc_info=True)
         return config
 
-    def hpbandster2smac(self, result, cs: ConfigurationSpace, backup_cs, output_dir: str):
-        """Reading hpbandster-result-object and creating RunHistory and
-        trajectory...
+    def hpbandster2smac(self, folder2result, cs: ConfigurationSpace, backup_cs, output_dir: str):
+        """Reading hpbandster-result-object and creating RunHistory and trajectory...
         treats each budget as an individual 'smac'-run, creates an
         output-directory with subdirectories for each budget.
 
         Parameters
         ----------
-        result: hpbandster.core.result.Result
-            bohb's result-object
+        folder2result: Dict(str : hpbandster.core.result.Result)
+            folder mapping to bohb's result-objects
         cs: ConfigurationSpace
             the configuration space
         backup_cs: List[ConfigurationSpace]
@@ -112,49 +133,50 @@ class HpBandSter2SMAC(object):
             the output-dir to save the smac-runs to
         """
         # Create runhistories (one per budget)
-        id2config_mapping = result.get_id2config_mapping()
         budget2rh = {}
-        skipped = {'None' : 0, 'NaN' : 0}
-        for run in result.get_all_runs():
-            if not run.budget in budget2rh:
-                budget2rh[run.budget] = RunHistory(average_cost)
-            rh = budget2rh[run.budget]
+        for folder, result in folder2result.items():
+            id2config_mapping = result.get_id2config_mapping()
+            skipped = {'None' : 0, 'NaN' : 0}
+            for run in result.get_all_runs():
+                if not run.budget in budget2rh:
+                    budget2rh[run.budget] = RunHistory(average_cost)
+                rh = budget2rh[run.budget]
 
-            # Load config...
-            try:
-                config = self._get_config(run.config_id, id2config_mapping, cs)
-            except ValueError as err:
-                self.logger.debug("Loading configuration failed... trying alternatives", exc_info=1)
-                for bcs in backup_cs:
-                    try:
-                        config = self._get_config(run.config_id, id2config_mapping, bcs)
-                        cs = bcs
-                        break
-                    except ValueError:
-                        self.logger.debug("", exc_info=1)
-                        pass
-                else:
-                    self.logger.debug("None of the alternatives worked...")
-                    raise ValueError("Your configspace seems to be corrupt. If you use floats (or mix up ints, bools and strings) as categoricals, "
-                                     "please consider using the .json-format, as the .pcs-format cannot recover the type "
-                                     "of categoricals. Otherwise please report this to "
-                                     "https://github.com/automl/CAVE/issues (and attach the debug.log)")
+                # Load config...
+                try:
+                    config = self._get_config(run.config_id, id2config_mapping, cs)
+                except ValueError as err:
+                    self.logger.debug("Loading configuration failed... trying alternatives", exc_info=1)
+                    for bcs in backup_cs:
+                        try:
+                            config = self._get_config(run.config_id, id2config_mapping, bcs)
+                            cs = bcs
+                            break
+                        except ValueError:
+                            self.logger.debug("", exc_info=1)
+                            pass
+                    else:
+                        self.logger.debug("None of the alternatives worked...")
+                        raise ValueError("Your configspace seems to be corrupt. If you use floats (or mix up ints, bools and strings) as categoricals, "
+                                         "please consider using the .json-format, as the .pcs-format cannot recover the type "
+                                         "of categoricals. Otherwise please report this to "
+                                         "https://github.com/automl/CAVE/issues (and attach the debug.log)")
 
-            if run.loss is None:
-                skipped['None'] += 1
-                continue
-            if np.isnan(run.loss):
-                skipped['NaN'] += 1
-                continue
+                if run.loss is None:
+                    skipped['None'] += 1
+                    continue
+                if np.isnan(run.loss):
+                    skipped['NaN'] += 1
+                    continue
 
-            rh.add(config=config,
-                   cost=run.loss,
-                   time=run.time_stamps['finished'] - run.time_stamps['started'],
-                   status=StatusType.SUCCESS,
-                   seed=0,
-                   additional_info={'info' : run.info, 'timestamps': run.time_stamps})
+                rh.add(config=config,
+                       cost=run.loss,
+                       time=run.time_stamps['finished'] - run.time_stamps['started'],
+                       status=StatusType.SUCCESS,
+                       seed=0,
+                       additional_info={'info' : run.info, 'timestamps': run.time_stamps})
 
-        self.logger.debug("Skipped %d None- and %d NaN-loss-values in BOHB-result", skipped['None'], skipped['NaN'])
+            self.logger.debug("Skipped %d None- and %d NaN-loss-values in BOHB-result", skipped['None'], skipped['NaN'])
 
         # Write to disk
         budget2path = {}  # paths to individual budgets
@@ -170,37 +192,56 @@ class HpBandSter2SMAC(object):
                                  })
             scenario.output_dir_for_this_run = output_path
             scenario.write()
-            rh.save_json(fn=os.path.join(output_path, 'runhistory.json'))
 
             with open(os.path.join(output_path, 'configspace.json'), 'w') as fh:
                 fh.write(pcs_json.write(cs))
 
-            self.get_trajectory(result, output_path, scenario, rh, budget=b)
+            rh.save_json(fn=os.path.join(output_path, 'runhistory.json'))
+            self.get_trajectory(folder2result, output_path, scenario, rh, budget=b)
 
         return budget2path
 
-    def get_trajectory(self, result, output_path, scenario, rh, budget=None):
+    def get_trajectory(self, folder2result, output_path, scenario, rh, budget=None):
         """
         If budget is specified, get trajectory for only that budget. Else use hpbandster's averaging.
+        If multiple results are specified, sort by times_finished and only add to combined trajectory if loss is better
         """
         cs = scenario.cs
-        id2config_mapping = result.get_id2config_mapping()
-        if budget:
-            traj_dict = self.get_incumbent_trajectory_for_budget(result, budget)
-        else:
-            traj_dict = result.get_incumbent_trajectory()
+
         if not output_path:
             output_path = tempfile.mkdtemp()
+
         traj_logger = TrajLogger(output_path, Stats(scenario))
-        for config_id, time, budget, loss in zip(traj_dict['config_ids'], traj_dict['times_finished'], traj_dict['budgets'], traj_dict['losses']):
-            incumbent = self._get_config(config_id, id2config_mapping, cs)
-            try:
-                incumbent_id = rh.config_ids[incumbent]
-            except KeyError as e:
-                # This config was not evaluated on this budget, just skip it
+        total_traj_dict = []
+        for f, result in folder2result.items():
+            if budget:
+                traj_dict = self.get_incumbent_trajectory_for_budget(result, budget)
+            else:
+                traj_dict = result.get_incumbent_trajectory()
+
+            id2config_mapping = result.get_id2config_mapping()
+
+            for config_id, time, budget, loss in zip(traj_dict['config_ids'], traj_dict['times_finished'], traj_dict['budgets'], traj_dict['losses']):
+                incumbent = self._get_config(config_id, id2config_mapping, cs)
+                try:
+                    incumbent_id = rh.config_ids[incumbent]
+                except KeyError as e:
+                    # This config was not evaluated on this budget, just skip it
+                    continue
+                except:
+                    raise
+                total_traj_dict.append({'config_id' : incumbent_id, 'time_finished' : time, 'budget' : budget, 'loss' : loss})
+
+        last_loss = np.inf
+        for element in sorted(total_traj_dict, key=lambda x: x['time_finished']):
+            incumbent_id = element["config_id"]
+            incumbent = rh.ids_config[incumbent_id]
+            time = element["time_finished"]
+            loss = element["loss"]
+
+            if loss > last_loss:
                 continue
-            except:
-                raise
+
             ta_runs = -1
             ta_time_used = -1
             wallclock_time = time

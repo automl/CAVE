@@ -220,10 +220,8 @@ class CAVE(object):
             os.makedirs(output_dir)
 
         if file_format == 'BOHB':
-            if len(folders) != 1:
-                raise ValueError("For file format BOHB you can only specify one folder.")
             self.use_budgets = True
-            self.bohb_result, folders = HpBandSter2SMAC().convert(folders[0])
+            self.bohb_result, folders, budgets = HpBandSter2SMAC().convert(folders, output_dir)
             if "DEBUG" in self.verbose_level:
                 for f in folders:
                     debug_f = os.path.join(output_dir, 'debug', os.path.basename(f))

@@ -235,7 +235,7 @@ class CostOverTime(BaseAnalyzer):
                 rh_bohb.update(run.combined_runhistory)
             #self.logger.debug(rh_bohb.data)
             # Get collective trajectory
-            traj = HpBandSter2SMAC().get_trajectory(self.bohb_result, '', self.scenario, rh_bohb)
+            traj = HpBandSter2SMAC().get_trajectory({'' : self.bohb_result}, '', self.scenario, rh_bohb)
             #self.logger.debug(traj)
             mean, time, configs = [], [], []
             traj_dict = self.bohb_result.get_incumbent_trajectory()
