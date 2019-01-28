@@ -3,6 +3,13 @@
 ## Bug fixes
 
 * Enforcing smac version 0.10.0 to fix pcs-loading issues for booleans
+* Catch NaN-values from BOHB-results
+* Fix sorting-bug in pimp-table
+* Fix notebook-errors when executing cfp
+
+## Major changes
+* New version of the overview-table (with run-specific for every run)
+* Enable support for multiple BOHB-runs (just aggregating budgets across results)
 
 ## Minor changes
 
