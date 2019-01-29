@@ -131,7 +131,7 @@ class OverviewTable(BaseAnalyzer):
                                  "tooltip" : "Information to specific runs (if there are multiple runs). Interesting "
                                              "for parallel optimizations or usage of budgets/fidelities."}
             d["tooltip"] = tooltip
-        return [self.html_table_general, self.html_table_specific]
+        return ' '.join([self.html_table_general, self.html_table_specific])
 
     def get_jupyter(self):
         from IPython.core.display import HTML, display

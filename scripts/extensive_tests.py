@@ -164,12 +164,17 @@ if __name__ == '__main__':
             smac = SMAC(scenario=scenario, rng=np.random.RandomState(42))
             smac.optimize()
     elif sys.argv[1] == 'cave':
+        failed = []
         for scen in get_scenarios():
-            folder = [f for f in os.listdir(scen['output_dir']) if f.startswith('run')][0]
-            cave = CAVE([os.path.join(scen['output_dir'], folder)],
-                        os.path.join(scen['output_dir'], 'CAVE_RESULT'),
-                        ta_exec_dir='.', validation_method='validation')
-            cave.analyze(param_importance=['ablation', 'forward_selection', 'lpi'], cfp_number_quantiles=2)
+            try:
+                folder = [f for f in os.listdir(scen['output_dir']) if f.startswith('run')][0]
+                cave = CAVE([os.path.join(scen['output_dir'], folder)],
+                            os.path.join(scen['output_dir'], 'CAVE_RESULT'),
+                            ta_exec_dir='.', validation_method='validation')
+                cave.analyze(param_importance=['ablation', 'forward_selection', 'lpi'], cfp_number_quantiles=2)
+            except:
+                failed.append(scen['output_dir'])
+        print("Failed: %s" % (str(failed)))
     elif sys.argv[1] == 'firefox':
         import webbrowser
         firefox = webbrowser.get('firefox')
