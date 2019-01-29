@@ -70,7 +70,7 @@ class PlotECDF(BaseAnalyzer):
         output_fns = []
 
         for insts, name in [(train, 'train'), (test, 'test')]:
-            if insts == [None]:
+            if len(insts) <= 1:
                 self.logger.debug("No %s instances, skipping cdf", name)
                 continue
             data = [prepare_data(np.array([v for k, v in costs if k in insts])) for costs in [def_costs, inc_costs]]
@@ -82,6 +82,8 @@ class PlotECDF(BaseAnalyzer):
         self.output_fns = output_fns
 
     def get_html(self, d=None, tooltip=None):
+        if not self.output_fns:
+            return
         if d is not None and self.output_fns:
             d["figure"] = self.output_fns
             d["tooltip"] = tooltip
