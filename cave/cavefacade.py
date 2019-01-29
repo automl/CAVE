@@ -629,16 +629,12 @@ class CAVE(object):
 
         if performance:
             self.performance_table(d=self._get_dict(d, "Performance Table", run=run), run=run)
-            d["Performance Table"]["tooltip"] = self._get_tooltip(self.performance_table)
         if cdf:
             self.plot_ecdf(d=self._get_dict(d, "empirical Cumulative Distribution Function (eCDF)", run=run), run=run)
-            d["empirical Cumulative Distribution Function (eCDF)"]["tooltip"] = self._get_tooltip(self.plot_ecdf)
         if scatter:
             self.plot_scatter(d=self._get_dict(d, "Scatterplot", run=run), run=run)
-            d["Scatterplot"]["tooltip"] = self._get_tooltip(self.plot_scatter)
         if algo_footprint and self.scenario.feature_dict:
             self.algorithm_footprints(d=self._get_dict(d, "Algorithm Footprints", run=run), run=run)
-            d["Algorithm Footprints"]["tooltip"] = self._get_tooltip(self.algorithm_footprints)
 
     @_analyzer_type
     def performance_table(self, cave):
@@ -670,7 +666,6 @@ class CAVE(object):
         improvements can be explained only by some outliers or whether they are due to improvements on the entire
         instance set. On the left side the training-data is scattered, on the right side the test-data is scattered.
         """
-
         return PlotScatter(default=cave.default,
                            incumbent=cave.incumbent,
                            rh=cave.global_epm_rh,

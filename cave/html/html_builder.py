@@ -239,7 +239,10 @@ for (i = 0; i < acc.length; i++) {
             if k.startswith('budget'):
                 self.budget = k[7:]
             if not v:
-                return '', ''
+                if isinstance(v, dict):
+                    continue
+                else:
+                    return '', ''
             elif isinstance(v, dict):
                 if use_tabs:
                     div += "<div id=\"{0}\" class=\"tabcontent\">\n".format(layer_name + k)
