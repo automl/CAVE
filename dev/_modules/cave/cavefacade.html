@@ -437,6 +437,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">feature_names</span> <span class="o">=</span> <span class="kc">None</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_bohb_results</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bohb_result</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># only relevant for bohb_result</span>
 
         <span class="c1"># Create output_dir if necessary</span>
@@ -447,6 +448,7 @@
 
         <span class="k">if</span> <span class="n">file_format</span> <span class="o">==</span> <span class="s1">&#39;BOHB&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">use_budgets</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_bohb_results</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">folders</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bohb_result</span><span class="p">,</span> <span class="n">folders</span><span class="p">,</span> <span class="n">budgets</span> <span class="o">=</span> <span class="n">HpBandSter2SMAC</span><span class="p">()</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">folders</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
             <span class="k">if</span> <span class="s2">&quot;DEBUG&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose_level</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">folders</span><span class="p">:</span>
@@ -828,6 +830,7 @@
 <span class="sd">        best run, if multiple configurator runs are compared.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">OverviewTable</span><span class="p">(</span><span class="n">cave</span><span class="o">.</span><span class="n">runs</span><span class="p">,</span>
+                             <span class="n">cave</span><span class="o">.</span><span class="n">num_bohb_results</span><span class="p">,</span>
                              <span class="n">cave</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CAVE.compare_default_incumbent"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.compare_default_incumbent">[docs]</a>    <span class="nd">@_analyzer_type</span>

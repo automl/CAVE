@@ -235,7 +235,7 @@
 <span id="cave-analyzer-overview-table-module"></span><h1>cave.analyzer.overview_table module<a class="headerlink" href="#module-cave.analyzer.overview_table" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.analyzer.overview_table.OverviewTable">
-<em class="property">class </em><code class="descclassname">cave.analyzer.overview_table.</code><code class="descname">OverviewTable</code><span class="sig-paren">(</span><em>runs</em>, <em>output_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/overview_table.html#OverviewTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.overview_table.OverviewTable" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">cave.analyzer.overview_table.</code><code class="descname">OverviewTable</code><span class="sig-paren">(</span><em>runs</em>, <em>bohb_parallel</em>, <em>output_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/overview_table.html#OverviewTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.overview_table.OverviewTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer" title="cave.analyzer.base_analyzer.BaseAnalyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">cave.analyzer.base_analyzer.BaseAnalyzer</span></code></a></p>
 <p>Create overview-table.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -244,6 +244,7 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>runs</strong> (<em>List</em><em>[</em><a class="reference internal" href="cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun" title="cave.reader.configurator_run.ConfiguratorRun"><em>ConfiguratorRun</em></a><em>]</em>) – list with all runs</li>
+<li><strong>bohb_parallel</strong> (<em>False</em><em> or </em><em>int</em>) – number of parallel bohb-runs if present</li>
 <li><strong>output_dir</strong> (<em>str</em>) – output-directory for CAVE</li>
 </ul>
 </td>
