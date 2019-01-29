@@ -609,7 +609,10 @@ class CAVE(object):
 
     @_analyzer_type
     def compare_default_incumbent(self, cave):
-        """ Comparing parameters of default and incumbent.  Parameters that differ from default to incumbent are presented first."""
+        """
+        Comparing parameters of default and incumbent. Parameters that differ from default to incumbent are presented
+        first. Parameters that are inactive for both configurations are omitted.
+        """
         return CompareDefaultIncumbent(cave.default, cave.incumbent)
 
     def performance_analysis(self, d, run,
