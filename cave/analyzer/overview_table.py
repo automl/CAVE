@@ -11,19 +11,22 @@ from cave.utils.helpers import get_config_origin
 from cave.utils.bokeh_routines import array_to_bokeh_table
 
 class OverviewTable(BaseAnalyzer):
-    def __init__(self, runs, output_dir):
+    def __init__(self, runs, bohb_parallel, output_dir):
         """ Create overview-table.
 
         Parameters
         ----------
         runs: List[ConfiguratorRun]
             list with all runs
+        bohb_parallel: False or int
+            number of parallel bohb-runs if present
         output_dir: str
             output-directory for CAVE
         """
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
         self.output_dir = output_dir
         self.runs = runs
+        self.bohb_parallel = bohb_parallel
 
         self.html_table_general, self.html_table_specific = self.run()
 
@@ -31,7 +34,7 @@ class OverviewTable(BaseAnalyzer):
         """ Generate tables. """
         scenario = self.runs[0].scenario
 
-        general_dict = self._general_dict(scenario)
+        general_dict = self._general_dict(scenario, self.bohb_parallel)
         html_table_general = DataFrame(data=OrderedDict([('General', general_dict)]))
         html_table_general = html_table_general.reindex(list(general_dict.keys()))
         html_table_general = html_table_general.to_html(escape=False, header=False, justify='left')
@@ -44,7 +47,7 @@ class OverviewTable(BaseAnalyzer):
 
         return html_table_general, html_table_specific
 
-    def _general_dict(self, scenario):
+    def _general_dict(self, scenario, bohb_parallel=False):
         """ Generate the meta-information that holds for all runs (scenario info etc) """
         # general stores information that holds for all runs, runspec holds information on a run-basis
         general = OrderedDict()
@@ -53,6 +56,10 @@ class OverviewTable(BaseAnalyzer):
         #    overview['Run with best incumbent'] = os.path.basename(best_run.folder)
         #if num_conf_runs != 1:
         #    overview['Number of configurator runs'] = num_conf_runs
+
+        self.logger.debug("bohb_parallel in overview: %s", bohb_parallel)
+        if bohb_parallel:
+            general['# aggregated parallel BOHB runs'] = bohb_parallel
 
         # Scenario related
         general['# parameters'] = len(scenario.cs.get_hyperparameters())

@@ -211,6 +211,7 @@ class CAVE(object):
 
         self.feature_names = None
 
+        self.num_bohb_results = 0
         self.bohb_result = None  # only relevant for bohb_result
 
         # Create output_dir if necessary
@@ -221,6 +222,7 @@ class CAVE(object):
 
         if file_format == 'BOHB':
             self.use_budgets = True
+            self.num_bohb_results = len(folders)
             self.bohb_result, folders, budgets = HpBandSter2SMAC().convert(folders, output_dir)
             if "DEBUG" in self.verbose_level:
                 for f in folders:
@@ -602,6 +604,7 @@ class CAVE(object):
         best run, if multiple configurator runs are compared.
         """
         return OverviewTable(cave.runs,
+                             cave.num_bohb_results,
                              cave.output_dir)
 
     @_analyzer_type
