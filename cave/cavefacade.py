@@ -125,6 +125,7 @@ class CAVE(object):
                  validation_method: str='epm',
                  pimp_max_samples: int=-1,
                  fanova_pairwise: bool=True,
+                 pc_sort_by: str='none',
                  use_budgets: bool=False,
                  seed: int=42,
                  show_jupyter: bool=True,
@@ -202,6 +203,7 @@ class CAVE(object):
         self.validation_method = validation_method
         self.pimp_max_samples = pimp_max_samples
         self.fanova_pairwise = fanova_pairwise
+        self.pc_sort_by = pc_sort_by
 
         # To be set during execution (used for dependencies of analysis-methods)
         self.param_imp = OrderedDict()
@@ -761,6 +763,7 @@ class CAVE(object):
                                    param_imp=cave.param_imp,
                                    params=params,
                                    n_configs=n_configs,
+                                   pc_sort_by=self.pc_sort_by,
                                    max_runs_epm=max_runs_epm,
                                    output_dir=cave.output_dir,
                                    cs=cave.scenario.cs,

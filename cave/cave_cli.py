@@ -159,6 +159,10 @@ class CaveCLI(object):
                               help="maximum number of configurations to be plotted in configurator footprint (in case "
                                    "you run into a MemoryError). -1 -> plot all. ",
                               default=-1, type=int)
+        opt_opts.add_argument("--pc_sort_by",
+                              help="parameter-importance method to determine the order (and selection) of parameters "
+                                   "for parallel coordinates. uses random method if none is given. ",
+                              default="none", type=str.lower, choices=p_choices)
         opt_opts.add_argument("--no_tabular_analysis",
                               action='store_false',
                               help="don't create performance table.",
@@ -262,6 +266,7 @@ class CaveCLI(object):
         cfp_max_plot = args_.cfp_max_plot
         cfp_number_quantiles = args_.cfp_number_quantiles
         parallel_coordinates = args_.parallel_coordinates
+        pc_sort_by = args_.pc_sort_by
         cost_over_time = args_.cost_over_time
         algorithm_footprints = args_.algorithm_footprints
         pimp_sort_table_by = args_.pimp_sort_table_by
@@ -286,6 +291,7 @@ class CaveCLI(object):
                     validation_method=validation,
                     pimp_max_samples=pimp_max_samples,
                     fanova_pairwise=fanova_pairwise,
+                    pc_sort_by=pc_sort_by,
                     use_budgets=file_format=='BOHB',
                     show_jupyter=show_jupyter,
                     seed=seed,
