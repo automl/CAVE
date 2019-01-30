@@ -385,6 +385,10 @@
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;maximum number of configurations to be plotted in configurator footprint (in case &quot;</span>
                                    <span class="s2">&quot;you run into a MemoryError). -1 -&gt; plot all. &quot;</span><span class="p">,</span>
                               <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--pc_sort_by&quot;</span><span class="p">,</span>
+                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;parameter-importance method to determine the order (and selection) of parameters &quot;</span>
+                                   <span class="s2">&quot;for parallel coordinates. uses random method if none is given. &quot;</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">p_choices</span><span class="p">)</span>
         <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_tabular_analysis&quot;</span><span class="p">,</span>
                               <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t create performance table.&quot;</span><span class="p">,</span>
@@ -488,6 +492,7 @@
         <span class="n">cfp_max_plot</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">cfp_max_plot</span>
         <span class="n">cfp_number_quantiles</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">cfp_number_quantiles</span>
         <span class="n">parallel_coordinates</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">parallel_coordinates</span>
+        <span class="n">pc_sort_by</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">pc_sort_by</span>
         <span class="n">cost_over_time</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">cost_over_time</span>
         <span class="n">algorithm_footprints</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">algorithm_footprints</span>
         <span class="n">pimp_sort_table_by</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">pimp_sort_table_by</span>
@@ -512,6 +517,7 @@
                     <span class="n">validation_method</span><span class="o">=</span><span class="n">validation</span><span class="p">,</span>
                     <span class="n">pimp_max_samples</span><span class="o">=</span><span class="n">pimp_max_samples</span><span class="p">,</span>
                     <span class="n">fanova_pairwise</span><span class="o">=</span><span class="n">fanova_pairwise</span><span class="p">,</span>
+                    <span class="n">pc_sort_by</span><span class="o">=</span><span class="n">pc_sort_by</span><span class="p">,</span>
                     <span class="n">use_budgets</span><span class="o">=</span><span class="n">file_format</span><span class="o">==</span><span class="s1">&#39;BOHB&#39;</span><span class="p">,</span>
                     <span class="n">show_jupyter</span><span class="o">=</span><span class="n">show_jupyter</span><span class="p">,</span>
                     <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
