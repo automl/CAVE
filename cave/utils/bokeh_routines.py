@@ -5,7 +5,7 @@ from bokeh.models import (HoverTool, ColorBar, LinearColorMapper, BasicTicker, C
 from bokeh.models.widgets import (RadioButtonGroup, CheckboxButtonGroup, CheckboxGroup, Button, Select,
                                   DataTable, TableColumn)
 
-def get_checkbox(glyph_renderers, labels):
+def get_checkbox(glyph_renderers, labels, max_checkbox_length=None):
     """
     Parameters
     ----------
@@ -16,7 +16,7 @@ def get_checkbox(glyph_renderers, labels):
 
     Returns
     -------
-    checkbox: CheckboxGroup
+    checkbox: CheckboxGroup or List[CheckboxGroup]
         checkbox object
     select_all: Button
         button related to checkbox
@@ -54,6 +54,12 @@ def get_checkbox(glyph_renderers, labels):
                                                        code="var labels = {}; ".format(handle_list_as_string) + code_button_tail))
     select_none = Button(label="None", callback=CustomJS(args=dict({'checkbox':checkbox}, **args_checkbox),
                                                        code="var labels = {}; ".format('[]') + code_button_tail))
+
+    if max_checkbox_length is not None and len(glyph_renderers) > max_checkbox_length:
+        # Keep all and none buttons, but create new checkboxes and return a list
+        slices = list(range(0, len(glyph_renderers), max_checkbox_length)) + [len(glyph_renderers)]
+        checkboxes = [get_checkbox(glyph_renderers[s:e], labels[s:e])[0] for s, e in zip(slices[:-1], slices[1:])]
+        return checkboxes, select_all, select_none
 
     return checkbox, select_all, select_none
 

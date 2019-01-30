@@ -21,7 +21,7 @@ class CompareDefaultIncumbent(BaseAnalyzer):
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
 
         # Remove unused parameters
-        keys = [k for k in default.keys() if default[k] or incumbent[k]]
+        keys = [k for k in default.configuration_space.get_hyperparameter_names() if default[k] or incumbent[k]]
         default = [default[k] if default[k] is not None else "inactive" for k in keys]
         incumbent = [incumbent[k] if incumbent[k] is not None else "inactive" for k in keys]
         zipped = list(zip(keys, default, incumbent))

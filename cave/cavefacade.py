@@ -125,6 +125,7 @@ class CAVE(object):
                  validation_method: str='epm',
                  pimp_max_samples: int=-1,
                  fanova_pairwise: bool=True,
+                 pc_sort_by: str='none',
                  use_budgets: bool=False,
                  seed: int=42,
                  show_jupyter: bool=True,
@@ -202,6 +203,7 @@ class CAVE(object):
         self.validation_method = validation_method
         self.pimp_max_samples = pimp_max_samples
         self.fanova_pairwise = fanova_pairwise
+        self.pc_sort_by = pc_sort_by
 
         # To be set during execution (used for dependencies of analysis-methods)
         self.param_imp = OrderedDict()
@@ -346,7 +348,7 @@ class CAVE(object):
         self.incumbent = self.pimp.incumbent = self.best_run.solver.incumbent
         self.logger.debug("Overall best run: %s, with incumbent: %s", self.best_run.folder, self.incumbent)
 
-    def _init_pimp_and_validator(self, rh, alternative_output_dir=None):
+    def _init_pimp_and_validator(self, rh, pimp_output_dir=None):
         """Create ParameterImportance-object and use it's trained model for  validation and further predictions
         We pass validated runhistory, so that the returned model will be based on as much information as possible
 
@@ -357,13 +359,14 @@ class CAVE(object):
         alternative_output_dir: str
             e.g. for budgets we want pimp to use an alternative output-dir (subfolders per budget)
         """
-        self.logger.debug("Using '%s' as output for pimp", alternative_output_dir if alternative_output_dir else
-                self.output_dir)
+        if not pimp_output_dir:
+            pimp_output_dir = os.path.join(self.output_dir, 'content')
+        self.logger.debug("Using '%s' as output for pimp", pimp_output_dir)
         self.pimp = Importance(scenario=copy.deepcopy(self.scenario),
                                runhistory=rh,
                                incumbent=self.default,  # Inject correct incumbent later
                                parameters_to_evaluate=4,
-                               save_folder=alternative_output_dir if alternative_output_dir else self.output_dir,
+                               save_folder=pimp_output_dir,
                                seed=self.rng.randint(1, 100000),
                                max_sample_size=self.pimp_max_samples,
                                fANOVA_pairwise=self.fanova_pairwise,
@@ -535,7 +538,7 @@ class CAVE(object):
                 self.global_validated_rh = run.combined_runhistory
                 self.global_epm_rh = RunHistory(average_cost)
                 # Train epm and stuff
-                self._init_pimp_and_validator(run.combined_runhistory, alternative_output_dir=sub_output_dir)
+                self._init_pimp_and_validator(run.combined_runhistory, pimp_output_dir=sub_output_dir)
                 self._validate_default_and_incumbents(self.validation_method, run.ta_exec_dir)
                 self.pimp.incumbent = run.incumbent
                 self.incumbent = run.incumbent
@@ -609,7 +612,10 @@ class CAVE(object):
 
     @_analyzer_type
     def compare_default_incumbent(self, cave):
-        """ Comparing parameters of default and incumbent.  Parameters that differ from default to incumbent are presented first."""
+        """
+        Comparing parameters of default and incumbent. Parameters that differ from default to incumbent are presented
+        first. Parameters that are inactive for both configurations are omitted.
+        """
         return CompareDefaultIncumbent(cave.default, cave.incumbent)
 
     def performance_analysis(self, d, run,
@@ -626,16 +632,12 @@ class CAVE(object):
 
         if performance:
             self.performance_table(d=self._get_dict(d, "Performance Table", run=run), run=run)
-            d["Performance Table"]["tooltip"] = self._get_tooltip(self.performance_table)
         if cdf:
             self.plot_ecdf(d=self._get_dict(d, "empirical Cumulative Distribution Function (eCDF)", run=run), run=run)
-            d["empirical Cumulative Distribution Function (eCDF)"]["tooltip"] = self._get_tooltip(self.plot_ecdf)
         if scatter:
             self.plot_scatter(d=self._get_dict(d, "Scatterplot", run=run), run=run)
-            d["Scatterplot"]["tooltip"] = self._get_tooltip(self.plot_scatter)
         if algo_footprint and self.scenario.feature_dict:
             self.algorithm_footprints(d=self._get_dict(d, "Algorithm Footprints", run=run), run=run)
-            d["Algorithm Footprints"]["tooltip"] = self._get_tooltip(self.algorithm_footprints)
 
     @_analyzer_type
     def performance_table(self, cave):
@@ -667,7 +669,6 @@ class CAVE(object):
         improvements can be explained only by some outliers or whether they are due to improvements on the entire
         instance set. On the left side the training-data is scattered, on the right side the test-data is scattered.
         """
-
         return PlotScatter(default=cave.default,
                            incumbent=cave.incumbent,
                            rh=cave.global_epm_rh,
@@ -763,6 +764,7 @@ class CAVE(object):
                                    param_imp=cave.param_imp,
                                    params=params,
                                    n_configs=n_configs,
+                                   pc_sort_by=self.pc_sort_by,
                                    max_runs_epm=max_runs_epm,
                                    output_dir=cave.output_dir,
                                    cs=cave.scenario.cs,
@@ -834,7 +836,7 @@ class CAVE(object):
         runhistories.
         """
         try:
-            fanova = CaveFanova(cave.pimp, cave.incumbent, cave.output_dir)
+            fanova = CaveFanova(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
         except IndexError as err:
             self.logger.debug("Error in fANOVA", exc_info=1)
             raise IndexError("Error in fANOVA - please run with --pimp_no_fanova_pairs (this is due to a known issue "
@@ -851,7 +853,7 @@ class CAVE(object):
         of flipping the parameter settings from default configuration to incumbent such that in each step the cost is
         maximally decreased."""
 
-        ablation = CaveAblation(cave.pimp, cave.incumbent, cave.output_dir)
+        ablation = CaveAblation(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
         cave.evaluators.append(cave.pimp.evaluator)
         cave.param_imp["ablation"] = cave.pimp.evaluator.evaluated_parameter_importance
 
@@ -863,7 +865,7 @@ class CAVE(object):
         Forward Selection is a generic method to obtain a subset of parameters to achieve the same prediction error as
         with the full parameter set.  Each parameter is scored by how much the out-of-bag-error of an empirical
         performance model based on a random forest is decreased."""
-        forward = CaveForwardSelection(cave.pimp, cave.incumbent, cave.output_dir)
+        forward = CaveForwardSelection(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
         cave.evaluators.append(cave.pimp.evaluator)
         cave.param_imp["forward-selection"] = cave.pimp.evaluator.evaluated_parameter_importance
 
@@ -876,7 +878,7 @@ class CAVE(object):
         parameter are predicted and then the fraction of all variances is computed. This analysis is inspired by the
         human behaviour to look for improvements in the neighborhood of individual parameters of a configuration."""
 
-        lpi = LocalParameterImportance(cave.pimp, cave.incumbent, cave.output_dir)
+        lpi = LocalParameterImportance(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
         cave.evaluators.append(cave.pimp.evaluator)
         cave.param_imp["lpi"] = cave.pimp.evaluator.evaluated_parameter_importance
 
@@ -893,7 +895,7 @@ class CAVE(object):
                                    cave.evaluators,
                                    sort_table_by=pimp_sort_table_by,
                                    cs=cave.scenario.cs,
-                                   out_fn=os.path.join(cave.output_dir, 'pimp.tex'),
+                                   out_fn=os.path.join(cave.output_dir, 'content', 'pimp.tex'),
                                    )
 
     def parameter_importance(self,

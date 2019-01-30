@@ -239,7 +239,10 @@ for (i = 0; i < acc.length; i++) {
             if k.startswith('budget'):
                 self.budget = k[7:]
             if not v:
-                return '', ''
+                if isinstance(v, dict):
+                    continue
+                else:
+                    return '', ''
             elif isinstance(v, dict):
                 if use_tabs:
                     div += "<div id=\"{0}\" class=\"tabcontent\">\n".format(layer_name + k)
@@ -255,7 +258,7 @@ for (i = 0; i < acc.length; i++) {
             elif k == "figure_x2":
                 div += figure_to_html(v, prefix=self.output_dn, max_in_a_row=2)
             elif k == "table":
-                div += "<div align=\"center\">\n{}\n</div>\n".format(v)
+                div += "<div style=\"overflow-x: auto\" align=\"center\">\n{}\n</div>\n".format(v)
             elif k == "html":
                 div += ("<div align=\"center\">\n<a href='{}'>Interactive "
                         "Plot</a>\n</div>\n".format(v[len(self.output_dn):].lstrip("/")))
