@@ -348,7 +348,7 @@ class CAVE(object):
         self.incumbent = self.pimp.incumbent = self.best_run.solver.incumbent
         self.logger.debug("Overall best run: %s, with incumbent: %s", self.best_run.folder, self.incumbent)
 
-    def _init_pimp_and_validator(self, rh, alternative_output_dir=None):
+    def _init_pimp_and_validator(self, rh, pimp_output_dir=None):
         """Create ParameterImportance-object and use it's trained model for  validation and further predictions
         We pass validated runhistory, so that the returned model will be based on as much information as possible
 
@@ -359,13 +359,14 @@ class CAVE(object):
         alternative_output_dir: str
             e.g. for budgets we want pimp to use an alternative output-dir (subfolders per budget)
         """
-        self.logger.debug("Using '%s' as output for pimp", alternative_output_dir if alternative_output_dir else
-                self.output_dir)
+        if not pimp_output_dir:
+            pimp_output_dir = os.path.join(self.output_dir, 'content')
+        self.logger.debug("Using '%s' as output for pimp", pimp_output_dir)
         self.pimp = Importance(scenario=copy.deepcopy(self.scenario),
                                runhistory=rh,
                                incumbent=self.default,  # Inject correct incumbent later
                                parameters_to_evaluate=4,
-                               save_folder=alternative_output_dir if alternative_output_dir else self.output_dir,
+                               save_folder=pimp_output_dir,
                                seed=self.rng.randint(1, 100000),
                                max_sample_size=self.pimp_max_samples,
                                fANOVA_pairwise=self.fanova_pairwise,
@@ -537,7 +538,7 @@ class CAVE(object):
                 self.global_validated_rh = run.combined_runhistory
                 self.global_epm_rh = RunHistory(average_cost)
                 # Train epm and stuff
-                self._init_pimp_and_validator(run.combined_runhistory, alternative_output_dir=sub_output_dir)
+                self._init_pimp_and_validator(run.combined_runhistory, pimp_output_dir=sub_output_dir)
                 self._validate_default_and_incumbents(self.validation_method, run.ta_exec_dir)
                 self.pimp.incumbent = run.incumbent
                 self.incumbent = run.incumbent
@@ -835,7 +836,7 @@ class CAVE(object):
         runhistories.
         """
         try:
-            fanova = CaveFanova(cave.pimp, cave.incumbent, cave.output_dir)
+            fanova = CaveFanova(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
         except IndexError as err:
             self.logger.debug("Error in fANOVA", exc_info=1)
             raise IndexError("Error in fANOVA - please run with --pimp_no_fanova_pairs (this is due to a known issue "
@@ -852,7 +853,7 @@ class CAVE(object):
         of flipping the parameter settings from default configuration to incumbent such that in each step the cost is
         maximally decreased."""
 
-        ablation = CaveAblation(cave.pimp, cave.incumbent, cave.output_dir)
+        ablation = CaveAblation(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
         cave.evaluators.append(cave.pimp.evaluator)
         cave.param_imp["ablation"] = cave.pimp.evaluator.evaluated_parameter_importance
 
@@ -864,7 +865,7 @@ class CAVE(object):
         Forward Selection is a generic method to obtain a subset of parameters to achieve the same prediction error as
         with the full parameter set.  Each parameter is scored by how much the out-of-bag-error of an empirical
         performance model based on a random forest is decreased."""
-        forward = CaveForwardSelection(cave.pimp, cave.incumbent, cave.output_dir)
+        forward = CaveForwardSelection(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
         cave.evaluators.append(cave.pimp.evaluator)
         cave.param_imp["forward-selection"] = cave.pimp.evaluator.evaluated_parameter_importance
 
@@ -877,7 +878,7 @@ class CAVE(object):
         parameter are predicted and then the fraction of all variances is computed. This analysis is inspired by the
         human behaviour to look for improvements in the neighborhood of individual parameters of a configuration."""
 
-        lpi = LocalParameterImportance(cave.pimp, cave.incumbent, cave.output_dir)
+        lpi = LocalParameterImportance(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
         cave.evaluators.append(cave.pimp.evaluator)
         cave.param_imp["lpi"] = cave.pimp.evaluator.evaluated_parameter_importance
 
@@ -894,7 +895,7 @@ class CAVE(object):
                                    cave.evaluators,
                                    sort_table_by=pimp_sort_table_by,
                                    cs=cave.scenario.cs,
-                                   out_fn=os.path.join(cave.output_dir, 'pimp.tex'),
+                                   out_fn=os.path.join(cave.output_dir, 'content', 'pimp.tex'),
                                    )
 
     def parameter_importance(self,
