@@ -154,7 +154,7 @@ class BohbLearningCurves(BaseAnalyzer):
         p = figure(plot_height=500, plot_width=600,
                    y_axis_type=y_axis_type,
                    tools=[hover, 'save', 'pan', 'wheel_zoom', 'box_zoom', 'reset'],
-                   x_axis_label='Time', y_axis_label='Quality',
+                   x_axis_label='Time', y_axis_label='Cost',
                    x_range=Range1d(x_min, x_max, bounds='auto'),
                    y_range=Range1d(y_min, y_max, bounds='auto'),
                    )
