@@ -161,8 +161,9 @@ class CaveCLI(object):
                               default=-1, type=int)
         opt_opts.add_argument("--pc_sort_by",
                               help="parameter-importance method to determine the order (and selection) of parameters "
-                                   "for parallel coordinates. uses random method if none is given. ",
-                              default="none", type=str.lower, choices=p_choices)
+                                   "for parallel coordinates. all: aggregate over all available methods. uses random "
+                                   "method if none is given. ",
+                              default="all", type=str.lower, choices=p_choices)
         opt_opts.add_argument("--no_tabular_analysis",
                               action='store_false',
                               help="don't create performance table.",

@@ -91,7 +91,18 @@ class ParallelCoordinates(BaseAnalyzer):
 
         # Sorting by importance, if possible (choose first executed parameter-importance)
         self.method, self.importance = "", {}
-        if pc_sort_by in self.param_imp:
+        if pc_sort_by == 'all':
+            self.logger.debug("Sorting by average importance")
+            self.method = 'average'
+            for m, i in self.param_imp.items():
+                if i:
+                    for p, imp in i.items():
+                        if p in self.importance:
+                            self.importance[p].append(imp)
+                        else:
+                            self.importance[p] = [imp]
+            self.importance = {k : sum(v) / len(v) for k, v in self.importance.items()}
+        elif pc_sort_by in self.param_imp:
             self.method, self.importance = pc_sort_by, self.param_imp[pc_sort_by]
         else:
             self.logger.debug("%s not evaluated.. choosing at random from: %s", pc_sort_by,
@@ -100,6 +111,7 @@ class ParallelCoordinates(BaseAnalyzer):
                 if i:
                     self.method, self.importance = m, i
                     break
+
         self.hp_names = sorted([hp for hp in self.cs.get_hyperparameter_names()],
                                key=lambda x: self.importance.get(x, 0),
                                reverse=True)
