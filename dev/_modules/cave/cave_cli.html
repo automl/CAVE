@@ -440,8 +440,7 @@
                 <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;fANOVA is not installed! To install it please run &#39;</span>
                                   <span class="s1">&#39;&quot;git+http://github.com/automl/fanova.git@master&quot;&#39;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">pimp_sort_table_by</span> <span class="o">==</span> <span class="s2">&quot;average&quot;</span> <span class="ow">or</span>
-                <span class="n">args_</span><span class="o">.</span><span class="n">pimp_sort_table_by</span> <span class="ow">in</span> <span class="n">param_imp</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">pimp_sort_table_by</span> <span class="o">==</span> <span class="s2">&quot;average&quot;</span> <span class="ow">or</span> <span class="n">args_</span><span class="o">.</span><span class="n">pimp_sort_table_by</span> <span class="ow">in</span> <span class="n">param_imp</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Pimp comparison sorting key is </span><span class="si">{}</span><span class="s2">, but this &quot;</span>
                              <span class="s2">&quot;method is deactivated or non-existent.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">pimp_sort_table_by</span><span class="p">))</span>
 
@@ -460,8 +459,6 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;At least one analysis method required to run CAVE&#39;</span><span class="p">)</span>
 
         <span class="n">output_dir</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">output</span>
-
-        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;CAVE is called with arguments: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="p">))</span>
 
         <span class="c1"># Configuration results to be analyzed</span>
         <span class="n">folders</span> <span class="o">=</span> <span class="p">[]</span>
@@ -522,6 +519,8 @@
                     <span class="n">show_jupyter</span><span class="o">=</span><span class="n">show_jupyter</span><span class="p">,</span>
                     <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
                     <span class="n">verbose_level</span><span class="o">=</span><span class="n">verbose_level</span><span class="p">)</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;CAVE is called with arguments: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="p">))</span>
 
         <span class="c1"># Analyze</span>
         <span class="n">cave</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">performance</span><span class="o">=</span><span class="n">tabular_analysis</span><span class="p">,</span>
