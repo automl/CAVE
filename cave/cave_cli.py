@@ -214,8 +214,7 @@ class CaveCLI(object):
                 raise ImportError('fANOVA is not installed! To install it please run '
                                   '"git+http://github.com/automl/fanova.git@master"')
 
-        if not (args_.pimp_sort_table_by == "average" or
-                args_.pimp_sort_table_by in param_imp):
+        if not (args_.pimp_sort_table_by == "average" or args_.pimp_sort_table_by in param_imp):
             raise ValueError("Pimp comparison sorting key is {}, but this "
                              "method is deactivated or non-existent.".format(args_.pimp_sort_table_by))
 
@@ -234,8 +233,6 @@ class CaveCLI(object):
             raise ValueError('At least one analysis method required to run CAVE')
 
         output_dir = args_.output
-
-        logging.getLogger().debug("CAVE is called with arguments: " + str(args_))
 
         # Configuration results to be analyzed
         folders = []
@@ -296,6 +293,8 @@ class CaveCLI(object):
                     show_jupyter=show_jupyter,
                     seed=seed,
                     verbose_level=verbose_level)
+
+        logging.getLogger().debug("CAVE is called with arguments: " + str(args_))
 
         # Analyze
         cave.analyze(performance=tabular_analysis,

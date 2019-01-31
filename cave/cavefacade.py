@@ -180,7 +180,7 @@ class CAVE(object):
         """
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
         self.output_dir = output_dir
-        self.set_verbosity(verbose_level.upper())
+        self.set_verbosity(verbose_level.upper(), os.path.join(self.output_dir, "debug"))
         self.logger.debug("Running CAVE version %s", v)
         self.show_jupyter = show_jupyter
         if self.show_jupyter:
@@ -1063,8 +1063,8 @@ class CAVE(object):
     def _build_website(self):
         self.builder.generate_html(self.website)
 
-    def set_verbosity(self, level):
-        # TODO add custom level with logging.addLevelName (e.g. DEV_DEBUG)
+    @staticmethod
+    def set_verbosity(level, output_dir):
         # Log to stream (console)
         logging.getLogger().setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
@@ -1094,16 +1094,18 @@ class CAVE(object):
                                    "urllib3.connectionpool",
                                    "selenium.webdriver.remote.remote_connection"]
                 for logger in disable_loggers:
-                    logging.getLogger().debug("Setting logger \'%s\' on level INFO", logger)
+                    logging.getLogger('cave.settings').debug("Setting logger \'%s\' on level INFO", logger)
                     logging.getLogger(logger).setLevel(logging.INFO)
         else:
-            raise ValueError("%s not recognized as a verbosity level. Choose from DEBUG, DEV_DEBUG. INFO, OFF.".format(level))
+            raise ValueError("%s not recognized as a verbosity level. Choose from DEBUG, DEV_DEBUG. INFO, WARNING, OFF.".format(level))
 
         logging.getLogger().addHandler(stdout_handler)
-        # Log to file
-        if not os.path.exists(os.path.join(self.output_dir, "debug")):
-            os.makedirs(os.path.join(self.output_dir, "debug"))
-        fh = logging.FileHandler(os.path.join(self.output_dir, "debug/debug.log"), "w")
+        # Log to file is always debug
+        logging.getLogger('cave.settings').debug("Output-file for debug-log: '%s'", os.path.join(output_dir, "debug.log"))
+        if not os.path.exists(output_dir):
+            logging.getLogger('cave.settings').debug("Output-dir for debug '%s' does not exist, creating...", output_dir)
+            os.makedirs(output_dir)
+        fh = logging.FileHandler(os.path.join(output_dir, "debug.log"), "w")
         fh.setLevel(logging.DEBUG)
         fh.setFormatter(formatter)
         logging.getLogger().addHandler(fh)
