@@ -183,8 +183,8 @@ class ConfiguratorFootprintPlotter(object):
 
         # impute missing values in configs and insert MDS'ed (2dim) configs to the right positions
         conf_dict = {}
-        # Remove forbidden clauses (because this is not relevant here)
-        cs_no_forbidden = conf_list[0].configuration_space
+        # Remove forbidden clauses (this is necessary to enable the impute_inactive_values-method, see #226)
+        cs_no_forbidden = copy.deepcopy(conf_list[0].configuration_space)
         cs_no_forbidden.forbidden_clauses = []
         for idx, c in enumerate(conf_list):
             c.configuration_space = cs_no_forbidden
