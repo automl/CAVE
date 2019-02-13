@@ -83,11 +83,7 @@ class CostOverTime(BaseAnalyzer):
         self.logger.debug("Initialized CostOverTime with %d runs, output to \"%s\"", len(self.runs), self.output_dir)
 
         # Will be set during execution:
-        self.script, self.div = None, None  # Bokeh for standalone html
         self.plots = []                     # List with paths to '.png's
-        self.bokeh_plot = None              # Bokeh plot object
-
-        self._plot(self.rh, self.runs, self.output_fn, self.validator)
 
     def _get_mean_var_time(self, validator, traj, use_epm, rh):
         """
@@ -235,7 +231,7 @@ class CostOverTime(BaseAnalyzer):
                 rh_bohb.update(run.combined_runhistory)
             #self.logger.debug(rh_bohb.data)
             # Get collective trajectory
-            traj = HpBandSter2SMAC().get_trajectory(self.bohb_result, '', self.scenario, rh_bohb)
+            traj = HpBandSter2SMAC().get_trajectory({'' : self.bohb_result}, '', self.scenario, rh_bohb)
             #self.logger.debug(traj)
             mean, time, configs = [], [], []
             traj_dict = self.bohb_result.get_incumbent_trajectory()
@@ -248,11 +244,12 @@ class CostOverTime(BaseAnalyzer):
             configs_double = [c for sub in zip(configs, configs) for c in sub][:-1]
             return Line('all_budgets', time_double, mean_double, mean_double, mean_double, configs_double)
 
-    def _plot(self, rh, runs, output_fn, validator):
+    def plot(self):
         """
         Plot performance over time, using all trajectory entries.
         max_time denotes max(wallclock_limit, highest recorded time).
         """
+        rh, runs, output_fn, validator = self.rh, self.runs, self.output_fn, self.validator
         # Add lines to be plotted to lines (key-values must be zippable)
         lines = []
 
@@ -337,7 +334,6 @@ class CostOverTime(BaseAnalyzer):
         # Wrap renderers in nested lists for checkbox-code
         checkbox, select_all, select_none = get_checkbox(renderers, [l[0] for l in legend_it])
 
-
         # Tilt tick labels and configure axis labels
         p.xaxis.major_label_orientation = 3/4
 
@@ -355,21 +351,23 @@ class CostOverTime(BaseAnalyzer):
         # Assign objects and save png's
         layout = row(p, column(widgetbox(checkbox, width=100),
                                row(widgetbox(select_all, width=50), widgetbox(select_none, width=50))))
-        self.script, self.div = components(layout)
-        self.bokeh_plot = layout
+
         output_path = os.path.join(self.output_dir, output_fn)
         export_bokeh(p, output_path, self.logger)
         self.plots.append(output_path)
 
+        return layout
+
     def get_html(self, d=None, tooltip=None):
+        script, div = components(self.plot())
         if d is not None:
-            d["bokeh"] = (self.script, self.div)
+            d["bokeh"] = (script, div)
             d["tooltip"] = tooltip
-        return self.script, self.div
+        return script, div
 
     def get_plots(self):
         return self.plots
 
     def get_jupyter(self):
         output_notebook()
-        show(self.bokeh_plot)
+        show(self.plot())

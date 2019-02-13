@@ -125,6 +125,7 @@ class CAVE(object):
                  validation_method: str='epm',
                  pimp_max_samples: int=-1,
                  fanova_pairwise: bool=True,
+                 pc_sort_by: str='none',
                  use_budgets: bool=False,
                  seed: int=42,
                  show_jupyter: bool=True,
@@ -180,7 +181,7 @@ class CAVE(object):
         # Administrative
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
         self.output_dir = output_dir
-        self.set_verbosity(verbose_level.upper())
+        self.set_verbosity(verbose_level.upper(), os.path.join(self.output_dir, "debug"))
         self.logger.debug("Running CAVE version %s", v)
         self.show_jupyter = show_jupyter
         if self.show_jupyter:
@@ -204,18 +205,28 @@ class CAVE(object):
         self.validation_method = validation_method
         self.pimp_max_samples = pimp_max_samples
         self.fanova_pairwise = fanova_pairwise
+        self.pc_sort_by = pc_sort_by
 
         # If only one ta_exec_dir, need to extend so it's same length as folders
         self.ta_exec_dir = self.ta_exec_dir.extend([self.ta_exec_dir[0] for i in range(len(self.folders) - len(self.ta_exec_dir))])
-
-        # To be set during execution (used for dependencies of analysis-methods)
-        # TODO this should go into ConfiguratorRun
 
         # Create output_dir if necessary
         self.logger.info("Saving results to '%s'", self.output_dir)
         if not os.path.exists(output_dir):
             self.logger.debug("Output-dir '%s' does not exist, creating", self.output_dir)
             os.makedirs(output_dir)
+
+        if file_format == 'BOHB':
+            self.use_budgets = True
+            self.num_bohb_results = len(folders)
+            self.bohb_result, folders, budgets = HpBandSter2SMAC().convert(folders, output_dir)
+            if "DEBUG" in self.verbose_level:
+                for f in folders:
+                    debug_f = os.path.join(output_dir, 'debug', os.path.basename(f))
+                    shutil.rmtree(debug_f, ignore_errors=True)
+                    shutil.copytree(f, debug_f)
+
+            file_format = 'SMAC3'
 
         # Save all relevant configurator-runs in a list
         self.logger.debug("Folders: %s; ta-exec-dirs: %s", str(folders), str(ta_exec_dir))
@@ -270,7 +281,6 @@ class CAVE(object):
                             seed=self.seed,
                             verbose_level='OFF')
         self.incumbent = self.runs[-1].incumbent
-
 
     @timing
     def analyze(self,
@@ -392,7 +402,7 @@ class CAVE(object):
                 self.global_validated_rh = run.combined_runhistory
                 self.global_epm_rh = RunHistory(average_cost)
                 # Train epm and stuff
-                self._init_pimp_and_validator(run.combined_runhistory, alternative_output_dir=sub_output_dir)
+                self._init_pimp_and_validator(run.combined_runhistory, pimp_output_dir=sub_output_dir)
                 self._validate_default_and_incumbents(self.validation_method, run.ta_exec_dir)
                 self.pimp.incumbent = run.incumbent
                 self.incumbent = run.incumbent
@@ -461,11 +471,15 @@ class CAVE(object):
         best run, if multiple configurator runs are compared.
         """
         return OverviewTable(cave.runs,
+                             cave.num_bohb_results,
                              cave.output_dir)
 
     @_analyzer_type
     def compare_default_incumbent(self, cave):
-        """ Comparing parameters of default and incumbent.  Parameters that differ from default to incumbent are presented first."""
+        """
+        Comparing parameters of default and incumbent. Parameters that differ from default to incumbent are presented
+        first. Parameters that are inactive for both configurations are omitted.
+        """
         return CompareDefaultIncumbent(cave.default, cave.incumbent)
 
     def performance_analysis(self, d, run,
@@ -482,16 +496,12 @@ class CAVE(object):
 
         if performance:
             self.performance_table(d=self._get_dict(d, "Performance Table", run=run), run=run)
-            d["Performance Table"]["tooltip"] = self._get_tooltip(self.performance_table)
         if cdf:
             self.plot_ecdf(d=self._get_dict(d, "empirical Cumulative Distribution Function (eCDF)", run=run), run=run)
-            d["empirical Cumulative Distribution Function (eCDF)"]["tooltip"] = self._get_tooltip(self.plot_ecdf)
         if scatter:
             self.plot_scatter(d=self._get_dict(d, "Scatterplot", run=run), run=run)
-            d["Scatterplot"]["tooltip"] = self._get_tooltip(self.plot_scatter)
         if algo_footprint and self.scenario.feature_dict:
             self.algorithm_footprints(d=self._get_dict(d, "Algorithm Footprints", run=run), run=run)
-            d["Algorithm Footprints"]["tooltip"] = self._get_tooltip(self.algorithm_footprints)
 
     @_analyzer_type
     def performance_table(self, cave):
@@ -523,7 +533,6 @@ class CAVE(object):
         improvements can be explained only by some outliers or whether they are due to improvements on the entire
         instance set. On the left side the training-data is scattered, on the right side the test-data is scattered.
         """
-
         return PlotScatter(default=cave.default,
                            incumbent=cave.incumbent,
                            rh=cave.global_epm_rh,
@@ -619,6 +628,7 @@ class CAVE(object):
                                    param_imp=cave.param_imp,
                                    params=params,
                                    n_configs=n_configs,
+                                   pc_sort_by=self.pc_sort_by,
                                    max_runs_epm=max_runs_epm,
                                    output_dir=cave.output_dir,
                                    cs=cave.scenario.cs,
@@ -690,7 +700,7 @@ class CAVE(object):
         runhistories.
         """
         try:
-            fanova = CaveFanova(cave.pimp, cave.incumbent, cave.output_dir)
+            fanova = CaveFanova(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
         except IndexError as err:
             self.logger.debug("Error in fANOVA", exc_info=1)
             raise IndexError("Error in fANOVA - please run with --pimp_no_fanova_pairs (this is due to a known issue "
@@ -707,7 +717,7 @@ class CAVE(object):
         of flipping the parameter settings from default configuration to incumbent such that in each step the cost is
         maximally decreased."""
 
-        ablation = CaveAblation(cave.pimp, cave.incumbent, cave.output_dir)
+        ablation = CaveAblation(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
         cave.evaluators.append(cave.pimp.evaluator)
         cave.param_imp["ablation"] = cave.pimp.evaluator.evaluated_parameter_importance
 
@@ -719,7 +729,7 @@ class CAVE(object):
         Forward Selection is a generic method to obtain a subset of parameters to achieve the same prediction error as
         with the full parameter set.  Each parameter is scored by how much the out-of-bag-error of an empirical
         performance model based on a random forest is decreased."""
-        forward = CaveForwardSelection(cave.pimp, cave.incumbent, cave.output_dir)
+        forward = CaveForwardSelection(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
         cave.evaluators.append(cave.pimp.evaluator)
         cave.param_imp["forward-selection"] = cave.pimp.evaluator.evaluated_parameter_importance
 
@@ -732,7 +742,7 @@ class CAVE(object):
         parameter are predicted and then the fraction of all variances is computed. This analysis is inspired by the
         human behaviour to look for improvements in the neighborhood of individual parameters of a configuration."""
 
-        lpi = LocalParameterImportance(cave.pimp, cave.incumbent, cave.output_dir)
+        lpi = LocalParameterImportance(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
         cave.evaluators.append(cave.pimp.evaluator)
         cave.param_imp["lpi"] = cave.pimp.evaluator.evaluated_parameter_importance
 
@@ -749,7 +759,7 @@ class CAVE(object):
                                    cave.evaluators,
                                    sort_table_by=pimp_sort_table_by,
                                    cs=cave.scenario.cs,
-                                   out_fn=os.path.join(cave.output_dir, 'pimp.tex'),
+                                   out_fn=os.path.join(cave.output_dir, 'content', 'pimp.tex'),
                                    )
 
     def parameter_importance(self,
@@ -897,8 +907,8 @@ class CAVE(object):
     def _build_website(self):
         self.builder.generate_html(self.website)
 
-    def set_verbosity(self, level):
-        # TODO add custom level with logging.addLevelName (e.g. DEV_DEBUG)
+    @staticmethod
+    def set_verbosity(level, output_dir):
         # Log to stream (console)
         logging.getLogger().setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
@@ -928,16 +938,18 @@ class CAVE(object):
                                    "urllib3.connectionpool",
                                    "selenium.webdriver.remote.remote_connection"]
                 for logger in disable_loggers:
-                    logging.getLogger().debug("Setting logger \'%s\' on level INFO", logger)
+                    logging.getLogger('cave.settings').debug("Setting logger \'%s\' on level INFO", logger)
                     logging.getLogger(logger).setLevel(logging.INFO)
         else:
-            raise ValueError("%s not recognized as a verbosity level. Choose from DEBUG, DEV_DEBUG. INFO, OFF.".format(level))
+            raise ValueError("%s not recognized as a verbosity level. Choose from DEBUG, DEV_DEBUG. INFO, WARNING, OFF.".format(level))
 
         logging.getLogger().addHandler(stdout_handler)
-        # Log to file
-        if not os.path.exists(os.path.join(self.output_dir, "debug")):
-            os.makedirs(os.path.join(self.output_dir, "debug"))
-        fh = logging.FileHandler(os.path.join(self.output_dir, "debug/debug.log"), "w")
+        # Log to file is always debug
+        logging.getLogger('cave.settings').debug("Output-file for debug-log: '%s'", os.path.join(output_dir, "debug.log"))
+        if not os.path.exists(output_dir):
+            logging.getLogger('cave.settings').debug("Output-dir for debug '%s' does not exist, creating...", output_dir)
+            os.makedirs(output_dir)
+        fh = logging.FileHandler(os.path.join(output_dir, "debug.log"), "w")
         fh.setLevel(logging.DEBUG)
         fh.setFormatter(formatter)
         logging.getLogger().addHandler(fh)

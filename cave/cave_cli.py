@@ -159,6 +159,11 @@ class CaveCLI(object):
                               help="maximum number of configurations to be plotted in configurator footprint (in case "
                                    "you run into a MemoryError). -1 -> plot all. ",
                               default=-1, type=int)
+        opt_opts.add_argument("--pc_sort_by",
+                              help="parameter-importance method to determine the order (and selection) of parameters "
+                                   "for parallel coordinates. all: aggregate over all available methods. uses random "
+                                   "method if none is given. ",
+                              default="all", type=str.lower, choices=p_choices)
         opt_opts.add_argument("--no_tabular_analysis",
                               action='store_false',
                               help="don't create performance table.",
@@ -210,8 +215,7 @@ class CaveCLI(object):
                 raise ImportError('fANOVA is not installed! To install it please run '
                                   '"git+http://github.com/automl/fanova.git@master"')
 
-        if not (args_.pimp_sort_table_by == "average" or
-                args_.pimp_sort_table_by in param_imp):
+        if not (args_.pimp_sort_table_by == "average" or args_.pimp_sort_table_by in param_imp):
             raise ValueError("Pimp comparison sorting key is {}, but this "
                              "method is deactivated or non-existent.".format(args_.pimp_sort_table_by))
 
@@ -230,8 +234,6 @@ class CaveCLI(object):
             raise ValueError('At least one analysis method required to run CAVE')
 
         output_dir = args_.output
-
-        logging.getLogger().debug("CAVE is called with arguments: " + str(args_))
 
         # Configuration results to be analyzed
         folders = []
@@ -262,6 +264,7 @@ class CaveCLI(object):
         cfp_max_plot = args_.cfp_max_plot
         cfp_number_quantiles = args_.cfp_number_quantiles
         parallel_coordinates = args_.parallel_coordinates
+        pc_sort_by = args_.pc_sort_by
         cost_over_time = args_.cost_over_time
         algorithm_footprints = args_.algorithm_footprints
         pimp_sort_table_by = args_.pimp_sort_table_by
@@ -286,10 +289,13 @@ class CaveCLI(object):
                     validation_method=validation,
                     pimp_max_samples=pimp_max_samples,
                     fanova_pairwise=fanova_pairwise,
+                    pc_sort_by=pc_sort_by,
                     use_budgets=file_format=='BOHB',
                     show_jupyter=show_jupyter,
                     seed=seed,
                     verbose_level=verbose_level)
+
+        logging.getLogger().debug("CAVE is called with arguments: " + str(args_))
 
         # Analyze
         cave.analyze(performance=tabular_analysis,

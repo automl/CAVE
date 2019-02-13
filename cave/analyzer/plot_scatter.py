@@ -56,7 +56,7 @@ class PlotScatter(BaseAnalyzer):
 
         out_fns = []
         for insts, name in [(train, 'train'), (test, 'test')]:
-            if insts == [None]:
+            if len(insts) <= 1:
                 self.logger.debug("No %s instances, skipping scatter", name)
                 continue
             default = np.array([v for k, v in def_costs if k in insts])
@@ -65,9 +65,12 @@ class PlotScatter(BaseAnalyzer):
             out_fn = out_fn_base + name + '.png'
             out_fns.append(plot_scatter_plot((default,), (incumbent,), labels, metric=metric,
                            min_val=min_val, max_val=timeout, out_fn=out_fn))
-        self.output_fns = out_fns
+        self.output_fns = out_fns if len(out_fns) > 0 else None
 
     def get_html(self, d=None, tooltip=None):
+        if not self.output_fns:
+            return
+
         if d is not None and self.output_fns:
             d["figure"] = self.output_fns
             d["tooltip"] = tooltip

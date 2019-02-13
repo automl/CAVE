@@ -162,7 +162,7 @@ class ParallelCoordinatesPlotter():
             return
 
         # Create dataframe with configs
-        cost_str = ('log-' if logy else '') + ('runtime' if self.runtime else 'quality')
+        cost_str = ('log-' if logy else '') + ('runtime' if self.runtime else 'cost')
         data = []
         for conf in configs:
             conf_dict = conf.get_dictionary()
@@ -244,10 +244,10 @@ class ParallelCoordinatesPlotter():
                 path_effects = [path_efx.Normal()]
                 if idx in [0, 1, 2, 3, 4, len(data) - 1, len(data) - 2, len(data) - 3, len(data) - 4, len(data) - 5]:
                     alpha = 1
-                    path_effects = [path_efx.withStroke(linewidth=5, foreground='k')]
+                    path_effects = [path_efx.withStroke(linewidth=10, foreground='k')]
                 #self.logger.debug(data.loc[idx, params])
                 ax.plot(range(len(params)), data.loc[idx, params], color=cval,
-                        alpha=alpha, linewidth=3, zorder=zorder, path_effects=path_effects)
+                        alpha=alpha, linewidth=6, zorder=zorder, path_effects=path_effects)
             ax.set_xlim([i, i + 1])
 
         def set_ticks_for_axis(p, ax, num_ticks=10):

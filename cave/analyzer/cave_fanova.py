@@ -95,7 +95,7 @@ class CaveFanova(CaveParameterImportance):
         # Get plot-paths
         self.single_plots = {p : os.path.join(self.output_dir, "fanova", p + '.png') for p in single_imp.keys()}
         # Right now no way to access paths of the plots -> file issue
-        self.pairwise_plots = {" & ".join(parse_pairwise(k)) : os.path.join(self.output_dir, 'fanova', '_'.join(parse_pairwise(k)) + '.png') for p in pairwise_imp.keys()}
+        self.pairwise_plots = {" & ".join(parse_pairwise(p)) : os.path.join(self.output_dir, 'fanova', '_'.join(parse_pairwise(p)) + '.png') for p in pairwise_imp.keys()}
         self.pairwise_plots = {p : path for p, path in self.pairwise_plots.items() if os.path.exists(path)}
 
     def get_table(self):

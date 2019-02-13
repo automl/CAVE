@@ -32,6 +32,7 @@ class SMAC3Reader(BaseReader):
                 pcs_fn = scen_dict.pop('pcs_fn', 'no pcs_fn in scenario')
                 self.logger.debug("Ignoring %s", pcs_fn)
                 scen_dict['cs'] = pcs_json.read(fh.read())
+                scen_dict['pcs_fn'] = cs_json
 
         with changedir(self.ta_exec_dir):
             self.logger.debug("Creating scenario from \"%s\"", self.ta_exec_dir)
@@ -86,7 +87,6 @@ class SMAC3Reader(BaseReader):
                 k,v = param.split("=")
                 v = v.strip("'")
                 hp = cs.get_hyperparameter(k)
-                print(hp)
                 if isinstance(hp, FloatHyperparameter):
                     v = float(v)
                 elif isinstance(hp, IntegerHyperparameter):
@@ -97,6 +97,8 @@ class SMAC3Reader(BaseReader):
                         v = True if v == 'True' else False
                     elif isinstance(hp.default_value, int):
                         v = int(v)
+                    elif isinstance(hp.default_value, float):
+                        v = float(v)
                     else:
                         v = v
                 ##############################################
