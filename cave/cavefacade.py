@@ -996,9 +996,11 @@ class CAVE(object):
 
     @_analyzer_type
     def bohb_learning_curves(self, cave):
-        """Visualizing the learning curves of the individual Hyperband-iterations. Model based picks are marked with a
-        cross. The config-id tuple denotes (iteration, stage, id_within_stage), where the iteration is a hyperband
-        iteration and the stage is the index of the budget used. It can be interpreted as a nested index-identifier.
+        """
+        Visualizing the learning curves of all individual HyperBand-iterations. Model-based picks are marked with a
+        cross. The config-id tuple denotes (iteration, stage, id_within_stage), where the iteration is the hyperband
+        iteration and the stage is the index of the budget in which the configuration was first sampled (should be 0).
+        The third index is just a sequential enumeration. This id can be interpreted as a nested index-identifier.
         """
         return BohbLearningCurves(self.scenario.cs.get_hyperparameter_names(), result_object=self.bohb_result)
 
