@@ -34,7 +34,7 @@ class ConfiguratorRun(SMAC):
             in the scenario-object. since instance- and PCS-files are necessary,
             specify the path to the execution-dir of SMAC here
         file_format: string
-            from [SMAC2, SMAC3, CSV]
+            from [SMAC2, SMAC3, BOHB, CSV]
         validation_format: string
             from [SMAC2, SMAC3, CSV, NONE], in which format to look for validated data
         """
