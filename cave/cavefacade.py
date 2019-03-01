@@ -364,7 +364,6 @@ class CAVE(object):
         self.pimp = Importance(scenario=copy.deepcopy(self.scenario),
                                runhistory=rh,
                                incumbent=self.default,  # Inject correct incumbent later
-                               parameters_to_evaluate=4,
                                save_folder=pimp_output_dir,
                                seed=self.rng.randint(1, 100000),
                                max_sample_size=self.pimp_max_samples,
