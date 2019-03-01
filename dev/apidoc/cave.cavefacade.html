@@ -330,9 +330,10 @@ budget).</p>
 <dl class="method">
 <dt id="cave.cavefacade.CAVE.bohb_learning_curves">
 <code class="descname">bohb_learning_curves</code><span class="sig-paren">(</span><em>cave</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/cavefacade.html#CAVE.bohb_learning_curves"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.cavefacade.CAVE.bohb_learning_curves" title="Permalink to this definition">¶</a></dt>
-<dd><p>Visualizing the learning curves of the individual Hyperband-iterations. Model based picks are marked with a
-cross. The config-id tuple denotes (iteration, stage, id_within_stage), where the iteration is a hyperband
-iteration and the stage is the index of the budget used. It can be interpreted as a nested index-identifier.</p>
+<dd><p>Visualizing the learning curves of all individual HyperBand-iterations. Model-based picks are marked with a
+cross. The config-id tuple denotes (iteration, stage, id_within_stage), where the iteration is the hyperband
+iteration and the stage is the index of the budget in which the configuration was first sampled (should be 0).
+The third index is just a sequential enumeration. This id can be interpreted as a nested index-identifier.</p>
 </dd></dl>
 
 <dl class="method">

@@ -1224,9 +1224,11 @@
 
 <div class="viewcode-block" id="CAVE.bohb_learning_curves"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.bohb_learning_curves">[docs]</a>    <span class="nd">@_analyzer_type</span>
     <span class="k">def</span> <span class="nf">bohb_learning_curves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cave</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Visualizing the learning curves of the individual Hyperband-iterations. Model based picks are marked with a</span>
-<span class="sd">        cross. The config-id tuple denotes (iteration, stage, id_within_stage), where the iteration is a hyperband</span>
-<span class="sd">        iteration and the stage is the index of the budget used. It can be interpreted as a nested index-identifier.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Visualizing the learning curves of all individual HyperBand-iterations. Model-based picks are marked with a</span>
+<span class="sd">        cross. The config-id tuple denotes (iteration, stage, id_within_stage), where the iteration is the hyperband</span>
+<span class="sd">        iteration and the stage is the index of the budget in which the configuration was first sampled (should be 0).</span>
+<span class="sd">        The third index is just a sequential enumeration. This id can be interpreted as a nested index-identifier.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">BohbLearningCurves</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="o">.</span><span class="n">get_hyperparameter_names</span><span class="p">(),</span> <span class="n">result_object</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bohb_result</span><span class="p">)</span></div>
 
