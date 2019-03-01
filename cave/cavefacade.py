@@ -6,6 +6,7 @@ from contextlib import contextmanager
 from importlib import reload
 import typing
 from typing import Union, List
+import tempfile
 import copy
 from functools import wraps
 import shutil
@@ -180,6 +181,7 @@ class CAVE(object):
         """
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
         self.output_dir = output_dir
+        self.output_dir_created = False
         self.set_verbosity(verbose_level.upper(), os.path.join(self.output_dir, "debug"))
         self.logger.debug("Running CAVE version %s", v)
         self.show_jupyter = show_jupyter
@@ -217,10 +219,7 @@ class CAVE(object):
         self.bohb_result = None  # only relevant for bohb_result
 
         # Create output_dir if necessary
-        self.logger.info("Saving results to '%s'", self.output_dir)
-        if not os.path.exists(output_dir):
-            self.logger.debug("Output-dir '%s' does not exist, creating", self.output_dir)
-            os.makedirs(output_dir)
+        self._create_outputdir(self.output_dir)
 
         if file_format == 'BOHB':
             self.use_budgets = True
@@ -1065,8 +1064,7 @@ class CAVE(object):
     def _build_website(self):
         self.builder.generate_html(self.website)
 
-    @staticmethod
-    def set_verbosity(level, output_dir):
+    def set_verbosity(self, level, output_dir):
         # Log to stream (console)
         logging.getLogger().setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
@@ -1104,10 +1102,33 @@ class CAVE(object):
         logging.getLogger().addHandler(stdout_handler)
         # Log to file is always debug
         logging.getLogger('cave.settings').debug("Output-file for debug-log: '%s'", os.path.join(output_dir, "debug.log"))
-        if not os.path.exists(output_dir):
-            logging.getLogger('cave.settings').debug("Output-dir for debug '%s' does not exist, creating...", output_dir)
-            os.makedirs(output_dir)
+        self._create_outputdir(output_dir)
         fh = logging.FileHandler(os.path.join(output_dir, "debug.log"), "w")
         fh.setLevel(logging.DEBUG)
         fh.setFormatter(formatter)
         logging.getLogger().addHandler(fh)
+
+    def _create_outputdir(self, output_dir):
+        """ Creates output-dir, if necessary. Also sets the 'self.output_dir_created'-flag, so this only happens once.
+        If there is a directory already, zip this into an archive in the output_dir called '.OLD.zip'. """
+        if self.output_dir_created:
+            if not os.path.exists(output_dir):
+                raise RuntimeError("'%s' should exist, but doesn't. Any raceconditions? "
+                                   "Please report to github.com/automl/CAVE/issues with debug/debug.log")
+            self.logger.debug("Output-dir '%s' was already created, call ignored", output_dir)
+            return
+
+        self.logger.info("Saving results to '%s'", output_dir)
+        if not os.path.exists(output_dir):
+            self.logger.debug("Output-dir '%s' does not exist, creating", output_dir)
+            os.makedirs(output_dir)
+        else:
+            archive_path = os.path.join(tempfile.mkdtemp(), '.OLD')
+            shutil.make_archive(archive_path, 'zip', output_dir)
+            shutil.rmtree(output_dir)
+            os.makedirs(output_dir)
+            shutil.move(archive_path + '.zip', output_dir)
+            self.logger.debug("Output-dir '%s' exists, moving old content to '%s'", self.output_dir,
+                              os.path.join(self.output_dir, '.OLD.zip'))
+
+        self.output_dir_created = True
