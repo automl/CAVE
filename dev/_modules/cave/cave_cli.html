@@ -283,18 +283,17 @@
         <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">(</span><span class="n">formatter_class</span><span class="o">=</span><span class="n">SmartArgsDefHelpFormatter</span><span class="p">,</span> <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                 <span class="n">description</span><span class="o">=</span><span class="s1">&#39;CAVE: Configuration Assessment Vizualisation and Evaluation&#39;</span><span class="p">)</span>
 
-        <span class="n">req_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Required Options:&quot;</span> <span class="o">+</span> <span class="s1">&#39;~&#39;</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">req_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Required Options&quot;</span><span class="p">)</span>
         <span class="n">req_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--folders&quot;</span><span class="p">,</span>
                               <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                               <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
                               <span class="c1"># strings prefixed with raw| can be manually split with \n</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;raw|path(s) to SMAC output-directory/ies, &quot;</span>
-                                   <span class="s2">&quot;containing each at least a runhistory</span><span class="se">\n</span><span class="s2">and &quot;</span>
-                                   <span class="s2">&quot;a trajectory.&quot;</span><span class="p">,</span>
+                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;raw|path(s) to Configurator output-directory/ies&quot;</span><span class="p">,</span>
                               <span class="n">default</span><span class="o">=</span><span class="n">SUPPRESS</span><span class="p">)</span>
 
-        <span class="n">opt_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Optional Options:&quot;</span> <span class="o">+</span> <span class="s1">&#39;~&#39;</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--verbose_level&quot;</span><span class="p">,</span>
+        <span class="n">cave_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;CAVE global options&quot;</span><span class="p">,</span>
+                                              <span class="s2">&quot;Options that configure the analysis in general and define behaviour.&quot;</span><span class="p">)</span>
+        <span class="n">cave_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--verbose_level&quot;</span><span class="p">,</span>
                               <span class="n">default</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
                               <span class="n">choices</span><span class="o">=</span><span class="p">[</span>
                                   <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
@@ -306,12 +305,12 @@
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;verbose level. use DEV_DEBUG for development to filter boilerplate-logs from &quot;</span>
                                    <span class="s2">&quot;imported modules, use DEBUG for full logging. full debug-log always in &quot;</span>
                                    <span class="s2">&quot;&#39;output/debug/debug.log&#39; &quot;</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--jupyter&quot;</span><span class="p">,</span>
+        <span class="n">cave_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--jupyter&quot;</span><span class="p">,</span>
                               <span class="n">default</span><span class="o">=</span><span class="s1">&#39;off&#39;</span><span class="p">,</span>
                               <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;on&#39;</span><span class="p">,</span> <span class="s1">&#39;off&#39;</span><span class="p">],</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;output everything to jupyter, if available.&quot;</span>
                               <span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--validation&quot;</span><span class="p">,</span>
+        <span class="n">cave_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--validation&quot;</span><span class="p">,</span>
                               <span class="n">default</span><span class="o">=</span><span class="s2">&quot;epm&quot;</span><span class="p">,</span>
                               <span class="n">choices</span><span class="o">=</span><span class="p">[</span>
                                   <span class="s2">&quot;validation&quot;</span><span class="p">,</span>
@@ -320,25 +319,25 @@
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;how to complete missing runs for config/inst-pairs. epm trains random forest with &quot;</span>
                                    <span class="s2">&quot;available data to estimate missing runs, validation requires target algorithm. &quot;</span><span class="p">,</span>
                               <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--output&quot;</span><span class="p">,</span>
+        <span class="n">cave_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--output&quot;</span><span class="p">,</span>
                               <span class="n">default</span><span class="o">=</span><span class="s2">&quot;CAVE_output_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
                                         <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">_%H:%M:%S_</span><span class="si">%f</span><span class="s1">&#39;</span><span class="p">)),</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;path to folder in which to save the HTML-report. &quot;</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--seed&quot;</span><span class="p">,</span>
+        <span class="n">cave_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--seed&quot;</span><span class="p">,</span>
                               <span class="n">default</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
                               <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;random seed used throughout analysis. &quot;</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--file_format&quot;</span><span class="p">,</span>
+        <span class="n">cave_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--file_format&quot;</span><span class="p">,</span>
                               <span class="n">default</span><span class="o">=</span><span class="s1">&#39;SMAC3&#39;</span><span class="p">,</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;specify the format of the configurator-files. &quot;</span><span class="p">,</span>
                               <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;SMAC2&#39;</span><span class="p">,</span> <span class="s1">&#39;SMAC3&#39;</span><span class="p">,</span> <span class="s1">&#39;CSV&#39;</span><span class="p">,</span> <span class="s1">&#39;BOHB&#39;</span><span class="p">],</span>
                               <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">upper</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--validation_format&quot;</span><span class="p">,</span>
+        <span class="n">cave_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--validation_format&quot;</span><span class="p">,</span>
                               <span class="n">default</span><span class="o">=</span><span class="s1">&#39;NONE&#39;</span><span class="p">,</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;what format the validation-files are in&quot;</span><span class="p">,</span>
                               <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;SMAC2&#39;</span><span class="p">,</span> <span class="s1">&#39;SMAC3&#39;</span><span class="p">,</span> <span class="s1">&#39;CSV&#39;</span><span class="p">,</span> <span class="s1">&#39;NONE&#39;</span><span class="p">],</span>
                               <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">upper</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--ta_exec_dir&quot;</span><span class="p">,</span>
+        <span class="n">cave_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--ta_exec_dir&quot;</span><span class="p">,</span>
                               <span class="n">default</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;path to the execution-directory of the configurator run. this is the path from &quot;</span>
                                    <span class="s2">&quot;which the scenario is loaded, so the instance-/pcs-files specified in the &quot;</span>
@@ -346,20 +345,46 @@
                                    <span class="s2">&quot;(e.g. &#39;ta_exec_dir/path_to_train_inst_specified_in_scenario.txt&#39;). &quot;</span><span class="p">,</span>
                               <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">)</span>
         <span class="c1"># PIMP-configs</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--pimp_max_samples&quot;</span><span class="p">,</span>
-                              <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-                              <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;How many datapoints to use with PIMP. -1 -&gt; use all. &quot;</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--pimp_no_fanova_pairs&quot;</span><span class="p">,</span>
-                              <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_false&quot;</span><span class="p">,</span>
-                              <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;fanova_pairwise&quot;</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;fANOVA won&#39;t compute pairwise marginals&quot;</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--pimp_sort_table_by&quot;</span><span class="p">,</span>
-                              <span class="n">default</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">,</span>
-                              <span class="n">choices</span><span class="o">=</span><span class="n">p_sort_by_choices</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;raw|what kind of parameter importance method to &quot;</span>
-                                   <span class="s2">&quot;use to sort the overview-table. &quot;</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--parameter_importance&quot;</span><span class="p">,</span>
+        <span class="n">pimp_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Parameter Importance&quot;</span><span class="p">,</span>
+                                              <span class="s2">&quot;Define the behaviour of the ParameterImportance-module (pimp)&quot;</span><span class="p">)</span>
+        <span class="n">pimp_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--pimp_max_samples&quot;</span><span class="p">,</span>
+                               <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                               <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;How many datapoints to use with PIMP. -1 -&gt; use all. &quot;</span><span class="p">)</span>
+        <span class="n">pimp_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--pimp_no_fanova_pairs&quot;</span><span class="p">,</span>
+                               <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_false&quot;</span><span class="p">,</span>
+                               <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;fanova_pairwise&quot;</span><span class="p">,</span>
+                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;fANOVA won&#39;t compute pairwise marginals&quot;</span><span class="p">)</span>
+        <span class="n">pimp_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--pimp_sort_table_by&quot;</span><span class="p">,</span>
+                               <span class="n">default</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">,</span>
+                               <span class="n">choices</span><span class="o">=</span><span class="n">p_sort_by_choices</span><span class="p">,</span>
+                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;raw|what kind of parameter importance method to &quot;</span>
+                                    <span class="s2">&quot;use to sort the overview-table. &quot;</span><span class="p">)</span>
+
+        <span class="n">cfp_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Configurator Footprint&quot;</span><span class="p">,</span> <span class="s2">&quot;Finetune the configurator footprint&quot;</span><span class="p">)</span>
+        <span class="n">cfp_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--cfp_time_slider&quot;</span><span class="p">,</span>
+                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;whether or not to have a time_slider-widget on cfp-plot&quot;</span>
+                                   <span class="s2">&quot;INCREASES FILE-SIZE (and loading) DRAMATICALLY. &quot;</span><span class="p">,</span>
+                              <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;on&quot;</span><span class="p">,</span> <span class="s2">&quot;off&quot;</span><span class="p">],</span>
+                              <span class="n">default</span><span class="o">=</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+        <span class="n">cfp_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--cfp_number_quantiles&quot;</span><span class="p">,</span>
+                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;number of quantiles that configurator footprint should plot over time. &quot;</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">cfp_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--cfp_max_plot&quot;</span><span class="p">,</span>
+                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;maximum number of configurations to be plotted in configurator footprint (in case &quot;</span>
+                                   <span class="s2">&quot;you run into a MemoryError). -1 -&gt; plot all. &quot;</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="n">pc_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Parallel Coordinates&quot;</span><span class="p">,</span> <span class="s2">&quot;Finetune the parameter parallel coordinates&quot;</span><span class="p">)</span>
+        <span class="n">pc_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--pc_sort_by&quot;</span><span class="p">,</span>
+                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;parameter-importance method to determine the order (and selection) of parameters &quot;</span>
+                                   <span class="s2">&quot;for parallel coordinates. all: aggregate over all available methods. uses random &quot;</span>
+                                   <span class="s2">&quot;method if none is given. &quot;</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">p_choices</span><span class="p">)</span>
+
+        <span class="c1"># General analysis to be carried out</span>
+        <span class="n">act_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Analysis&quot;</span><span class="p">,</span> <span class="s2">&quot;Which analysis methods should be carried out&quot;</span><span class="p">)</span>
+        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--parameter_importance&quot;</span><span class="p">,</span>
                               <span class="n">default</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
                               <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;raw|what kind of parameter importance method to &quot;</span>
@@ -367,7 +392,7 @@
                                                                                                       <span class="s2">&quot;all/none&quot;</span><span class="p">,</span>
                               <span class="n">choices</span><span class="o">=</span><span class="n">p_choices</span><span class="p">,</span>
                               <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--feature_analysis&quot;</span><span class="p">,</span>
+        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--feature_analysis&quot;</span><span class="p">,</span>
                               <span class="n">default</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
                               <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;raw|what kind of feature analysis methods to use. &quot;</span>
@@ -375,53 +400,36 @@
                                                                                                  <span class="s2">&quot;all/none&quot;</span><span class="p">,</span>
                               <span class="n">choices</span><span class="o">=</span><span class="n">f_choices</span><span class="p">,</span>
                               <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--cfp_time_slider&quot;</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;whether or not to have a time_slider-widget on cfp-plot&quot;</span>
-                                   <span class="s2">&quot;INCREASES FILE-SIZE (and loading) DRAMATICALLY. &quot;</span><span class="p">,</span>
-                              <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;on&quot;</span><span class="p">,</span> <span class="s2">&quot;off&quot;</span><span class="p">],</span>
-                              <span class="n">default</span><span class="o">=</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--cfp_number_quantiles&quot;</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;number of quantiles that configurator footprint should plot over time. &quot;</span><span class="p">,</span>
-                              <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--cfp_max_plot&quot;</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;maximum number of configurations to be plotted in configurator footprint (in case &quot;</span>
-                                   <span class="s2">&quot;you run into a MemoryError). -1 -&gt; plot all. &quot;</span><span class="p">,</span>
-                              <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--pc_sort_by&quot;</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;parameter-importance method to determine the order (and selection) of parameters &quot;</span>
-                                   <span class="s2">&quot;for parallel coordinates. all: aggregate over all available methods. uses random &quot;</span>
-                                   <span class="s2">&quot;method if none is given. &quot;</span><span class="p">,</span>
-                              <span class="n">default</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">p_choices</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_tabular_analysis&quot;</span><span class="p">,</span>
+        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_tabular_analysis&quot;</span><span class="p">,</span>
                               <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t create performance table.&quot;</span><span class="p">,</span>
                               <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;tabular_analysis&#39;</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_ecdf&quot;</span><span class="p">,</span>
+        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_ecdf&quot;</span><span class="p">,</span>
                               <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t plot ecdf.&quot;</span><span class="p">,</span>
                               <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;ecdf&#39;</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_scatter_plots&quot;</span><span class="p">,</span>
+        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_scatter_plots&quot;</span><span class="p">,</span>
                               <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t plot scatter plots.&quot;</span><span class="p">,</span>
                               <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;scatter_plots&#39;</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_cost_over_time&quot;</span><span class="p">,</span>
+        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_cost_over_time&quot;</span><span class="p">,</span>
                               <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t plot cost over time.&quot;</span><span class="p">,</span>
                               <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;cost_over_time&#39;</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_configurator_footprint&quot;</span><span class="p">,</span>
+        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_configurator_footprint&quot;</span><span class="p">,</span>
                               <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t plot configurator footprint.&quot;</span><span class="p">,</span>
                               <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;cfp&#39;</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_parallel_coordinates&quot;</span><span class="p">,</span>
+        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_parallel_coordinates&quot;</span><span class="p">,</span>
                               <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t plot parallel coordinates.&quot;</span><span class="p">,</span>
                               <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;parallel_coordinates&#39;</span><span class="p">)</span>
-        <span class="n">opt_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_algorithm_footprints&quot;</span><span class="p">,</span>
+        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_algorithm_footprints&quot;</span><span class="p">,</span>
                               <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t plot algorithm footprints.&quot;</span><span class="p">,</span>
                               <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;algorithm_footprints&#39;</span><span class="p">)</span>
 
-        <span class="n">spe_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;special arguments:&quot;</span> <span class="o">+</span> <span class="s1">&#39;~&#39;</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">spe_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Meta arguments&quot;</span><span class="p">)</span>
         <span class="n">spe_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="s1">&#39;--version&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;version&#39;</span><span class="p">,</span>
                               <span class="n">version</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(prog)s</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;show program&#39;s version number and exit.&quot;</span><span class="p">)</span>
         <span class="n">spe_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-h&#39;</span><span class="p">,</span> <span class="s1">&#39;--help&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;show this help message and exit&quot;</span><span class="p">)</span>
