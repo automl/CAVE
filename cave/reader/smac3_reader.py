@@ -24,17 +24,17 @@ class SMAC3Reader(BaseReader):
         scen_dict = in_reader.read_scenario_file(scen_fn)
         scen_dict['output_dir'] = ""
 
-        # We always prefer the less error-prone json-format if available:
-        cs_json = os.path.join(self.folder, 'configspace.json')
-        if os.path.exists(cs_json):
-            self.logger.debug("Detected '%s'", cs_json)
-            with open(cs_json, 'r') as fh:
-                pcs_fn = scen_dict.pop('pcs_fn', 'no pcs_fn in scenario')
-                self.logger.debug("Ignoring %s", pcs_fn)
-                scen_dict['cs'] = pcs_json.read(fh.read())
-
         with changedir(self.ta_exec_dir):
-            self.logger.debug("Creating scenario from \"%s\"", self.ta_exec_dir)
+            # We always prefer the less error-prone json-format if available:
+            pcs_fn = scen_dict.get('pcs_fn', 'no_pcs_fn')
+            cs_json = os.path.join(os.path.dirname(pcs_fn), 'configspace.json')
+            if not pcs_fn.endswith('.json') and os.path.exists(cs_json):
+                self.logger.debug("Detected, '%s' ignoring '%s'", cs_json, pcs_fn)
+                with open(cs_json, 'r') as fh:
+                    scen_dict['cs'] = pcs_json.read(fh.read())
+                    scen_dict['pcs_fn'] = cs_json
+
+            self.logger.debug("Creating scenario from '%s'", self.ta_exec_dir)
             scen = Scenario(scen_dict)
 
         if (not run_1_existed) and os.path.exists('run_1'):
@@ -96,6 +96,8 @@ class SMAC3Reader(BaseReader):
                         v = True if v == 'True' else False
                     elif isinstance(hp.default_value, int):
                         v = int(v)
+                    elif isinstance(hp.default_value, float):
+                        v = float(v)
                     else:
                         v = v
                 ##############################################

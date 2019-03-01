@@ -116,9 +116,10 @@ class BohbLearningCurves(BaseAnalyzer):
             data['colors_iteration'].append(c_id[0])
 
         # Tooltips
-        tooltips=[(key, '@' + key) for key in data.keys() if not key in ['times', 'duration', 'colors',
-                                                                         'colors_performance', 'colors_iteration']]
+        tooltips = [(key, '@' + key) for key in data.keys() if not key in ['times', 'duration', 'colors',
+                                                                           'colors_performance', 'colors_iteration']]
         tooltips.insert(4, ('duration (sec)', '@duration'))
+        tooltips.insert(5, ('Configuration', ' '))
         hover = HoverTool(tooltips=tooltips)
 
         # Create sources
@@ -154,14 +155,15 @@ class BohbLearningCurves(BaseAnalyzer):
         p = figure(plot_height=500, plot_width=600,
                    y_axis_type=y_axis_type,
                    tools=[hover, 'save', 'pan', 'wheel_zoom', 'box_zoom', 'reset'],
-                   x_axis_label='Time', y_axis_label='Quality',
+                   x_axis_label='Time', y_axis_label='Cost',
                    x_range=Range1d(x_min, x_max, bounds='auto'),
                    y_range=Range1d(y_min, y_max, bounds='auto'),
                    )
 
         # Plot per HB_iteration, each config individually
         HB_iterations = sorted(set(data['HB_iteration']))
-        HB_handles = []
+        max_label_len = max([len(l) for l in HB_iterations])
+        HB_handles, HB_labels = [], []
         self.logger.debug("Assuming config_info to be either \"model_based_pick=True\" or \"model_based_pick=False\"")
         for it in HB_iterations:
             line_handles = []
@@ -197,12 +199,15 @@ class BohbLearningCurves(BaseAnalyzer):
                                          size=20,
                                       ))
             HB_handles.append(line_handles)
+            HB_labels.append('warmstart data' if l in [-1, '-1']  else '{number:0{width}d}'.format(width=max_label_len,
+                                                                                                   number=int(it)))
 
-        iteration_labels = sorted(['warmstart data' if l in [-1, '-1'] else '{:02d}'.format(int(l)) for l in HB_iterations])
-        self.logger.debug("iteration_labels: %s", str(iteration_labels))
-        self.logger.debug("HB_iterations: %s", str(HB_iterations))
+        # Sort all lists according to label
+        HB_iterations, HB_handles, HB_labels = zip(*sorted(zip(HB_iterations, HB_handles, HB_labels), key=lambda tup: tup[2]))
+        HB_iterations, HB_handles, HB_labels = list(HB_iterations), list(HB_handles), list(HB_labels)
+        self.logger.debug("HB_iterations to labels: %s", str(list(zip(HB_iterations, HB_labels))))
 
-        checkbox, select_all, select_none = get_checkbox(HB_handles, iteration_labels)
+        checkbox, select_all, select_none = get_checkbox(HB_handles, HB_labels)
 
         callback_color = CustomJS(args=dict(source_multiline=source_multiline,
                                             source_scatter=source_scatter,
@@ -226,12 +231,17 @@ class BohbLearningCurves(BaseAnalyzer):
             }}
             source.change.emit();
             """.format(min_perf, max_perf, min_iter, max_iter))
-        select_color = Select(title="Select colors", value="performance", options = ["performance", "iteration"],
+
+        select_color = Select(title="Select colors",
+                              value="performance",
+                              options=["performance", "iteration"],
                               callback=callback_color)
 
-
-        # Put it all together
-        layout = column(p, row(widgetbox(select_all, select_none, width=100), widgetbox(checkbox, width=500),
+        # Put it all together in a layout (width of checkbox-field sizes with number of elements
+        width_of_checkbox = 650 if len(HB_labels) > 100 else 500 if len(HB_labels) > 70 else 400
+        layout = row(p, column(widgetbox(checkbox, width=width_of_checkbox),
+                               row(widgetbox(select_all, width=50),
+                                   widgetbox(select_none, width=50)),
                                widgetbox(select_color, width=200)))
         return layout
 

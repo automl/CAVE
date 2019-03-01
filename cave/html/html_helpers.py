@@ -12,11 +12,11 @@ def figure_to_html(figure, prefix=None, max_in_a_row=None, true_break_between_ro
     max_in_a_row: Union[None, int]
         if set, insert a break after this many plots
     true_break_between_rows: bool
-        if False, a siple <br> tag will be set between the rows, if True, will insert div-end tags
+        if False, a simple <br> tag will be set between the rows, if True, will insert div-end tags
 
     Returns
     -------
-    html: Union[str, List[str]
+    htmli: Union[str, List[str]]
         html-code or list with independent html-codes
     """
     if not prefix:

@@ -334,7 +334,6 @@ class CostOverTime(BaseAnalyzer):
         # Wrap renderers in nested lists for checkbox-code
         checkbox, select_all, select_none = get_checkbox(renderers, [l[0] for l in legend_it])
 
-
         # Tilt tick labels and configure axis labels
         p.xaxis.major_label_orientation = 3/4
 

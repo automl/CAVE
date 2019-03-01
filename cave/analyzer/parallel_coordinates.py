@@ -39,12 +39,13 @@ class ParallelCoordinates(BaseAnalyzer):
             param_imp: Union[None, Dict[str, float]],
             params: Union[int, List[str]],
             n_configs: int,
+            pc_sort_by: str,
             output_dir: str,
             cs: ConfigurationSpace,
             runtime: bool=False,
             max_runs_epm: int=3000000,
                  ):
-        """"This function prepares the data from a SMAC-related
+        """This function prepares the data from a SMAC-related
         format (using runhistories and parameters) to a more general format
         (using a dataframe). The resulting dataframe is passed to the
         parallel_coordinates-routine
@@ -69,6 +70,8 @@ class ParallelCoordinates(BaseAnalyzer):
             important ones
         n_configs: int
             number of configs to be plotted
+        pc_sort_by: str
+            defines the pimp-method by which to choose the plotted parameters
         max_runs_epm: int
             maximum number of runs to train the epm with. this should prevent MemoryErrors
         output_dir: str
@@ -86,13 +89,33 @@ class ParallelCoordinates(BaseAnalyzer):
         self.param_imp = param_imp
         self.cs = cs
 
-        # Sorting by importance, if possible (choose first executed parameter-importance
+        # Sorting by importance, if possible (choose first executed parameter-importance)
         self.method, self.importance = "", {}
-        for m, i in list(self.param_imp.items()):
-            if i:
-                self.method, self.importance = m, i
+        if pc_sort_by == 'all':
+            self.logger.debug("Sorting by average importance")
+            self.method = 'average'
+            for m, i in self.param_imp.items():
+                if i:
+                    for p, imp in i.items():
+                        if p in self.importance:
+                            self.importance[p].append(imp)
+                        else:
+                            self.importance[p] = [imp]
+            self.importance = {k : sum(v) / len(v) for k, v in self.importance.items()}
+        elif pc_sort_by in self.param_imp:
+            self.method, self.importance = pc_sort_by, self.param_imp[pc_sort_by]
+        else:
+            self.logger.debug("%s not evaluated.. choosing at random from: %s", pc_sort_by,
+                              str(list(self.param_imp.keys())))
+            for m, i in self.param_imp.items():
+                if i:
+                    self.method, self.importance = m, i
+                    break
+
         self.hp_names = sorted([hp for hp in self.cs.get_hyperparameter_names()],
-                               key=lambda x: self.importance.get(x, 0))
+                               key=lambda x: self.importance.get(x, 0),
+                               reverse=True)
+        self.logger.debug("Sorted hp's by method \'%s\': %s", self.method, str(self.hp_names))
 
         # To be set
         self.plots = []
@@ -146,6 +169,7 @@ class ParallelCoordinates(BaseAnalyzer):
                 self.plots = [self.pcp.plot_n_configs(self.n_configs, self.params)]
             except ValueError as err:
                 self.error = str(err)
+        self.logger.debug("Paths to plot(s): %s", str(self.plots))
         return self.plots
 
     def get_html(self, d=None, tooltip=None):

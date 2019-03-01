@@ -55,18 +55,17 @@ class CaveCLI(object):
         parser = ArgumentParser(formatter_class=SmartArgsDefHelpFormatter, add_help=False,
                                 description='CAVE: Configuration Assessment Vizualisation and Evaluation')
 
-        req_opts = parser.add_argument_group("Required Options:" + '~' * 100)
+        req_opts = parser.add_argument_group("Required Options")
         req_opts.add_argument("--folders",
                               required=True,
                               nargs='+',
                               # strings prefixed with raw| can be manually split with \n
-                              help="raw|path(s) to SMAC output-directory/ies, "
-                                   "containing each at least a runhistory\nand "
-                                   "a trajectory.",
+                              help="raw|path(s) to Configurator output-directory/ies",
                               default=SUPPRESS)
 
-        opt_opts = parser.add_argument_group("Optional Options:" + '~' * 100)
-        opt_opts.add_argument("--verbose_level",
+        cave_opts = parser.add_argument_group("CAVE global options",
+                                              "Options that configure the analysis in general and define behaviour.")
+        cave_opts.add_argument("--verbose_level",
                               default="INFO",
                               choices=[
                                   "INFO",
@@ -78,12 +77,12 @@ class CaveCLI(object):
                               help="verbose level. use DEV_DEBUG for development to filter boilerplate-logs from "
                                    "imported modules, use DEBUG for full logging. full debug-log always in "
                                    "'output/debug/debug.log' ")
-        opt_opts.add_argument("--jupyter",
+        cave_opts.add_argument("--jupyter",
                               default='off',
                               choices=['on', 'off'],
                               help="output everything to jupyter, if available."
                               )
-        opt_opts.add_argument("--validation",
+        cave_opts.add_argument("--validation",
                               default="epm",
                               choices=[
                                   "validation",
@@ -92,25 +91,25 @@ class CaveCLI(object):
                               help="how to complete missing runs for config/inst-pairs. epm trains random forest with "
                                    "available data to estimate missing runs, validation requires target algorithm. ",
                               type=str.lower)
-        opt_opts.add_argument("--output",
+        cave_opts.add_argument("--output",
                               default="CAVE_output_%s" % (
                                         datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H:%M:%S_%f')),
                               help="path to folder in which to save the HTML-report. ")
-        opt_opts.add_argument("--seed",
+        cave_opts.add_argument("--seed",
                               default=42,
                               type=int,
                               help="random seed used throughout analysis. ")
-        opt_opts.add_argument("--file_format",
+        cave_opts.add_argument("--file_format",
                               default='SMAC3',
                               help="specify the format of the configurator-files. ",
                               choices=['SMAC2', 'SMAC3', 'CSV', 'BOHB'],
                               type=str.upper)
-        opt_opts.add_argument("--validation_format",
+        cave_opts.add_argument("--validation_format",
                               default='NONE',
                               help="what format the validation-files are in",
                               choices=['SMAC2', 'SMAC3', 'CSV', 'NONE'],
                               type=str.upper)
-        opt_opts.add_argument("--ta_exec_dir",
+        cave_opts.add_argument("--ta_exec_dir",
                               default='.',
                               help="path to the execution-directory of the configurator run. this is the path from "
                                    "which the scenario is loaded, so the instance-/pcs-files specified in the "
@@ -118,20 +117,46 @@ class CaveCLI(object):
                                    "(e.g. 'ta_exec_dir/path_to_train_inst_specified_in_scenario.txt'). ",
                               nargs='+')
         # PIMP-configs
-        opt_opts.add_argument("--pimp_max_samples",
-                              default=-1,
-                              type=int,
-                              help="How many datapoints to use with PIMP. -1 -> use all. ")
-        opt_opts.add_argument("--pimp_no_fanova_pairs",
-                              action="store_false",
-                              dest="fanova_pairwise",
-                              help="fANOVA won't compute pairwise marginals")
-        opt_opts.add_argument("--pimp_sort_table_by",
-                              default="average",
-                              choices=p_sort_by_choices,
-                              help="raw|what kind of parameter importance method to "
-                                   "use to sort the overview-table. ")
-        opt_opts.add_argument("--parameter_importance",
+        pimp_opts = parser.add_argument_group("Parameter Importance",
+                                              "Define the behaviour of the ParameterImportance-module (pimp)")
+        pimp_opts.add_argument("--pimp_max_samples",
+                               default=-1,
+                               type=int,
+                               help="How many datapoints to use with PIMP. -1 -> use all. ")
+        pimp_opts.add_argument("--pimp_no_fanova_pairs",
+                               action="store_false",
+                               dest="fanova_pairwise",
+                               help="fANOVA won't compute pairwise marginals")
+        pimp_opts.add_argument("--pimp_sort_table_by",
+                               default="average",
+                               choices=p_sort_by_choices,
+                               help="raw|what kind of parameter importance method to "
+                                    "use to sort the overview-table. ")
+
+        cfp_opts = parser.add_argument_group("Configurator Footprint", "Finetune the configurator footprint")
+        cfp_opts.add_argument("--cfp_time_slider",
+                              help="whether or not to have a time_slider-widget on cfp-plot"
+                                   "INCREASES FILE-SIZE (and loading) DRAMATICALLY. ",
+                              choices=["on", "off"],
+                              default="off")
+        cfp_opts.add_argument("--cfp_number_quantiles",
+                              help="number of quantiles that configurator footprint should plot over time. ",
+                              default=3, type=int)
+        cfp_opts.add_argument("--cfp_max_plot",
+                              help="maximum number of configurations to be plotted in configurator footprint (in case "
+                                   "you run into a MemoryError). -1 -> plot all. ",
+                              default=-1, type=int)
+
+        pc_opts = parser.add_argument_group("Parallel Coordinates", "Finetune the parameter parallel coordinates")
+        pc_opts.add_argument("--pc_sort_by",
+                              help="parameter-importance method to determine the order (and selection) of parameters "
+                                   "for parallel coordinates. all: aggregate over all available methods. uses random "
+                                   "method if none is given. ",
+                              default="all", type=str.lower, choices=p_choices)
+
+        # General analysis to be carried out
+        act_opts = parser.add_argument_group("Analysis", "Which analysis methods should be carried out")
+        act_opts.add_argument("--parameter_importance",
                               default="all",
                               nargs='+',
                               help="raw|what kind of parameter importance method to "
@@ -139,7 +164,7 @@ class CaveCLI(object):
                                                                                                       "all/none",
                               choices=p_choices,
                               type=str.lower)
-        opt_opts.add_argument("--feature_analysis",
+        act_opts.add_argument("--feature_analysis",
                               default="all",
                               nargs='+',
                               help="raw|what kind of feature analysis methods to use. "
@@ -147,48 +172,36 @@ class CaveCLI(object):
                                                                                                  "all/none",
                               choices=f_choices,
                               type=str.lower)
-        opt_opts.add_argument("--cfp_time_slider",
-                              help="whether or not to have a time_slider-widget on cfp-plot"
-                                   "INCREASES FILE-SIZE (and loading) DRAMATICALLY. ",
-                              choices=["on", "off"],
-                              default="off")
-        opt_opts.add_argument("--cfp_number_quantiles",
-                              help="number of quantiles that configurator footprint should plot over time. ",
-                              default=3, type=int)
-        opt_opts.add_argument("--cfp_max_plot",
-                              help="maximum number of configurations to be plotted in configurator footprint (in case "
-                                   "you run into a MemoryError). -1 -> plot all. ",
-                              default=-1, type=int)
-        opt_opts.add_argument("--no_tabular_analysis",
+        act_opts.add_argument("--no_tabular_analysis",
                               action='store_false',
                               help="don't create performance table.",
                               dest='tabular_analysis')
-        opt_opts.add_argument("--no_ecdf",
+        act_opts.add_argument("--no_ecdf",
                               action='store_false',
                               help="don't plot ecdf.",
                               dest='ecdf')
-        opt_opts.add_argument("--no_scatter_plots",
+        act_opts.add_argument("--no_scatter_plots",
                               action='store_false',
                               help="don't plot scatter plots.",
                               dest='scatter_plots')
-        opt_opts.add_argument("--no_cost_over_time",
+        act_opts.add_argument("--no_cost_over_time",
                               action='store_false',
                               help="don't plot cost over time.",
                               dest='cost_over_time')
-        opt_opts.add_argument("--no_configurator_footprint",
+        act_opts.add_argument("--no_configurator_footprint",
                               action='store_false',
                               help="don't plot configurator footprint.",
                               dest='cfp')
-        opt_opts.add_argument("--no_parallel_coordinates",
+        act_opts.add_argument("--no_parallel_coordinates",
                               action='store_false',
                               help="don't plot parallel coordinates.",
                               dest='parallel_coordinates')
-        opt_opts.add_argument("--no_algorithm_footprints",
+        act_opts.add_argument("--no_algorithm_footprints",
                               action='store_false',
                               help="don't plot algorithm footprints.",
                               dest='algorithm_footprints')
 
-        spe_opts = parser.add_argument_group("special arguments:" + '~' * 100)
+        spe_opts = parser.add_argument_group("Meta arguments")
         spe_opts.add_argument('-v', '--version', action='version',
                               version='%(prog)s ' + str(v), help="show program's version number and exit.")
         spe_opts.add_argument('-h', '--help', action="help", help="show this help message and exit")
@@ -210,8 +223,7 @@ class CaveCLI(object):
                 raise ImportError('fANOVA is not installed! To install it please run '
                                   '"git+http://github.com/automl/fanova.git@master"')
 
-        if not (args_.pimp_sort_table_by == "average" or
-                args_.pimp_sort_table_by in param_imp):
+        if not (args_.pimp_sort_table_by == "average" or args_.pimp_sort_table_by in param_imp):
             raise ValueError("Pimp comparison sorting key is {}, but this "
                              "method is deactivated or non-existent.".format(args_.pimp_sort_table_by))
 
@@ -230,8 +242,6 @@ class CaveCLI(object):
             raise ValueError('At least one analysis method required to run CAVE')
 
         output_dir = args_.output
-
-        logging.getLogger().debug("CAVE is called with arguments: " + str(args_))
 
         # Configuration results to be analyzed
         folders = []
@@ -262,6 +272,7 @@ class CaveCLI(object):
         cfp_max_plot = args_.cfp_max_plot
         cfp_number_quantiles = args_.cfp_number_quantiles
         parallel_coordinates = args_.parallel_coordinates
+        pc_sort_by = args_.pc_sort_by
         cost_over_time = args_.cost_over_time
         algorithm_footprints = args_.algorithm_footprints
         pimp_sort_table_by = args_.pimp_sort_table_by
@@ -286,10 +297,13 @@ class CaveCLI(object):
                     validation_method=validation,
                     pimp_max_samples=pimp_max_samples,
                     fanova_pairwise=fanova_pairwise,
+                    pc_sort_by=pc_sort_by,
                     use_budgets=file_format=='BOHB',
                     show_jupyter=show_jupyter,
                     seed=seed,
                     verbose_level=verbose_level)
+
+        logging.getLogger().debug("CAVE is called with arguments: " + str(args_))
 
         # Analyze
         cave.analyze(performance=tabular_analysis,
