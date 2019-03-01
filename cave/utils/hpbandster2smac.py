@@ -221,7 +221,10 @@ class HpBandSter2SMAC(object):
 
             id2config_mapping = result.get_id2config_mapping()
 
-            for config_id, time, budget, loss in zip(traj_dict['config_ids'], traj_dict['times_finished'], traj_dict['budgets'], traj_dict['losses']):
+            for config_id, time, budget, loss in zip(traj_dict['config_ids'],
+                                                     traj_dict['times_finished'],
+                                                     traj_dict['budgets'],
+                                                     traj_dict['losses']):
                 incumbent = self._get_config(config_id, id2config_mapping, cs)
                 try:
                     incumbent_id = rh.config_ids[incumbent]
@@ -230,7 +233,10 @@ class HpBandSter2SMAC(object):
                     continue
                 except:
                     raise
-                total_traj_dict.append({'config_id' : incumbent_id, 'time_finished' : time, 'budget' : budget, 'loss' : loss})
+                total_traj_dict.append({'config_id' : incumbent_id,
+                                        'time_finished' : time,
+                                        'budget' : budget,
+                                        'loss' : loss})
 
         last_loss = np.inf
         for element in sorted(total_traj_dict, key=lambda x: x['time_finished']):

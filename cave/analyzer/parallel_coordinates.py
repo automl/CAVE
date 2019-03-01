@@ -45,7 +45,7 @@ class ParallelCoordinates(BaseAnalyzer):
             runtime: bool=False,
             max_runs_epm: int=3000000,
                  ):
-        """"This function prepares the data from a SMAC-related
+        """This function prepares the data from a SMAC-related
         format (using runhistories and parameters) to a more general format
         (using a dataframe). The resulting dataframe is passed to the
         parallel_coordinates-routine
@@ -169,6 +169,7 @@ class ParallelCoordinates(BaseAnalyzer):
                 self.plots = [self.pcp.plot_n_configs(self.n_configs, self.params)]
             except ValueError as err:
                 self.error = str(err)
+        self.logger.debug("Paths to plot(s): %s", str(self.plots))
         return self.plots
 
     def get_html(self, d=None, tooltip=None):
