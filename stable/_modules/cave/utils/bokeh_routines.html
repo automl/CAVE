@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.utils.bokeh_routines &mdash; CAVE 1.1.4 documentation</title>
+  <title>cave.utils.bokeh_routines &mdash; CAVE 1.1.5 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.4
+                1.1.5
               </div>
             
           
@@ -233,7 +233,7 @@
 <span class="kn">from</span> <span class="nn">bokeh.models.widgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">RadioButtonGroup</span><span class="p">,</span> <span class="n">CheckboxButtonGroup</span><span class="p">,</span> <span class="n">CheckboxGroup</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">Select</span><span class="p">,</span>
                                   <span class="n">DataTable</span><span class="p">,</span> <span class="n">TableColumn</span><span class="p">)</span>
 
-<div class="viewcode-block" id="get_checkbox"><a class="viewcode-back" href="../../../apidoc/cave.utils.bokeh_routines.html#cave.utils.bokeh_routines.get_checkbox">[docs]</a><span class="k">def</span> <span class="nf">get_checkbox</span><span class="p">(</span><span class="n">glyph_renderers</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+<div class="viewcode-block" id="get_checkbox"><a class="viewcode-back" href="../../../apidoc/cave.utils.bokeh_routines.html#cave.utils.bokeh_routines.get_checkbox">[docs]</a><span class="k">def</span> <span class="nf">get_checkbox</span><span class="p">(</span><span class="n">glyph_renderers</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">max_checkbox_length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -244,7 +244,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    checkbox: CheckboxGroup</span>
+<span class="sd">    checkbox: CheckboxGroup or List[CheckboxGroup]</span>
 <span class="sd">        checkbox object</span>
 <span class="sd">    select_all: Button</span>
 <span class="sd">        button related to checkbox</span>
@@ -282,6 +282,12 @@
                                                        <span class="n">code</span><span class="o">=</span><span class="s2">&quot;var labels = </span><span class="si">{}</span><span class="s2">; &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">handle_list_as_string</span><span class="p">)</span> <span class="o">+</span> <span class="n">code_button_tail</span><span class="p">))</span>
     <span class="n">select_none</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;None&quot;</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">CustomJS</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="nb">dict</span><span class="p">({</span><span class="s1">&#39;checkbox&#39;</span><span class="p">:</span><span class="n">checkbox</span><span class="p">},</span> <span class="o">**</span><span class="n">args_checkbox</span><span class="p">),</span>
                                                        <span class="n">code</span><span class="o">=</span><span class="s2">&quot;var labels = </span><span class="si">{}</span><span class="s2">; &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;[]&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">code_button_tail</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">max_checkbox_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">glyph_renderers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_checkbox_length</span><span class="p">:</span>
+        <span class="c1"># Keep all and none buttons, but create new checkboxes and return a list</span>
+        <span class="n">slices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">glyph_renderers</span><span class="p">),</span> <span class="n">max_checkbox_length</span><span class="p">))</span> <span class="o">+</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">glyph_renderers</span><span class="p">)]</span>
+        <span class="n">checkboxes</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_checkbox</span><span class="p">(</span><span class="n">glyph_renderers</span><span class="p">[</span><span class="n">s</span><span class="p">:</span><span class="n">e</span><span class="p">],</span> <span class="n">labels</span><span class="p">[</span><span class="n">s</span><span class="p">:</span><span class="n">e</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">slices</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">slices</span><span class="p">[</span><span class="mi">1</span><span class="p">:])]</span>
+        <span class="k">return</span> <span class="n">checkboxes</span><span class="p">,</span> <span class="n">select_all</span><span class="p">,</span> <span class="n">select_none</span>
 
     <span class="k">return</span> <span class="n">checkbox</span><span class="p">,</span> <span class="n">select_all</span><span class="p">,</span> <span class="n">select_none</span></div>
 

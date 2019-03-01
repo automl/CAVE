@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.utils.bokeh_routines module &mdash; CAVE 1.1.4 documentation</title>
+  <title>cave.utils.bokeh_routines module &mdash; CAVE 1.1.5 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.4
+                1.1.5
               </div>
             
           
@@ -263,7 +263,7 @@
 
 <dl class="function">
 <dt id="cave.utils.bokeh_routines.get_checkbox">
-<code class="descclassname">cave.utils.bokeh_routines.</code><code class="descname">get_checkbox</code><span class="sig-paren">(</span><em>glyph_renderers</em>, <em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/bokeh_routines.html#get_checkbox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.bokeh_routines.get_checkbox" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">cave.utils.bokeh_routines.</code><code class="descname">get_checkbox</code><span class="sig-paren">(</span><em>glyph_renderers</em>, <em>labels</em>, <em>max_checkbox_length=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/bokeh_routines.html#get_checkbox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.bokeh_routines.get_checkbox" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -275,7 +275,7 @@
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><strong>checkbox</strong> (<em>CheckboxGroup</em>) – checkbox object</li>
+<li><strong>checkbox</strong> (<em>CheckboxGroup or List[CheckboxGroup]</em>) – checkbox object</li>
 <li><strong>select_all</strong> (<em>Button</em>) – button related to checkbox</li>
 <li><strong>select_none</strong> (<em>Button</em>) – button related to checkbox</li>
 </ul>

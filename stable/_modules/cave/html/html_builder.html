@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.html.html_builder &mdash; CAVE 1.1.4 documentation</title>
+  <title>cave.html.html_builder &mdash; CAVE 1.1.5 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.4
+                1.1.5
               </div>
             
           
@@ -467,7 +467,10 @@
             <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;budget&#39;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">budget</span> <span class="o">=</span> <span class="n">k</span><span class="p">[</span><span class="mi">7</span><span class="p">:]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">use_tabs</span><span class="p">:</span>
                     <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;div id=</span><span class="se">\&quot;</span><span class="si">{0}</span><span class="se">\&quot;</span><span class="s2"> class=</span><span class="se">\&quot;</span><span class="s2">tabcontent</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">layer_name</span> <span class="o">+</span> <span class="n">k</span><span class="p">)</span>
@@ -483,12 +486,12 @@
             <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;figure_x2&quot;</span><span class="p">:</span>
                 <span class="n">div</span> <span class="o">+=</span> <span class="n">figure_to_html</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="n">max_in_a_row</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;table&quot;</span><span class="p">:</span>
-                <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;div align=</span><span class="se">\&quot;</span><span class="s2">center</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&lt;/div&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;div style=</span><span class="se">\&quot;</span><span class="s2">overflow-x: auto</span><span class="se">\&quot;</span><span class="s2"> align=</span><span class="se">\&quot;</span><span class="s2">center</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&lt;/div&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;html&quot;</span><span class="p">:</span>
                 <span class="n">div</span> <span class="o">+=</span> <span class="p">(</span><span class="s2">&quot;&lt;div align=</span><span class="se">\&quot;</span><span class="s2">center</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&lt;a href=&#39;</span><span class="si">{}</span><span class="s2">&#39;&gt;Interactive &quot;</span>
                         <span class="s2">&quot;Plot&lt;/a&gt;</span><span class="se">\n</span><span class="s2">&lt;/div&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">):]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)))</span>
             <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;bokeh&quot;</span><span class="p">:</span>
-                <span class="c1"># Escape path for URL (replace   and &#39; with   . ;)</span>
+                <span class="c1"># Escape path for URL (remove spaces and single quotes)</span>
                 <span class="n">path_script</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">relative_content_js</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">layer_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">budget</span><span class="p">,</span>
                                                                                <span class="bp">self</span><span class="o">.</span><span class="n">get_unique_id</span><span class="p">(),</span> <span class="s1">&#39;script.js&#39;</span><span class="p">]))</span>
                 <span class="n">path_script</span> <span class="o">=</span> <span class="n">path_script</span><span class="o">.</span><span class="n">translate</span><span class="p">({</span><span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">):</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="s1">&#39; </span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">})</span>
