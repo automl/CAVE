@@ -273,7 +273,7 @@
             <span class="n">runtime</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">max_runs_epm</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">3000000</span><span class="p">,</span>
                  <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;&quot;This function prepares the data from a SMAC-related</span>
+        <span class="sd">&quot;&quot;&quot;This function prepares the data from a SMAC-related</span>
 <span class="sd">        format (using runhistories and parameters) to a more general format</span>
 <span class="sd">        (using a dataframe). The resulting dataframe is passed to the</span>
 <span class="sd">        parallel_coordinates-routine</span>
@@ -397,6 +397,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">plots</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pcp</span><span class="o">.</span><span class="n">plot_n_configs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_configs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)]</span>
             <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Paths to plot(s): </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">))</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span></div>
 
 <div class="viewcode-block" id="ParallelCoordinates.get_html"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.parallel_coordinates.html#cave.analyzer.parallel_coordinates.ParallelCoordinates.get_html">[docs]</a>    <span class="k">def</span> <span class="nf">get_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
