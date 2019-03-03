@@ -12,11 +12,14 @@ import inspect
 import logging
 import copy
 import time
+import multiprocessing
 
 import numpy as np
 from sklearn.manifold.mds import MDS
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
+from joblib import Parallel, delayed
+from tqdm import tqdm
 
 from bokeh.plotting import figure, ColumnDataSource
 from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider
@@ -58,6 +61,9 @@ class ConfiguratorFootprintPlotter(object):
                  use_timeslider: bool=False,
                  num_quantiles: int=10,
                  timeslider_log: bool=True,
+                 n_jobs=4,
+                 show_progressbar=True,
+                 rng=None,
                  output_dir: str=None,
                  ):
         '''
@@ -88,6 +94,12 @@ class ConfiguratorFootprintPlotter(object):
             number of quantiles for the slider/ number of static pictures
         timeslider_log: bool
             whether to use a logarithmic scale for the timeslider/quantiles
+        n_jobs: int
+            how many processors should be used
+        show_progressbar: bool
+            whether to show tqdm progressbar
+        rng: np.random.RandomState or None
+            random state to be used
         output_dir: str
             output directory
         '''
@@ -102,6 +114,9 @@ class ConfiguratorFootprintPlotter(object):
         self.use_timeslider = use_timeslider
         self.num_quantiles = num_quantiles
         self.contour_step_size = contour_step_size
+        self.n_jobs = n_jobs
+        self.show_progressbar = show_progressbar
+        self.rng = rng if rng is not None else np.random.RandomState(seed=42)
         self.output_dir = output_dir
         self.timeslider_log = timeslider_log
 
@@ -256,19 +271,31 @@ class ConfiguratorFootprintPlotter(object):
         is_cat = np.array(is_cat)
         depth = np.array(depth)
 
-        # TODO tqdm
+        def calc_dist(i_start, i_stop):
+            for i in range(i_start, i_stop):
+                for j in range(i, n_confs):
+                    dist = np.abs(conf_matrix[i, :] - conf_matrix[j, :])
+                    dist[np.isnan(dist)] = 1
+                    dist[np.logical_and(is_cat, dist != 0)] = 1
+                    dist /= depth
+                    dists[i, j] = np.sum(dist)
+                    dists[j, i] = np.sum(dist)
         start = time.time()
-        for i in range(n_confs):
-            for j in range(i + 1, n_confs):
-                dist = np.abs(conf_matrix[i, :] - conf_matrix[j, :])
-                dist[np.isnan(dist)] = 1
-                dist[np.logical_and(is_cat, dist != 0)] = 1
-                dist /= depth
-                dists[i, j] = np.sum(dist)
-                dists[j, i] = np.sum(dist)
-            if 5 < n_confs and i % (n_confs // 5) == 0:
-                self.logger.debug("%.2f%% of all distances calculated in %.2f seconds...", 100 * i / n_confs,
-                                                                                         time.time() - start)
+        #pbar = tqdm(range(n_confs), ascii=True, disable=not self.show_progressbar)
+
+        n_cpus = multiprocessing.cpu_count()
+        self.logger.debug("Detected %d cpu's. njobs=%d", n_cpus, self.n_jobs)
+        if self.n_jobs < 0:
+            n_cpus -= self.n_jobs + 1
+        ranges = [i * (n_confs // n_cpus) for i in range(n_cpus)] + [n_confs]
+        ranges = zip(ranges[:-1], ranges[1:])
+        ranges = tqdm(ranges, ascii=True, disable=not self.show_progressbar)
+        Parallel(n_jobs=self.n_jobs, backend='threading')(delayed(calc_dist)(start, stop) for start, stop in ranges)
+        #for i in pbar:
+        #    #Parallel(n_jobs=self.n_jobs, backend='threading')(delayed(calc_dist)(i, j) for j in range(i + 1, n_confs))
+        #    if not self.show_progressbar and 5 < n_confs and i % (n_confs // 5) == 0:
+        #        self.logger.debug("%.2f%% of all distances calculated in %.2f seconds...", 100 * i / n_confs,
+        #                                                                                 time.time() - start)
 
         return dists
 
@@ -317,8 +344,7 @@ class ConfiguratorFootprintPlotter(object):
         """
         # TODO there are ways to extend MDS to provide a transform-method. if
         #   available, train on randomly sampled configs and plot all
-        # TODO MDS provides 'n_jobs'-argument for parallel computing...
-        mds = MDS(n_components=2, dissimilarity="precomputed", random_state=12345)
+        mds = MDS(n_components=2, dissimilarity="precomputed", n_jobs=self.n_jobs, random_state=self.rng)
         dists = mds.fit_transform(dists)
         self.logger.debug("MDS-stress: %f", mds.stress_)
         return dists
