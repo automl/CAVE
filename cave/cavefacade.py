@@ -179,6 +179,7 @@ class CAVE(object):
         verbose_level: str
             from [OFF, INFO, DEBUG, DEV_DEBUG and WARNING]
         """
+        # Administrative
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
         self.output_dir = output_dir
         self.output_dir_created = False
@@ -199,6 +200,7 @@ class CAVE(object):
         self.seed = seed
         self.rng = np.random.RandomState(seed)
         self.use_budgets = use_budgets
+        self.folders = folders
         self.ta_exec_dir = ta_exec_dir
         self.file_format = file_format
         self.validation_format = validation_format
@@ -207,16 +209,8 @@ class CAVE(object):
         self.fanova_pairwise = fanova_pairwise
         self.pc_sort_by = pc_sort_by
 
-        # To be set during execution (used for dependencies of analysis-methods)
-        self.param_imp = OrderedDict()
-        self.feature_imp = OrderedDict()
-        self.evaluators = []
-        self.validator = None
-
-        self.feature_names = None
-
-        self.num_bohb_results = 0
-        self.bohb_result = None  # only relevant for bohb_result
+        # If only one ta_exec_dir, need to extend so it's same length as folders
+        self.ta_exec_dir = self.ta_exec_dir.extend([self.ta_exec_dir[0] for i in range(len(self.folders) - len(self.ta_exec_dir))])
 
         # Create output_dir if necessary
         self._create_outputdir(self.output_dir)
@@ -235,38 +229,12 @@ class CAVE(object):
 
         # Save all relevant configurator-runs in a list
         self.logger.debug("Folders: %s; ta-exec-dirs: %s", str(folders), str(ta_exec_dir))
-        self.runs = []
-        if len(ta_exec_dir) < len(folders):
-            for i in range(len(folders) - len(ta_exec_dir)):
-                ta_exec_dir.append(ta_exec_dir[0])
-        for ta_exec_dir, folder in zip(ta_exec_dir, folders):
-            try:
-                self.logger.debug("Collecting data from %s.", folder)
-                self.runs.append(ConfiguratorRun(folder, ta_exec_dir, file_format=file_format,
-                                                 validation_format=validation_format))
-            except Exception as err:
-                self.logger.warning("Folder %s could with ta_exec_dir %s not be loaded, failed with error message: %s",
-                                    folder, ta_exec_dir, err)
-                self.logger.exception(err)
-                continue
+        self.use_budgets = file_format == 'BOHB'
+        self.runs = RunsContainer(ta_exec_dirs, folders)
         if not self.runs:
             raise ValueError("None of the specified folders could be loaded.")
-        self.folder_to_run = {os.path.basename(run.folder) : run for run in self.runs}
 
         # Use scenario of first run for general purposes (expecting they are all the same anyway!
-        self.scenario = self.runs[0].solver.scenario
-        scenario_sanity_check(self.scenario, self.logger)
-        self.feature_names = self._get_feature_names()
-        self.default = self.scenario.cs.get_default_configuration()
-
-        # All runs that have been actually explored during optimization
-        self.global_original_rh = None
-        # All original runs + validated runs if available
-        self.global_validated_rh = None
-        # All validated runs + EPM-estimated for def and inc on all insts
-        self.global_epm_rh = None
-        self.pimp = None
-        self.model = None
 
         if self.use_budgets:
             self._init_helper_budgets()
@@ -287,6 +255,7 @@ class CAVE(object):
                              "in the directory from which you run CAVE.", custom_logo)
         self.builder = HTMLBuilder(self.output_dir, "CAVE", logo_fn=logo_fn, logo_custom=custom_logo==logo_fn)
         self.website = OrderedDict([])
+
 
     def _init_helper_budgets(self):
         """
@@ -311,109 +280,6 @@ class CAVE(object):
                             seed=self.seed,
                             verbose_level='OFF')
         self.incumbent = self.runs[-1].incumbent
-
-    def _init_helper_no_budgets(self):
-        """
-        No budgets means using global, aggregated runhistories to analyze the Configurator's behaviour.
-        Also it creates an EPM using all available information, since all runs are "equal".
-        """
-        self.global_original_rh = RunHistory(average_cost)
-        self.global_validated_rh = RunHistory(average_cost)
-        self.global_epm_rh = RunHistory(average_cost)
-        self.logger.debug("Update original rh with all available rhs!")
-        for run in self.runs:
-            self.global_original_rh.update(run.original_runhistory, origin=DataOrigin.INTERNAL)
-            self.global_validated_rh.update(run.original_runhistory, origin=DataOrigin.INTERNAL)
-            if run.validated_runhistory:
-                self.global_validated_rh.update(run.validated_runhistory, origin=DataOrigin.EXTERNAL_SAME_INSTANCES)
-
-        self._init_pimp_and_validator(self.global_validated_rh)
-
-        # Estimate missing costs for [def, inc1, inc2, ...]
-        self._validate_default_and_incumbents(self.validation_method, self.ta_exec_dir)
-        self.global_epm_rh.update(self.global_validated_rh)
-
-        for rh_name, rh in [("original", self.global_original_rh),
-                            ("validated", self.global_validated_rh),
-                            ("epm", self.global_epm_rh)]:
-            self.logger.debug('Combined number of RunHistory data points for %s runhistory: %d '
-                              '# Configurations: %d. # Configurator runs: %d',
-                              rh_name, len(rh.data), len(rh.get_all_configs()), len(self.runs))
-
-        # Sort runs (best first)
-        self.runs = sorted(self.runs, key=lambda run: self.global_epm_rh.get_cost(run.solver.incumbent))
-        self.best_run = self.runs[0]
-
-        self.incumbent = self.pimp.incumbent = self.best_run.solver.incumbent
-        self.logger.debug("Overall best run: %s, with incumbent: %s", self.best_run.folder, self.incumbent)
-
-    def _init_pimp_and_validator(self, rh, pimp_output_dir=None):
-        """Create ParameterImportance-object and use it's trained model for  validation and further predictions
-        We pass validated runhistory, so that the returned model will be based on as much information as possible
-
-        Parameters
-        ----------
-        rh: RunHistory
-            runhistory used to build EPM
-        alternative_output_dir: str
-            e.g. for budgets we want pimp to use an alternative output-dir (subfolders per budget)
-        """
-        if not pimp_output_dir:
-            pimp_output_dir = os.path.join(self.output_dir, 'content')
-        self.logger.debug("Using '%s' as output for pimp", pimp_output_dir)
-        self.pimp = Importance(scenario=copy.deepcopy(self.scenario),
-                               runhistory=rh,
-                               incumbent=self.default,  # Inject correct incumbent later
-                               save_folder=pimp_output_dir,
-                               seed=self.rng.randint(1, 100000),
-                               max_sample_size=self.pimp_max_samples,
-                               fANOVA_pairwise=self.fanova_pairwise,
-                               preprocess=False,
-                               verbose=self.verbose_level != 'OFF',  # disable progressbars
-                               )
-        self.model = self.pimp.model
-
-        # Validator (initialize without trajectory)
-        self.validator = Validator(self.scenario, None, None)
-        self.validator.epm = self.model
-
-    @timing
-    def _validate_default_and_incumbents(self, method, ta_exec_dir):
-        """Validate default and incumbent configurations on all instances possible.
-        Either use validation (physically execute the target algorithm) or EPM-estimate and update according runhistory
-        (validation -> self.global_validated_rh; epm -> self.global_epm_rh).
-
-        Parameters
-        ----------
-        method: str
-            epm or validation
-        ta_exec_dir: str
-            path from where the target algorithm can be executed as found in scenario (only used for actual validation)
-        """
-        for run in self.runs:
-            self.logger.debug("Validating %s using %s!", run.folder, method)
-            self.validator.traj = run.traj
-            if method == "validation":
-                with _changedir(ta_exec_dir):
-                    # TODO determine # repetitions
-                    new_rh = self.validator.validate('def+inc', 'train+test', 1, -1, runhistory=self.global_validated_rh)
-                self.global_validated_rh.update(new_rh)
-            elif method == "epm":
-                # Only do test-instances if features for test-instances are available
-                instance_mode = 'train+test'
-                if (any([i not in self.scenario.feature_dict for i in self.scenario.test_insts]) and
-                    any([i in self.scenario.feature_dict for i in self.scenario.train_insts])):  # noqa
-                    self.logger.debug("No features provided for test-instances (but for train!). "
-                                      "Cannot validate on \"epm\".")
-                    self.logger.warning("Features detected for train-instances, but not for test-instances. This is "
-                                        "unintended usage and may lead to errors for some analysis-methods.")
-                    instance_mode = 'train'
-
-                new_rh = self.validator.validate_epm('def+inc', instance_mode, 1, runhistory=self.global_validated_rh)
-                self.global_epm_rh.update(new_rh)
-            else:
-                raise ValueError("Missing data method illegal (%s)", method)
-            self.validator.traj = None  # Avoid usage-mistakes
 
     @timing
     def analyze(self,
@@ -479,7 +345,6 @@ class CAVE(object):
             self.logger.info("Deactivating parameter importance, since there are less configs than parameters (%d < %d)"
                              % (num_configs, num_params))
             param_importance = []
-
 
         # Start analysis
         headings = ["Meta Data",
@@ -1029,7 +894,7 @@ class CAVE(object):
     def print_budgets(self):
         """If the analyzed configurator uses budgets, print a list of available budgets."""
         if self.use_budgets:
-            print(list(self.folder_to_run.keys()))
+            print(self.runs.get_budgets())
         else:
             raise NotImplementedError("This CAVE instance does not seem to use budgets.")
 
@@ -1039,26 +904,6 @@ class CAVE(object):
         tooltip = tooltip.split("Parameters\n----------")[0] if tooltip is not None else ""
         tooltip = tooltip.replace("\n", " ")
         return tooltip
-
-    def _get_feature_names(self):
-        if not self.scenario.feature_dict:
-            self.logger.info("No features available. Skipping feature analysis.")
-            return
-        feat_fn = self.scenario.feature_fn
-        if not self.scenario.feature_names:
-            self.logger.debug("`scenario.feature_names` is not set. Loading from '%s'", feat_fn)
-            with _changedir(self.ta_exec_dir if self.ta_exec_dir else '.'):
-                if not feat_fn or not os.path.exists(feat_fn):
-                    self.logger.warning("Feature names are missing. Either provide valid feature_file in scenario "
-                                        "(currently %s) or set `scenario.feature_names` manually." % feat_fn)
-                    self.logger.error("Skipping Feature Analysis.")
-                    return
-                else:
-                    # Feature names are contained in feature-file and retrieved
-                    feat_names = InputReader().read_instance_features_file(feat_fn)[0]
-        else:
-            feat_names = copy.deepcopy(self.scenario.feature_names)
-        return feat_names
 
     def _build_website(self):
         self.builder.generate_html(self.website)
@@ -1131,3 +976,137 @@ class CAVE(object):
                               os.path.join(self.output_dir, '.OLD.zip'))
 
         self.output_dir_created = True
+
+class RunsContainer(object):
+
+    def __init__(self, ta_exec_dirs, folders):
+        """ Reads in runs. There will be `n_budgets * m_parallel_execution` runs in CAVE.
+
+        Parameters
+        ----------
+        ta_exec_dirs: List[str]
+            list of execution directories for target-algorithms (to find filepaths, etc.). If you're not sure, just set
+            to current working directory.
+        folders: List[str]
+            list of folders to read in
+        output_dir: str
+            path for intermediate results of conversion
+        file_format, validation_format: str, str
+            formats for data (from [SMAC3, SMAC2, BOHB, CSV(, NONE)]), where NONE is only valid for validation
+        """
+        run = []
+
+        self.budgets2folders = {}
+        self.folders2budgets = {}
+        if self.use_budgets:
+            # Convert into SMAC-format
+            for f in folders:
+                if not f in folders2budgets:
+                    self.folders2budgets[f] = {}
+                self.bohb_result, sub_folders, budgets = HpBandSter2SMAC().convert(f, os.path.join(output_dir, 'data'))
+                for sf, b in zip(sub_folders, budgets):
+                    self.logger.debug("Collecting data from %s after converting to %s for budget %s.", f, sf, b)
+                    cr = ConfiguratorRun(sf,
+                                         '.',
+                                         file_format=self.file_format,
+                                         validation_format=self.validation_format,
+                                         budget=b)
+                    if not b in budgets2folders:
+                        budgets2folders[b] = {}
+                    self.budgets2folders[b][sf] = cr
+                    self.folders2budgets[sf][b] = cr
+
+                    runs.append(cr)
+                    # Add aggregated runs
+                    for b, f in budgets2folders.items():
+                        runs.append('aggregate_budget_{}'.format(b), aggregate_configurator_runs(list(f.values())))
+                    for f, b in budget
+        else:
+            for ta_exec_dir, folder in zip(ta_exec_dirs, folders):
+                self.logger.debug("Collecting data from %s.", folder)
+                cr = ConfiguratorRun(f,
+                                     ta_exec_dir,
+                                     file_format=self.file_format,
+                                     validation_format=self.validation_format,
+                                     ))
+                runs.append(cr)
+                self.folder2run[f] = cr
+
+
+    def __getitem__(self, key):
+        """ Return highest budget for given folder. """
+        if self.use_budgets:
+            return self.folders2budgets[key][self.get_highest_budget()]
+        else:
+            return self.folder2run[key]
+
+    def get_highest_budget(self):
+        return max(self.budgets2folders.keys()) if self.use_budgets else None
+
+    def get_budgets(self):
+        return list(self.budgets2folders.keys())
+
+    def get_runs_for_budget(self, b):
+        return list(self.budgets2folders.values())
+
+    def get_folders(self):
+        if self.use_budgets:
+            return list(self.folders2budgets.keys())
+        else:
+            return list(self.folder2run.keys())
+
+    def get_runs_for_folder(self, f)
+        if self.use_budgets:
+            return list(self.folders2budgets[f].values())
+        else:
+            return list(self.folder2run.values())
+
+    def get_aggregated(self, keep_budgets=True, keep_folders=False):
+        """ Collapse data-structure along a given "axis".
+
+        Returns
+        -------
+        aggregated_runs: either ConfiguratorRun or Dict(str->ConfiguratorRun)
+            run(s) with aggregated data
+        """
+        if not self.use_budgets:
+            keep_budgets = False
+
+        if (not keep_budgets) and (not keep_folders):
+            return self._aggregate(self.runs)
+        elif keep_budgets:
+            return {b : self._aggregate(self.get_runs_for_budget(b)) for b in self.get_budgets()}
+        elif keep_folders:
+            return {f : self._aggregate(self.get_runs_for_folder(f)) for f in self.get_folders()}
+        else:
+            return self.runs
+
+    def _aggregate(self, runs):
+        """
+        """
+        orig_rh, vali_rh = RunHistory(average_cost), RunHistory(average_cost)
+        for run in runs:
+            self.orig_rh.update(run.original_runhistory, origin=DataOrigin.INTERNAL)
+            self.vali_rh.update(run.original_runhistory, origin=DataOrigin.INTERNAL)
+            if run.validated_runhistory:
+                self.vali_rh.update(run.validated_runhistory, origin=DataOrigin.EXTERNAL_SAME_INSTANCES)
+
+        self._init_pimp_and_validator(self.global_validated_rh)
+
+        # Estimate missing costs for [def, inc1, inc2, ...]
+        self._validate_default_and_incumbents(self.validation_method, self.ta_exec_dir)
+        self.global_epm_rh.update(self.global_validated_rh)
+
+        for rh_name, rh in [("original", self.global_original_rh),
+                            ("validated", self.global_validated_rh),
+                            ("epm", self.global_epm_rh)]:
+            self.logger.debug('Combined number of RunHistory data points for %s runhistory: %d '
+                              '# Configurations: %d. # Configurator runs: %d',
+                              rh_name, len(rh.data), len(rh.get_all_configs()), len(self.runs))
+
+        # Sort runs (best first)
+        self.runs = sorted(self.runs, key=lambda run: self.global_epm_rh.get_cost(run.solver.incumbent))
+        self.best_run = self.runs[0]
+
+        self.incumbent = self.pimp.incumbent = self.best_run.solver.incumbent
+        self.logger.debug("Overall best run: %s, with incumbent: %s", self.best_run.folder, self.incumbent)
