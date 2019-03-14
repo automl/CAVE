@@ -3,7 +3,7 @@ from typing import List, Tuple
 class BaseAnalyzer(object):
 
     def __init__(self, *args, **kwargs):
-        pass
+        self.plots = []
 
     def get_static_plots(self) -> List[str]:
         """ Returns plot-paths, if any are available

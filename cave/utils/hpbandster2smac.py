@@ -55,8 +55,8 @@ class HpBandSter2SMAC(object):
 
         # Using temporary files for the intermediate smac-result-like format
         if not output_dir:
+            self.logger.debug("New outputdir")
             output_dir = tempfile.mkdtemp()
-            self.logger.debug("New output-dir: %s", output_dir)
         budgets, paths = zip(*self.hpbandster2smac(folder2result, cs, backup_cs, output_dir).items())
 
         return list(folder2result.values())[0], paths, budgets
