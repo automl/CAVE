@@ -41,7 +41,7 @@ class CostOverTime(BaseAnalyzer):
                  rh: RunHistory,
                  runs: List[ConfiguratorRun],
                  block_epm: bool=False,
-                 bohb_result=None,
+                 bohb_results=None,
                  average_over_runs: bool=True,
                  output_fn: str="performance_over_time.png",
                  validator: Union[None, Validator]=None):
@@ -74,7 +74,7 @@ class CostOverTime(BaseAnalyzer):
         self.output_dir = output_dir
         self.rh = rh
         self.runs = runs
-        self.bohb_result = bohb_result
+        self.bohb_results = bohb_results
         self.block_epm = block_epm
         self.average_over_runs = average_over_runs
         self.output_fn =output_fn
@@ -223,26 +223,43 @@ class CostOverTime(BaseAnalyzer):
         return lines
 
     def _get_bohb_avg(self, validator, runs, rh):
-        if len(runs) > 1 and self.bohb_result:
-            # Add bohb-specific line
-            # Get collective rh
-            rh_bohb = RunHistory(average_cost)
-            for run in runs:
-                rh_bohb.update(run.combined_runhistory)
-            #self.logger.debug(rh_bohb.data)
-            # Get collective trajectory
-            traj = HpBandSter2SMAC().get_trajectory({'' : self.bohb_result}, '', self.scenario, rh_bohb)
-            #self.logger.debug(traj)
-            mean, time, configs = [], [], []
-            traj_dict = self.bohb_result.get_incumbent_trajectory()
+        if len(runs) > 1 and self.bohb_results:
+            data = {}
+            for idx, bohb_result in enumerate(self.bohb_results):
+                data[idx] = {'costs' : [], 'times' : []}
+                traj_dict = bohb_result.get_incumbent_trajectory()
+                data[idx]['costs'] = traj_dict['losses']
+                data[idx]['times'] = traj_dict['times_finished']
 
-            mean, _, time, configs = self._get_mean_var_time(validator, traj, False, rh_bohb)
+            # Average over parallel bohb iterations to get final values
+            f_time, f_config, f_mean, f_std = [], [], [], []
 
-            configs, time, budget, mean = traj_dict['config_ids'],  traj_dict['times_finished'], traj_dict['budgets'], traj_dict['losses']
-            time_double = [t for sub in zip(time, time) for t in sub][1:]
-            mean_double = [t for sub in zip(mean, mean) for t in sub][:-1]
-            configs_double = [c for sub in zip(configs, configs) for c in sub][:-1]
-            return Line('all_budgets', time_double, mean_double, mean_double, mean_double, configs_double)
+            pointer = {idx : {'cost' : data[idx]['costs'][0],
+                              'time' : 0} for idx in list(data.keys())}
+
+            f_time.append(min([values['time'] for values in pointer.values()]) / 100)
+            costs = [values['cost'] for values in pointer.values()]
+            f_mean.append(np.mean(costs))
+            f_std.append(np.std(costs))
+
+            while (len(data) > 0):
+                next_idx = min({idx : data[idx]['times'][0] for idx in data.keys()}.items(), key=lambda x: x[1])[0]
+                pointer[next_idx] = {'cost' : data[next_idx]['costs'].pop(0),
+                                     'time' : data[next_idx]['times'].pop(0)}
+                f_time.append(pointer[next_idx]['time'])
+                f_mean.append(np.mean([values['cost'] for values in pointer.values()]))
+                f_std.append(np.std([values['cost'] for values in pointer.values()]))
+
+                if len(data[next_idx]['times']) == 0:
+                    data.pop(next_idx)
+
+            time_double = [t for sub in zip(f_time, f_time) for t in sub][1:]
+            mean_double = [t for sub in zip(f_mean, f_mean) for t in sub][:-1]
+            std_double = [t for sub in zip(f_std, f_std) for t in sub][:-1]
+            configs_double = ['N/A' for _ in time_double]
+            return Line('all_budgets', time_double, mean_double,
+                        [x + y for x, y in zip(mean_double, std_double)],
+                        [x - y for x, y in zip(mean_double, std_double)], configs_double)
 
     def plot(self):
         """
@@ -254,8 +271,9 @@ class CostOverTime(BaseAnalyzer):
         lines = []
 
         # Get plotting data and create CDS
-        if self.bohb_result:
+        if self.bohb_results:
             lines.append(self._get_bohb_avg(validator, runs, rh))
+            self.logger.debug(lines[-1])
         else:
             lines.append(self._get_avg(validator, runs, rh))
         lines.extend(self._get_all_runs(validator, runs, rh))
@@ -304,7 +322,7 @@ class CostOverTime(BaseAnalyzer):
             # Add to legend
             legend_it.append((name, renderers[-1]))
 
-            if name == 'average':
+            if name in ['average', 'all_budgets']:
                 # Fill area (uncertainty)
                 # Defined as sequence of coordinates, so for step-effect double and arange accordingly ([(t0, v0), (t1, v0), (t1, v1), ... (tn, vn-1)])
                 band_x = np.append(line.time, line.time[::-1])

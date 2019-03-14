@@ -216,7 +216,7 @@ class CAVE(object):
         self.feature_names = None
 
         self.num_bohb_results = 0
-        self.bohb_result = None  # only relevant for bohb_result
+        self.bohb_results = None  # only relevant for bohb_result
 
         # Create output_dir if necessary
         self._create_outputdir(self.output_dir)
@@ -224,7 +224,7 @@ class CAVE(object):
         if file_format == 'BOHB':
             self.use_budgets = True
             self.num_bohb_results = len(folders)
-            self.bohb_result, folders, budgets = HpBandSter2SMAC().convert(folders, output_dir)
+            self.bohb_results, folders, budgets = HpBandSter2SMAC().convert(folders, output_dir)
             if "DEBUG" in self.verbose_level:
                 for f in folders:
                     debug_f = os.path.join(output_dir, 'debug', os.path.basename(f))
@@ -500,7 +500,7 @@ class CAVE(object):
             # TODO: Currently, the code below is configured for bohb... if we extend to other budget-driven configurators, review!
 
             # Perform analysis for each run
-            if self.bohb_result:
+            if self.bohb_results:
                 self.website["Budget Correlation"] = OrderedDict()
                 self.budget_correlation(d=self.website["Budget Correlation"])
                 self.bohb_learning_curves(d=self.website)
@@ -722,7 +722,7 @@ class CAVE(object):
                             cave.global_validated_rh,
                             self.runs,
                             block_epm=self.use_budgets,  # blocking epms if bohb is analyzed
-                            bohb_result=self.bohb_result,
+                            bohb_results=self.bohb_results,
                             validator=cave.validator)
 
     @_analyzer_type
@@ -1000,7 +1000,7 @@ class CAVE(object):
         iteration and the stage is the index of the budget in which the configuration was first sampled (should be 0).
         The third index is just a sequential enumeration. This id can be interpreted as a nested index-identifier.
         """
-        return BohbLearningCurves(self.scenario.cs.get_hyperparameter_names(), result_object=self.bohb_result)
+        return BohbLearningCurves(self.scenario.cs.get_hyperparameter_names(), result_object=self.bohb_results[0])
 
     @_analyzer_type
     def bohb_incumbents_per_budget(self, cave):
