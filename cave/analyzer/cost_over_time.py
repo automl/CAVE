@@ -234,21 +234,16 @@ class CostOverTime(BaseAnalyzer):
             # Average over parallel bohb iterations to get final values
             f_time, f_config, f_mean, f_std = [], [], [], []
 
-            pointer = {idx : {'cost' : data[idx]['costs'][0],
+            pointer = {idx : {'cost' : np.nan,
                               'time' : 0} for idx in list(data.keys())}
-
-            f_time.append(min([values['time'] for values in pointer.values()]) / 100)
-            costs = [values['cost'] for values in pointer.values()]
-            f_mean.append(np.mean(costs))
-            f_std.append(np.std(costs))
 
             while (len(data) > 0):
                 next_idx = min({idx : data[idx]['times'][0] for idx in data.keys()}.items(), key=lambda x: x[1])[0]
                 pointer[next_idx] = {'cost' : data[next_idx]['costs'].pop(0),
                                      'time' : data[next_idx]['times'].pop(0)}
                 f_time.append(pointer[next_idx]['time'])
-                f_mean.append(np.mean([values['cost'] for values in pointer.values()]))
-                f_std.append(np.std([values['cost'] for values in pointer.values()]))
+                f_mean.append(np.nanmean([values['cost'] for values in pointer.values()]))
+                f_std.append(np.nanstd([values['cost'] for values in pointer.values()]))
 
                 if len(data[next_idx]['times']) == 0:
                     data.pop(next_idx)

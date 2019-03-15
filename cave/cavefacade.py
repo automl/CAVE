@@ -182,7 +182,7 @@ class CAVE(object):
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
         self.output_dir = output_dir
         self.output_dir_created = False
-        self.set_verbosity(verbose_level.upper(), os.path.join(self.output_dir, "debug"))
+        self.set_verbosity(verbose_level.upper())
         self.logger.debug("Running CAVE version %s", v)
         self.show_jupyter = show_jupyter
         if self.show_jupyter:
@@ -1063,7 +1063,7 @@ class CAVE(object):
     def _build_website(self):
         self.builder.generate_html(self.website)
 
-    def set_verbosity(self, level, output_dir):
+    def set_verbosity(self, level):
         # Log to stream (console)
         logging.getLogger().setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
@@ -1100,9 +1100,11 @@ class CAVE(object):
 
         logging.getLogger().addHandler(stdout_handler)
         # Log to file is always debug
-        logging.getLogger('cave.settings').debug("Output-file for debug-log: '%s'", os.path.join(output_dir, "debug.log"))
-        self._create_outputdir(output_dir)
-        fh = logging.FileHandler(os.path.join(output_dir, "debug.log"), "w")
+        debug_path = os.path.join(self.output_dir, "debug", "debug.log")
+        logging.getLogger('cave.settings').debug("Output-file for debug-log: '%s'", debug_path)
+        self._create_outputdir(self.output_dir)
+        os.makedirs(os.path.split(debug_path)[0])
+        fh = logging.FileHandler(debug_path, "w")
         fh.setLevel(logging.DEBUG)
         fh.setFormatter(formatter)
         logging.getLogger().addHandler(fh)
@@ -1122,11 +1124,10 @@ class CAVE(object):
             self.logger.debug("Output-dir '%s' does not exist, creating", output_dir)
             os.makedirs(output_dir)
         else:
-            archive_path = os.path.join(tempfile.mkdtemp(), '.OLD')
-            shutil.make_archive(archive_path, 'zip', output_dir)
+            archive_path = shutil.make_archive(os.path.join(tempfile.mkdtemp(), '.OLD'), 'zip', output_dir)
             shutil.rmtree(output_dir)
             os.makedirs(output_dir)
-            shutil.move(archive_path + '.zip', output_dir)
+            shutil.move(archive_path, output_dir)
             self.logger.debug("Output-dir '%s' exists, moving old content to '%s'", self.output_dir,
                               os.path.join(self.output_dir, '.OLD.zip'))
 
