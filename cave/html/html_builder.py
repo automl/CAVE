@@ -245,7 +245,7 @@ for (i = 0; i < acc.length; i++) {
                     return '', ''
             elif isinstance(v, dict):
                 if use_tabs:
-                    div += "<div id=\"{0}\" class=\"tabcontent\">\n".format(layer_name + k)
+                    div += "<div id=\"{0}\" class=\"tabcontent\">\n".format((layer_name + k).replace('_', ' '))
                     div += "<div class=\"pane\">\n"
                 add_script, add_div = self.add_layer(k, v, is_tab=use_tabs)
                 script += add_script
