@@ -59,7 +59,7 @@ class BudgetCorrelation(BaseAnalyzer):
                 else:
                     table[-1].append("{:.2f} ({} samples)".format(rho, len(costs[0])))
 
-        budget_names = [os.path.basename(run.folder) for run in runs]
+        budget_names = [os.path.basename(run.folder).replace('_', ' ') for run in runs]  # TODO
         return DataFrame(data=table, columns=budget_names, index=budget_names)
 
     def plot(self):

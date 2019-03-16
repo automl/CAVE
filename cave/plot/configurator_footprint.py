@@ -964,6 +964,7 @@ class ConfiguratorFootprintPlotter(object):
             timeslider = Slider(start=1, end=num_quantiles, value=num_quantiles, step=1, title=title)
         else:
             timeslider = Slider(start=1, end=2, value=1)
+        labels_runs = [label.replace('_', ' ') for label in labels_runs if label.startswith('budget')]
         checkbox = CheckboxButtonGroup(labels=labels_runs, active=list(range(len(labels_runs))))
 
         args = {name: glyph for name, glyph in zip(aliases, all_glyphs)}

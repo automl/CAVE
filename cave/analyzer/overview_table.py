@@ -11,6 +11,7 @@ from cave.utils.helpers import get_config_origin
 from cave.utils.bokeh_routines import array_to_bokeh_table
 
 class OverviewTable(BaseAnalyzer):
+
     def __init__(self, runs, bohb_parallel, output_dir):
         """ Create overview-table.
 
@@ -48,7 +49,15 @@ class OverviewTable(BaseAnalyzer):
         return html_table_general, html_table_specific
 
     def _general_dict(self, scenario, bohb_parallel=False):
-        """ Generate the meta-information that holds for all runs (scenario info etc) """
+        """ Generate the meta-information that holds for all runs (scenario info etc) 
+
+        Parameters
+        ----------
+        scenario: smac.Scenario
+            scenario file to get information from
+        bohb_parallel: Union[False, int]
+            if set, defines number of parallel runs
+        """
         # general stores information that holds for all runs, runspec holds information on a run-basis
         general = OrderedDict()
 
@@ -90,7 +99,7 @@ class OverviewTable(BaseAnalyzer):
         runspec = OrderedDict()
 
         for run in runs:
-            name = os.path.basename(run.folder)  # TODO this should be changed with multiple BOHB-folder suppor (no basename should be necessary)
+            name = os.path.basename(run.folder).replace('_', ' ')  # TODO this should be changed with multiple BOHB-folder suppor (no basename should be necessary)
             runspec[name] = self._stats_for_run(run.original_runhistory,
                                                 run.scenario,
                                                 run.incumbent)
