@@ -237,7 +237,7 @@
 <span id="cave-analyzer-cost-over-time-module"></span><h1>cave.analyzer.cost_over_time module<a class="headerlink" href="#module-cave.analyzer.cost_over_time" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.analyzer.cost_over_time.CostOverTime">
-<em class="property">class </em><code class="descclassname">cave.analyzer.cost_over_time.</code><code class="descname">CostOverTime</code><span class="sig-paren">(</span><em>scenario, output_dir, rh: smac.runhistory.runhistory.RunHistory, runs: List[cave.reader.configurator_run.ConfiguratorRun], block_epm: bool = False, bohb_result=None, average_over_runs: bool = True, output_fn: str = 'performance_over_time.png', validator: Union[None, smac.utils.validate.Validator] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cost_over_time.html#CostOverTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">cave.analyzer.cost_over_time.</code><code class="descname">CostOverTime</code><span class="sig-paren">(</span><em>scenario, output_dir, rh: smac.runhistory.runhistory.RunHistory, runs: List[cave.reader.configurator_run.ConfiguratorRun], block_epm: bool = False, bohb_results=None, average_over_runs: bool = True, output_fn: str = 'performance_over_time.png', validator: Union[None, smac.utils.validate.Validator] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cost_over_time.html#CostOverTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer" title="cave.analyzer.base_analyzer.BaseAnalyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">cave.analyzer.base_analyzer.BaseAnalyzer</span></code></a></p>
 <p>Plot performance over time, using all trajectory entries
 where max_time = max(wallclock_limit, the highest recorded time)</p>
@@ -270,6 +270,36 @@ where max_time = max(wallclock_limit, the highest recorded time)</p>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>script, div</strong> – header and body part of html-code</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str, str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.analyzer.cost_over_time.CostOverTime.get_incumbent_trajectory">
+<code class="descname">get_incumbent_trajectory</code><span class="sig-paren">(</span><em>result</em>, <em>budgets</em>, <em>bigger_is_better=True</em>, <em>non_decreasing_budget=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cost_over_time.html#CostOverTime.get_incumbent_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime.get_incumbent_trajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the best configurations over time</p>
+<p>!! Copied from hpbandster and modified to enable getting trajectories for individual budgets !!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>result</strong> – result</li>
+<li><strong>budgets</strong> (<em>List</em><em>[</em><em>budgets</em><em>]</em>) – budgets to be considered</li>
+<li><strong>bigger_is_better</strong> (<em>bool</em>) – flag whether an evaluation on a larger budget is always considered better.
+If True, the incumbent might increase for the first evaluations on a bigger budget</li>
+<li><strong>non_decreasing_budget</strong> (<em>bool</em>) – flag whether the budget of a new incumbent should be at least as big as the one for
+the current incumbent.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dictionary with all the config IDs, the times the runs
+finished, their respective budgets, and corresponding losses</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
 </tr>
 </tbody>
 </table>
