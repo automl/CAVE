@@ -124,9 +124,10 @@ class ConfiguratorFootprintPlotter(object):
         red_dists = self.get_mds(dists)
 
         contour_data = {}
-        contour_data['combined'] = self.get_pred_surface(self.combined_rh, X_scaled=red_dists,
-                                                         conf_list=copy.deepcopy(conf_list),
-                                                         contour_step_size=self.contour_step_size)
+        if not any([label.startswith('budget') for label in self.rh_labels]):
+            contour_data['combined'] = self.get_pred_surface(self.combined_rh, X_scaled=red_dists,
+                                                             conf_list=copy.deepcopy(conf_list),
+                                                             contour_step_size=self.contour_step_size)
         for label, rh in zip(self.rh_labels, self.rhs):
             contour_data[label] = self.get_pred_surface(rh, X_scaled=red_dists,
                                                         conf_list=copy.deepcopy(conf_list),
@@ -580,6 +581,7 @@ class ConfiguratorFootprintPlotter(object):
         unique = np.unique(np.concatenate([contour_data[label][2] for label in contour_data.keys()]))
         color_mapper = LinearColorMapper(palette="Viridis256", low=np.min(unique), high=np.max(unique))
         handles = {}
+        default_label = 'combined' if 'combined' in contour_data.keys() else list(contour_data.keys())[0]
         for label, data in contour_data.items():
             unique = np.unique(contour_data[label][2])
             handles[label] = (p.image(image=contour_data[label], x=x_range[0], y=y_range[0],
@@ -587,7 +589,7 @@ class ConfiguratorFootprintPlotter(object):
                                       color_mapper=color_mapper),
                               (np.min(unique), np.max(unique)))
 
-            if not label == 'combined' and len(contour_data) > 1:
+            if not label == default_label and len(contour_data) > 1:
                 handles[label][0].visible = False
         color_bar = ColorBar(color_mapper=color_mapper,
                              ticker=BasicTicker(desired_num_ticks=15),
@@ -964,7 +966,7 @@ class ConfiguratorFootprintPlotter(object):
             timeslider = Slider(start=1, end=num_quantiles, value=num_quantiles, step=1, title=title)
         else:
             timeslider = Slider(start=1, end=2, value=1)
-        labels_runs = [label.replace('_', ' ') for label in labels_runs if label.startswith('budget')]
+        labels_runs = [label.replace('_', ' ') if label.startswith('budget') else label for label in labels_runs]
         checkbox = CheckboxButtonGroup(labels=labels_runs, active=list(range(len(labels_runs))))
 
         args = {name: glyph for name, glyph in zip(aliases, all_glyphs)}
@@ -992,7 +994,7 @@ class ConfiguratorFootprintPlotter(object):
         title: Div
             text-element to "show title" of widget
         """
-        labels = list(contour_data.keys())
+        labels = [l.replace('_', ' ') if l.startswith('budget') else l for l in contour_data.keys()]
         aliases = ['glyph' + str(i) for i in range(len(labels))]
         values = list(contour_data.values())
         glyphs = [v[0] for v in values]
