@@ -59,7 +59,7 @@ class HpBandSter2SMAC(object):
             output_dir = tempfile.mkdtemp()
         budgets, paths = zip(*self.hpbandster2smac(folder2result, cs, backup_cs, output_dir).items())
 
-        return list(folder2result.values())[0], paths, budgets
+        return list(folder2result.values()), paths, budgets
 
     def load_configspace(self, folder):
         """Will try to load the configspace. If it's a pcs-file, backup_cs will be a list containing all possible

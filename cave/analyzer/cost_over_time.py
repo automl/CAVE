@@ -41,7 +41,7 @@ class CostOverTime(BaseAnalyzer):
                  rh: RunHistory,
                  runs: List[ConfiguratorRun],
                  block_epm: bool=False,
-                 bohb_result=None,
+                 bohb_results=None,
                  average_over_runs: bool=True,
                  output_fn: str="performance_over_time.png",
                  validator: Union[None, Validator]=None):
@@ -74,7 +74,7 @@ class CostOverTime(BaseAnalyzer):
         self.output_dir = output_dir
         self.rh = rh
         self.runs = runs
-        self.bohb_result = bohb_result
+        self.bohb_results = bohb_results
         self.block_epm = block_epm
         self.average_over_runs = average_over_runs
         self.output_fn =output_fn
@@ -222,27 +222,118 @@ class CostOverTime(BaseAnalyzer):
             lines.append(Line(os.path.basename(run.folder), time_double, mean_double, mean_double, mean_double, configs))
         return lines
 
-    def _get_bohb_avg(self, validator, runs, rh):
-        if len(runs) > 1 and self.bohb_result:
-            # Add bohb-specific line
-            # Get collective rh
-            rh_bohb = RunHistory(average_cost)
-            for run in runs:
-                rh_bohb.update(run.combined_runhistory)
-            #self.logger.debug(rh_bohb.data)
-            # Get collective trajectory
-            traj = HpBandSter2SMAC().get_trajectory({'' : self.bohb_result}, '', self.scenario, rh_bohb)
-            #self.logger.debug(traj)
-            mean, time, configs = [], [], []
-            traj_dict = self.bohb_result.get_incumbent_trajectory()
+    def _get_bohb_line(self, validator, runs, rh, budget=None):
+        label = 'budget ' + str(int(budget) if (budget).is_integer() else budget) if budget else 'all budgets'
+        if budget is None:
+            budgets = self.bohb_results[0].HB_config['budgets']
+        else:
+            budgets = [budget]
 
-            mean, _, time, configs = self._get_mean_var_time(validator, traj, False, rh_bohb)
+        data = {}
+        for idx, bohb_result in enumerate(self.bohb_results):
+            data[idx] = {'costs' : [], 'times' : []}
+            traj_dict = self.get_incumbent_trajectory(bohb_result, budgets)
+            data[idx]['costs'] = traj_dict['losses']
+            data[idx]['times'] = traj_dict['times_finished']
 
-            configs, time, budget, mean = traj_dict['config_ids'],  traj_dict['times_finished'], traj_dict['budgets'], traj_dict['losses']
-            time_double = [t for sub in zip(time, time) for t in sub][1:]
-            mean_double = [t for sub in zip(mean, mean) for t in sub][:-1]
-            configs_double = [c for sub in zip(configs, configs) for c in sub][:-1]
-            return Line('all_budgets', time_double, mean_double, mean_double, mean_double, configs_double)
+        # Average over parallel bohb iterations to get final values
+        f_time, f_config, f_mean, f_std = [], [], [], []
+
+        pointer = {idx : {'cost' : np.nan,
+                          'time' : 0} for idx in list(data.keys())}
+
+        while (len(data) > 0):
+            next_idx = min({idx : data[idx]['times'][0] for idx in data.keys()}.items(), key=lambda x: x[1])[0]
+            pointer[next_idx] = {'cost' : data[next_idx]['costs'].pop(0),
+                                 'time' : data[next_idx]['times'].pop(0)}
+            f_time.append(pointer[next_idx]['time'])
+            f_mean.append(np.nanmean([values['cost'] for values in pointer.values()]))
+            f_std.append(np.nanstd([values['cost'] for values in pointer.values()]))
+
+            if len(data[next_idx]['times']) == 0:
+                data.pop(next_idx)
+
+        time_double = [t for sub in zip(f_time, f_time) for t in sub][1:]
+        mean_double = [t for sub in zip(f_mean, f_mean) for t in sub][:-1]
+        std_double = [t for sub in zip(f_std, f_std) for t in sub][:-1]
+        configs_double = ['N/A' for _ in time_double]
+        return Line(str(label), time_double, mean_double,
+                    [x + y for x, y in zip(mean_double, std_double)],
+                    [x - y for x, y in zip(mean_double, std_double)], configs_double)
+
+    def get_incumbent_trajectory(self, result, budgets, bigger_is_better=True, non_decreasing_budget=True):
+        """
+        Returns the best configurations over time
+
+        !! Copied from hpbandster and modified to enable getting trajectories for individual budgets !!
+
+        Parameters
+        ----------
+            result:
+                    result
+            budgets: List[budgets]
+                    budgets to be considered
+            bigger_is_better:bool
+                    flag whether an evaluation on a larger budget is always considered better.
+                    If True, the incumbent might increase for the first evaluations on a bigger budget
+            non_decreasing_budget: bool
+                    flag whether the budget of a new incumbent should be at least as big as the one for
+                    the current incumbent.
+        Returns
+        -------
+            dict:
+                    dictionary with all the config IDs, the times the runs
+                    finished, their respective budgets, and corresponding losses
+        """
+        all_runs = result.get_all_runs(only_largest_budget=False)
+
+        all_runs = list(filter(lambda r: r.budget in budgets, all_runs))
+
+        all_runs.sort(key=lambda r: r.time_stamps['finished'])
+
+        return_dict = { 'config_ids' : [],
+                        'times_finished': [],
+                        'budgets'    : [],
+                        'losses'     : [],
+        }
+
+        current_incumbent = float('inf')
+        incumbent_budget = min(budgets)
+
+        for r in all_runs:
+            if r.loss is None: continue
+
+            new_incumbent = False
+
+            if bigger_is_better and r.budget > incumbent_budget:
+                new_incumbent = True
+
+            if r.loss < current_incumbent:
+                new_incumbent = True
+
+            if non_decreasing_budget and r.budget < incumbent_budget:
+                new_incumbent = False
+
+            if new_incumbent:
+                current_incumbent = r.loss
+                incumbent_budget  = r.budget
+
+                return_dict['config_ids'].append(r.config_id)
+                return_dict['times_finished'].append(r.time_stamps['finished'])
+                return_dict['budgets'].append(r.budget)
+                return_dict['losses'].append(r.loss)
+
+        if current_incumbent != r.loss:
+            r = all_runs[-1]
+
+            return_dict['config_ids'].append(return_dict['config_ids'][-1])
+            return_dict['times_finished'].append(r.time_stamps['finished'])
+            return_dict['budgets'].append(return_dict['budgets'][-1])
+            return_dict['losses'].append(return_dict['losses'][-1])
+
+
+        return (return_dict)
+
 
     def plot(self):
         """
@@ -254,11 +345,13 @@ class CostOverTime(BaseAnalyzer):
         lines = []
 
         # Get plotting data and create CDS
-        if self.bohb_result:
-            lines.append(self._get_bohb_avg(validator, runs, rh))
+        if self.bohb_results:
+            lines.append(self._get_bohb_line(validator, runs, rh))
+            for b in self.bohb_results[0].HB_config['budgets']:
+                lines.append(self._get_bohb_line(validator, runs, rh, b))
         else:
             lines.append(self._get_avg(validator, runs, rh))
-        lines.extend(self._get_all_runs(validator, runs, rh))
+            lines.extend(self._get_all_runs(validator, runs, rh))
 
         data = {'name' : [], 'time' : [], 'mean' : [], 'upper' : [], 'lower' : []}
         hp_names = self.scenario.cs.get_hyperparameter_names()
@@ -275,7 +368,6 @@ class CostOverTime(BaseAnalyzer):
                     data[p].append(c[p] if (c and p in c) else 'inactive')
         source = ColumnDataSource(data=data)
 
-
         # Create plot
         x_range = Range1d(min(source.data['time']),
                           max(source.data['time']))
@@ -288,7 +380,6 @@ class CostOverTime(BaseAnalyzer):
                    y_axis_label=y_label,
                    title="Cost over time")
 
-
         colors = itertools.cycle(Dark2_5)
         renderers = []
         legend_it = []
@@ -297,19 +388,20 @@ class CostOverTime(BaseAnalyzer):
             name = line.name
             view = CDSView(source=source, filters=[GroupFilter(column_name='name', group=str(name))])
             renderers.append([p.line('time', 'mean',
-                                    source=source, view=view,
-                                    line_color=color,
-                                    visible=True)])
+                                     source=source, view=view,
+                                     line_color=color,
+                                     visible=True if line.name in ['average', 'all budgets'] else False)])
 
             # Add to legend
             legend_it.append((name, renderers[-1]))
 
-            if name == 'average':
+            if name in ['average', 'all budgets'] or 'budget' in name:
                 # Fill area (uncertainty)
                 # Defined as sequence of coordinates, so for step-effect double and arange accordingly ([(t0, v0), (t1, v0), (t1, v1), ... (tn, vn-1)])
                 band_x = np.append(line.time, line.time[::-1])
                 band_y = np.append(line.lower, line.upper[::-1])
-                renderers[-1].extend([p.patch(band_x, band_y, color='#7570B3', fill_alpha=0.2)])
+                renderers[-1].extend([p.patch(band_x, band_y, color='#7570B3', fill_alpha=0.2,
+                                              visible=True if line.name in ['average', 'all budgets'] else False)])
 
         # Tooltips
         tooltips = [("estimated performance", "@mean"),
@@ -333,6 +425,7 @@ class CostOverTime(BaseAnalyzer):
 
         # Wrap renderers in nested lists for checkbox-code
         checkbox, select_all, select_none = get_checkbox(renderers, [l[0] for l in legend_it])
+        checkbox.active = [0]
 
         # Tilt tick labels and configure axis labels
         p.xaxis.major_label_orientation = 3/4
