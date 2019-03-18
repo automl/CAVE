@@ -264,9 +264,9 @@ class ConfiguratorFootprintPlotter(object):
                 dist = np.abs(conf_matrix[i, :] - conf_matrix[j, :])
                 dist[np.isnan(dist)] = 1
                 dist[np.logical_and(is_cat, dist != 0)] = 1
-                dist /= depth
-                dists[i, j] = np.sum(dist)
-                dists[j, i] = np.sum(dist)
+                dist = np.sum(dist / depth)
+                dists[i, j] = dist
+                dists[j, i] = dist
             if 5 < n_confs and i % (n_confs // 5) == 0:
                 self.logger.debug("%.2f%% of all distances calculated in %.2f seconds...", 100 * i / n_confs,
                                                                                          time.time() - start)

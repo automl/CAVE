@@ -86,13 +86,13 @@ class BudgetCorrelation(BaseAnalyzer):
                    TableColumn(field=header, title=header, default_sort='descending', width=10) for header in columns
                   ]
         bokeh_table = DataTable(source=table_source, columns=columns, index_position=None, sortable=False,
-                               height=20 + 30 * len(data["Budget"]))
+                                height=20 + 30 * len(data["Budget"]))
 
         # Create CDS for scatter-plot
         all_configs = set([a for b in [run.original_runhistory.get_all_configs() for run in runs] for a in b])
-        data = {os.path.basename(run.folder) : [run.original_runhistory.get_cost(c) if c in
-                                                run.original_runhistory.get_all_configs() else
-                                                None for c in all_configs] for run in runs}
+        data = {os.path.basename(run.folder).replace('_', ' ')  : [run.original_runhistory.get_cost(c) if c in  # TODO
+                                                                   run.original_runhistory.get_all_configs() else
+                                                                   None for c in all_configs] for run in runs}
         data['x'] = []
         data['y'] = []
 
