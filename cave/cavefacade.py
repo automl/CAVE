@@ -1009,7 +1009,7 @@ class CAVE(object):
         budget).
         """
         return BohbIncumbentsPerBudget([b.incumbent for b in self.runs],
-                                       [b.folder for b in self.runs],
+                                       [b.folder.replace('_', ' ') for b in self.runs],
                                        [b.epm_runhistory for b in self.runs])
 
     @_analyzer_type
