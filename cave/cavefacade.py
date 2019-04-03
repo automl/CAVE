@@ -1015,9 +1015,10 @@ class CAVE(object):
     @_analyzer_type
     def budget_correlation(self, cave):
         """
-        Use spearman correlation, to get a correlation-value and a p-value for every pairwise combination of budgets.
+        Use spearman correlation to get a correlation-value and a p-value for every pairwise combination of budgets.
         First value is the correlation, second is the p-value (the p-value roughly estimates the likelihood to obtain
         this correlation coefficient with uncorrelated datasets).
+        This can be used to estimate how well a budget approximates the function to be optimized.
         """
         return BudgetCorrelation(self.runs)
 
