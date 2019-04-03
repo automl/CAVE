@@ -242,49 +242,43 @@
 <p>Plot the visualization of configurations, highlighting the
 incumbents. Using original rh, so the explored configspace can be
 estimated.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>scenario</strong> (<em>Scenario</em>) – deepcopy of scenario-object</li>
-<li><strong>runs</strong> (<em>List</em><em>[</em><a class="reference internal" href="cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun" title="cave.reader.configurator_run.ConfiguratorRun"><em>ConfiguratorRun</em></a><em>]</em>) – holding information about original runhistories, trajectories, incumbents, etc.</li>
-<li><strong>runhistory</strong> (<em>RunHistory</em>) – with maximum number of real (not estimated) runs to train best-possible epm</li>
-<li><strong>final_incumbent</strong> (<em>Configuration</em>) – final incumbent (best of all (highest budget) runs)</li>
-<li><strong>max_confs</strong> (<em>int</em>) – maximum number of data-points to plot</li>
-<li><strong>use_timeslider</strong> (<em>bool</em>) – whether or not to have a time_slider-widget on cfp-plot
-INCREASES FILE-SIZE DRAMATICALLY</li>
-<li><strong>num_quantiles</strong> (<em>int</em>) – if use_timeslider is not off, defines the number of quantiles for the
-slider/ number of static pictures</li>
-<li><strong>timeslider_log</strong> (<em>bool</em>) – whether to use a logarithmic scale for the timeslider/quantiles</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>Scenario</em>) – deepcopy of scenario-object</p></li>
+<li><p><strong>runs</strong> (<em>List</em><em>[</em><a class="reference internal" href="cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun" title="cave.reader.configurator_run.ConfiguratorRun"><em>ConfiguratorRun</em></a><em>]</em>) – holding information about original runhistories, trajectories, incumbents, etc.</p></li>
+<li><p><strong>runhistory</strong> (<em>RunHistory</em>) – with maximum number of real (not estimated) runs to train best-possible epm</p></li>
+<li><p><strong>final_incumbent</strong> (<em>Configuration</em>) – final incumbent (best of all (highest budget) runs)</p></li>
+<li><p><strong>max_confs</strong> (<em>int</em>) – maximum number of data-points to plot</p></li>
+<li><p><strong>use_timeslider</strong> (<em>bool</em>) – whether or not to have a time_slider-widget on cfp-plot
+INCREASES FILE-SIZE DRAMATICALLY</p></li>
+<li><p><strong>num_quantiles</strong> (<em>int</em>) – if use_timeslider is not off, defines the number of quantiles for the
+slider/ number of static pictures</p></li>
+<li><p><strong>timeslider_log</strong> (<em>bool</em>) – whether to use a logarithmic scale for the timeslider/quantiles</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><strong>script</strong> (<em>str</em>) – script part of bokeh plot</li>
-<li><strong>div</strong> (<em>str</em>) – div part of bokeh plot</li>
-<li><strong>over_time_paths</strong> (<em>List[str]</em>) – list with paths to the different quantiled timesteps of the
-configurator run (for static evaluation)</li>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>script</strong> (<em>str</em>) – script part of bokeh plot</p></li>
+<li><p><strong>div</strong> (<em>str</em>) – div part of bokeh plot</p></li>
+<li><p><strong>over_time_paths</strong> (<em>List[str]</em>) – list with paths to the different quantiled timesteps of the
+configurator run (for static evaluation)</p></li>
 </ul>
 </p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="cave.analyzer.configurator_footprint.ConfiguratorFootprint.get_html">
 <code class="descname">get_html</code><span class="sig-paren">(</span><em>d=None</em>, <em>tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/configurator_footprint.html#ConfiguratorFootprint.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.configurator_footprint.ConfiguratorFootprint.get_html" title="Permalink to this definition">¶</a></dt>
 <dd><p>General reports in html-format, to be easily integrated in html-code. ALSO FOR BOKEH-OUTPUT.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>script, div</strong> – header and body part of html-code</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str, str</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>script, div</strong> – header and body part of html-code</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str, str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -302,16 +296,14 @@ configurator run (for static evaluation)</li>
 <dt id="cave.analyzer.configurator_footprint.ConfiguratorFootprint.get_static_plots">
 <code class="descname">get_static_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#cave.analyzer.configurator_footprint.ConfiguratorFootprint.get_static_plots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns plot-paths, if any are available</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>plot_paths</strong> – returns list of strings</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">List[str]</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>plot_paths</strong> – returns list of strings</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">

@@ -244,51 +244,43 @@
 <code class="descname">convert</code><span class="sig-paren">(</span><em>folders</em>, <em>output_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.convert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert hpbandster-results into smac-format, aggregating parallel runs along the budgets, so it is treated as
 one run with the same budgets. Throws ValueError when budgets of individual runs dont match.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>folders</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of runs to consider</li>
-<li><strong>output_dir</strong> (<em>str</em>) – path to CAVE’s output-directory</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>folders</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of runs to consider</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – path to CAVE’s output-directory</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><strong>result</strong> (<em>hpbandster.core.result</em>) – BOHB-result in original format</li>
-<li><strong>paths</strong> (<em>List[str]</em>) – paths to converted data</li>
-<li><strong>budgets</strong> (<em>List[int]</em>) – budgets, corresponding to paths</li>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>result</strong> (<em>hpbandster.core.result</em>) – BOHB-result in original format</p></li>
+<li><p><strong>paths</strong> (<em>List[str]</em>) – paths to converted data</p></li>
+<li><p><strong>budgets</strong> (<em>List[int]</em>) – budgets, corresponding to paths</p></li>
 </ul>
 </p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.get_incumbent_trajectory_for_budget">
 <code class="descname">get_incumbent_trajectory_for_budget</code><span class="sig-paren">(</span><em>result</em>, <em>budget</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.get_incumbent_trajectory_for_budget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.get_incumbent_trajectory_for_budget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the best configurations over time</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>budget</strong> (<em>string</em>) – TODO</li>
-<li><strong>result</strong> (<em>Result</em>) – result object with runs</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>budget</strong> (<em>string</em>) – TODO</p></li>
+<li><p><strong>result</strong> (<em>Result</em>) – result object with runs</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dictionary with all the config IDs, the times the runs
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dictionary with all the config IDs, the times the runs
 finished, their respective budgets, and corresponding losses</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -304,20 +296,16 @@ If multiple results are specified, sort by times_finished and only add to combin
 <dd><p>Reading hpbandster-result-object and creating RunHistory and trajectory…
 treats each budget as an individual ‘smac’-run, creates an
 output-directory with subdirectories for each budget.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>folder2result</strong> (<em>Dict</em><em>(</em><em>str : hpbandster.core.result.Result</em><em>)</em>) – folder mapping to bohb’s result-objects</li>
-<li><strong>cs</strong> (<em>ConfigurationSpace</em>) – the configuration space</li>
-<li><strong>backup_cs</strong> (<em>List</em><em>[</em><em>ConfigurationSpace</em><em>]</em>) – if loading a configuration fails, try configspaces from this list until succeed</li>
-<li><strong>output_dir</strong> (<em>str</em>) – the output-dir to save the smac-runs to</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>folder2result</strong> (<em>Dict</em><em>(</em><em>str : hpbandster.core.result.Result</em><em>)</em>) – folder mapping to bohb’s result-objects</p></li>
+<li><p><strong>cs</strong> (<em>ConfigurationSpace</em>) – the configuration space</p></li>
+<li><p><strong>backup_cs</strong> (<em>List</em><em>[</em><em>ConfigurationSpace</em><em>]</em>) – if loading a configuration fails, try configspaces from this list until succeed</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – the output-dir to save the smac-runs to</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">

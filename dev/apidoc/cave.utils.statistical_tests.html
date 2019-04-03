@@ -239,50 +239,42 @@
 <dt id="cave.utils.statistical_tests.paired_permutation">
 <code class="descclassname">cave.utils.statistical_tests.</code><code class="descname">paired_permutation</code><span class="sig-paren">(</span><em>data1</em>, <em>data2</em>, <em>rng</em>, <em>num_permutations=10000</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/statistical_tests.html#paired_permutation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.statistical_tests.paired_permutation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test for significance using paired permutation.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data2</strong> (<em>data1</em><em>,</em>) – ordered results for instances for two different configurations</li>
-<li><strong>rng</strong> (<em>np.RandomState</em>) – random number generator</li>
-<li><strong>num_permutations</strong> (<em>int</em>) – number of permutations performed</li>
-<li><strong>logger</strong> (<em>Logger</em>) – logger-instance write debugs to</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data2</strong> (<em>data1</em><em>,</em>) – ordered results for instances for two different configurations</p></li>
+<li><p><strong>rng</strong> (<em>np.RandomState</em>) – random number generator</p></li>
+<li><p><strong>num_permutations</strong> (<em>int</em>) – number of permutations performed</p></li>
+<li><p><strong>logger</strong> (<em>Logger</em>) – logger-instance write debugs to</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>p</strong> – p-value for statistical test</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>p</strong> – p-value for statistical test</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="cave.utils.statistical_tests.paired_t_student">
 <code class="descclassname">cave.utils.statistical_tests.</code><code class="descname">paired_t_student</code><span class="sig-paren">(</span><em>data1</em>, <em>data2</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/statistical_tests.html#paired_t_student"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.statistical_tests.paired_t_student" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test for significance using paired t-test.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data2</strong> (<em>data1</em><em>,</em>) – ordered results for instances for two different configurations</li>
-<li><strong>logger</strong> (<em>logging.Logger</em>) – to log scores, if given</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data2</strong> (<em>data1</em><em>,</em>) – ordered results for instances for two different configurations</p></li>
+<li><p><strong>logger</strong> (<em>logging.Logger</em>) – to log scores, if given</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>p</strong> – p-value for statistical test</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>p</strong> – p-value for statistical test</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

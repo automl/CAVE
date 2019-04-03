@@ -242,35 +242,29 @@
 <p>Reader for SMAC2-output.
 The expected output-structure in the specified folder is:</p>
 <blockquote>
-<div><dl class="docutils">
-<dt>self.folder/</dt>
-<dd><dl class="first last docutils">
-<dt>smac-output/</dt>
-<dd><dl class="first last docutils">
-<dt>aclib/</dt>
-<dd><dl class="first last docutils">
-<dt>state-run1/</dt>
-<dd><ul class="first last simple">
-<li>scenario.txt                # scenario</li>
-<li>runs_and_results(…).csv   # runhistory</li>
-<li>paramstrings(…).csv       # runhistory</li>
-<li>traj-run-(…)              # trajectory</li>
+<div><dl class="simple">
+<dt>self.folder/</dt><dd><dl class="simple">
+<dt>smac-output/</dt><dd><dl class="simple">
+<dt>aclib/</dt><dd><dl class="simple">
+<dt>state-run1/</dt><dd><ul class="simple">
+<li><p>scenario.txt                # scenario</p></li>
+<li><p>runs_and_results(…).csv   # runhistory</p></li>
+<li><p>paramstrings(…).csv       # runhistory</p></li>
+<li><p>traj-run-(…)              # trajectory</p></li>
 </ul>
 </dd>
 </dl>
 </dd>
 </dl>
 </dd>
-<dt>validate-time-train/              # optional, if validation has been beformed</dt>
-<dd><ul class="first last simple">
-<li>validationCallStrings(…).csv</li>
-<li>validationRunResultLineMatrix(…).csv</li>
+<dt>validate-time-train/              # optional, if validation has been beformed</dt><dd><ul class="simple">
+<li><p>validationCallStrings(…).csv</p></li>
+<li><p>validationRunResultLineMatrix(…).csv</p></li>
 </ul>
 </dd>
-<dt>validate-time-test/               # optional, if validation has been beformed</dt>
-<dd><ul class="first last simple">
-<li>validationCallStrings(…).csv</li>
-<li>validationRunResultLineMatrix(…).csv</li>
+<dt>validate-time-test/               # optional, if validation has been beformed</dt><dd><ul class="simple">
+<li><p>validationCallStrings(…).csv</p></li>
+<li><p>validationRunResultLineMatrix(…).csv</p></li>
 </ul>
 </dd>
 </dl>
@@ -282,19 +276,17 @@ The expected output-structure in the specified folder is:</p>
 <code class="descname">get_runhistory</code><span class="sig-paren">(</span><em>cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/smac2_reader.html#SMAC2Reader.get_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.smac2_reader.SMAC2Reader.get_runhistory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expects the following files:</p>
 <ul class="simple">
-<li><cite>self.folder/smac-output/aclib/state-run1/runs_and_results(…).csv</cite></li>
-<li><cite>self.folder/smac-output/aclib/state-run1/paramstrings(…).csv</cite></li>
+<li><p><cite>self.folder/smac-output/aclib/state-run1/runs_and_results(…).csv</cite></p></li>
+<li><p><cite>self.folder/smac-output/aclib/state-run1/paramstrings(…).csv</cite></p></li>
 </ul>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>rh</strong> – runhistory</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">RunHistory</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>rh</strong> – runhistory</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>RunHistory</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -310,7 +302,7 @@ scenario-information (
 <code class="descname">get_trajectory</code><span class="sig-paren">(</span><em>cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/smac2_reader.html#SMAC2Reader.get_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.smac2_reader.SMAC2Reader.get_trajectory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expects the following files:</p>
 <ul class="simple">
-<li><cite>self.folder/smac-output/aclib/state-run1/traj-run-(…).csv</cite></li>
+<li><p><cite>self.folder/smac-output/aclib/state-run1/traj-run-(…).csv</cite></p></li>
 </ul>
 </dd></dl>
 
@@ -319,21 +311,19 @@ scenario-information (
 <code class="descname">get_validated_runhistory</code><span class="sig-paren">(</span><em>cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/smac2_reader.html#SMAC2Reader.get_validated_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.smac2_reader.SMAC2Reader.get_validated_runhistory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expects the following files:</p>
 <ul class="simple">
-<li><cite>self.folder/validate-time-train/validationCallStrings(…).csv</cite></li>
-<li><cite>self.folder/validate-time-train/validationRunResultLineMatrix(…).csv</cite></li>
-<li><cite>self.folder/validate-time-test/validationCallStrings(…).csv</cite></li>
-<li><cite>self.folder/validate-time-test/validationRunResultLineMatrix(…).csv</cite></li>
+<li><p><cite>self.folder/validate-time-train/validationCallStrings(…).csv</cite></p></li>
+<li><p><cite>self.folder/validate-time-train/validationRunResultLineMatrix(…).csv</cite></p></li>
+<li><p><cite>self.folder/validate-time-test/validationCallStrings(…).csv</cite></p></li>
+<li><p><cite>self.folder/validate-time-test/validationRunResultLineMatrix(…).csv</cite></p></li>
 </ul>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>validated_rh</strong> – validated runhistory</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">RunHistory</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>validated_rh</strong> – validated runhistory</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>RunHistory</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

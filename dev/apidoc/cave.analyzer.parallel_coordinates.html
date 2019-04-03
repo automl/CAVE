@@ -243,63 +243,51 @@
 format (using runhistories and parameters) to a more general format
 (using a dataframe). The resulting dataframe is passed to the
 parallel_coordinates-routine</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>original_rh</strong> (<em>RunHistory</em>) – runhistory that should contain only runs that were executed during search</li>
-<li><strong>validated_rh</strong> (<em>RunHistory</em>) – runhistory that may contain as many runs as possible, also external runs.
-this runhistory will be used to build the EPM</li>
-<li><strong>validator</strong> (<em>Validator</em>) – validator to be used to estimate costs for configurations</li>
-<li><strong>scenario</strong> (<em>Scenario</em>) – scenario object to take instances from</li>
-<li><strong>incumbent</strong> (<em>default</em><em>,</em>) – default and incumbent, they will surely be displayed</li>
-<li><strong>param_imp</strong> (<em>Union</em><em>[</em><em>None</em><em>, </em><em>Dict</em><em>[</em><em>str-&gt;float</em><em>]</em>) – if given, maps parameter-names to importance</li>
-<li><strong>params</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) – either directly the parameters to displayed or the number of parameters (will try to define the most
-important ones</li>
-<li><strong>n_configs</strong> (<em>int</em>) – number of configs to be plotted</li>
-<li><strong>pc_sort_by</strong> (<em>str</em>) – defines the pimp-method by which to choose the plotted parameters</li>
-<li><strong>max_runs_epm</strong> (<em>int</em>) – maximum number of runs to train the epm with. this should prevent MemoryErrors</li>
-<li><strong>output_dir</strong> (<em>str</em>) – output directory for plots</li>
-<li><strong>cs</strong> (<em>ConfigurationSpace</em>) – parameter configuration space to be visualized</li>
-<li><strong>runtime</strong> (<em>boolean</em>) – runtime will be on logscale</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>original_rh</strong> (<em>RunHistory</em>) – runhistory that should contain only runs that were executed during search</p></li>
+<li><p><strong>validated_rh</strong> (<em>RunHistory</em>) – runhistory that may contain as many runs as possible, also external runs.
+this runhistory will be used to build the EPM</p></li>
+<li><p><strong>validator</strong> (<em>Validator</em>) – validator to be used to estimate costs for configurations</p></li>
+<li><p><strong>scenario</strong> (<em>Scenario</em>) – scenario object to take instances from</p></li>
+<li><p><strong>incumbent</strong> (<em>default</em><em>,</em>) – default and incumbent, they will surely be displayed</p></li>
+<li><p><strong>param_imp</strong> (<em>Union</em><em>[</em><em>None</em><em>, </em><em>Dict</em><em>[</em><em>str-&gt;float</em><em>]</em>) – if given, maps parameter-names to importance</p></li>
+<li><p><strong>params</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) – either directly the parameters to displayed or the number of parameters (will try to define the most
+important ones</p></li>
+<li><p><strong>n_configs</strong> (<em>int</em>) – number of configs to be plotted</p></li>
+<li><p><strong>pc_sort_by</strong> (<em>str</em>) – defines the pimp-method by which to choose the plotted parameters</p></li>
+<li><p><strong>max_runs_epm</strong> (<em>int</em>) – maximum number of runs to train the epm with. this should prevent MemoryErrors</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – output directory for plots</p></li>
+<li><p><strong>cs</strong> (<em>ConfigurationSpace</em>) – parameter configuration space to be visualized</p></li>
+<li><p><strong>runtime</strong> (<em>boolean</em>) – runtime will be on logscale</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="cave.analyzer.parallel_coordinates.ParallelCoordinates.get_html">
 <code class="descname">get_html</code><span class="sig-paren">(</span><em>d=None</em>, <em>tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/parallel_coordinates.html#ParallelCoordinates.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.parallel_coordinates.ParallelCoordinates.get_html" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>n_configs</strong> (<em>int</em>) – number of configurations to plot (if this is less than available, worst configurations will be removed)</li>
-<li><strong>params</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – what parameters to plot</li>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_configs</strong> (<em>int</em>) – number of configurations to plot (if this is less than available, worst configurations will be removed)</p></li>
+<li><p><strong>params</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – what parameters to plot</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.analyzer.parallel_coordinates.ParallelCoordinates.get_jupyter">
 <code class="descname">get_jupyter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/parallel_coordinates.html#ParallelCoordinates.get_jupyter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.parallel_coordinates.ParallelCoordinates.get_jupyter" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>n_configs</strong> (<em>int</em>) – number of configurations to plot (if this is less than available, worst configurations will be removed)</li>
-<li><strong>params</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – what parameters to plot</li>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_configs</strong> (<em>int</em>) – number of configurations to plot (if this is less than available, worst configurations will be removed)</p></li>
+<li><p><strong>params</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – what parameters to plot</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -310,34 +298,28 @@ important ones</li>
 <dl class="method">
 <dt id="cave.analyzer.parallel_coordinates.ParallelCoordinates.get_plots">
 <code class="descname">get_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/parallel_coordinates.html#ParallelCoordinates.get_plots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.parallel_coordinates.ParallelCoordinates.get_plots" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>n_configs</strong> (<em>int</em>) – number of configurations to plot (if this is less than available, worst configurations will be removed)</li>
-<li><strong>params</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – what parameters to plot</li>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_configs</strong> (<em>int</em>) – number of configurations to plot (if this is less than available, worst configurations will be removed)</p></li>
+<li><p><strong>params</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – what parameters to plot</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.analyzer.parallel_coordinates.ParallelCoordinates.get_static_plots">
 <code class="descname">get_static_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#cave.analyzer.parallel_coordinates.ParallelCoordinates.get_static_plots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns plot-paths, if any are available</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>plot_paths</strong> – returns list of strings</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">List[str]</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>plot_paths</strong> – returns list of strings</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">

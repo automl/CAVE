@@ -241,35 +241,27 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Plotting a parallel coordinates plot, visualizing the explored PCS.
 Inspired by: <a class="reference external" href="http://benalexkeen.com/parallel-coordinates-in-matplotlib/">http://benalexkeen.com/parallel-coordinates-in-matplotlib/</a></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>config_to_cost</strong> (<em>Dict</em><em>[</em><em>Configuration -&gt; float</em><em>]</em>) – configurations to be considered for plotting mapped to estimated costs</li>
-<li><strong>output_dir</strong> (<em>str</em>) – output-filepath</li>
-<li><strong>cs</strong> (<em>ConfigurationSpace</em>) – configspace of this scenario</li>
-<li><strong>runtime</strong> (<em>bool</em>) – if True, the run_objective of this configurator run is runtime-optimization, if false it’s quality</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config_to_cost</strong> (<em>Dict</em><em>[</em><em>Configuration -&gt; float</em><em>]</em>) – configurations to be considered for plotting mapped to estimated costs</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – output-filepath</p></li>
+<li><p><strong>cs</strong> (<em>ConfigurationSpace</em>) – configspace of this scenario</p></li>
+<li><p><strong>runtime</strong> (<em>bool</em>) – if True, the run_objective of this configurator run is runtime-optimization, if false it’s quality</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="cave.plot.parallel_coordinates.ParallelCoordinatesPlotter.plot_n_configs">
 <code class="descname">plot_n_configs</code><span class="sig-paren">(</span><em>num_configs</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/parallel_coordinates.html#ParallelCoordinatesPlotter.plot_n_configs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.parallel_coordinates.ParallelCoordinatesPlotter.plot_n_configs" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>num_configs</strong> (<em>int</em>) – number of configs to be plotted</li>
-<li><strong>params</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – parameters to be plotted</li>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_configs</strong> (<em>int</em>) – number of configs to be plotted</p></li>
+<li><p><strong>params</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – parameters to be plotted</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

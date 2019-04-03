@@ -236,43 +236,43 @@
 <p>When running CAVE via the commandline you can use the following arguments to control it’s behaviour:</p>
 <p>Mandatory:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">--folders</span></code>: path(s) to folder(s) containing the SMAC3-output (works with
-<cite>output/run_*</cite>)</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--folders</span></code>: path(s) to folder(s) containing the SMAC3-output (works with
+<cite>output/run_*</cite>)</p></li>
 </ul>
 <p>Meta-parameters:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">--output</span></code>: where to save the CAVE-output</li>
-<li><code class="docutils literal notranslate"><span class="pre">--file_format</span></code>: of results to be analyzed, choose from <a class="reference external" href="https://github.com/automl/SMAC3">SMAC3</a>, <a class="reference external" href="https://www.cs.ubc.ca/labs/beta/Projects/SMAC">SMAC2</a>,
-<a class="reference external" href="fileformats.html#csv">CSV</a> or <a class="reference external" href="https://github.com/automl/HpBandSter">BOHB</a>.</li>
-<li><code class="docutils literal notranslate"><span class="pre">--validation_format</span></code>: of (optional) validation data (to enhance epm-quality where appropriate), choose from
+<li><p><code class="docutils literal notranslate"><span class="pre">--output</span></code>: where to save the CAVE-output</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--file_format</span></code>: of results to be analyzed, choose from <a class="reference external" href="https://github.com/automl/SMAC3">SMAC3</a>, <a class="reference external" href="https://www.cs.ubc.ca/labs/beta/Projects/SMAC">SMAC2</a>,
+<a class="reference external" href="fileformats.html#csv">CSV</a> or <a class="reference external" href="https://github.com/automl/HpBandSter">BOHB</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--validation_format</span></code>: of (optional) validation data (to enhance epm-quality where appropriate), choose from
 <a class="reference external" href="https://github.com/automl/SMAC3">SMAC3</a>, <a class="reference external" href="https://www.cs.ubc.ca/labs/beta/Projects/SMAC">SMAC2</a>,
-<a class="reference external" href="fileformats.html#csv">CSV</a> or None.</li>
-<li><code class="docutils literal notranslate"><span class="pre">--ta_exec_dir</span></code>: target algorithm execution directory, this should be a path to
+<a class="reference external" href="fileformats.html#csv">CSV</a> or None.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--ta_exec_dir</span></code>: target algorithm execution directory, this should be a path to
 the directory from which the Configurator was run initially (e.g. used to find relative instance-files and
 if necessary execute the <cite>algo</cite>-parameter of the SMAC-scenario). (DEFAULT:
-current working directory)</li>
+current working directory)</p></li>
 </ul>
 <p>Analysis-control (what methods to use in what way):</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">--parameter_importance</span></code>: calculating parameter importance is expensive, so you can
+<li><p><code class="docutils literal notranslate"><span class="pre">--parameter_importance</span></code>: calculating parameter importance is expensive, so you can
 specify which plots you desire: <cite>ablation</cite>, <cite>forward_selection</cite>, <cite>fanova</cite>
 and/or <cite>lpi</cite>.
-either provide a combination of those or use <cite>all</cite> or <cite>none</cite></li>
-<li><code class="docutils literal notranslate"><span class="pre">--feature_analysis</span></code>: analysis of features is expensive, so you can specify which
+either provide a combination of those or use <cite>all</cite> or <cite>none</cite></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--feature_analysis</span></code>: analysis of features is expensive, so you can specify which
 algorithm to run: <cite>box_violin</cite>, <cite>clustering</cite>, <cite>importance</cite> and/or <cite>feature_cdf</cite>.
-either provide a combination of those or use <cite>all</cite> or <cite>none</cite></li>
-<li><code class="docutils literal notranslate"><span class="pre">--no_tabular_analysis</span></code>: toggles the tabular analysis</li>
-<li><code class="docutils literal notranslate"><span class="pre">--no_ecdf</span></code>, <code class="docutils literal notranslate"><span class="pre">--no_scatter_plots</span></code>: toggle ecdf- and scatter-plots</li>
-<li><code class="docutils literal notranslate"><span class="pre">--no_cost_over_time</span></code>: toggles the cost-over-time plot</li>
-<li><code class="docutils literal notranslate"><span class="pre">--no_parallel_coordinates</span></code>: toggles the parallel-coordinates plot</li>
-<li><code class="docutils literal notranslate"><span class="pre">--no_configurator_footprint</span></code>: toggles the configurator-footprints</li>
-<li><code class="docutils literal notranslate"><span class="pre">--no_algorithm_footprints</span></code>: toggles the algorithm-footprints</li>
-<li><code class="docutils literal notranslate"><span class="pre">--cfp_time_slider</span></code>: how to display the over-time development of the configurator footprint, choose from <cite>off</cite> (which yields only the final interactive plot), <cite>static</cite> (which yields a number of <cite>.png`s to click through), `online</cite> (which generates a time-slider-widget - might be slow interaction on big data) and <cite>prerender</cite> (which also generates time-slider, but large file with low interaction time)</li>
-<li><code class="docutils literal notranslate"><span class="pre">--cfp_number_quantiles</span></code>: if time-slider for configurator footprints is not <cite>off</cite>, determines the number of different quantiles to look at</li>
+either provide a combination of those or use <cite>all</cite> or <cite>none</cite></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--no_tabular_analysis</span></code>: toggles the tabular analysis</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--no_ecdf</span></code>, <code class="docutils literal notranslate"><span class="pre">--no_scatter_plots</span></code>: toggle ecdf- and scatter-plots</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--no_cost_over_time</span></code>: toggles the cost-over-time plot</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--no_parallel_coordinates</span></code>: toggles the parallel-coordinates plot</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--no_configurator_footprint</span></code>: toggles the configurator-footprints</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--no_algorithm_footprints</span></code>: toggles the algorithm-footprints</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--cfp_time_slider</span></code>: how to display the over-time development of the configurator footprint, choose from <cite>off</cite> (which yields only the final interactive plot), <cite>static</cite> (which yields a number of <cite>.png`s to click through), `online</cite> (which generates a time-slider-widget - might be slow interaction on big data) and <cite>prerender</cite> (which also generates time-slider, but large file with low interaction time)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--cfp_number_quantiles</span></code>: if time-slider for configurator footprints is not <cite>off</cite>, determines the number of different quantiles to look at</p></li>
 </ul>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If you analyze BOHB-results, you can only provide one folder.</p>
+<p class="admonition-title">Note</p>
+<p>If you analyze BOHB-results, you can only provide one folder.</p>
 </div>
 </div>
 

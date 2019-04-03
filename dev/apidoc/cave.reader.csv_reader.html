@@ -243,53 +243,51 @@
 <dt id="cave.reader.csv_reader.CSVReader.get_runhistory">
 <code class="descname">get_runhistory</code><span class="sig-paren">(</span><em>cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv_reader.html#CSVReader.get_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv_reader.CSVReader.get_runhistory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads runhistory in csv-format:</p>
-<table border="1" class="docutils">
+<table class="docutils align-center">
 <colgroup>
-<col width="30%" />
-<col width="30%" />
-<col width="9%" />
-<col width="9%" />
-<col width="9%" />
-<col width="12%" />
+<col style="width: 30%" />
+<col style="width: 30%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 12%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">config_id</th>
-<th class="head">instance_id</th>
-<th class="head">cost</th>
-<th class="head">time</th>
-<th class="head">seed</th>
-<th class="head">status</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>config_id</p></th>
+<th class="head"><p>instance_id</p></th>
+<th class="head"><p>cost</p></th>
+<th class="head"><p>time</p></th>
+<th class="head"><p>seed</p></th>
+<th class="head"><p>status</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>name of config 1</td>
-<td>name of instance 1</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
+<tbody>
+<tr class="row-even"><td><p>name of config 1</p></td>
+<td><p>name of instance 1</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
 </tr>
-<tr class="row-odd"><td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
+<tr class="row-odd"><td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
 </tr>
 </tbody>
 </table>
 <p>where config_id and instance_id can also be replaced by columns for the
 individual parameters/instance features</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>rh</strong> – runhistory</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">RunHistory</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>rh</strong> – runhistory</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>RunHistory</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -304,60 +302,60 @@ scenario-information (
 <dt id="cave.reader.csv_reader.CSVReader.get_trajectory">
 <code class="descname">get_trajectory</code><span class="sig-paren">(</span><em>cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv_reader.html#CSVReader.get_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv_reader.CSVReader.get_trajectory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads <cite>self.folder/trajectory.csv</cite>, expected format:</p>
-<table border="1" class="docutils">
+<table class="docutils align-center">
 <colgroup>
-<col width="18%" />
-<col width="11%" />
-<col width="29%" />
-<col width="23%" />
-<col width="20%" />
+<col style="width: 18%" />
+<col style="width: 11%" />
+<col style="width: 29%" />
+<col style="width: 23%" />
+<col style="width: 20%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">cpu_time</th>
-<th class="head">cost</th>
-<th class="head">wallclock_time</th>
-<th class="head">evaluations</th>
-<th class="head">config_id</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>cpu_time</p></th>
+<th class="head"><p>cost</p></th>
+<th class="head"><p>wallclock_time</p></th>
+<th class="head"><p>evaluations</p></th>
+<th class="head"><p>config_id</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
+<tbody>
+<tr class="row-even"><td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
 </tr>
 </tbody>
 </table>
 <p>or</p>
-<table border="1" class="docutils">
+<table class="docutils align-center">
 <colgroup>
-<col width="14%" />
-<col width="8%" />
-<col width="22%" />
-<col width="18%" />
-<col width="16%" />
-<col width="16%" />
-<col width="7%" />
+<col style="width: 14%" />
+<col style="width: 8%" />
+<col style="width: 22%" />
+<col style="width: 18%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 7%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">cpu_time</th>
-<th class="head">cost</th>
-<th class="head">wallclock_time</th>
-<th class="head">evaluations</th>
-<th class="head">parameter1</th>
-<th class="head">parameter2</th>
-<th class="head">…</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>cpu_time</p></th>
+<th class="head"><p>cost</p></th>
+<th class="head"><p>wallclock_time</p></th>
+<th class="head"><p>evaluations</p></th>
+<th class="head"><p>parameter1</p></th>
+<th class="head"><p>parameter2</p></th>
+<th class="head"><p>…</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
+<tbody>
+<tr class="row-even"><td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
 </tr>
 </tbody>
 </table>
@@ -367,53 +365,51 @@ scenario-information (
 <dt id="cave.reader.csv_reader.CSVReader.get_validated_runhistory">
 <code class="descname">get_validated_runhistory</code><span class="sig-paren">(</span><em>cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv_reader.html#CSVReader.get_validated_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv_reader.CSVReader.get_validated_runhistory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads runhistory in csv-format:</p>
-<table border="1" class="docutils">
+<table class="docutils align-center">
 <colgroup>
-<col width="30%" />
-<col width="30%" />
-<col width="9%" />
-<col width="9%" />
-<col width="9%" />
-<col width="12%" />
+<col style="width: 30%" />
+<col style="width: 30%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 12%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">config_id</th>
-<th class="head">instance_id</th>
-<th class="head">cost</th>
-<th class="head">time</th>
-<th class="head">seed</th>
-<th class="head">status</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>config_id</p></th>
+<th class="head"><p>instance_id</p></th>
+<th class="head"><p>cost</p></th>
+<th class="head"><p>time</p></th>
+<th class="head"><p>seed</p></th>
+<th class="head"><p>status</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>name of config 1</td>
-<td>name of instance 1</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
+<tbody>
+<tr class="row-even"><td><p>name of config 1</p></td>
+<td><p>name of instance 1</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
 </tr>
-<tr class="row-odd"><td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
+<tr class="row-odd"><td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
 </tr>
 </tbody>
 </table>
 <p>where config_id and instance_id can also be replaced by columns for the
 individual parameters/instance features</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>rh</strong> – validated runhistory</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">RunHistory</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>rh</strong> – validated runhistory</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>RunHistory</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

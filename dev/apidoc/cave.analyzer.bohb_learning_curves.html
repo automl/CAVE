@@ -240,33 +240,27 @@
 <em class="property">class </em><code class="descclassname">cave.analyzer.bohb_learning_curves.</code><code class="descname">BohbLearningCurves</code><span class="sig-paren">(</span><em>hp_names</em>, <em>result_object=None</em>, <em>result_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/bohb_learning_curves.html#BohbLearningCurves"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.bohb_learning_curves.BohbLearningCurves" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer" title="cave.analyzer.base_analyzer.BaseAnalyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">cave.analyzer.base_analyzer.BaseAnalyzer</span></code></a></p>
 <p>Visualize hpbandster learning curves in an interactive bokeh-plot.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>hp_names</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list with hyperparameters-names</li>
-<li><strong>result_object</strong> (<em>Result</em>) – hpbandster-result object. must be specified if result_path is not</li>
-<li><strong>result_path</strong> (<em>str</em>) – path to hpbandster result-folder. must contain configs.json and results.json. must be specified if result_object is not</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hp_names</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list with hyperparameters-names</p></li>
+<li><p><strong>result_object</strong> (<em>Result</em>) – hpbandster-result object. must be specified if result_path is not</p></li>
+<li><p><strong>result_path</strong> (<em>str</em>) – path to hpbandster result-folder. must contain configs.json and results.json. must be specified if result_object is not</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="cave.analyzer.bohb_learning_curves.BohbLearningCurves.get_html">
 <code class="descname">get_html</code><span class="sig-paren">(</span><em>d=None</em>, <em>tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/bohb_learning_curves.html#BohbLearningCurves.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.bohb_learning_curves.BohbLearningCurves.get_html" title="Permalink to this definition">¶</a></dt>
 <dd><p>General reports in html-format, to be easily integrated in html-code. ALSO FOR BOKEH-OUTPUT.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>script, div</strong> – header and body part of html-code</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str, str</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>script, div</strong> – header and body part of html-code</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str, str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -284,16 +278,14 @@
 <dt id="cave.analyzer.bohb_learning_curves.BohbLearningCurves.get_static_plots">
 <code class="descname">get_static_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#cave.analyzer.bohb_learning_curves.BohbLearningCurves.get_static_plots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns plot-paths, if any are available</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>plot_paths</strong> – returns list of strings</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">List[str]</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>plot_paths</strong> – returns list of strings</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">

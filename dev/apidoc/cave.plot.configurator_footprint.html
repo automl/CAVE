@@ -244,56 +244,48 @@ The runhistories are correlated to the individual runs.
 Each run consists of a runhistory (in the smac-format), a list of incumbents
 If the dict “additional_info” in the RunValues of the runhistory contains a nested dict with
 additional_info[“timestamps”][“finished”], using those timestamps to sort data</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>scenario</strong> (<em>Scenario</em>) – scenario</li>
-<li><strong>rhs</strong> (<em>List</em><em>[</em><em>RunHistory</em><em>]</em>) – runhistories from configurator runs, only data collected during optimization (no validation!)</li>
-<li><strong>incs</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><em>Configuration</em><em>]</em><em>]</em>) – incumbents per run, last entry is final incumbent</li>
-<li><strong>final_incumbent</strong> (<em>Configuration</em>) – final configuration (best of all runs)</li>
-<li><strong>max_plot</strong> (<em>int</em>) – maximum number of configs to plot, if -1 plot all</li>
-<li><strong>contour_step_size</strong> (<em>float</em>) – step size of meshgrid to compute contour of fitness landscape</li>
-<li><strong>use_timeslider</strong> (<em>bool</em>) – whether or not to have a time_slider-widget on cfp-plot
-INCREASES FILE-SIZE DRAMATICALLY</li>
-<li><strong>num_quantiles</strong> (<em>int</em>) – number of quantiles for the slider/ number of static pictures</li>
-<li><strong>timeslider_log</strong> (<em>bool</em>) – whether to use a logarithmic scale for the timeslider/quantiles</li>
-<li><strong>output_dir</strong> (<em>str</em>) – output directory</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>Scenario</em>) – scenario</p></li>
+<li><p><strong>rhs</strong> (<em>List</em><em>[</em><em>RunHistory</em><em>]</em>) – runhistories from configurator runs, only data collected during optimization (no validation!)</p></li>
+<li><p><strong>incs</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><em>Configuration</em><em>]</em><em>]</em>) – incumbents per run, last entry is final incumbent</p></li>
+<li><p><strong>final_incumbent</strong> (<em>Configuration</em>) – final configuration (best of all runs)</p></li>
+<li><p><strong>max_plot</strong> (<em>int</em>) – maximum number of configs to plot, if -1 plot all</p></li>
+<li><p><strong>contour_step_size</strong> (<em>float</em>) – step size of meshgrid to compute contour of fitness landscape</p></li>
+<li><p><strong>use_timeslider</strong> (<em>bool</em>) – whether or not to have a time_slider-widget on cfp-plot
+INCREASES FILE-SIZE DRAMATICALLY</p></li>
+<li><p><strong>num_quantiles</strong> (<em>int</em>) – number of quantiles for the slider/ number of static pictures</p></li>
+<li><p><strong>timeslider_log</strong> (<em>bool</em>) – whether to use a logarithmic scale for the timeslider/quantiles</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – output directory</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_conf_matrix">
 <code class="descname">get_conf_matrix</code><span class="sig-paren">(</span><em>rh</em>, <em>incs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.get_conf_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_conf_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterates through runhistory to get a matrix of configurations (in
 vector representation), a list of configurations and the number of
 runs per configuration in a quantiled manner.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>rh</strong> (<em>RunHistory</em>) – smac.runhistory</li>
-<li><strong>incs</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><em>Configuration</em><em>]</em><em>]</em>) – incumbents of configurator runs, last entry is final incumbent</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rh</strong> (<em>RunHistory</em>) – smac.runhistory</p></li>
+<li><p><strong>incs</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><em>Configuration</em><em>]</em><em>]</em>) – incumbents of configurator runs, last entry is final incumbent</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><strong>conf_matrix</strong> (<em>np.array</em>) – matrix of configurations in vector representation</li>
-<li><strong>conf_list</strong> (<em>np.array</em>) – list of all Configuration objects that appeared in runhistory
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>conf_matrix</strong> (<em>np.array</em>) – matrix of configurations in vector representation</p></li>
+<li><p><strong>conf_list</strong> (<em>np.array</em>) – list of all Configuration objects that appeared in runhistory
 the order of this list is used to determine all kinds of properties
-in the plotting (but is arbitrarily determined)</li>
-<li><strong>runs_per_quantile</strong> (<em>np.array</em>) – numpy array of runs per configuration per quantile</li>
-<li><strong>labels</strong> (<em>List[str]</em>) – labels for timeslider (i.e. wallclock-times)</li>
+in the plotting (but is arbitrarily determined)</p></li>
+<li><p><strong>runs_per_quantile</strong> (<em>np.array</em>) – numpy array of runs per configuration per quantile</p></li>
+<li><p><strong>labels</strong> (<em>List[str]</em>) – labels for timeslider (i.e. wallclock-times)</p></li>
 </ul>
 </p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -301,60 +293,51 @@ in the plotting (but is arbitrarily determined)</li>
 <code class="descname">get_depth</code><span class="sig-paren">(</span><em>cs: ConfigSpace.configuration_space.ConfigurationSpace</em>, <em>param: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.get_depth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_depth" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get depth in configuration space of a given parameter name
 breadth search until reaching a leaf for the first time</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>cs</strong> (<em>ConfigurationSpace</em>) – ConfigurationSpace to get parents of a parameter</li>
-<li><strong>param</strong> (<em>str</em>) – name of parameter to inspect</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cs</strong> (<em>ConfigurationSpace</em>) – ConfigurationSpace to get parents of a parameter</p></li>
+<li><p><strong>param</strong> (<em>str</em>) – name of parameter to inspect</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_distance">
 <code class="descname">get_distance</code><span class="sig-paren">(</span><em>conf_matrix</em>, <em>cs: ConfigSpace.configuration_space.ConfigurationSpace</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.get_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_distance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the distance between all pairs of configurations.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>conf_matrx</strong> (<em>np.array</em>) – numpy array with cols as parameter values</li>
-<li><strong>cs</strong> (<em>ConfigurationSpace</em>) – ConfigurationSpace to get conditionalities</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>conf_matrx</strong> (<em>np.array</em>) – numpy array with cols as parameter values</p></li>
+<li><p><strong>cs</strong> (<em>ConfigurationSpace</em>) – ConfigurationSpace to get conditionalities</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dists</strong> – np.array with distances between configurations i,j in dists[i,j] or dists[j,i]</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.array</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>dists</strong> – np.array with distances between configurations i,j in dists[i,j] or dists[j,i]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_mds">
 <code class="descname">get_mds</code><span class="sig-paren">(</span><em>dists</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.get_mds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_mds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute multi-dimensional scaling (using sklearn MDS) – nonlinear scaling</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dists</strong> (<em>np.array</em>) – full matrix of distances between all configurations</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">scaled coordinates in 2-dim room</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.array</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dists</strong> (<em>np.array</em>) – full matrix of distances between all configurations</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>scaled coordinates in 2-dim room</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -362,26 +345,22 @@ breadth search until reaching a leaf for the first time</p>
 <code class="descname">get_pred_surface</code><span class="sig-paren">(</span><em>rh</em>, <em>X_scaled</em>, <em>conf_list: list</em>, <em>contour_step_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.get_pred_surface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_pred_surface" title="Permalink to this definition">¶</a></dt>
 <dd><p>fit epm on the scaled input dimension and
 return data to plot a contour plot of the empirical performance</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>rh</strong> (<em>RunHistory</em>) – runhistory</li>
-<li><strong>X_scaled</strong> (<em>np.array</em>) – configurations in scaled 2dim</li>
-<li><strong>conf_list</strong> (<em>list</em>) – list of Configuration objects</li>
-<li><strong>contour_step_size</strong> (<em>float</em>) – step-size for contour</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rh</strong> (<em>RunHistory</em>) – runhistory</p></li>
+<li><p><strong>X_scaled</strong> (<em>np.array</em>) – configurations in scaled 2dim</p></li>
+<li><p><strong>conf_list</strong> (<em>list</em>) – list of Configuration objects</p></li>
+<li><p><strong>contour_step_size</strong> (<em>float</em>) – step-size for contour</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>contour_data</strong> – x, y, Z for contour plots</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(np.array, np.array, np.array)</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>contour_data</strong> – x, y, Z for contour plots</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(np.array, np.array, np.array)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -390,58 +369,50 @@ return data to plot a contour plot of the empirical performance</p>
 <dd><p>plots sampled configuration in 2d-space;
 uses bokeh for interactive plot
 saves results in self.output, if set</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>X</strong> (<em>np.array</em>) – np.array with 2-d coordinates for each configuration</li>
-<li><strong>conf_list</strong> (<em>list</em>) – list of ALL configurations in the same order as X</li>
-<li><strong>runs_per_quantile</strong> (<em>list</em><em>[</em><em>np.array</em><em>]</em>) – configurator-run to be analyzed, as a np.array with
-the number of target-algorithm-runs per config per quantile.</li>
-<li><strong>inc_list</strong> (<em>list</em>) – list of incumbents (Configuration)</li>
-<li><strong>contour_data</strong> (<em>list</em>) – contour data (xx,yy,Z)</li>
-<li><strong>use_timeslider</strong> (<em>bool</em>) – whether or not to have a time_slider-widget on cfp-plot
-INCREASES FILE-SIZE DRAMATICALLY</li>
-<li><strong>use_checkbox</strong> (<em>bool</em>) – have checkboxes to toggle individual runs</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>np.array</em>) – np.array with 2-d coordinates for each configuration</p></li>
+<li><p><strong>conf_list</strong> (<em>list</em>) – list of ALL configurations in the same order as X</p></li>
+<li><p><strong>runs_per_quantile</strong> (<em>list</em><em>[</em><em>np.array</em><em>]</em>) – configurator-run to be analyzed, as a np.array with
+the number of target-algorithm-runs per config per quantile.</p></li>
+<li><p><strong>inc_list</strong> (<em>list</em>) – list of incumbents (Configuration)</p></li>
+<li><p><strong>contour_data</strong> (<em>list</em>) – contour data (xx,yy,Z)</p></li>
+<li><p><strong>use_timeslider</strong> (<em>bool</em>) – whether or not to have a time_slider-widget on cfp-plot
+INCREASES FILE-SIZE DRAMATICALLY</p></li>
+<li><p><strong>use_checkbox</strong> (<em>bool</em>) – have checkboxes to toggle individual runs</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><strong>(script, div)</strong> (<em>str</em>) – script and div of the bokeh-figure</li>
-<li><strong>over_time_paths</strong> (<em>List[str]</em>) – list with paths to the different quantiled timesteps of the
-configurator run (for static evaluation)</li>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>(script, div)</strong> (<em>str</em>) – script and div of the bokeh-figure</p></li>
+<li><p><strong>over_time_paths</strong> (<em>List[str]</em>) – list with paths to the different quantiled timesteps of the
+configurator run (for static evaluation)</p></li>
 </ul>
 </p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.reduce_runhistory">
 <code class="descname">reduce_runhistory</code><span class="sig-paren">(</span><em>rh: smac.runhistory.runhistory.RunHistory</em>, <em>max_configs: int</em>, <em>keep=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.reduce_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.reduce_runhistory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reduce configs to desired number, by default just drop the configs with the fewest runs.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>rh</strong> (<em>RunHistory</em>) – runhistory that is to be reduced</li>
-<li><strong>max_configs</strong> (<em>int</em>) – if &gt; -1 reduce runhistory to at most max_configs</li>
-<li><strong>keep</strong> (<em>List</em><em>[</em><em>Configuration</em><em>]</em>) – list of configs that should be kept for sure (e.g. default, incumbents)</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rh</strong> (<em>RunHistory</em>) – runhistory that is to be reduced</p></li>
+<li><p><strong>max_configs</strong> (<em>int</em>) – if &gt; -1 reduce runhistory to at most max_configs</p></li>
+<li><p><strong>keep</strong> (<em>List</em><em>[</em><em>Configuration</em><em>]</em>) – list of configs that should be kept for sure (e.g. default, incumbents)</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>rh</strong> – reduced runhistory</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RunHistory</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>rh</strong> – reduced runhistory</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>RunHistory</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
