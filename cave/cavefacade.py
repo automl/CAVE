@@ -179,16 +179,21 @@ class CAVE(object):
         verbose_level: str
             from [OFF, INFO, DEBUG, DEV_DEBUG and WARNING]
         """
-        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
-        self.output_dir = output_dir
-        self.output_dir_created = False
-        self.set_verbosity(verbose_level.upper())
-        self.logger.debug("Running CAVE version %s", v)
         self.show_jupyter = show_jupyter
         if self.show_jupyter:
             # Reset logging module
             logging.shutdown()
             reload(logging)
+
+        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
+        self.output_dir = output_dir
+        self.output_dir_created = False
+
+        # Create output_dir and set verbosity
+        self.set_verbosity(verbose_level.upper())
+        self._create_outputdir(self.output_dir)
+
+        self.logger.debug("Running CAVE version %s", v)
 
         # Methods that are never per-run, because they are inter-run-analysis by nature
         self.always_aggregated = ['bohb_learning_curves', 'bohb_incumbents_per_budget', 'configurator_footprint',
@@ -217,9 +222,6 @@ class CAVE(object):
 
         self.num_bohb_results = 0
         self.bohb_results = None  # only relevant for bohb_result
-
-        # Create output_dir if necessary
-        self._create_outputdir(self.output_dir)
 
         if file_format == 'BOHB':
             self.use_budgets = True
