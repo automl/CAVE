@@ -1,6 +1,23 @@
+# 1.1.6
+
+## Bug fixes
+
+* Recreate output always, zip old files if present
+* Fix jupyter-notebook logging and output-folder recreation
+
+## Minor changes
+
+* Show budgets as integers, if they are integers
+* Add single budgets to cost-over-time plot (from bohb-result)
+* Add std to bohb-runs in cost-over-time plot
+* Remove combined option from contour-plot-selection, fix checkboxes
+* Improve budget correlation plot (add dropdown-selection)
+* Remove package orange3
+
 # 1.1.5
 
 ## Bug fixes
+
 * Parallel Coordinates order now derived from parameter importance
 * Show all fANOVA pairwise plots
 * Fix bug in cost-over-time if run multiple times with same output-dir
@@ -11,6 +28,7 @@
 * Parameters active in either def or inc are shown in comparison (before only active in def)
 
 ## Minor changes
+
 * Add number of bohb-runs to meta-table
 * Make overflowing HTML-tables scrollable
 * Don't plot scatter or cdf if leq than one instance
@@ -30,6 +48,7 @@
 * Fix notebook-errors when executing cfp
 
 ## Major changes
+
 * New version of the overview-table (with run-specific for every run)
 * Enable support for multiple BOHB-runs (just aggregating budgets across results)
 
