@@ -55,20 +55,17 @@ We are currently working on the [documentation](https://automl.github.io/CAVE/st
 You can analyze multiple folders (that are generated with the same scenario) for the analysis, simply provide the paths to all the individual results in `--folders`.
 
 Commandline arguments:
-- `--folders`: path(s) to folder(s) containing the SMAC3-output (works with
-  `output/run_*`)
+- `--folders`: path(s) to folder(s) containing the configurator-output (works with `output/run_*`)
 
 Optional:
 - `--output`: where to save the CAVE-output
 - `--file_format`: of results to be analyzed, choose from [SMAC3](https://github.com/automl/SMAC3), [SMAC2](https://www.cs.ubc.ca/labs/beta/Projects/SMAC), [CSV](https://automl.github.io/CAVE/stable/quickstart.html#csv) or [BOHB](https://github.com/automl/HpBandSter)
 - `--validation_format`: of (optional) validation data (to enhance epm-quality where appropriate), choose from [SMAC3](https://github.com/automl/SMAC3), [SMAC2](https://www.cs.ubc.ca/labs/beta/Projects/SMAC), [CSV](https://automl.github.io/CAVE/stable/quickstart.html#csv) or NONE
-- `--ta_exec_dir`: target algorithm execution directory, this should be a path to
-  the directory from which SMAC was run initially. used to find instance-files and
-  if necessary execute the `algo`-parameter of the SMAC-scenario (DEFAULT:
-  current working directory)
+- `--ta_exec_dir`: target algorithm execution directories, this should be one or multiple path(s) to
+  the directories from which the configurator was run initially. not necessary for all configurators (BOHB doesn't need it). used to find instance-files and
+  if necessary execute the `algo`-parameter of the SMAC-scenario (DEFAULT: current working directory)
 - `--parameter_importance`: calculating parameter importance is expensive, so you can
-  specify which plots you desire: `ablation`, `forward_selection`, `fanova`
-  and/or `lpi`.
+  specify which plots you desire: `ablation`, `forward_selection`, `fanova` and/or `lpi`.
   either provide a combination of those or use `all` or `none`
 - `--feature_analysis`: analysis features is expensive, so you can specify which
   algorithm to run: `box_violin`, `clustering`, `importance` and/or `feature_cdf`.
@@ -79,8 +76,8 @@ Optional:
 - `--no_parallel_coordinates`: toggles the parallel-coordinates plot
 - `--no_configurator_footprint`: toggles the configurator-footprints
 - `--no_algorithm_footprints`: toggles the algorithm-footprints
-- `--cfp_time_slider`: how to display the over-time development of the configurator footprint, choose from `off` (which yields only the final interactive plot), `static` (which yields a number of `.png`s to click through), `online` (which generates a time-slider-widget - might be slow interaction on big data) and `prerender` (which also generates time-slider, but large file with low interaction time)
-- `--cfp_number_quantiles`: if time-slider for configurator footprints is not `off`, determines the number of different quantiles to look at
+- `--cfp_time_slider`: `on` will add a time-slider to the interactive configurator footprint which will result in longer loading times, `off` will generate static png's at the desired quantiles
+- `--cfp_number_quantiles`: determines how many time-steps to prerender from in the configurator footprint
 
 For further information on  to use CAVE, see:
 `python scripts/cave.py -h
@@ -111,6 +108,4 @@ and then you can use CAVE as usual, specifying the file_format as BOHB:
 ```
 cave --folders examples/bohb --file_format BOHB --output CAVE_BOHB_results
 ```
-There is an [example
-jupyter-notebook](https://github.com/automl/BOHBsCAVE/blob/master/notebook_mlp_on_digits.ipynb) on how to use
-CAVE with BOHB.
+There is an [example jupyter-notebook](https://github.com/automl/HpBandSter/blob/add_docu/hpbandster/examples/Workflow.ipynb) on how to use CAVE with BOHB.

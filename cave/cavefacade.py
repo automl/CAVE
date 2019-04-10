@@ -179,16 +179,21 @@ class CAVE(object):
         verbose_level: str
             from [OFF, INFO, DEBUG, DEV_DEBUG and WARNING]
         """
-        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
-        self.output_dir = output_dir
-        self.output_dir_created = False
-        self.set_verbosity(verbose_level.upper(), os.path.join(self.output_dir, "debug"))
-        self.logger.debug("Running CAVE version %s", v)
         self.show_jupyter = show_jupyter
         if self.show_jupyter:
             # Reset logging module
             logging.shutdown()
             reload(logging)
+
+        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
+        self.output_dir = output_dir
+        self.output_dir_created = False
+
+        # Create output_dir and set verbosity
+        self.set_verbosity(verbose_level.upper())
+        self._create_outputdir(self.output_dir)
+
+        self.logger.debug("Running CAVE version %s", v)
 
         # Methods that are never per-run, because they are inter-run-analysis by nature
         self.always_aggregated = ['bohb_learning_curves', 'bohb_incumbents_per_budget', 'configurator_footprint',
@@ -216,15 +221,12 @@ class CAVE(object):
         self.feature_names = None
 
         self.num_bohb_results = 0
-        self.bohb_result = None  # only relevant for bohb_result
-
-        # Create output_dir if necessary
-        self._create_outputdir(self.output_dir)
+        self.bohb_results = None  # only relevant for bohb_result
 
         if file_format == 'BOHB':
             self.use_budgets = True
             self.num_bohb_results = len(folders)
-            self.bohb_result, folders, budgets = HpBandSter2SMAC().convert(folders, output_dir)
+            self.bohb_results, folders, budgets = HpBandSter2SMAC().convert(folders, output_dir)
             if "DEBUG" in self.verbose_level:
                 for f in folders:
                     debug_f = os.path.join(output_dir, 'debug', os.path.basename(f))
@@ -500,7 +502,7 @@ class CAVE(object):
             # TODO: Currently, the code below is configured for bohb... if we extend to other budget-driven configurators, review!
 
             # Perform analysis for each run
-            if self.bohb_result:
+            if self.bohb_results:
                 self.website["Budget Correlation"] = OrderedDict()
                 self.budget_correlation(d=self.website["Budget Correlation"])
                 self.bohb_learning_curves(d=self.website)
@@ -722,7 +724,7 @@ class CAVE(object):
                             cave.global_validated_rh,
                             self.runs,
                             block_epm=self.use_budgets,  # blocking epms if bohb is analyzed
-                            bohb_result=self.bohb_result,
+                            bohb_results=self.bohb_results,
                             validator=cave.validator)
 
     @_analyzer_type
@@ -1000,7 +1002,7 @@ class CAVE(object):
         iteration and the stage is the index of the budget in which the configuration was first sampled (should be 0).
         The third index is just a sequential enumeration. This id can be interpreted as a nested index-identifier.
         """
-        return BohbLearningCurves(self.scenario.cs.get_hyperparameter_names(), result_object=self.bohb_result)
+        return BohbLearningCurves(self.scenario.cs.get_hyperparameter_names(), result_object=self.bohb_results[0])
 
     @_analyzer_type
     def bohb_incumbents_per_budget(self, cave):
@@ -1009,15 +1011,16 @@ class CAVE(object):
         budget).
         """
         return BohbIncumbentsPerBudget([b.incumbent for b in self.runs],
-                                       [b.folder for b in self.runs],
+                                       [b.folder.replace('_', ' ') for b in self.runs],
                                        [b.epm_runhistory for b in self.runs])
 
     @_analyzer_type
     def budget_correlation(self, cave):
         """
-        Use spearman correlation, to get a correlation-value and a p-value for every pairwise combination of budgets.
+        Use spearman correlation to get a correlation-value and a p-value for every pairwise combination of budgets.
         First value is the correlation, second is the p-value (the p-value roughly estimates the likelihood to obtain
         this correlation coefficient with uncorrelated datasets).
+        This can be used to estimate how well a budget approximates the function to be optimized.
         """
         return BudgetCorrelation(self.runs)
 
@@ -1063,7 +1066,7 @@ class CAVE(object):
     def _build_website(self):
         self.builder.generate_html(self.website)
 
-    def set_verbosity(self, level, output_dir):
+    def set_verbosity(self, level):
         # Log to stream (console)
         logging.getLogger().setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
@@ -1086,10 +1089,7 @@ class CAVE(object):
                                    "LPI",
                                    # Other (mostly bokeh)
                                    "PIL.PngImagePlugin",
-                                   "matplotlib.font_manager",
-                                   "matplotlib.ticker",
-                                   "matplotlib.axes",
-                                   "matplotlib.colorbar",
+                                   "matplotlib",
                                    "urllib3.connectionpool",
                                    "selenium.webdriver.remote.remote_connection"]
                 for logger in disable_loggers:
@@ -1100,9 +1100,11 @@ class CAVE(object):
 
         logging.getLogger().addHandler(stdout_handler)
         # Log to file is always debug
-        logging.getLogger('cave.settings').debug("Output-file for debug-log: '%s'", os.path.join(output_dir, "debug.log"))
-        self._create_outputdir(output_dir)
-        fh = logging.FileHandler(os.path.join(output_dir, "debug.log"), "w")
+        debug_path = os.path.join(self.output_dir, "debug", "debug.log")
+        logging.getLogger('cave.settings').debug("Output-file for debug-log: '%s'", debug_path)
+        self._create_outputdir(self.output_dir)
+        os.makedirs(os.path.split(debug_path)[0])
+        fh = logging.FileHandler(debug_path, "w")
         fh.setLevel(logging.DEBUG)
         fh.setFormatter(formatter)
         logging.getLogger().addHandler(fh)
@@ -1122,11 +1124,10 @@ class CAVE(object):
             self.logger.debug("Output-dir '%s' does not exist, creating", output_dir)
             os.makedirs(output_dir)
         else:
-            archive_path = os.path.join(tempfile.mkdtemp(), '.OLD')
-            shutil.make_archive(archive_path, 'zip', output_dir)
+            archive_path = shutil.make_archive(os.path.join(tempfile.mkdtemp(), '.OLD'), 'zip', output_dir)
             shutil.rmtree(output_dir)
             os.makedirs(output_dir)
-            shutil.move(archive_path + '.zip', output_dir)
+            shutil.move(archive_path, output_dir)
             self.logger.debug("Output-dir '%s' exists, moving old content to '%s'", self.output_dir,
                               os.path.join(self.output_dir, '.OLD.zip'))
 

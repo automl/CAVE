@@ -224,7 +224,7 @@ for (i = 0; i < acc.length; i++) {
 
         if use_tabs:
             div += "<div class=\"tab\">\n"
-            tabs_names = [k for k, v in data_dict.items() if isinstance(v, dict)]
+            tabs_names = [k.replace('_', ' ') for k, v in data_dict.items() if isinstance(v, dict)]
             rnd_prefix = str(random.randn())
             default_open_id = "defaultOpen" + self.get_unique_id()
             div += "  <button class=\"tablinks\" onclick=\"openTab(event, '{0}', '{1}')\" "\
@@ -245,7 +245,7 @@ for (i = 0; i < acc.length; i++) {
                     return '', ''
             elif isinstance(v, dict):
                 if use_tabs:
-                    div += "<div id=\"{0}\" class=\"tabcontent\">\n".format(layer_name + k)
+                    div += "<div id=\"{0}\" class=\"tabcontent\">\n".format((layer_name + k).replace('_', ' '))
                     div += "<div class=\"pane\">\n"
                 add_script, add_div = self.add_layer(k, v, is_tab=use_tabs)
                 script += add_script

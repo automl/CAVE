@@ -13,11 +13,11 @@ from smac.runhistory.runhistory import RunHistory
 from smac.scenario.scenario import Scenario
 
 from bokeh.models import ColumnDataSource, CustomJS, Range1d
-from bokeh.models.widgets import DataTable, TableColumn
+from bokeh.models.widgets import DataTable, TableColumn, Select
 from bokeh.embed import components
 from bokeh.plotting import show, figure
 from bokeh.io import output_notebook
-from bokeh.layouts import column
+from bokeh.layouts import column, row
 from bokeh.transform import jitter
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
@@ -59,7 +59,7 @@ class BudgetCorrelation(BaseAnalyzer):
                 else:
                     table[-1].append("{:.2f} ({} samples)".format(rho, len(costs[0])))
 
-        budget_names = [os.path.basename(run.folder) for run in runs]
+        budget_names = [os.path.basename(run.folder).replace('_', ' ') for run in runs]  # TODO
         return DataFrame(data=table, columns=budget_names, index=budget_names)
 
     def plot(self):
@@ -77,24 +77,30 @@ class BudgetCorrelation(BaseAnalyzer):
         """
         df = self._get_table(runs)
         # Create CDS from pandas dataframe
-        columns = list(df.columns.values)
-        data = dict(df[columns])
+        budget_names = list(df.columns.values)
+        data = dict(df[budget_names])
         data["Budget"] = df.index.tolist()
         table_source = ColumnDataSource(data)
         # Create bokeh-datatable
         columns = [TableColumn(field='Budget', title="Budget", sortable=False, width=20)] + [
-                   TableColumn(field=header, title=header, default_sort='descending', width=10) for header in columns
+                   TableColumn(field=header, title=header, default_sort='descending', width=10) for header in budget_names
                   ]
         bokeh_table = DataTable(source=table_source, columns=columns, index_position=None, sortable=False,
-                               height=20 + 30 * len(data["Budget"]))
+                                height=20 + 30 * len(data["Budget"]))
 
         # Create CDS for scatter-plot
         all_configs = set([a for b in [run.original_runhistory.get_all_configs() for run in runs] for a in b])
-        data = {os.path.basename(run.folder) : [run.original_runhistory.get_cost(c) if c in
-                                                run.original_runhistory.get_all_configs() else
-                                                None for c in all_configs] for run in runs}
+        data = {os.path.basename(run.folder).replace('_', ' ')  : [run.original_runhistory.get_cost(c) if c in  # TODO
+                                                                   run.original_runhistory.get_all_configs() else
+                                                                   None for c in all_configs] for run in runs}
         data['x'] = []
         data['y'] = []
+        # Default scatter should be lowest vs highest:
+        for x, y in zip(data[budget_names[0]], data[budget_names[-1]]):
+            if x is not None and y is not None:
+                data['x'].append(x)
+                data['y'].append(y)
+
 
         with warnings.catch_warnings(record=True) as list_of_warnings:
             # Catch unmatching column lengths warning
@@ -113,15 +119,15 @@ class BudgetCorrelation(BaseAnalyzer):
                    match_aspect=True,
                    y_range=Range1d(start=min_val, end=max_val, bounds=(min_val, max_val)),
                    x_range=Range1d(start=min_val, end=max_val, bounds=(min_val, max_val)),
-                   x_axis_label='budget', y_axis_label='budget')
+                   x_axis_label=budget_names[0], y_axis_label=budget_names[-1])
         p.circle(x='x', y='y',
                  #x=jitter('x', 0.1), y=jitter('y', 0.1),
                  source=scatter_source, size=5, color="navy", alpha=0.5)
 
-        code = 'var budgets = ' + str(list(df.columns.values)) + ';'
-        code += 'console.log(budgets);'
-        code += """
-        try {
+        code_budgets = 'var budgets = ' + str(budget_names) + '; console.log(budgets);'
+
+        code_try = 'try {'
+        code_get_selected_cell = """
             // This first part only extracts selected row and column!
             var grid = document.getElementsByClassName('grid-canvas')[0].children;
             var row = '';
@@ -138,7 +144,19 @@ class BudgetCorrelation(BaseAnalyzer):
             console.log('row', row, budgets[row]);
             console.log('col', col, budgets[col]);
             table_source.selected.indices = [];  // Reset, so gets triggered again when clicked again
+        """
 
+        code_selected = """
+        row = budgets.indexOf(select_x.value);
+        col = budgets.indexOf(select_y.value);
+        """
+
+        code_update_selection_values = """
+        select_x.value = budgets[row];
+        select_y.value = budgets[col];
+        """
+
+        code_update_plot = """
             // This is the actual updating of the plot
             if (row =>  0 && col > 0) {
               // Copy relevant arrays
@@ -170,25 +188,42 @@ class BudgetCorrelation(BaseAnalyzer):
               xr.end = max + padding;
               yr.end = max + padding;
             }
+        """
+
+        code_catch = """
         } catch(err) {
             console.log(err.message);
         }
         """
 
-        callback = CustomJS(args=dict(table_source=table_source,
-                                      scatter_source=scatter_source,
-                                      xaxis=p.xaxis[0], yaxis=p.yaxis[0],
-                                      xr=p.x_range, yr=p.y_range,
-                                      ), code=code)
-        table_source.selected.js_on_change('indices', callback)
+        code_selected = code_budgets + code_try + code_selected + code_update_plot + code_catch
+        select_x = Select(title="X-axis:", value=budget_names[0],  options=budget_names)
+        select_y = Select(title="Y-axis:", value=budget_names[-1], options=budget_names)
+        callback_select = CustomJS(args=dict(scatter_source=scatter_source,
+                                             select_x=select_x, select_y=select_y,
+                                             xaxis=p.xaxis[0], yaxis=p.yaxis[0],
+                                             xr=p.x_range, yr=p.y_range,
+                                             ), code=code_selected)
+        select_x.js_on_change('value', callback_select)
+        select_y.js_on_change('value', callback_select)
 
-        layout = column(bokeh_table, p)
+        code_table_cell = code_budgets + code_try + code_get_selected_cell + code_update_selection_values + code_update_plot + code_catch
+        callback_table_cell = CustomJS(args=dict(table_source=table_source,
+                                                 scatter_source=scatter_source,
+                                                 select_x=select_x, select_y=select_y,
+                                                 xaxis=p.xaxis[0], yaxis=p.yaxis[0],
+                                                 xr=p.x_range, yr=p.y_range,
+                                                 ), code=code_table_cell)
+        table_source.selected.js_on_change('indices', callback_table_cell)
+
+        layout = column(bokeh_table, row(p, column(select_x, select_y)))
         return layout
 
     def get_html(self, d=None, tooltip=None):
         script, div = components(self.plot())
         if d is not None:
             d["bokeh"] = script, div
+            d["tooltip"] = tooltip
         return script, div
 
     def get_jupyter(self):

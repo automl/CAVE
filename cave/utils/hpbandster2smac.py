@@ -59,7 +59,7 @@ class HpBandSter2SMAC(object):
             output_dir = tempfile.mkdtemp()
         budgets, paths = zip(*self.hpbandster2smac(folder2result, cs, backup_cs, output_dir).items())
 
-        return list(folder2result.values())[0], paths, budgets
+        return list(folder2result.values()), paths, budgets
 
     def load_configspace(self, folder):
         """Will try to load the configspace. If it's a pcs-file, backup_cs will be a list containing all possible
@@ -182,7 +182,8 @@ class HpBandSter2SMAC(object):
         budget2path = {}  # paths to individual budgets
         self.logger.info("Assuming BOHB treats target algorithms as deterministic (and does not re-evaluate)")
         for b, rh in budget2rh.items():
-            output_path = os.path.join(output_dir, 'budget_' + str(b))
+            formatted = 'budget_{}'.format(int(b)) if (b).is_integer() else 'budget_{:.3f}'.format(b)
+            output_path = os.path.join(output_dir, 'budget_' + str(int(b) if (b).is_integer() else b))
             budget2path[b] = output_path
 
             scenario = Scenario({'run_obj' : 'quality',

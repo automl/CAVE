@@ -1,6 +1,7 @@
 *.swp
 *.sh
 data/
+output/
 results/
 vespy/
 _run_number.txt
