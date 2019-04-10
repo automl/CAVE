@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.plot.algorithm_footprint module &mdash; CAVE 1.1.5 documentation</title>
+  <title>cave.plot.algorithm_footprint module &mdash; CAVE 1.1.6 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.5
+                1.1.6
               </div>
             
           
@@ -242,32 +242,27 @@
 <p>Class that provides the algorithmic footprints after
 “Measuring algorithm footprints in instance space”
 (Kate Smith-Miles, Kate Smith-Miles)</p>
-<dl class="docutils">
-<dt>General procedure:</dt>
-<dd><ul class="first last simple">
-<li>label for each algorithm each instance with the same metric</li>
-<li>map the instances onto a plane using pca</li>
+<dl class="simple">
+<dt>General procedure:</dt><dd><ul class="simple">
+<li><p>label for each algorithm each instance with the same metric</p></li>
+<li><p>map the instances onto a plane using pca</p></li>
 </ul>
 </dd>
 </dl>
 <p>NOTE:
 The terms ‘algorithm’ and ‘config/configuration’ will be used synonymous
 throughout the class.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>rh</strong> (<em>RunHistory</em>) – runhistory to take cost from</li>
-<li><strong>test_inst_feat</strong> (<em>train_inst_feat</em><em>,</em>) – instances names mapped to features</li>
-<li><strong>algorithms</strong> (<em>List</em><em>[</em><em>Tuple</em><em>(</em><em>Configuration</em><em>, </em><em>str</em><em>)</em><em>]</em>) – list with configs and descriptive names</li>
-<li><strong>cutoff</strong> (<em>int</em>) – cutoff (if available)</li>
-<li><strong>output_dir</strong> (<em>str</em>) – output directory</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rh</strong> (<em>RunHistory</em>) – runhistory to take cost from</p></li>
+<li><p><strong>test_inst_feat</strong> (<em>train_inst_feat</em><em>,</em>) – instances names mapped to features</p></li>
+<li><p><strong>algorithms</strong> (<em>List</em><em>[</em><em>Tuple</em><em>(</em><em>Configuration</em><em>, </em><em>str</em><em>)</em><em>]</em>) – list with configs and descriptive names</p></li>
+<li><p><strong>cutoff</strong> (<em>int</em>) – cutoff (if available)</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – output directory</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="cave.plot.algorithm_footprint.AlgorithmFootprintPlotter.footprint">
 <code class="descname">footprint</code><span class="sig-paren">(</span><em>a</em>, <em>density_threshold</em>, <em>purity_threshold</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/algorithm_footprint.html#AlgorithmFootprintPlotter.footprint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter.footprint" title="Permalink to this definition">¶</a></dt>
@@ -278,26 +273,22 @@ depend on density and purity thresholds.
 name: the name (unique!) of the instance
 feat2d: the position as np.array
 tup: the tuple-version of feat2d (hashable…)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>a</strong> (<em>Configuration</em>) – configuration to get footprint of</li>
-<li><strong>density_threshold</strong> (<em>float</em>) – minimum density that regions must show to be merged</li>
-<li><strong>purity_threshold</strong> (<em>float</em>) – minimum purity (percentage of good instance)
-that regions must show to be merged</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>Configuration</em>) – configuration to get footprint of</p></li>
+<li><p><strong>density_threshold</strong> (<em>float</em>) – minimum density that regions must show to be merged</p></li>
+<li><p><strong>purity_threshold</strong> (<em>float</em>) – minimum purity (percentage of good instance)
+that regions must show to be merged</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>footprint</strong> – the size of all resulting convex hulls</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>footprint</strong> – the size of all resulting convex hulls</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -305,16 +296,14 @@ that regions must show to be merged</li>
 <code class="descname">get_clusters</code><span class="sig-paren">(</span><em>features_2d</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/algorithm_footprint.html#AlgorithmFootprintPlotter.get_clusters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter.get_clusters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mapping instances to clusters, using silhouette-scores to determine
 number of cluster.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>paths</strong> – paths to plots</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">List[str]</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>paths</strong> – paths to plots</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -336,24 +325,20 @@ zoom) and provide better information about instances.</p>
 <dt id="cave.plot.algorithm_footprint.AlgorithmFootprintPlotter.plot_points_per_cluster">
 <code class="descname">plot_points_per_cluster</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/algorithm_footprint.html#AlgorithmFootprintPlotter.plot_points_per_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter.plot_points_per_cluster" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot good versus bad for passed config per cluster.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>conf</strong> (<em>Configuration</em>) – configuration for which to plot good vs bad</li>
-<li><strong>out</strong> (<em>str</em>) – output path</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>conf</strong> (<em>Configuration</em>) – configuration for which to plot good vs bad</p></li>
+<li><p><strong>out</strong> (<em>str</em>) – output path</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>outpaths</strong> – output paths per cluster</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">List[str]</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>outpaths</strong> – output paths per cluster</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

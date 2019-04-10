@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.utils.helpers module &mdash; CAVE 1.1.5 documentation</title>
+  <title>cave.utils.helpers module &mdash; CAVE 1.1.6 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.5
+                1.1.6
               </div>
             
           
@@ -291,44 +291,39 @@ set self.__traceback__ to tb and return self.</p>
 <dt id="cave.utils.helpers.get_config_origin">
 <code class="descclassname">cave.utils.helpers.</code><code class="descname">get_config_origin</code><span class="sig-paren">(</span><em>c</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#get_config_origin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.get_config_origin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return appropriate configuration origin</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>c</strong> (<em>Configuration</em>) – configuration to be examined</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>origin</strong> – origin of configuration (e.g. “Local”, “Random”, etc.)</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>c</strong> (<em>Configuration</em>) – configuration to be examined</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>origin</strong> – origin of configuration (e.g. “Local”, “Random”, etc.)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="cave.utils.helpers.get_cost_dict_for_config">
 <code class="descclassname">cave.utils.helpers.</code><code class="descname">get_cost_dict_for_config</code><span class="sig-paren">(</span><em>rh: smac.runhistory.runhistory.RunHistory</em>, <em>conf: ConfigSpace.configuration_space.Configuration</em>, <em>par: int = 1</em>, <em>cutoff: Optional[float] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#get_cost_dict_for_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.get_cost_dict_for_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Aggregates loss for configuration on evaluated instances over seeds.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>rh</strong> (<em>RunHistory</em>) – runhistory with data</li>
-<li><strong>conf</strong> (<em>Configuration</em>) – configuration to evaluate</li>
-<li><strong>par</strong> (<em>int</em>) – par-factor with which to multiply timeouts</li>
-<li><strong>cutoff</strong> (<em>float</em>) – cutoff of scenario - used to penalize costs if par != 1</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rh</strong> (<em>RunHistory</em>) – runhistory with data</p></li>
+<li><p><strong>conf</strong> (<em>Configuration</em>) – configuration to evaluate</p></li>
+<li><p><strong>par</strong> (<em>int</em>) – par-factor with which to multiply timeouts</p></li>
+<li><p><strong>cutoff</strong> (<em>float</em>) – cutoff of scenario - used to penalize costs if par != 1</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>cost</strong> – cost per instance (aggregated or as list per seed)</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict(instance-&gt;cost)</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>cost</strong> – cost per instance (aggregated or as list per seed)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict(instance-&gt;cost)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -336,25 +331,21 @@ set self.__traceback__ to tb and return self.</p>
 <code class="descclassname">cave.utils.helpers.</code><code class="descname">get_timeout</code><span class="sig-paren">(</span><em>rh</em>, <em>conf</em>, <em>cutoff</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#get_timeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.get_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check for timeouts. If multiple runs for an inst/config-pair are
 available, using the median (not the mean: no fractional timeouts)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>rh</strong> (<em>RunHistory</em>) – runhistory to take runs from</li>
-<li><strong>conf</strong> (<em>Configuration</em>) – config to use</li>
-<li><strong>cutoff</strong> (<em>int</em>) – to determine timeouts</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rh</strong> (<em>RunHistory</em>) – runhistory to take runs from</p></li>
+<li><p><strong>conf</strong> (<em>Configuration</em>) – config to use</p></li>
+<li><p><strong>cutoff</strong> (<em>int</em>) – to determine timeouts</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>timeouts</strong> – mapping instances to [True, False], where True indicates a timeout</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Dict(str: bool)</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>timeouts</strong> – mapping instances to [True, False], where True indicates a timeout</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict(str: bool)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">

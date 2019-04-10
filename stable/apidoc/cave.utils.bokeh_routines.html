@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.utils.bokeh_routines module &mdash; CAVE 1.1.5 documentation</title>
+  <title>cave.utils.bokeh_routines module &mdash; CAVE 1.1.6 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.5
+                1.1.6
               </div>
             
           
@@ -239,74 +239,62 @@
 <dt id="cave.utils.bokeh_routines.array_to_bokeh_table">
 <code class="descclassname">cave.utils.bokeh_routines.</code><code class="descname">array_to_bokeh_table</code><span class="sig-paren">(</span><em>df</em>, <em>sortable=None</em>, <em>width=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/bokeh_routines.html#array_to_bokeh_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.bokeh_routines.array_to_bokeh_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create bokeh-table from array.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>array</strong> (<em>pandas.DataFrame</em>) – dataframe with columns and index set</li>
-<li><strong>sortable</strong> (<em>dict</em><em>(</em><em>str : boolean</em><em>)</em>) – columns that should be sortable, default none</li>
-<li><strong>width</strong> (<em>dict</em><em>(</em><em>str : int</em><em>)</em>) – width of columns, default 100 for all</li>
-<li><strong>logger</strong> (<em>logging.Logger</em>) – logger to use, if not set use default</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>pandas.DataFrame</em>) – dataframe with columns and index set</p></li>
+<li><p><strong>sortable</strong> (<em>dict</em><em>(</em><em>str : boolean</em><em>)</em>) – columns that should be sortable, default none</p></li>
+<li><p><strong>width</strong> (<em>dict</em><em>(</em><em>str : int</em><em>)</em>) – width of columns, default 100 for all</p></li>
+<li><p><strong>logger</strong> (<em>logging.Logger</em>) – logger to use, if not set use default</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>bokeh_table</strong> – bokeh object</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bokeh.models.widgets.DataTable</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>bokeh_table</strong> – bokeh object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bokeh.models.widgets.DataTable</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="cave.utils.bokeh_routines.get_checkbox">
 <code class="descclassname">cave.utils.bokeh_routines.</code><code class="descname">get_checkbox</code><span class="sig-paren">(</span><em>glyph_renderers</em>, <em>labels</em>, <em>max_checkbox_length=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/bokeh_routines.html#get_checkbox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.bokeh_routines.get_checkbox" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>glyph_renderers</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><em>Renderer</em><em>]</em><em>]</em>) – list of glyph-renderers</li>
-<li><strong>labels</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list with strings to be put in checkbox</li>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>glyph_renderers</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><em>Renderer</em><em>]</em><em>]</em>) – list of glyph-renderers</p></li>
+<li><p><strong>labels</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list with strings to be put in checkbox</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><strong>checkbox</strong> (<em>CheckboxGroup or List[CheckboxGroup]</em>) – checkbox object</li>
-<li><strong>select_all</strong> (<em>Button</em>) – button related to checkbox</li>
-<li><strong>select_none</strong> (<em>Button</em>) – button related to checkbox</li>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>checkbox</strong> (<em>CheckboxGroup or List[CheckboxGroup]</em>) – checkbox object</p></li>
+<li><p><strong>select_all</strong> (<em>Button</em>) – button related to checkbox</p></li>
+<li><p><strong>select_none</strong> (<em>Button</em>) – button related to checkbox</p></li>
 </ul>
 </p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="cave.utils.bokeh_routines.get_radiobuttongroup">
 <code class="descclassname">cave.utils.bokeh_routines.</code><code class="descname">get_radiobuttongroup</code><span class="sig-paren">(</span><em>glyph_renderers</em>, <em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/bokeh_routines.html#get_radiobuttongroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.bokeh_routines.get_radiobuttongroup" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>glyph_renderers</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><em>Renderer</em><em>]</em><em>]</em>) – list of glyph-renderers</li>
-<li><strong>labels</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list with strings to be put in widget</li>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>glyph_renderers</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><em>Renderer</em><em>]</em><em>]</em>) – list of glyph-renderers</p></li>
+<li><p><strong>labels</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list with strings to be put in widget</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>radiobuttongroup</strong> – radiobuttongroup widget to select one of the elements</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RadioButtonGroup</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>radiobuttongroup</strong> – radiobuttongroup widget to select one of the elements</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>RadioButtonGroup</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

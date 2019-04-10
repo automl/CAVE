@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.performance_table module &mdash; CAVE 1.1.5 documentation</title>
+  <title>cave.analyzer.performance_table module &mdash; CAVE 1.1.6 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.5
+                1.1.6
               </div>
             
           
@@ -251,16 +251,14 @@ Distinguishes between train and test, if available.</p>
 <dt id="cave.analyzer.performance_table.PerformanceTable.get_html">
 <code class="descname">get_html</code><span class="sig-paren">(</span><em>d=None</em>, <em>tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/performance_table.html#PerformanceTable.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.get_html" title="Permalink to this definition">¶</a></dt>
 <dd><p>General reports in html-format, to be easily integrated in html-code. ALSO FOR BOKEH-OUTPUT.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>script, div</strong> – header and body part of html-code</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str, str</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>script, div</strong> – header and body part of html-code</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str, str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -273,21 +271,17 @@ Distinguishes between train and test, if available.</p>
 <dt id="cave.analyzer.performance_table.PerformanceTable.get_oracle">
 <code class="descname">get_oracle</code><span class="sig-paren">(</span><em>instances</em>, <em>rh</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/performance_table.html#PerformanceTable.get_oracle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.get_oracle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Estimation of oracle performance. Collects best performance seen for each instance in any run.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>instances</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of instances in question</li>
-<li><strong>rh</strong> (<em>RunHistory</em><em> or </em><em>List</em><em>[</em><em>RunHistory</em><em>]</em>) – runhistory or list of runhistories (will be combined)</li>
-<li><strong>Results</strong> – </li>
-<li><strong>-------</strong> – </li>
-<li><strong>oracle</strong> (<em>dict</em><em>[</em><em>str-&gt;float</em><em>]</em>) – best seen performance per instance {inst : performance}</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instances</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of instances in question</p></li>
+<li><p><strong>rh</strong> (<em>RunHistory</em><em> or </em><em>List</em><em>[</em><em>RunHistory</em><em>]</em>) – runhistory or list of runhistories (will be combined)</p></li>
+<li><p><strong>Results</strong> – </p></li>
+<li><p><strong>-------</strong> – </p></li>
+<li><p><strong>oracle</strong> (<em>dict</em><em>[</em><em>str-&gt;float</em><em>]</em>) – best seen performance per instance {inst : performance}</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -296,41 +290,35 @@ Distinguishes between train and test, if available.</p>
 <dd><p>Calculate parX-values from given cost_dict.
 First determine PAR-timeouts for each run on each instances,
 Second average over train/test if available, else just average.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cost_dict</strong> (<em>Dict</em><em>[</em><em>inst-&gt;cost</em><em>]</em>) – mapping instances to costs</li>
-<li><strong>par</strong> (<em>int</em>) – par-factor to use</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cost_dict</strong> (<em>Dict</em><em>[</em><em>inst-&gt;cost</em><em>]</em>) – mapping instances to costs</p></li>
+<li><p><strong>par</strong> (<em>int</em>) – par-factor to use</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">PAR10 values for train- and test-instances, if available as tuple
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>PAR10 values for train- and test-instances, if available as tuple
 else the general average</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(train, test) OR average – tuple&lt;float, float&gt; OR float</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(train, test) OR average – tuple&lt;float, float&gt; OR float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.analyzer.performance_table.PerformanceTable.get_static_plots">
 <code class="descname">get_static_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.get_static_plots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns plot-paths, if any are available</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>plot_paths</strong> – returns list of strings</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">List[str]</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>plot_paths</strong> – returns list of strings</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -343,18 +331,17 @@ else the general average</p>
 <dt id="cave.analyzer.performance_table.PerformanceTable.timeouts_to_tuple">
 <code class="descname">timeouts_to_tuple</code><span class="sig-paren">(</span><em>timeouts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/performance_table.html#PerformanceTable.timeouts_to_tuple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.timeouts_to_tuple" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get number of timeouts in config</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>timeouts</strong> (<em>dict</em><em>[</em><em>i -&gt; bool</em><em>]</em>) – mapping instances to whether timeout was on that instance</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>timeouts</strong> – tuple (timeouts, total runs)</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple(int, int)</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>timeouts</strong> (<em>dict</em><em>[</em><em>i -&gt; bool</em><em>]</em>) – mapping instances to whether timeout was on that instance</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>timeouts</strong> – tuple (timeouts, total runs)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple(int, int)</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

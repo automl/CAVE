@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.html.html_builder &mdash; CAVE 1.1.5 documentation</title>
+  <title>cave.html.html_builder &mdash; CAVE 1.1.6 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.5
+                1.1.6
               </div>
             
           
@@ -452,7 +452,7 @@
 
         <span class="k">if</span> <span class="n">use_tabs</span><span class="p">:</span>
             <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;div class=</span><span class="se">\&quot;</span><span class="s2">tab</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="n">tabs_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)]</span>
+            <span class="n">tabs_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)]</span>
             <span class="n">rnd_prefix</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">())</span>
             <span class="n">default_open_id</span> <span class="o">=</span> <span class="s2">&quot;defaultOpen&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unique_id</span><span class="p">()</span>
             <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;  &lt;button class=</span><span class="se">\&quot;</span><span class="s2">tablinks</span><span class="se">\&quot;</span><span class="s2"> onclick=</span><span class="se">\&quot;</span><span class="s2">openTab(event, &#39;</span><span class="si">{0}</span><span class="s2">&#39;, &#39;</span><span class="si">{1}</span><span class="s2">&#39;)</span><span class="se">\&quot;</span><span class="s2"> &quot;</span>\
@@ -473,7 +473,7 @@
                     <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">use_tabs</span><span class="p">:</span>
-                    <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;div id=</span><span class="se">\&quot;</span><span class="si">{0}</span><span class="se">\&quot;</span><span class="s2"> class=</span><span class="se">\&quot;</span><span class="s2">tabcontent</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">layer_name</span> <span class="o">+</span> <span class="n">k</span><span class="p">)</span>
+                    <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;div id=</span><span class="se">\&quot;</span><span class="si">{0}</span><span class="se">\&quot;</span><span class="s2"> class=</span><span class="se">\&quot;</span><span class="s2">tabcontent</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="n">layer_name</span> <span class="o">+</span> <span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">))</span>
                     <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;div class=</span><span class="se">\&quot;</span><span class="s2">pane</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="n">add_script</span><span class="p">,</span> <span class="n">add_div</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_layer</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">is_tab</span><span class="o">=</span><span class="n">use_tabs</span><span class="p">)</span>
                 <span class="n">script</span> <span class="o">+=</span> <span class="n">add_script</span>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.reader.csv2rh module &mdash; CAVE 1.1.5 documentation</title>
+  <title>cave.reader.csv2rh module &mdash; CAVE 1.1.6 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.5
+                1.1.6
               </div>
             
           
@@ -253,28 +253,24 @@ The data-frame is expected to either contain a column for config-id OR
 columns for each individual hyperparameter. Parameter-names will be used
 from the provided configspace.
 If a mapping of ids to configurations already exists, it will be used.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> (<em>pd.DataFrame</em>) – pandas dataframe containing either a column called <cite>config_id</cite> or a
-column for every individual parameter</li>
-<li><strong>cs</strong> (<em>ConfigurationSpace</em>) – optional, if provided the <cite>parameters</cite>-argument will be ignored</li>
-<li><strong>id_to_config</strong> (<em>dict</em><em>[</em><em>int:Configuration</em><em>]</em>) – optional, mapping ids to Configurations (necessary when using
-<cite>config_id</cite>-column)</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – pandas dataframe containing either a column called <cite>config_id</cite> or a
+column for every individual parameter</p></li>
+<li><p><strong>cs</strong> (<em>ConfigurationSpace</em>) – optional, if provided the <cite>parameters</cite>-argument will be ignored</p></li>
+<li><p><strong>id_to_config</strong> (<em>dict</em><em>[</em><em>int:Configuration</em><em>]</em>) – optional, mapping ids to Configurations (necessary when using
+<cite>config_id</cite>-column)</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><strong>data</strong> (<em>pd.DataFrame</em>) – if no config-id-columns was there before, there is one now.</li>
-<li><strong>id_to_config</strong> (<em>dict</em>) – mapping every id to a configuration</li>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – if no config-id-columns was there before, there is one now.</p></li>
+<li><p><strong>id_to_config</strong> (<em>dict</em>) – mapping every id to a configuration</p></li>
 </ul>
 </p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -286,28 +282,24 @@ The data-frame is expected to either contain a column for instance-id OR
 columns for each individual instance-feature. Parameter-names will be used
 from the provided configspace.
 If a mapping of ids to configurations already exists, it will be used.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> (<em>pd.DataFrame</em>) – pandas dataframe containing either a column called <cite>instance_id</cite> or a
-column for every individual instance-features</li>
-<li><strong>feature_names</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – optional, list of feature-names</li>
-<li><strong>features</strong> (<em>dict</em><em>[</em><em>int:np.array</em><em>]</em>) – optional, mapping ids to instance-feature vectors (necessary when using
-<cite>instance_id</cite>-column)</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – pandas dataframe containing either a column called <cite>instance_id</cite> or a
+column for every individual instance-features</p></li>
+<li><p><strong>feature_names</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – optional, list of feature-names</p></li>
+<li><p><strong>features</strong> (<em>dict</em><em>[</em><em>int:np.array</em><em>]</em>) – optional, mapping ids to instance-feature vectors (necessary when using
+<cite>instance_id</cite>-column)</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><strong>data</strong> (<em>pd.DataFrame</em>) – if no instance_id-columns was there before, there is one now.</li>
-<li><strong>id_to_inst_feats</strong> (<em>dict</em>) – mapping every id to instance-features</li>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – if no instance_id-columns was there before, there is one now.</p></li>
+<li><p><strong>id_to_inst_feats</strong> (<em>dict</em>) – mapping every id to instance-features</p></li>
 </ul>
 </p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -317,27 +309,23 @@ column for every individual instance-features</li>
 Valid values for the header of the csv-file/DataFrame are:
 [‘seed’, ‘cost’, ‘time’, ‘status’, ‘config_id’, ‘instance_id’] or any
 parameter- or instance-feature-names.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data</strong> (<em>str</em><em> or </em><em>pd.DataFrame</em>) – either string to csv-formatted runhistory-file or DataFrame
-containing the same information</li>
-<li><strong>cs</strong> (<em>str</em><em> or </em><em>ConfigurationSpace</em>) – config-space to use for this runhistory</li>
-<li><strong>id_to_config</strong> (<em>dict</em>) – mapping ids to Configuration-objects</li>
-<li><strong>train_inst</strong> (<em>str</em><em> or </em><em>list</em><em>[</em><em>str</em><em>]</em>) – train instances or path to file</li>
-<li><strong>test_inst</strong> (<em>str</em><em> or </em><em>list</em><em>[</em><em>str</em><em>]</em>) – test instances or path to file</li>
-<li><strong>instance_features</strong> (<em>str</em><em> or </em><em>dict</em>) – instance features as dict mapping instance-ids to feature-array or
-file to appropriately formatted instance-feature-file</li>
-<li><strong>Returns</strong> – </li>
-<li><strong>--------</strong> – </li>
-<li><strong>rh</strong> (<em>RunHistory</em>) – runhistory with all the runs from the csv-file</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>str</em><em> or </em><em>pd.DataFrame</em>) – either string to csv-formatted runhistory-file or DataFrame
+containing the same information</p></li>
+<li><p><strong>cs</strong> (<em>str</em><em> or </em><em>ConfigurationSpace</em>) – config-space to use for this runhistory</p></li>
+<li><p><strong>id_to_config</strong> (<em>dict</em>) – mapping ids to Configuration-objects</p></li>
+<li><p><strong>train_inst</strong> (<em>str</em><em> or </em><em>list</em><em>[</em><em>str</em><em>]</em>) – train instances or path to file</p></li>
+<li><p><strong>test_inst</strong> (<em>str</em><em> or </em><em>list</em><em>[</em><em>str</em><em>]</em>) – test instances or path to file</p></li>
+<li><p><strong>instance_features</strong> (<em>str</em><em> or </em><em>dict</em>) – instance features as dict mapping instance-ids to feature-array or
+file to appropriately formatted instance-feature-file</p></li>
+<li><p><strong>Returns</strong> – </p></li>
+<li><p><strong>--------</strong> – </p></li>
+<li><p><strong>rh</strong> (<em>RunHistory</em>) – runhistory with all the runs from the csv-file</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

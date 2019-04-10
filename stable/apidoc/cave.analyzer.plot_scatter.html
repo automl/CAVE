@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.plot_scatter module &mdash; CAVE 1.1.5 documentation</title>
+  <title>cave.analyzer.plot_scatter module &mdash; CAVE 1.1.6 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.5
+                1.1.6
               </div>
             
           
@@ -241,39 +241,33 @@
 <dd><p>Bases: <a class="reference internal" href="cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer" title="cave.analyzer.base_analyzer.BaseAnalyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">cave.analyzer.base_analyzer.BaseAnalyzer</span></code></a></p>
 <p>Creates a scatterplot of the two configurations on the given set of instances.
 Saves plot to file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>incumbent</strong> (<em>default</em><em>,</em>) – configurations to be compared</li>
-<li><strong>rh</strong> (<em>RunHistory</em>) – runhistory to use for cost-estimations</li>
-<li><strong>output_dir</strong> (<em>str</em>) – output directory</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>incumbent</strong> (<em>default</em><em>,</em>) – configurations to be compared</p></li>
+<li><p><strong>rh</strong> (<em>RunHistory</em>) – runhistory to use for cost-estimations</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – output directory</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>output_fns</strong> – list with paths to generated plots</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">List[str]</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>output_fns</strong> – list with paths to generated plots</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="cave.analyzer.plot_scatter.PlotScatter.get_html">
 <code class="descname">get_html</code><span class="sig-paren">(</span><em>d=None</em>, <em>tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/plot_scatter.html#PlotScatter.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.plot_scatter.PlotScatter.get_html" title="Permalink to this definition">¶</a></dt>
 <dd><p>General reports in html-format, to be easily integrated in html-code. ALSO FOR BOKEH-OUTPUT.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>script, div</strong> – header and body part of html-code</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str, str</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>script, div</strong> – header and body part of html-code</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str, str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -291,16 +285,14 @@ Saves plot to file.</p>
 <dt id="cave.analyzer.plot_scatter.PlotScatter.get_static_plots">
 <code class="descname">get_static_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#cave.analyzer.plot_scatter.PlotScatter.get_static_plots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns plot-paths, if any are available</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>plot_paths</strong> – returns list of strings</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">List[str]</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>plot_paths</strong> – returns list of strings</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">

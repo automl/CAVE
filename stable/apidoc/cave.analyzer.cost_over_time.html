@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.cost_over_time module &mdash; CAVE 1.1.5 documentation</title>
+  <title>cave.analyzer.cost_over_time module &mdash; CAVE 1.1.6 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.5
+                1.1.6
               </div>
             
           
@@ -237,42 +237,62 @@
 <span id="cave-analyzer-cost-over-time-module"></span><h1>cave.analyzer.cost_over_time module<a class="headerlink" href="#module-cave.analyzer.cost_over_time" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.analyzer.cost_over_time.CostOverTime">
-<em class="property">class </em><code class="descclassname">cave.analyzer.cost_over_time.</code><code class="descname">CostOverTime</code><span class="sig-paren">(</span><em>scenario, output_dir, rh: smac.runhistory.runhistory.RunHistory, runs: List[cave.reader.configurator_run.ConfiguratorRun], block_epm: bool = False, bohb_result=None, average_over_runs: bool = True, output_fn: str = 'performance_over_time.png', validator: Union[None, smac.utils.validate.Validator] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cost_over_time.html#CostOverTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">cave.analyzer.cost_over_time.</code><code class="descname">CostOverTime</code><span class="sig-paren">(</span><em>scenario, output_dir, rh: smac.runhistory.runhistory.RunHistory, runs: List[cave.reader.configurator_run.ConfiguratorRun], block_epm: bool = False, bohb_results=None, average_over_runs: bool = True, output_fn: str = 'performance_over_time.png', validator: Union[None, smac.utils.validate.Validator] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cost_over_time.html#CostOverTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer" title="cave.analyzer.base_analyzer.BaseAnalyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">cave.analyzer.base_analyzer.BaseAnalyzer</span></code></a></p>
 <p>Plot performance over time, using all trajectory entries
 where max_time = max(wallclock_limit, the highest recorded time)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>scenario</strong> (<em>smac.scenario.scenario.Scenario</em>) – scenario object with necessary information</li>
-<li><strong>output_dir</strong> (<em>str</em>) – output-directory for smac-object</li>
-<li><strong>rh</strong> (<em>smac.runhistory.runhistory.RunHistory</em>) – runhistory to use</li>
-<li><strong>runs</strong> (<em>List</em><em>[</em><a class="reference internal" href="cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun" title="cave.reader.configurator_run.ConfiguratorRun"><em>ConfiguratorRun</em></a><em>]</em>) – list of configurator-runs</li>
-<li><strong>block_epm</strong> (<em>bool</em>) – if block_epm, only use given runs to estimate cost</li>
-<li><strong>average_over_runs</strong> (<em>bool</em>) – if True, average over plots. if False, all runs are treated individually with checkboxes</li>
-<li><strong>output_fn</strong> (<em>str</em>) – path to output-png for this analysis</li>
-<li><strong>validator</strong> (<em>Validator</em><em> or </em><em>None</em>) – if given, use this epm to estimate costs for the individual incumbents (EPM)</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>smac.scenario.scenario.Scenario</em>) – scenario object with necessary information</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – output-directory for smac-object</p></li>
+<li><p><strong>rh</strong> (<em>smac.runhistory.runhistory.RunHistory</em>) – runhistory to use</p></li>
+<li><p><strong>runs</strong> (<em>List</em><em>[</em><a class="reference internal" href="cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun" title="cave.reader.configurator_run.ConfiguratorRun"><em>ConfiguratorRun</em></a><em>]</em>) – list of configurator-runs</p></li>
+<li><p><strong>block_epm</strong> (<em>bool</em>) – if block_epm, only use given runs to estimate cost</p></li>
+<li><p><strong>average_over_runs</strong> (<em>bool</em>) – if True, average over plots. if False, all runs are treated individually with checkboxes</p></li>
+<li><p><strong>output_fn</strong> (<em>str</em>) – path to output-png for this analysis</p></li>
+<li><p><strong>validator</strong> (<em>Validator</em><em> or </em><em>None</em>) – if given, use this epm to estimate costs for the individual incumbents (EPM)</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="cave.analyzer.cost_over_time.CostOverTime.get_html">
 <code class="descname">get_html</code><span class="sig-paren">(</span><em>d=None</em>, <em>tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cost_over_time.html#CostOverTime.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime.get_html" title="Permalink to this definition">¶</a></dt>
 <dd><p>General reports in html-format, to be easily integrated in html-code. ALSO FOR BOKEH-OUTPUT.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>script, div</strong> – header and body part of html-code</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str, str</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>script, div</strong> – header and body part of html-code</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str, str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.analyzer.cost_over_time.CostOverTime.get_incumbent_trajectory">
+<code class="descname">get_incumbent_trajectory</code><span class="sig-paren">(</span><em>result</em>, <em>budgets</em>, <em>bigger_is_better=True</em>, <em>non_decreasing_budget=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cost_over_time.html#CostOverTime.get_incumbent_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime.get_incumbent_trajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the best configurations over time</p>
+<p>!! Copied from hpbandster and modified to enable getting trajectories for individual budgets !!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>result</strong> – result</p></li>
+<li><p><strong>budgets</strong> (<em>List</em><em>[</em><em>budgets</em><em>]</em>) – budgets to be considered</p></li>
+<li><p><strong>bigger_is_better</strong> (<em>bool</em>) – flag whether an evaluation on a larger budget is always considered better.
+If True, the incumbent might increase for the first evaluations on a bigger budget</p></li>
+<li><p><strong>non_decreasing_budget</strong> (<em>bool</em>) – flag whether the budget of a new incumbent should be at least as big as the one for
+the current incumbent.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dictionary with all the config IDs, the times the runs
+finished, their respective budgets, and corresponding losses</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -290,16 +310,14 @@ where max_time = max(wallclock_limit, the highest recorded time)</p>
 <dt id="cave.analyzer.cost_over_time.CostOverTime.get_static_plots">
 <code class="descname">get_static_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime.get_static_plots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns plot-paths, if any are available</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>plot_paths</strong> – returns list of strings</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">List[str]</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>plot_paths</strong> – returns list of strings</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
