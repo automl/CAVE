@@ -3,6 +3,8 @@ from collections import OrderedDict
 import logging
 import itertools
 
+import numpy as np
+
 from bokeh.io import output_notebook
 from bokeh.plotting import show, figure, ColumnDataSource
 from bokeh.embed import components
@@ -62,7 +64,10 @@ class BohbLearningCurves(BaseAnalyzer):
             for l in learning_curves:
                 if len(l) == 0:
                     continue
-                tmp = list(zip(*l))
+                tmp = list(zip(*[(time, loss) for time, loss in l if np.isfinite(loss) and loss is not None]))
+                if len(tmp) == 0:
+                    self.logger.debug("Probably filtered NaNs or None's..., skipping %s, data %s", str(conf_id), str(l))
+                    continue
                 times.append(tmp[0])
                 losses.append(tmp[1])
                 config_ids.append(conf_id)
