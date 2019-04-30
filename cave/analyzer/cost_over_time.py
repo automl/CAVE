@@ -223,7 +223,7 @@ class CostOverTime(BaseAnalyzer):
         return lines
 
     def _get_bohb_line(self, validator, runs, rh, budget=None):
-        label = 'budget ' + str(int(budget) if (budget).is_integer() else budget) if budget else 'all budgets'
+        label = 'budget ' + str(int(budget) if float(budget).is_integer() else budget) if budget else 'all budgets'
         if budget is None:
             budgets = self.bohb_results[0].HB_config['budgets']
         else:

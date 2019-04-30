@@ -182,11 +182,11 @@ class HpBandSter2SMAC(object):
         budget2path = {}  # paths to individual budgets
         self.logger.info("Assuming BOHB treats target algorithms as deterministic (and does not re-evaluate)")
         round_to = 1
-        formatted_budgets = {b : 'budget_{}'.format(int(b)) if (b).is_integer() else 'budget_{:.{}f}'.format(b, round_to)
+        formatted_budgets = {b : 'budget_{}'.format(int(b)) if float(b).is_integer() else 'budget_{:.{}f}'.format(b, round_to)
                              for b in budget2rh.keys()}
         while len(set(formatted_budgets)) != len(formatted_budgets):
             rount_to += 1
-            formatted_budgets = {b : 'budget_{}'.format(int(b)) if (b).is_integer() else 'budget_{:.{}f}'.format(b, round_to)
+            formatted_budgets = {b : 'budget_{}'.format(int(b)) if float(b).is_integer() else 'budget_{:.{}f}'.format(b, round_to)
                                  for b in budget2rh.keys()}
         for b, rh in budget2rh.items():
             output_path = os.path.join(output_dir, formatted_budgets[b])
