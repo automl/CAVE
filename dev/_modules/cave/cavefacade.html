@@ -443,7 +443,7 @@
         <span class="c1"># To be set during execution (used for dependencies of analysis-methods)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">param_imp</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">feature_imp</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">evaluators</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluators</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">validator</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">feature_names</span> <span class="o">=</span> <span class="kc">None</span>
@@ -654,7 +654,7 @@
                 <span class="n">cfp_time_slider</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">cfp_max_plot</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
                 <span class="n">cfp_number_quantiles</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                <span class="n">param_importance</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;forward_selection&#39;</span><span class="p">,</span> <span class="s1">&#39;ablation&#39;</span><span class="p">,</span> <span class="s1">&#39;fanova&#39;</span><span class="p">],</span>
+                <span class="n">param_importance</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;lpi&#39;</span><span class="p">,</span> <span class="s1">&#39;fanova&#39;</span><span class="p">],</span>
                 <span class="n">pimp_sort_table_by</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">,</span>
                 <span class="n">feature_analysis</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;box_violin&quot;</span><span class="p">,</span> <span class="s2">&quot;correlation&quot;</span><span class="p">,</span> <span class="s2">&quot;importance&quot;</span><span class="p">,</span> <span class="s2">&quot;clustering&quot;</span><span class="p">,</span> <span class="s2">&quot;feature_cdf&quot;</span><span class="p">],</span>
                 <span class="n">parallel_coordinates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -694,6 +694,8 @@
 <span class="sd">        algo_footprint: bool</span>
 <span class="sd">            whether to plot algorithm footprints</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">flag_show_jupyter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_jupyter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_jupyter</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># Check arguments</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">param_importance</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;forward_selection&#39;</span><span class="p">,</span> <span class="s1">&#39;ablation&#39;</span><span class="p">,</span> <span class="s1">&#39;fanova&#39;</span><span class="p">,</span> <span class="s1">&#39;lpi&#39;</span><span class="p">]:</span>
@@ -815,7 +817,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_website</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;CAVE finished. Report is located in </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-                         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;report.html&#39;</span><span class="p">))</span></div>
+                         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;report.html&#39;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_jupyter</span> <span class="o">=</span> <span class="n">flag_show_jupyter</span></div>
 
     <span class="k">def</span> <span class="nf">_get_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">layername</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the appropriate sub-dict for this layer (or layer-run combination) and create it if necessary &quot;&quot;&quot;</span>
@@ -1069,7 +1073,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Error in fANOVA&quot;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Error in fANOVA - please run with --pimp_no_fanova_pairs (this is due to a known issue &quot;</span>
                              <span class="s2">&quot;with ints and bools in categorical hyperparameters, see issue #192).&quot;</span><span class="p">)</span>
-        <span class="n">cave</span><span class="o">.</span><span class="n">evaluators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cave</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span><span class="p">)</span>
+        <span class="n">cave</span><span class="o">.</span><span class="n">evaluators</span><span class="p">[</span><span class="s2">&quot;fanova&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cave</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span>
         <span class="n">cave</span><span class="o">.</span><span class="n">param_imp</span><span class="p">[</span><span class="s2">&quot;fanova&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cave</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">evaluated_parameter_importance</span>
 
         <span class="k">return</span> <span class="n">fanova</span></div>
@@ -1082,7 +1086,7 @@
 <span class="sd">        maximally decreased.&quot;&quot;&quot;</span>
 
         <span class="n">ablation</span> <span class="o">=</span> <span class="n">CaveAblation</span><span class="p">(</span><span class="n">cave</span><span class="o">.</span><span class="n">pimp</span><span class="p">,</span> <span class="n">cave</span><span class="o">.</span><span class="n">incumbent</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cave</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">))</span>
-        <span class="n">cave</span><span class="o">.</span><span class="n">evaluators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cave</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span><span class="p">)</span>
+        <span class="n">cave</span><span class="o">.</span><span class="n">evaluators</span><span class="p">[</span><span class="s2">&quot;ablation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cave</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span>
         <span class="n">cave</span><span class="o">.</span><span class="n">param_imp</span><span class="p">[</span><span class="s2">&quot;ablation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cave</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">evaluated_parameter_importance</span>
 
         <span class="k">return</span> <span class="n">ablation</span></div>
@@ -1094,7 +1098,7 @@
 <span class="sd">        with the full parameter set.  Each parameter is scored by how much the out-of-bag-error of an empirical</span>
 <span class="sd">        performance model based on a random forest is decreased.&quot;&quot;&quot;</span>
         <span class="n">forward</span> <span class="o">=</span> <span class="n">CaveForwardSelection</span><span class="p">(</span><span class="n">cave</span><span class="o">.</span><span class="n">pimp</span><span class="p">,</span> <span class="n">cave</span><span class="o">.</span><span class="n">incumbent</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cave</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">))</span>
-        <span class="n">cave</span><span class="o">.</span><span class="n">evaluators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cave</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span><span class="p">)</span>
+        <span class="n">cave</span><span class="o">.</span><span class="n">evaluators</span><span class="p">[</span><span class="s2">&quot;forward-selection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cave</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span>
         <span class="n">cave</span><span class="o">.</span><span class="n">param_imp</span><span class="p">[</span><span class="s2">&quot;forward-selection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cave</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">evaluated_parameter_importance</span>
 
         <span class="k">return</span> <span class="n">forward</span></div>
@@ -1107,7 +1111,7 @@
 <span class="sd">        human behaviour to look for improvements in the neighborhood of individual parameters of a configuration.&quot;&quot;&quot;</span>
 
         <span class="n">lpi</span> <span class="o">=</span> <span class="n">LocalParameterImportance</span><span class="p">(</span><span class="n">cave</span><span class="o">.</span><span class="n">pimp</span><span class="p">,</span> <span class="n">cave</span><span class="o">.</span><span class="n">incumbent</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cave</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">))</span>
-        <span class="n">cave</span><span class="o">.</span><span class="n">evaluators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cave</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span><span class="p">)</span>
+        <span class="n">cave</span><span class="o">.</span><span class="n">evaluators</span><span class="p">[</span><span class="s2">&quot;lpi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cave</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span>
         <span class="n">cave</span><span class="o">.</span><span class="n">param_imp</span><span class="p">[</span><span class="s2">&quot;lpi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cave</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">evaluated_parameter_importance</span>
 
         <span class="k">return</span> <span class="n">lpi</span></div>
