@@ -215,7 +215,7 @@ class CAVE(object):
         # To be set during execution (used for dependencies of analysis-methods)
         self.param_imp = OrderedDict()
         self.feature_imp = OrderedDict()
-        self.evaluators = []
+        self.evaluators = OrderedDict()
         self.validator = None
 
         self.feature_names = None
@@ -426,7 +426,7 @@ class CAVE(object):
                 cfp_time_slider=False,
                 cfp_max_plot=-1,
                 cfp_number_quantiles=10,
-                param_importance=['forward_selection', 'ablation', 'fanova'],
+                param_importance=['lpi', 'fanova'],
                 pimp_sort_table_by: str="average",
                 feature_analysis=["box_violin", "correlation", "importance", "clustering", "feature_cdf"],
                 parallel_coordinates=True,
@@ -466,6 +466,8 @@ class CAVE(object):
         algo_footprint: bool
             whether to plot algorithm footprints
         """
+        flag_show_jupyter = self.show_jupyter
+        self.show_jupyter = False
         # Check arguments
         for p in param_importance:
             if p not in ['forward_selection', 'ablation', 'fanova', 'lpi']:
@@ -588,6 +590,8 @@ class CAVE(object):
 
         self.logger.info("CAVE finished. Report is located in %s",
                          os.path.join(self.output_dir, 'report.html'))
+
+        self.show_jupyter = flag_show_jupyter
 
     def _get_dict(self, d, layername, run=None):
         """ Get the appropriate sub-dict for this layer (or layer-run combination) and create it if necessary """
@@ -841,7 +845,7 @@ class CAVE(object):
             self.logger.debug("Error in fANOVA", exc_info=1)
             raise IndexError("Error in fANOVA - please run with --pimp_no_fanova_pairs (this is due to a known issue "
                              "with ints and bools in categorical hyperparameters, see issue #192).")
-        cave.evaluators.append(cave.pimp.evaluator)
+        cave.evaluators["fanova"] = cave.pimp.evaluator
         cave.param_imp["fanova"] = cave.pimp.evaluator.evaluated_parameter_importance
 
         return fanova
@@ -854,7 +858,7 @@ class CAVE(object):
         maximally decreased."""
 
         ablation = CaveAblation(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
-        cave.evaluators.append(cave.pimp.evaluator)
+        cave.evaluators["ablation"] = cave.pimp.evaluator
         cave.param_imp["ablation"] = cave.pimp.evaluator.evaluated_parameter_importance
 
         return ablation
@@ -866,7 +870,7 @@ class CAVE(object):
         with the full parameter set.  Each parameter is scored by how much the out-of-bag-error of an empirical
         performance model based on a random forest is decreased."""
         forward = CaveForwardSelection(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
-        cave.evaluators.append(cave.pimp.evaluator)
+        cave.evaluators["forward-selection"] = cave.pimp.evaluator
         cave.param_imp["forward-selection"] = cave.pimp.evaluator.evaluated_parameter_importance
 
         return forward
@@ -879,7 +883,7 @@ class CAVE(object):
         human behaviour to look for improvements in the neighborhood of individual parameters of a configuration."""
 
         lpi = LocalParameterImportance(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
-        cave.evaluators.append(cave.pimp.evaluator)
+        cave.evaluators["lpi"] = cave.pimp.evaluator
         cave.param_imp["lpi"] = cave.pimp.evaluator.evaluated_parameter_importance
 
         return lpi
