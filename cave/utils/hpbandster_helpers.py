@@ -2,7 +2,7 @@
 Here are helper functions needed to provide a certain behaviour of HpBandSter, such as special trajectories.
 """
 
-def get_incumbent_trajectory(result, budgets, racing=True):
+def get_incumbent_trajectory(result, budgets, mode='racing'):
     """
     Parameters
     ----------
@@ -10,6 +10,8 @@ def get_incumbent_trajectory(result, budgets, racing=True):
         result object
     budgets: List[str|int|float] or 'all'
         if a list of budgets, only consider those budgets (to enable trajectories for only a single budget)
+    mode: str
+        from ['racing', 'minimum', 'prefer_higher_budget']
 
     Returns
     -------
@@ -22,7 +24,7 @@ def get_incumbent_trajectory(result, budgets, racing=True):
     if not isinstance(budgets, list):
         raise ValueError("%s not a valid argument for 'budgets'" % str(budgets))
 
-    if racing:
+    if mode == 'racing':
         # Philipp's method
         all_runs = result.get_all_runs(only_largest_budget=False)
         all_runs = list(filter(lambda r: r.budget in budgets, all_runs))
@@ -44,7 +46,15 @@ def get_incumbent_trajectory(result, budgets, racing=True):
         return return_dict
     else:
         # HpBandSter's method (adapted for single budgets)
-        return _get_incumbent_trajectory_hpbandster(result, budgets)
+        if mode == 'minimum':
+            return _get_incumbent_trajectory_hpbandster(result, budgets, bigger_is_better=False,
+                                                        non_decreasing_budget=False)
+        elif mode == 'prefer_higher_budget':
+            return _get_incumbent_trajectory_hpbandster(result, budgets, bigger_is_better=True,
+                                                        non_decreasing_budget=True)
+        else:
+            raise ValueError("'%s' not a supported method for get_incumbent_trajectory" % mode)
+
 
 
 def _compute_trajectory_racing(all_runs, budgets):

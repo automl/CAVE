@@ -45,7 +45,9 @@ class CostOverTime(BaseAnalyzer):
                  bohb_results=None,
                  average_over_runs: bool=True,
                  output_fn: str="performance_over_time.png",
-                 validator: Union[None, Validator]=None):
+                 validator: Union[None, Validator]=None,
+                 cot_inc_traj='racing',
+                 ):
         """ Plot performance over time, using all trajectory entries
             where max_time = max(wallclock_limit, the highest recorded time)
 
@@ -67,6 +69,8 @@ class CostOverTime(BaseAnalyzer):
                 path to output-png for this analysis
             validator: Validator or None
                 if given, use this epm to estimate costs for the individual incumbents (EPM)
+            cot_inc_traj: str
+                from ['racing', 'minimum', 'prefer_higher_budget'], defines incumbent trajectory from hpbandster result
         """
 
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
@@ -78,8 +82,9 @@ class CostOverTime(BaseAnalyzer):
         self.bohb_results = bohb_results
         self.block_epm = block_epm
         self.average_over_runs = average_over_runs
-        self.output_fn =output_fn
+        self.output_fn = output_fn
         self.validator = validator
+        self.cot_inc_traj = cot_inc_traj
 
         self.logger.debug("Initialized CostOverTime with %d runs, output to \"%s\"", len(self.runs), self.output_dir)
 
@@ -233,7 +238,7 @@ class CostOverTime(BaseAnalyzer):
         data = {}
         for idx, bohb_result in enumerate(self.bohb_results):
             data[idx] = {'costs' : [], 'times' : []}
-            traj_dict = get_incumbent_trajectory(bohb_result, budgets)
+            traj_dict = get_incumbent_trajectory(bohb_result, budgets, mode=self.cot_inc_traj)
             data[idx]['costs'] = traj_dict['losses']
             data[idx]['times'] = traj_dict['times_finished']
 
