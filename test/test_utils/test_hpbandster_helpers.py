@@ -157,9 +157,11 @@ class TestHpbandsterHelpers(unittest.TestCase):
         result = logged_results_to_HBS_result(self.result_path)
 
         # All budgets
-        traj = get_incumbent_trajectory(result, result.HB_config['budgets'], racing=True)
-        traj = get_incumbent_trajectory(result, result.HB_config['budgets'], racing=False)
+        traj = get_incumbent_trajectory(result, result.HB_config['budgets'], mode='racing')
+        traj = get_incumbent_trajectory(result, result.HB_config['budgets'], mode='minimum')
+        traj = get_incumbent_trajectory(result, result.HB_config['budgets'], mode='prefer_higher_budget')
 
         # Single budgets
-        traj = get_incumbent_trajectory(result, [result.HB_config['budgets'][0]], racing=True)
-        traj = get_incumbent_trajectory(result, [result.HB_config['budgets'][0]], racing=False)
+        traj = get_incumbent_trajectory(result, [result.HB_config['budgets'][0]], mode='racing')
+        traj = get_incumbent_trajectory(result, [result.HB_config['budgets'][0]], mode='minimum')
+        traj = get_incumbent_trajectory(result, [result.HB_config['budgets'][0]], mode='prefer_higher_budget')
