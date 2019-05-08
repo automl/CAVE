@@ -85,6 +85,7 @@ setuptools.setup(
     platforms=['Linux'],
     install_requires=requirements,
     tests_require=['mock',
-                   'nose'],
+                   'nose',
+                   'hpbandster'],
     test_suite='nose.collector'
 )
