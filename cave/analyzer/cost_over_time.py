@@ -20,6 +20,7 @@ from cave.utils.hpbandster2smac import HpBandSter2SMAC
 from cave.reader.configurator_run import ConfiguratorRun
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.utils.bokeh_routines import get_checkbox
+from cave.utils.hpbandster_helpers import get_incumbent_trajectory
 
 from bokeh.plotting import figure, ColumnDataSource, show
 from bokeh.embed import components
@@ -232,7 +233,7 @@ class CostOverTime(BaseAnalyzer):
         data = {}
         for idx, bohb_result in enumerate(self.bohb_results):
             data[idx] = {'costs' : [], 'times' : []}
-            traj_dict = self.get_incumbent_trajectory(bohb_result, budgets)
+            traj_dict = get_incumbent_trajectory(bohb_result, budgets)
             data[idx]['costs'] = traj_dict['losses']
             data[idx]['times'] = traj_dict['times_finished']
 
@@ -260,86 +261,6 @@ class CostOverTime(BaseAnalyzer):
         return Line(str(label), time_double, mean_double,
                     [x + y for x, y in zip(mean_double, std_double)],
                     [x - y for x, y in zip(mean_double, std_double)], configs_double)
-
-    @static
-    def get_incumbent_trajectory(result, budgets, bigger_is_better=True, non_decreasing_budget=True):
-        """
-        Returns the best configurations over time
-
-        !! Copied from hpbandster and modified to enable getting trajectories for individual budgets !!
-
-        Parameters
-        ----------
-            result:
-                    result
-            budgets: List[budgets] or 'all' or 'only_largest'
-                    budgets to be considered
-            bigger_is_better:bool
-                    flag whether an evaluation on a larger budget is always considered better.
-                    If True, the incumbent might increase for the first evaluations on a bigger budget
-            non_decreasing_budget: bool
-                    flag whether the budget of a new incumbent should be at least as big as the one for
-                    the current incumbent.
-        Returns
-        -------
-            dict:
-                    dictionary with all the config IDs, the times the runs
-                    finished, their respective budgets, and corresponding losses
-        """
-        all_runs = result.get_all_runs(only_largest_budget=False)
-
-        if isinstance(budgets, list):
-            all_runs = list(filter(lambda r: r.budget in budgets, all_runs))
-        elif budgets == 'all':
-            pass
-        elif budgets == 'only_largest':
-            all_runs = result.get_all_runs(only_largest_budget=True)
-
-        all_runs.sort(key=lambda r: r.time_stamps['finished'])
-
-        return_dict = { 'config_ids' : [],
-                        'times_finished': [],
-                        'budgets'    : [],
-                        'losses'     : [],
-        }
-
-        current_incumbent = float('inf')
-        incumbent_budget = result.HB_config['min_budget']
-
-        for r in all_runs:
-            if r.loss is None: continue
-
-            new_incumbent = False
-
-            if bigger_is_better and r.budget > incumbent_budget:
-                new_incumbent = True
-
-            if r.loss < current_incumbent:
-                new_incumbent = True
-
-            if non_decreasing_budget and r.budget < incumbent_budget:
-                new_incumbent = False
-
-            if new_incumbent:
-                current_incumbent = r.loss
-                incumbent_budget  = r.budget
-
-                return_dict['config_ids'].append(r.config_id)
-                return_dict['times_finished'].append(r.time_stamps['finished'])
-                return_dict['budgets'].append(r.budget)
-                return_dict['losses'].append(r.loss)
-
-        if current_incumbent != r.loss:
-            r = all_runs[-1]
-
-            return_dict['config_ids'].append(return_dict['config_ids'][-1])
-            return_dict['times_finished'].append(r.time_stamps['finished'])
-            return_dict['budgets'].append(return_dict['budgets'][-1])
-            return_dict['losses'].append(return_dict['losses'][-1])
-
-
-        return (return_dict)
-
 
     def plot(self):
         """
