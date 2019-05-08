@@ -261,7 +261,8 @@ class CostOverTime(BaseAnalyzer):
                     [x + y for x, y in zip(mean_double, std_double)],
                     [x - y for x, y in zip(mean_double, std_double)], configs_double)
 
-    def get_incumbent_trajectory(self, result, budgets, bigger_is_better=True, non_decreasing_budget=True):
+    @static
+    def get_incumbent_trajectory(result, budgets, bigger_is_better=True, non_decreasing_budget=True):
         """
         Returns the best configurations over time
 
@@ -271,7 +272,7 @@ class CostOverTime(BaseAnalyzer):
         ----------
             result:
                     result
-            budgets: List[budgets]
+            budgets: List[budgets] or 'all' or 'only_largest'
                     budgets to be considered
             bigger_is_better:bool
                     flag whether an evaluation on a larger budget is always considered better.
@@ -287,7 +288,12 @@ class CostOverTime(BaseAnalyzer):
         """
         all_runs = result.get_all_runs(only_largest_budget=False)
 
-        all_runs = list(filter(lambda r: r.budget in budgets, all_runs))
+        if isinstance(budgets, list):
+            all_runs = list(filter(lambda r: r.budget in budgets, all_runs))
+        elif budgets == 'all':
+            pass
+        elif budgets == 'only_largest':
+            all_runs = result.get_all_runs(only_largest_budget=True)
 
         all_runs.sort(key=lambda r: r.time_stamps['finished'])
 
@@ -298,7 +304,7 @@ class CostOverTime(BaseAnalyzer):
         }
 
         current_incumbent = float('inf')
-        incumbent_budget = min(budgets)
+        incumbent_budget = result.HB_config['min_budget']
 
         for r in all_runs:
             if r.loss is None: continue
