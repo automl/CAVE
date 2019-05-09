@@ -659,6 +659,7 @@
                 <span class="n">feature_analysis</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;box_violin&quot;</span><span class="p">,</span> <span class="s2">&quot;correlation&quot;</span><span class="p">,</span> <span class="s2">&quot;importance&quot;</span><span class="p">,</span> <span class="s2">&quot;clustering&quot;</span><span class="p">,</span> <span class="s2">&quot;feature_cdf&quot;</span><span class="p">],</span>
                 <span class="n">parallel_coordinates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">cost_over_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">cot_inc_traj</span><span class="o">=</span><span class="s1">&#39;racing&#39;</span><span class="p">,</span>
                 <span class="n">algo_footprint</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Analyze the available data and build HTML-webpage as dict.</span>
 <span class="sd">        Save webpage in &#39;self.output_dir/CAVE/report.html&#39;.</span>
@@ -691,6 +692,8 @@
 <span class="sd">            whether to plot parallel coordinates</span>
 <span class="sd">        cost_over_time: bool</span>
 <span class="sd">            whether to plot cost over time</span>
+<span class="sd">        cot_inc_traj: str</span>
+<span class="sd">            from [&#39;racing&#39;, &#39;minimum&#39;, &#39;prefer_higher_budget&#39;], defines incumbent trajectory from hpbandster result</span>
 <span class="sd">        algo_footprint: bool</span>
 <span class="sd">            whether to plot algorithm footprints</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -753,7 +756,8 @@
                                             <span class="n">num_quantiles</span><span class="o">=</span><span class="n">cfp_number_quantiles</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">website</span><span class="p">[</span><span class="s2">&quot;Configurators Behavior&quot;</span><span class="p">][</span><span class="s2">&quot;Configurator Footprint&quot;</span><span class="p">][</span><span class="s2">&quot;tooltip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tooltip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">configurator_footprint</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">cost_over_time</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">cost_over_time</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">website</span><span class="p">[</span><span class="s2">&quot;Configurators Behavior&quot;</span><span class="p">],</span> <span class="s2">&quot;Cost Over Time&quot;</span><span class="p">),</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cost_over_time</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">website</span><span class="p">[</span><span class="s2">&quot;Configurators Behavior&quot;</span><span class="p">],</span> <span class="s2">&quot;Cost Over Time&quot;</span><span class="p">),</span>
+                                    <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cot_inc_traj</span><span class="o">=</span><span class="n">cot_inc_traj</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">website</span><span class="p">[</span><span class="s2">&quot;Configurators Behavior&quot;</span><span class="p">][</span><span class="s2">&quot;Cost Over Time&quot;</span><span class="p">][</span><span class="s2">&quot;tooltip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tooltip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cost_over_time</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">overview_table</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">website</span><span class="p">,</span> <span class="s2">&quot;Meta Data&quot;</span><span class="p">),</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">website</span><span class="p">[</span><span class="s2">&quot;Meta Data&quot;</span><span class="p">][</span><span class="s2">&quot;tooltip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tooltip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">overview_table</span><span class="p">)</span>
@@ -804,7 +808,7 @@
                                       <span class="n">lpi</span><span class="o">=</span><span class="s1">&#39;lpi&#39;</span> <span class="ow">in</span> <span class="n">param_importance</span><span class="p">,</span>
                                       <span class="n">pimp_sort_table_by</span><span class="o">=</span><span class="n">pimp_sort_table_by</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">configurators_behavior</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">website</span><span class="p">[</span><span class="s2">&quot;Configurators Behavior&quot;</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span>
-                                        <span class="n">cost_over_time</span><span class="p">,</span>
+                                        <span class="n">cost_over_time</span><span class="p">,</span> <span class="n">cot_inc_traj</span><span class="p">,</span>
                                         <span class="n">cfp</span><span class="p">,</span> <span class="n">cfp_max_plot</span><span class="p">,</span> <span class="n">cfp_time_slider</span><span class="p">,</span> <span class="n">cfp_number_quantiles</span><span class="p">,</span>
                                         <span class="n">parallel_coordinates</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_names</span><span class="p">:</span>
@@ -943,13 +947,19 @@
                                   <span class="p">)</span></div>
 
 <div class="viewcode-block" id="CAVE.cost_over_time"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.cost_over_time">[docs]</a>    <span class="nd">@_analyzer_type</span>
-    <span class="k">def</span> <span class="nf">cost_over_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cave</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">cost_over_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cave</span><span class="p">,</span>
+                       <span class="n">cot_inc_traj</span><span class="o">=</span><span class="s1">&#39;racing&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Depicts the average cost of the best so far found configuration (using all trajectory data) over the time spent</span>
 <span class="sd">        by the configurator (including target algorithm runs and the overhead generated by the configurator) If the</span>
 <span class="sd">        curve flattens out early, it indicates that too much time was spent for the configurator run; whereas a curve</span>
 <span class="sd">        that is still improving at the end of the budget indicates that one should increase the configuration budget.</span>
 <span class="sd">        The plotted standard deviation gives the uncertainty over multiple configurator runs.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cot_inc_traj: str</span>
+<span class="sd">            from [&#39;racing&#39;, &#39;minimum&#39;, &#39;prefer_higher_budget&#39;], defines incumbent trajectory from hpbandster result</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">CostOverTime</span><span class="p">(</span><span class="n">cave</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span>
                             <span class="n">cave</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
@@ -957,7 +967,8 @@
                             <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">,</span>
                             <span class="n">block_epm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_budgets</span><span class="p">,</span>  <span class="c1"># blocking epms if bohb is analyzed</span>
                             <span class="n">bohb_results</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bohb_results</span><span class="p">,</span>
-                            <span class="n">validator</span><span class="o">=</span><span class="n">cave</span><span class="o">.</span><span class="n">validator</span><span class="p">)</span></div>
+                            <span class="n">validator</span><span class="o">=</span><span class="n">cave</span><span class="o">.</span><span class="n">validator</span><span class="p">,</span>
+                            <span class="n">cot_inc_traj</span><span class="o">=</span><span class="n">cot_inc_traj</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CAVE.parallel_coordinates"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.parallel_coordinates">[docs]</a>    <span class="nd">@_analyzer_type</span>
     <span class="k">def</span> <span class="nf">parallel_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cave</span><span class="p">,</span>
@@ -1040,6 +1051,7 @@
                                <span class="n">d</span><span class="p">,</span>
                                <span class="n">run</span><span class="p">,</span>
                                <span class="n">cost_over_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                               <span class="n">cot_inc_traj</span><span class="o">=</span><span class="s1">&#39;racing&#39;</span><span class="p">,</span>
                                <span class="n">cfp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                <span class="n">cfp_max_plot</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
                                <span class="n">cfp_time_slider</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -1047,7 +1059,8 @@
                                <span class="n">parallel_coordinates</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="n">cost_over_time</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cost_over_time</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_dict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;Cost Over Time&quot;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">),</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cost_over_time</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_dict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;Cost Over Time&quot;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">),</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
+                                <span class="n">cot_inc_traj</span><span class="o">=</span><span class="n">cot_inc_traj</span><span class="p">)</span>
             <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Cost Over Time&quot;</span><span class="p">][</span><span class="s2">&quot;tooltip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tooltip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cost_over_time</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cfp</span><span class="p">:</span>  <span class="c1"># Configurator Footprint</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">configurator_footprint</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_dict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;Configurator Footprint&quot;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">),</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
