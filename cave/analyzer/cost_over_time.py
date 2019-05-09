@@ -20,6 +20,7 @@ from cave.utils.hpbandster2smac import HpBandSter2SMAC
 from cave.reader.configurator_run import ConfiguratorRun
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.utils.bokeh_routines import get_checkbox
+from cave.utils.hpbandster_helpers import get_incumbent_trajectory
 
 from bokeh.plotting import figure, ColumnDataSource, show
 from bokeh.embed import components
@@ -44,7 +45,9 @@ class CostOverTime(BaseAnalyzer):
                  bohb_results=None,
                  average_over_runs: bool=True,
                  output_fn: str="performance_over_time.png",
-                 validator: Union[None, Validator]=None):
+                 validator: Union[None, Validator]=None,
+                 cot_inc_traj='racing',
+                 ):
         """ Plot performance over time, using all trajectory entries
             where max_time = max(wallclock_limit, the highest recorded time)
 
@@ -66,6 +69,8 @@ class CostOverTime(BaseAnalyzer):
                 path to output-png for this analysis
             validator: Validator or None
                 if given, use this epm to estimate costs for the individual incumbents (EPM)
+            cot_inc_traj: str
+                from ['racing', 'minimum', 'prefer_higher_budget'], defines incumbent trajectory from hpbandster result
         """
 
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
@@ -77,8 +82,9 @@ class CostOverTime(BaseAnalyzer):
         self.bohb_results = bohb_results
         self.block_epm = block_epm
         self.average_over_runs = average_over_runs
-        self.output_fn =output_fn
+        self.output_fn = output_fn
         self.validator = validator
+        self.cot_inc_traj = cot_inc_traj
 
         self.logger.debug("Initialized CostOverTime with %d runs, output to \"%s\"", len(self.runs), self.output_dir)
 
@@ -232,7 +238,7 @@ class CostOverTime(BaseAnalyzer):
         data = {}
         for idx, bohb_result in enumerate(self.bohb_results):
             data[idx] = {'costs' : [], 'times' : []}
-            traj_dict = self.get_incumbent_trajectory(bohb_result, budgets)
+            traj_dict = get_incumbent_trajectory(bohb_result, budgets, mode=self.cot_inc_traj)
             data[idx]['costs'] = traj_dict['losses']
             data[idx]['times'] = traj_dict['times_finished']
 
@@ -260,80 +266,6 @@ class CostOverTime(BaseAnalyzer):
         return Line(str(label), time_double, mean_double,
                     [x + y for x, y in zip(mean_double, std_double)],
                     [x - y for x, y in zip(mean_double, std_double)], configs_double)
-
-    def get_incumbent_trajectory(self, result, budgets, bigger_is_better=True, non_decreasing_budget=True):
-        """
-        Returns the best configurations over time
-
-        !! Copied from hpbandster and modified to enable getting trajectories for individual budgets !!
-
-        Parameters
-        ----------
-            result:
-                    result
-            budgets: List[budgets]
-                    budgets to be considered
-            bigger_is_better:bool
-                    flag whether an evaluation on a larger budget is always considered better.
-                    If True, the incumbent might increase for the first evaluations on a bigger budget
-            non_decreasing_budget: bool
-                    flag whether the budget of a new incumbent should be at least as big as the one for
-                    the current incumbent.
-        Returns
-        -------
-            dict:
-                    dictionary with all the config IDs, the times the runs
-                    finished, their respective budgets, and corresponding losses
-        """
-        all_runs = result.get_all_runs(only_largest_budget=False)
-
-        all_runs = list(filter(lambda r: r.budget in budgets, all_runs))
-
-        all_runs.sort(key=lambda r: r.time_stamps['finished'])
-
-        return_dict = { 'config_ids' : [],
-                        'times_finished': [],
-                        'budgets'    : [],
-                        'losses'     : [],
-        }
-
-        current_incumbent = float('inf')
-        incumbent_budget = min(budgets)
-
-        for r in all_runs:
-            if r.loss is None: continue
-
-            new_incumbent = False
-
-            if bigger_is_better and r.budget > incumbent_budget:
-                new_incumbent = True
-
-            if r.loss < current_incumbent:
-                new_incumbent = True
-
-            if non_decreasing_budget and r.budget < incumbent_budget:
-                new_incumbent = False
-
-            if new_incumbent:
-                current_incumbent = r.loss
-                incumbent_budget  = r.budget
-
-                return_dict['config_ids'].append(r.config_id)
-                return_dict['times_finished'].append(r.time_stamps['finished'])
-                return_dict['budgets'].append(r.budget)
-                return_dict['losses'].append(r.loss)
-
-        if current_incumbent != r.loss:
-            r = all_runs[-1]
-
-            return_dict['config_ids'].append(return_dict['config_ids'][-1])
-            return_dict['times_finished'].append(r.time_stamps['finished'])
-            return_dict['budgets'].append(return_dict['budgets'][-1])
-            return_dict['losses'].append(return_dict['losses'][-1])
-
-
-        return (return_dict)
-
 
     def plot(self):
         """

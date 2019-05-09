@@ -78,6 +78,7 @@ Optional:
 - `--no_algorithm_footprints`: toggles the algorithm-footprints
 - `--cfp_time_slider`: `on` will add a time-slider to the interactive configurator footprint which will result in longer loading times, `off` will generate static png's at the desired quantiles
 - `--cfp_number_quantiles`: determines how many time-steps to prerender from in the configurator footprint
+- `--cot_inc_traj`: how the incumbent trajectory for the cost-over-time plot will be generated if the optimizer is BOHB (from [`racing`, `minimum`, `prefer_higher_budget`])
 
 For further information on  to use CAVE, see:
 `python scripts/cave.py -h

@@ -154,6 +154,19 @@ class CaveCLI(object):
                                    "method if none is given. ",
                               default="all", type=str.lower, choices=p_choices)
 
+        cot_opts = parser.add_argument_group("Cost Over Time", "Finetune the cost over time plot")
+        cot_opts.add_argument("--cot_inc_traj",
+                              help="if the optimizer belongs to HpBandSter (e.g. bohb), you can choose how the "
+                                   "incumbent-trajectory will be interpreted with regards to the budget. You can "
+                                   "choose from 'racing', which will only accept a configuration of a higher budget "
+                                   "than the current incumbent's if the current incumbent has been evaluated on "
+                                   "the higher budget; 'minimum', which will only look at the current performance "
+                                   "no matter the budget; and 'prefer_higher_budget', which will always choose "
+                                   "a configuration on a higher budget as incumbent as soon as it is available "
+                                   "(this will likely lead to peaks, whenever a new budget is evaluated)",
+                              default="racing", type=str.lower,
+                              choices=["racing", "minimum", "prefer_higher_budget"])
+
         # General analysis to be carried out
         act_opts = parser.add_argument_group("Analysis", "Which analysis methods should be carried out")
         act_opts.add_argument("--parameter_importance",
@@ -274,6 +287,7 @@ class CaveCLI(object):
         parallel_coordinates = args_.parallel_coordinates
         pc_sort_by = args_.pc_sort_by
         cost_over_time = args_.cost_over_time
+        cot_inc_traj = args_.cot_inc_traj
         algorithm_footprints = args_.algorithm_footprints
         pimp_sort_table_by = args_.pimp_sort_table_by
         verbose_level = args_.verbose_level
@@ -315,6 +329,7 @@ class CaveCLI(object):
                      cfp_number_quantiles=cfp_number_quantiles,
                      parallel_coordinates=parallel_coordinates,
                      cost_over_time=cost_over_time,
+                     cot_inc_traj=cot_inc_traj,
                      algo_footprint=algorithm_footprints,
                      param_importance=param_imp,
                      pimp_sort_table_by=pimp_sort_table_by,
