@@ -88,6 +88,17 @@ class CostOverTime(BaseAnalyzer):
 
         self.logger.debug("Initialized CostOverTime with %d runs, output to \"%s\"", len(self.runs), self.output_dir)
 
+        # TODO to be replaced by base restruct
+        if self.bohb_results:
+            budgets = self.bohb_results[0].HB_config['budgets']
+            round_to = 1
+            self.formatted_budgets = {b : 'budget_{}'.format(int(b)) if float(b).is_integer() else 'budget_{:.{}f}'.format(b, round_to)
+                                      for b in budgets}
+            while len(set(self.formatted_budgets)) != len(self.formatted_budgets):
+                rount_to += 1
+                self.formatted_budgets = {b : 'budget_{}'.format(int(b)) if float(b).is_integer() else 'budget_{:.{}f}'.format(b, round_to)
+                                          for b in budgets}
+
         # Will be set during execution:
         self.plots = []                     # List with paths to '.png's
 
@@ -229,7 +240,7 @@ class CostOverTime(BaseAnalyzer):
         return lines
 
     def _get_bohb_line(self, validator, runs, rh, budget=None):
-        label = 'budget ' + str(int(budget) if float(budget).is_integer() else budget) if budget else 'all budgets'
+        label = self.formatted_budgets[budget] if budget else 'all budgets'
         if budget is None:
             budgets = self.bohb_results[0].HB_config['budgets']
         else:
