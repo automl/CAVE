@@ -246,7 +246,7 @@ class CostOverTime(BaseAnalyzer):
         else:
             budgets = [budget]
 
-        data = {}
+        data = OrderedDict()
         for idx, bohb_result in enumerate(self.bohb_results):
             data[idx] = {'costs' : [], 'times' : []}
             traj_dict = get_incumbent_trajectory(bohb_result, budgets, mode=self.cot_inc_traj)
@@ -256,8 +256,8 @@ class CostOverTime(BaseAnalyzer):
         # Average over parallel bohb iterations to get final values
         f_time, f_config, f_mean, f_std = [], [], [], []
 
-        pointer = {idx : {'cost' : np.nan,
-                          'time' : 0} for idx in list(data.keys())}
+        pointer = OrderedDict([(idx, {'cost' : np.nan,
+                          'time' : 0}) for idx in list(data.keys())])
 
         while (len(data) > 0):
             next_idx = min({idx : data[idx]['times'][0] for idx in data.keys()}.items(), key=lambda x: x[1])[0]

@@ -2,6 +2,10 @@
 Here are helper functions needed to provide a certain behaviour of HpBandSter, such as special trajectories.
 """
 
+import numpy as np
+from collections import OrderedDict
+
+
 def get_incumbent_trajectory(result, budgets, mode='racing'):
     """
     Parameters
@@ -85,14 +89,14 @@ def _compute_trajectory_racing(all_runs, budgets):
         return []
     # The current incumbents for all budgets
     # - key is the budget and value is the incumbent
-    incumbents = {}
+    incumbents = OrderedDict()
 
     # The configurations seen for each budget
-    seen = {x: set() for x in budgets}
+    seen = OrderedDict([(x, set()) for x in budgets])
     # The configurations which are available for each budget.
     # It is used to perform a lookup if a configuration is actually evaluated
     # on a budget.
-    upcoming = {x: set() for x in budgets}
+    upcoming = OrderedDict([(x, set()) for x in budgets])
     for a in all_runs:
         upcoming[a.budget].add(a.config_id)
 

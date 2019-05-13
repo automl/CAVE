@@ -2,8 +2,8 @@ import os
 import logging
 import tempfile
 import itertools
-
 import numpy as np
+from collections import OrderedDict
 
 from ConfigSpace.read_and_write import json as pcs_json
 from ConfigSpace.read_and_write import pcs_new
@@ -51,7 +51,7 @@ class HpBandSter2SMAC(object):
         except ImportError as e:
             raise ImportError("To analyze BOHB-data, please install hpbandster (e.g. `pip install hpbandster`)")
 
-        folder2result = {f : logged_results_to_HBS_result(f) for f in folders}
+        folder2result = OrderedDict([(f, logged_results_to_HBS_result(f)) for f in folders])
 
         # backup_cs is a list with alternative interpretations of the configspace-file (if it's a .pcs-file)
         cs, backup_cs = self.load_configspace(folders[0])
@@ -136,7 +136,7 @@ class HpBandSter2SMAC(object):
             the output-dir to save the smac-runs to
         """
         # Create runhistories (one per budget)
-        budget2rh = {}
+        budget2rh = OrderedDict()
         for folder, result in folder2result.items():
             id2config_mapping = result.get_id2config_mapping()
             skipped = {'None' : 0, 'NaN' : 0}
@@ -182,7 +182,7 @@ class HpBandSter2SMAC(object):
             self.logger.debug("Skipped %d None- and %d NaN-loss-values in BOHB-result", skipped['None'], skipped['NaN'])
 
         # Write to disk
-        budget2path = {}  # paths to individual budgets
+        budget2path = OrderedDict()  # paths to individual budgets
         self.logger.info("Assuming BOHB treats target algorithms as deterministic (and does not re-evaluate)")
         round_to = 1
         formatted_budgets = {b : 'budget_{}'.format(int(b)) if float(b).is_integer() else 'budget_{:.{}f}'.format(b, round_to)
