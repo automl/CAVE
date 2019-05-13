@@ -302,6 +302,11 @@ class CostOverTime(BaseAnalyzer):
             data[p] = []
         for line in lines:
             for t, m, u, l, c in zip(line.time, line.mean, line.upper, line.lower, line.config):
+                if not (np.isfinite(m) and np.isfinite(u) and np.isfinite(l)):
+                    self.logger.debug("Why is there a NaN? (%s)", str(line))
+                    raise ValueError("There is a NaN value in your data, this should be filtered out. "
+                                     "Please report this to github.com/automl/CAVE/issues and provide the "
+                                     "debug/debug.log and the output of `pip freeze`, if you can.")
                 data['name'].append(line.name)
                 data['time'].append(t)
                 data['mean'].append(m)
