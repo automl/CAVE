@@ -18,7 +18,7 @@ from smac.stats.stats import Stats
 from smac.utils.io.output_writer import OutputWriter
 from smac.utils.io.traj_logging import TrajLogger, TrajEntry
 
-from cave.utils.hpbandster_helpers import get_incumbent_trajectory
+from cave.utils.hpbandster_helpers import get_incumbent_trajectory, format_budgets
 
 class HpBandSter2SMAC(object):
 
@@ -138,6 +138,7 @@ class HpBandSter2SMAC(object):
         # Create runhistories (one per budget)
         budget2rh = OrderedDict()
         for folder, result in folder2result.items():
+            self.logger.debug("Budgets for '%s': %s" % (folder, str(result.HB_config['budgets'])))
             id2config_mapping = result.get_id2config_mapping()
             skipped = {'None' : 0, 'NaN' : 0}
             for run in result.get_all_runs():
@@ -184,13 +185,7 @@ class HpBandSter2SMAC(object):
         # Write to disk
         budget2path = OrderedDict()  # paths to individual budgets
         self.logger.info("Assuming BOHB treats target algorithms as deterministic (and does not re-evaluate)")
-        round_to = 1
-        formatted_budgets = {b : 'budget_{}'.format(int(b)) if float(b).is_integer() else 'budget_{:.{}f}'.format(b, round_to)
-                             for b in budget2rh.keys()}
-        while len(set(formatted_budgets)) != len(formatted_budgets):
-            rount_to += 1
-            formatted_budgets = {b : 'budget_{}'.format(int(b)) if float(b).is_integer() else 'budget_{:.{}f}'.format(b, round_to)
-                                 for b in budget2rh.keys()}
+        formatted_budgets = format_budgets(budget2rh.keys())
         for b, rh in budget2rh.items():
             output_path = os.path.join(output_dir, formatted_budgets[b])
             budget2path[b] = output_path
