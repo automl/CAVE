@@ -88,6 +88,17 @@ class CostOverTime(BaseAnalyzer):
 
         self.logger.debug("Initialized CostOverTime with %d runs, output to \"%s\"", len(self.runs), self.output_dir)
 
+        # TODO to be replaced by base restruct
+        if self.bohb_results:
+            budgets = self.bohb_results[0].HB_config['budgets']
+            round_to = 1
+            self.formatted_budgets = {b : 'budget_{}'.format(int(b)) if float(b).is_integer() else 'budget_{:.{}f}'.format(b, round_to)
+                                      for b in budgets}
+            while len(set(self.formatted_budgets)) != len(self.formatted_budgets):
+                rount_to += 1
+                self.formatted_budgets = {b : 'budget_{}'.format(int(b)) if float(b).is_integer() else 'budget_{:.{}f}'.format(b, round_to)
+                                          for b in budgets}
+
         # Will be set during execution:
         self.plots = []                     # List with paths to '.png's
 
@@ -229,13 +240,13 @@ class CostOverTime(BaseAnalyzer):
         return lines
 
     def _get_bohb_line(self, validator, runs, rh, budget=None):
-        label = 'budget ' + str(int(budget) if float(budget).is_integer() else budget) if budget else 'all budgets'
+        label = self.formatted_budgets[budget] if budget else 'all budgets'
         if budget is None:
             budgets = self.bohb_results[0].HB_config['budgets']
         else:
             budgets = [budget]
 
-        data = {}
+        data = OrderedDict()
         for idx, bohb_result in enumerate(self.bohb_results):
             data[idx] = {'costs' : [], 'times' : []}
             traj_dict = get_incumbent_trajectory(bohb_result, budgets, mode=self.cot_inc_traj)
@@ -245,8 +256,8 @@ class CostOverTime(BaseAnalyzer):
         # Average over parallel bohb iterations to get final values
         f_time, f_config, f_mean, f_std = [], [], [], []
 
-        pointer = {idx : {'cost' : np.nan,
-                          'time' : 0} for idx in list(data.keys())}
+        pointer = OrderedDict([(idx, {'cost' : np.nan,
+                          'time' : 0}) for idx in list(data.keys())])
 
         while (len(data) > 0):
             next_idx = min({idx : data[idx]['times'][0] for idx in data.keys()}.items(), key=lambda x: x[1])[0]
@@ -291,6 +302,11 @@ class CostOverTime(BaseAnalyzer):
             data[p] = []
         for line in lines:
             for t, m, u, l, c in zip(line.time, line.mean, line.upper, line.lower, line.config):
+                if not (np.isfinite(m) and np.isfinite(u) and np.isfinite(l)):
+                    self.logger.debug("Why is there a NaN? (%s)", str(line))
+                    raise ValueError("There is a NaN value in your data, this should be filtered out. "
+                                     "Please report this to github.com/automl/CAVE/issues and provide the "
+                                     "debug/debug.log and the output of `pip freeze`, if you can.")
                 data['name'].append(line.name)
                 data['time'].append(t)
                 data['mean'].append(m)
