@@ -20,7 +20,7 @@ from cave.utils.hpbandster2smac import HpBandSter2SMAC
 from cave.reader.configurator_run import ConfiguratorRun
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.utils.bokeh_routines import get_checkbox
-from cave.utils.hpbandster_helpers import get_incumbent_trajectory
+from cave.utils.hpbandster_helpers import get_incumbent_trajectory, format_budgets
 
 from bokeh.plotting import figure, ColumnDataSource, show
 from bokeh.embed import components
@@ -90,14 +90,7 @@ class CostOverTime(BaseAnalyzer):
 
         # TODO to be replaced by base restruct
         if self.bohb_results:
-            budgets = self.bohb_results[0].HB_config['budgets']
-            round_to = 1
-            self.formatted_budgets = {b : 'budget_{}'.format(int(b)) if float(b).is_integer() else 'budget_{:.{}f}'.format(b, round_to)
-                                      for b in budgets}
-            while len(set(self.formatted_budgets)) != len(self.formatted_budgets):
-                rount_to += 1
-                self.formatted_budgets = {b : 'budget_{}'.format(int(b)) if float(b).is_integer() else 'budget_{:.{}f}'.format(b, round_to)
-                                          for b in budgets}
+            self.formatted_budgets = format_budgets(self.bohb_results[0].HB_config['budgets'])
 
         # Will be set during execution:
         self.plots = []                     # List with paths to '.png's
