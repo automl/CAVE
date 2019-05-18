@@ -559,7 +559,7 @@ class CAVE(object):
                                           lpi='lpi' in param_importance,
                                           pimp_sort_table_by=pimp_sort_table_by)
                 self.configurators_behavior(self.website["Configurators Behavior"], sub_sec,
-                                            False,
+                                            False, cot_inc_traj,
                                             False, cfp_max_plot, cfp_time_slider, cfp_number_quantiles,
                                             parallel_coordinates)
                 if self.feature_names:
