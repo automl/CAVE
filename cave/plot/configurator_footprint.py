@@ -129,7 +129,7 @@ class ConfiguratorFootprintPlotter(object):
                                                              conf_list=copy.deepcopy(conf_list),
                                                              contour_step_size=self.contour_step_size)
         for label, rh in zip(self.rh_labels, self.rhs):
-            contour_data[label] = self.get_pred_surface(rh, X_scaled=red_dists,
+            contour_data[label] = self.get_pred_surface(self.combined_rh, X_scaled=red_dists,
                                                         conf_list=copy.deepcopy(conf_list),
                                                         contour_step_size=self.contour_step_size)
 
