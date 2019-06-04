@@ -181,7 +181,7 @@ class CAVE(object):
         """
         self.show_jupyter = show_jupyter
         if self.show_jupyter:
-            # Reset logging module
+            # Reset logging module (needs to happen before logger initalization)
             logging.shutdown()
             reload(logging)
 
@@ -208,6 +208,11 @@ class CAVE(object):
         self.file_format = file_format
         self.validation_format = validation_format
         self.validation_method = validation_method
+
+        # If only one ta_exec_dir, need to extend so it's same length as folders
+        self.ta_exec_dir.extend([self.ta_exec_dir[0] for i in range(len(self.folders) - len(self.ta_exec_dir))])
+
+        # Configuration of analyzers (works as a default for report generation)
         self.pimp_max_samples = pimp_max_samples
         self.fanova_pairwise = fanova_pairwise
         self.pc_sort_by = pc_sort_by
@@ -275,7 +280,7 @@ class CAVE(object):
         else:
             self._init_helper_no_budgets()
 
-        # Builder for html-website
+        # Builder for html-website, decide for suitable logo
         custom_logo = './custom_logo.png'
         if self.use_budgets:
             logo_fn = 'BOHB_logo.png'

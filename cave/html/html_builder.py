@@ -203,11 +203,13 @@ for (i = 0; i < acc.length; i++) {
         script, div = "", ""
 
         # Add tooltip, if possible
-        tooltip = data_dict.get("tooltip", "")
-        if tooltip != "":
+        tooltip = data_dict.get("tooltip", None)
+        if tooltip is not None:
             tooltip = "<div class=\"help-tip\"><p>{}</p></div>".format(tooltip)
         elif get_tooltip(layer_name):  # if no tooltip is parsed, try to look it up
             tooltip = "<div class=\"help-tip\"><p>{}</p></div>".format(get_tooltip(layer_name))
+        else:
+            tooltip = ""
 
         # Start accordion-panel
         if not is_tab:
