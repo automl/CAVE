@@ -1,3 +1,26 @@
+# 1.1.7
+
+## Bug fixes
+
+* Fix error's in some plots related to NaN's in bohb-trajectory
+* Fix fanova display error in jupyter notebook
+* Fix critical error on rh-reduction in cfp (individual budget's didn't reduce, leading to KeyError)
+* Fix too many cfp-plots (for individual budgets) in some cases
+* Fix several jupyter-related bugs
+* (minor) Fix TypeError when additional-info in bohb-result is a list (not a dict)
+
+## Major changes
+
+* Add option `cot_inc_traj` to choose the way the bohb-trajectory is interpreted (add `racing` method)
+* Add ConfigSpace to overview-table
+* Budgets with long floats are rounded as much as possible while staying unique
+* Add hpbandster to requirements (overdue, this is mainly used for hpbandster)
+
+## Minor changes
+
+* Update bokeh to 1.1.0
+* Format issues (dos to unix)
+
 # 1.1.6
 
 ## Bug fixes

@@ -28,7 +28,7 @@ class PimpComparisonTable(BaseAnalyzer):
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
 
         self.pimp = pimp
-        self.evaluators = evaluators
+        self.evaluators = list(evaluators.values())
         self.sort_table_by = sort_table_by
         self.cs = cs
         self.out_fn = out_fn

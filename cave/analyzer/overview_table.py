@@ -5,6 +5,8 @@ from collections import OrderedDict
 from pandas import DataFrame
 import numpy as np
 
+from ConfigSpace.hyperparameters import NumericalHyperparameter, CategoricalHyperparameter, OrdinalHyperparameter, Constant
+
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.html.html_helpers import figure_to_html
 from cave.utils.helpers import get_config_origin
@@ -29,27 +31,34 @@ class OverviewTable(BaseAnalyzer):
         self.runs = runs
         self.bohb_parallel = bohb_parallel
 
-        self.html_table_general, self.html_table_specific = self.run()
+        self.html_table_general, self.html_table_specific, self.html_table_cs = self.run()
 
     def run(self):
         """ Generate tables. """
         scenario = self.runs[0].scenario
 
+        # General infos
         general_dict = self._general_dict(scenario, self.bohb_parallel)
         html_table_general = DataFrame(data=OrderedDict([('General', general_dict)]))
         html_table_general = html_table_general.reindex(list(general_dict.keys()))
         html_table_general = html_table_general.to_html(escape=False, header=False, justify='left')
 
+        # Run-specific / budget specific infos
         runspec_dict = self._runspec_dict(self.runs)
         order_spec = list(list(runspec_dict.values())[0].keys())  # Get keys of any sub-dict for order
         html_table_specific = DataFrame(runspec_dict)
         html_table_specific = html_table_specific.reindex(order_spec)
         html_table_specific = html_table_specific.to_html(escape=False, justify='left')
 
-        return html_table_general, html_table_specific
+        # ConfigSpace in tabular form
+        cs_dict = self._configspace(scenario.cs)
+        cs_table = DataFrame(data=cs_dict)
+        html_table_cs = cs_table.to_html(escape=False, justify='left', index=False)
+
+        return html_table_general, html_table_specific, html_table_cs
 
     def _general_dict(self, scenario, bohb_parallel=False):
-        """ Generate the meta-information that holds for all runs (scenario info etc) 
+        """ Generate the meta-information that holds for all runs (scenario info etc)
 
         Parameters
         ----------
@@ -138,6 +147,30 @@ class OverviewTable(BaseAnalyzer):
 
         return result
 
+    def _configspace(self, cs):
+        """ Return configspace in table-format """
+        d = OrderedDict([("Parameter", []),
+                         ("Type", []),
+                         ("Range/Choices", []),
+                         ("Default", [])]
+                        )
+        for hp in cs.get_hyperparameters():
+            d["Parameter"].append(hp.name)
+            d["Type"].append(type(hp).__name__)
+            if isinstance(hp, NumericalHyperparameter):
+                d["Range/Choices"].append("[{}, {}]{}".format(hp.lower, hp.upper, ' (log)' if hp.log else ''))
+            elif isinstance(hp, CategoricalHyperparameter):
+                d["Range/Choices"].append("{}".format(hp.choices))
+            elif isinstance(hp, OrdinalHyperparameter):
+                d["Range/Choices"].append("{}".format(hp.sequence))
+            elif isinstance(hp, Constant):
+                d["Range/Choices"].append("{}".format(hp.default_value))
+            else:
+                d["Range/Choices"].append("?")
+            d["Default"].append(hp.default_value)
+
+        return d
+
 
     def get_html(self, d=None, tooltip=None, budget=None):
         if d is not None:
@@ -146,8 +179,10 @@ class OverviewTable(BaseAnalyzer):
             d["Run-Specific"] = {"table" : self.html_table_specific,
                                  "tooltip" : "Information to specific runs (if there are multiple runs). Interesting "
                                              "for parallel optimizations or usage of budgets/fidelities."}
+            d["Configuration Space"] = {"table" : self.html_table_cs,
+                            "tooltip" : "The parameter configuration space. (See github.com/automl/ConfigSpace)"}
             d["tooltip"] = tooltip
-        return ' '.join([self.html_table_general, self.html_table_specific])
+        return ' '.join([self.html_table_general, self.html_table_specific, self.html_table_cs])
 
     def get_jupyter(self):
         from IPython.core.display import HTML, display

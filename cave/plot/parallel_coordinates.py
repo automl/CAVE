@@ -132,6 +132,8 @@ class ParallelCoordinatesPlotter():
                       'log_sampling' if log_sample else 'uniform_sampling')] = path
         return_path = pngs[('log_cost', 'log_sampling')] if self.runtime else pngs[('linear_cost', 'log_sampling')]
         self.plots.append(return_path)
+        if return_path is None:
+            raise ValueError("No parallel coordinate plot was generated. Check the debug/debug.log for details.")
         return return_path
 
     def _plot(self, configs, params, fn=None, log_c=False, logy=False):

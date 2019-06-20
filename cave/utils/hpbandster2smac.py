@@ -2,13 +2,14 @@ import os
 import logging
 import tempfile
 import itertools
-
 import numpy as np
+from collections import OrderedDict
 
 from ConfigSpace.read_and_write import json as pcs_json
 from ConfigSpace.read_and_write import pcs_new
 from ConfigSpace.configuration_space import Configuration, ConfigurationSpace
 from ConfigSpace.hyperparameters import CategoricalHyperparameter
+
 from smac.tae.execute_ta_run import StatusType
 from smac.runhistory.runhistory import RunHistory
 from smac.optimizer.objective import average_cost
@@ -16,6 +17,8 @@ from smac.scenario.scenario import Scenario
 from smac.stats.stats import Stats
 from smac.utils.io.output_writer import OutputWriter
 from smac.utils.io.traj_logging import TrajLogger, TrajEntry
+
+from cave.utils.hpbandster_helpers import get_incumbent_trajectory, format_budgets
 
 class HpBandSter2SMAC(object):
 
@@ -48,7 +51,7 @@ class HpBandSter2SMAC(object):
         except ImportError as e:
             raise ImportError("To analyze BOHB-data, please install hpbandster (e.g. `pip install hpbandster`)")
 
-        folder2result = {f : logged_results_to_HBS_result(f) for f in folders}
+        folder2result = OrderedDict([(f, logged_results_to_HBS_result(f)) for f in folders])
 
         # backup_cs is a list with alternative interpretations of the configspace-file (if it's a .pcs-file)
         cs, backup_cs = self.load_configspace(folders[0])
@@ -133,8 +136,9 @@ class HpBandSter2SMAC(object):
             the output-dir to save the smac-runs to
         """
         # Create runhistories (one per budget)
-        budget2rh = {}
+        budget2rh = OrderedDict()
         for folder, result in folder2result.items():
+            self.logger.debug("Budgets for '%s': %s" % (folder, str(result.HB_config['budgets'])))
             id2config_mapping = result.get_id2config_mapping()
             skipped = {'None' : 0, 'NaN' : 0}
             for run in result.get_all_runs():
@@ -179,11 +183,11 @@ class HpBandSter2SMAC(object):
             self.logger.debug("Skipped %d None- and %d NaN-loss-values in BOHB-result", skipped['None'], skipped['NaN'])
 
         # Write to disk
-        budget2path = {}  # paths to individual budgets
+        budget2path = OrderedDict()  # paths to individual budgets
         self.logger.info("Assuming BOHB treats target algorithms as deterministic (and does not re-evaluate)")
+        formatted_budgets = format_budgets(budget2rh.keys())
         for b, rh in budget2rh.items():
-            formatted = 'budget_{}'.format(int(b)) if (b).is_integer() else 'budget_{:.3f}'.format(b)
-            output_path = os.path.join(output_dir, 'budget_' + str(int(b) if (b).is_integer() else b))
+            output_path = os.path.join(output_dir, formatted_budgets[b])
             budget2path[b] = output_path
 
             scenario = Scenario({'run_obj' : 'quality',
@@ -267,12 +271,12 @@ class HpBandSter2SMAC(object):
 
     def get_incumbent_trajectory_for_budget(self, result, budget):
         """
-        Returns the best configurations over time
+        Returns the best configurations over time for a single budget
 
         Parameters
         ----------
         budget: string
-            TODO
+            budget to be considered
         result: Result
             result object with runs
 
@@ -282,48 +286,7 @@ class HpBandSter2SMAC(object):
                 dictionary with all the config IDs, the times the runs
                 finished, their respective budgets, and corresponding losses
         """
-        all_runs = result.get_all_runs(only_largest_budget=False)
-
-        #if not all_budgets:
-        #    all_runs = list(filter(lambda r: r.budget==res.HB_config['max_budget'], all_runs))
-
-        all_runs.sort(key=lambda r: (r.budget, r.time_stamps['finished']))
-
-        #self.logger.debug("all runs %s", str(all_runs))
-
-        return_dict = { 'config_ids' : [],
-                        'times_finished': [],
-                        'budgets'    : [],
-                        'losses'     : [],
-        }
-
-        current_incumbent = float('inf')
-        incumbent_budget = result.HB_config['min_budget']
-
-        for r in all_runs:
-            if r.loss is None: continue
-            if r.budget != budget: continue
-
-            new_incumbent = False
-
-            if r.loss < current_incumbent:
-                new_incumbent = True
-
-            if new_incumbent:
-                current_incumbent = r.loss
-
-                return_dict['config_ids'].append(r.config_id)
-                return_dict['times_finished'].append(r.time_stamps['finished'])
-                return_dict['budgets'].append(r.budget)
-                return_dict['losses'].append(r.loss)
-
-        if current_incumbent != r.loss:
-            r = all_runs[-1]
-
-            return_dict['config_ids'].append(return_dict['config_ids'][-1])
-            return_dict['times_finished'].append(r.time_stamps['finished'])
-            return_dict['budgets'].append(return_dict['budgets'][-1])
-            return_dict['losses'].append(return_dict['losses'][-1])
-
-
-        return (return_dict)
+        if not budget in result.HB_config['budgets']:
+            raise ValueError("Budget '{}' (type: {}) does not exist. Choose from {}".format(str(budget), str(type(budget)),
+                "[" + ", ".join([str(b) + " (type: " +  str(type(b)) + ")" for b in result.HB_config['budgets']]) + "]"))
+        return get_incumbent_trajectory(result, [budget])

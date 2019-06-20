@@ -129,7 +129,7 @@ class ConfiguratorFootprintPlotter(object):
                                                              conf_list=copy.deepcopy(conf_list),
                                                              contour_step_size=self.contour_step_size)
         for label, rh in zip(self.rh_labels, self.rhs):
-            contour_data[label] = self.get_pred_surface(rh, X_scaled=red_dists,
+            contour_data[label] = self.get_pred_surface(self.combined_rh, X_scaled=red_dists,
                                                         conf_list=copy.deepcopy(conf_list),
                                                         contour_step_size=self.contour_step_size)
 
@@ -469,7 +469,7 @@ class ConfiguratorFootprintPlotter(object):
                 while len(timestamps) - 1 > idx and (timestamps[idx] < time or idx <= time_idx):
                     idx += 1
                 ranges.append(idx)
-        except KeyError as err:
+        except (KeyError, TypeError) as err:
             self.logger.debug(err)
             self.logger.debug("Failed to sort by timestamps... only a reason to worry if this is BOHB-analysis")
             ranges = [int(x) for x in scale(1, runs_total, num=quantiles+1)]

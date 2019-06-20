@@ -94,15 +94,15 @@ class HTMLBuilder(object):
 <link href="html/css/back-to-top.css" rel="stylesheet" />
 <link href="html/css/tabs.css" rel="stylesheet" />
 
-<link href="html/css/bokeh-1.0.1.min.css" rel="stylesheet" type="text/css">
-<link href="html/css/bokeh-widgets-1.0.1.min.css" rel="stylesheet" type="text/css">
-<link href="html/css/bokeh-tables-1.0.1.min.css" rel="stylesheet" type="text/css">
+<link href="html/css/bokeh-1.1.0.min.css" rel="stylesheet" type="text/css">
+<link href="html/css/bokeh-widgets-1.1.0.min.css" rel="stylesheet" type="text/css">
+<link href="html/css/bokeh-tables-1.1.0.min.css" rel="stylesheet" type="text/css">
 
 <script src="html/js/tabs.js"></script>
 
-<script src="html/js/bokeh-1.0.1.min.js"></script>
-<script src="html/js/bokeh-widgets-1.0.1.min.js"></script>
-<script src="html/js/bokeh-tables-1.0.1.min.js"></script>
+<script src="html/js/bokeh-1.1.0.min.js"></script>
+<script src="html/js/bokeh-widgets-1.1.0.min.js"></script>
+<script src="html/js/bokeh-tables-1.1.0.min.js"></script>
 
 <!--Below here are the includes of scripts for the report (e.g. bokeh)-->
 '''
@@ -203,13 +203,11 @@ for (i = 0; i < acc.length; i++) {
         script, div = "", ""
 
         # Add tooltip, if possible
-        tooltip = data_dict.get("tooltip", None)
-        if tooltip is not None:
+        tooltip = data_dict.get("tooltip", "")
+        if tooltip != "":
             tooltip = "<div class=\"help-tip\"><p>{}</p></div>".format(tooltip)
         elif get_tooltip(layer_name):  # if no tooltip is parsed, try to look it up
             tooltip = "<div class=\"help-tip\"><p>{}</p></div>".format(get_tooltip(layer_name))
-        else:
-            tooltip = ""
 
         # Start accordion-panel
         if not is_tab:
