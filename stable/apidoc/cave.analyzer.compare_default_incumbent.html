@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.compare_default_incumbent module &mdash; CAVE 1.1.6 documentation</title>
+  <title>cave.analyzer.compare_default_incumbent module &mdash; CAVE 1.1.8.dev documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.6
+                1.1.8.dev
               </div>
             
           
@@ -237,7 +237,7 @@
 <span id="cave-analyzer-compare-default-incumbent-module"></span><h1>cave.analyzer.compare_default_incumbent module<a class="headerlink" href="#module-cave.analyzer.compare_default_incumbent" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent">
-<em class="property">class </em><code class="descclassname">cave.analyzer.compare_default_incumbent.</code><code class="descname">CompareDefaultIncumbent</code><span class="sig-paren">(</span><em>default</em>, <em>incumbent</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/compare_default_incumbent.html#CompareDefaultIncumbent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cave.analyzer.compare_default_incumbent.</code><code class="sig-name descname">CompareDefaultIncumbent</code><span class="sig-paren">(</span><em class="sig-param">default</em>, <em class="sig-param">incumbent</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/compare_default_incumbent.html#CompareDefaultIncumbent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer" title="cave.analyzer.base_analyzer.BaseAnalyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">cave.analyzer.base_analyzer.BaseAnalyzer</span></code></a></p>
 <p>Create comparison table of default and incumbent
 Removes unused parameters.</p>
@@ -248,7 +248,7 @@ Removes unused parameters.</p>
 </dl>
 <dl class="method">
 <dt id="cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent.get_html">
-<code class="descname">get_html</code><span class="sig-paren">(</span><em>d=None</em>, <em>tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/compare_default_incumbent.html#CompareDefaultIncumbent.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent.get_html" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_html</code><span class="sig-paren">(</span><em class="sig-param">d=None</em>, <em class="sig-param">tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/compare_default_incumbent.html#CompareDefaultIncumbent.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent.get_html" title="Permalink to this definition">¶</a></dt>
 <dd><p>General reports in html-format, to be easily integrated in html-code. ALSO FOR BOKEH-OUTPUT.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -262,13 +262,13 @@ Removes unused parameters.</p>
 
 <dl class="method">
 <dt id="cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent.get_jupyter">
-<code class="descname">get_jupyter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/compare_default_incumbent.html#CompareDefaultIncumbent.get_jupyter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent.get_jupyter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_jupyter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/compare_default_incumbent.html#CompareDefaultIncumbent.get_jupyter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent.get_jupyter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Depending on analysis, this creates jupyter-notebook compatible output.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent.get_static_plots">
-<code class="descname">get_static_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent.get_static_plots" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_static_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent.get_static_plots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns plot-paths, if any are available</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -282,7 +282,7 @@ Removes unused parameters.</p>
 
 <dl class="method">
 <dt id="cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent.get_table">
-<code class="descname">get_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/compare_default_incumbent.html#CompareDefaultIncumbent.get_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent.get_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/compare_default_incumbent.html#CompareDefaultIncumbent.get_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent.get_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get table, if available</p>
 </dd></dl>
 

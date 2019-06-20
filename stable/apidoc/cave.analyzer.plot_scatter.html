@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.plot_scatter module &mdash; CAVE 1.1.6 documentation</title>
+  <title>cave.analyzer.plot_scatter module &mdash; CAVE 1.1.8.dev documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.6
+                1.1.8.dev
               </div>
             
           
@@ -237,7 +237,7 @@
 <span id="cave-analyzer-plot-scatter-module"></span><h1>cave.analyzer.plot_scatter module<a class="headerlink" href="#module-cave.analyzer.plot_scatter" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.analyzer.plot_scatter.PlotScatter">
-<em class="property">class </em><code class="descclassname">cave.analyzer.plot_scatter.</code><code class="descname">PlotScatter</code><span class="sig-paren">(</span><em>default: ConfigSpace.configuration_space.Configuration, incumbent: ConfigSpace.configuration_space.Configuration, rh: smac.runhistory.runhistory.RunHistory, train: List[str], test: Optional[List[str]], run_obj: str, cutoff, output_dir: int</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/plot_scatter.html#PlotScatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.plot_scatter.PlotScatter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cave.analyzer.plot_scatter.</code><code class="sig-name descname">PlotScatter</code><span class="sig-paren">(</span><em class="sig-param">default: ConfigSpace.configuration_space.Configuration, incumbent: ConfigSpace.configuration_space.Configuration, rh: smac.runhistory.runhistory.RunHistory, train: List[str], test: Optional[List[str]], run_obj: str, cutoff, output_dir: int</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/plot_scatter.html#PlotScatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.plot_scatter.PlotScatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer" title="cave.analyzer.base_analyzer.BaseAnalyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">cave.analyzer.base_analyzer.BaseAnalyzer</span></code></a></p>
 <p>Creates a scatterplot of the two configurations on the given set of instances.
 Saves plot to file.</p>
@@ -258,7 +258,7 @@ Saves plot to file.</p>
 </dl>
 <dl class="method">
 <dt id="cave.analyzer.plot_scatter.PlotScatter.get_html">
-<code class="descname">get_html</code><span class="sig-paren">(</span><em>d=None</em>, <em>tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/plot_scatter.html#PlotScatter.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.plot_scatter.PlotScatter.get_html" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_html</code><span class="sig-paren">(</span><em class="sig-param">d=None</em>, <em class="sig-param">tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/plot_scatter.html#PlotScatter.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.plot_scatter.PlotScatter.get_html" title="Permalink to this definition">¶</a></dt>
 <dd><p>General reports in html-format, to be easily integrated in html-code. ALSO FOR BOKEH-OUTPUT.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -272,18 +272,18 @@ Saves plot to file.</p>
 
 <dl class="method">
 <dt id="cave.analyzer.plot_scatter.PlotScatter.get_jupyter">
-<code class="descname">get_jupyter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/plot_scatter.html#PlotScatter.get_jupyter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.plot_scatter.PlotScatter.get_jupyter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_jupyter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/plot_scatter.html#PlotScatter.get_jupyter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.plot_scatter.PlotScatter.get_jupyter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Depending on analysis, this creates jupyter-notebook compatible output.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.analyzer.plot_scatter.PlotScatter.get_plots">
-<code class="descname">get_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/plot_scatter.html#PlotScatter.get_plots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.plot_scatter.PlotScatter.get_plots" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/plot_scatter.html#PlotScatter.get_plots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.plot_scatter.PlotScatter.get_plots" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="cave.analyzer.plot_scatter.PlotScatter.get_static_plots">
-<code class="descname">get_static_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#cave.analyzer.plot_scatter.PlotScatter.get_static_plots" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_static_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#cave.analyzer.plot_scatter.PlotScatter.get_static_plots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns plot-paths, if any are available</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -297,7 +297,7 @@ Saves plot to file.</p>
 
 <dl class="method">
 <dt id="cave.analyzer.plot_scatter.PlotScatter.get_table">
-<code class="descname">get_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.analyzer.plot_scatter.PlotScatter.get_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.analyzer.plot_scatter.PlotScatter.get_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get table, if available</p>
 </dd></dl>
 

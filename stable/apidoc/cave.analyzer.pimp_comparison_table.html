@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.pimp_comparison_table module &mdash; CAVE 1.1.6 documentation</title>
+  <title>cave.analyzer.pimp_comparison_table module &mdash; CAVE 1.1.8.dev documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.6
+                1.1.8.dev
               </div>
             
           
@@ -237,13 +237,13 @@
 <span id="cave-analyzer-pimp-comparison-table-module"></span><h1>cave.analyzer.pimp_comparison_table module<a class="headerlink" href="#module-cave.analyzer.pimp_comparison_table" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.analyzer.pimp_comparison_table.PimpComparisonTable">
-<em class="property">class </em><code class="descclassname">cave.analyzer.pimp_comparison_table.</code><code class="descname">PimpComparisonTable</code><span class="sig-paren">(</span><em>pimp</em>, <em>evaluators</em>, <em>sort_table_by</em>, <em>cs</em>, <em>out_fn</em>, <em>threshold=0.05</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/pimp_comparison_table.html#PimpComparisonTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.pimp_comparison_table.PimpComparisonTable" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cave.analyzer.pimp_comparison_table.</code><code class="sig-name descname">PimpComparisonTable</code><span class="sig-paren">(</span><em class="sig-param">pimp</em>, <em class="sig-param">evaluators</em>, <em class="sig-param">sort_table_by</em>, <em class="sig-param">cs</em>, <em class="sig-param">out_fn</em>, <em class="sig-param">threshold=0.05</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/pimp_comparison_table.html#PimpComparisonTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.pimp_comparison_table.PimpComparisonTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer" title="cave.analyzer.base_analyzer.BaseAnalyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">cave.analyzer.base_analyzer.BaseAnalyzer</span></code></a></p>
 <p>Create a html-table over all evaluated parameter-importance-methods.
 Parameters are sorted after their average importance.</p>
 <dl class="method">
 <dt id="cave.analyzer.pimp_comparison_table.PimpComparisonTable.get_html">
-<code class="descname">get_html</code><span class="sig-paren">(</span><em>d=None</em>, <em>tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/pimp_comparison_table.html#PimpComparisonTable.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.pimp_comparison_table.PimpComparisonTable.get_html" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_html</code><span class="sig-paren">(</span><em class="sig-param">d=None</em>, <em class="sig-param">tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/pimp_comparison_table.html#PimpComparisonTable.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.pimp_comparison_table.PimpComparisonTable.get_html" title="Permalink to this definition">¶</a></dt>
 <dd><p>General reports in html-format, to be easily integrated in html-code. ALSO FOR BOKEH-OUTPUT.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -257,13 +257,13 @@ Parameters are sorted after their average importance.</p>
 
 <dl class="method">
 <dt id="cave.analyzer.pimp_comparison_table.PimpComparisonTable.get_jupyter">
-<code class="descname">get_jupyter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/pimp_comparison_table.html#PimpComparisonTable.get_jupyter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.pimp_comparison_table.PimpComparisonTable.get_jupyter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_jupyter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/pimp_comparison_table.html#PimpComparisonTable.get_jupyter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.pimp_comparison_table.PimpComparisonTable.get_jupyter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Depending on analysis, this creates jupyter-notebook compatible output.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.analyzer.pimp_comparison_table.PimpComparisonTable.get_static_plots">
-<code class="descname">get_static_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#cave.analyzer.pimp_comparison_table.PimpComparisonTable.get_static_plots" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_static_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#cave.analyzer.pimp_comparison_table.PimpComparisonTable.get_static_plots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns plot-paths, if any are available</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -277,13 +277,13 @@ Parameters are sorted after their average importance.</p>
 
 <dl class="method">
 <dt id="cave.analyzer.pimp_comparison_table.PimpComparisonTable.get_table">
-<code class="descname">get_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.analyzer.pimp_comparison_table.PimpComparisonTable.get_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.analyzer.pimp_comparison_table.PimpComparisonTable.get_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get table, if available</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.analyzer.pimp_comparison_table.PimpComparisonTable.plot">
-<code class="descname">plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/pimp_comparison_table.html#PimpComparisonTable.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.pimp_comparison_table.PimpComparisonTable.plot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/pimp_comparison_table.html#PimpComparisonTable.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.pimp_comparison_table.PimpComparisonTable.plot" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

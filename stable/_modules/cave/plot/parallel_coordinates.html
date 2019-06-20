@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.plot.parallel_coordinates &mdash; CAVE 1.1.6 documentation</title>
+  <title>cave.plot.parallel_coordinates &mdash; CAVE 1.1.8.dev documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.6
+                1.1.8.dev
               </div>
             
           
@@ -360,6 +360,8 @@
                       <span class="s1">&#39;log_sampling&#39;</span> <span class="k">if</span> <span class="n">log_sample</span> <span class="k">else</span> <span class="s1">&#39;uniform_sampling&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">path</span>
         <span class="n">return_path</span> <span class="o">=</span> <span class="n">pngs</span><span class="p">[(</span><span class="s1">&#39;log_cost&#39;</span><span class="p">,</span> <span class="s1">&#39;log_sampling&#39;</span><span class="p">)]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime</span> <span class="k">else</span> <span class="n">pngs</span><span class="p">[(</span><span class="s1">&#39;linear_cost&#39;</span><span class="p">,</span> <span class="s1">&#39;log_sampling&#39;</span><span class="p">)]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">return_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">return_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No parallel coordinate plot was generated. Check the debug/debug.log for details.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">return_path</span></div>
 
     <span class="k">def</span> <span class="nf">_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configs</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log_c</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">logy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>

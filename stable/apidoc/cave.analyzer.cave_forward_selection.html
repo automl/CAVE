@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.cave_forward_selection module &mdash; CAVE 1.1.6 documentation</title>
+  <title>cave.analyzer.cave_forward_selection module &mdash; CAVE 1.1.8.dev documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.6
+                1.1.8.dev
               </div>
             
           
@@ -237,12 +237,12 @@
 <span id="cave-analyzer-cave-forward-selection-module"></span><h1>cave.analyzer.cave_forward_selection module<a class="headerlink" href="#module-cave.analyzer.cave_forward_selection" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.analyzer.cave_forward_selection.CaveForwardSelection">
-<em class="property">class </em><code class="descclassname">cave.analyzer.cave_forward_selection.</code><code class="descname">CaveForwardSelection</code><span class="sig-paren">(</span><em>pimp</em>, <em>incumbent</em>, <em>output_dir</em>, <em>marginal_threshold=0.05</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cave_forward_selection.html#CaveForwardSelection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cave_forward_selection.CaveForwardSelection" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cave.analyzer.cave_forward_selection.</code><code class="sig-name descname">CaveForwardSelection</code><span class="sig-paren">(</span><em class="sig-param">pimp</em>, <em class="sig-param">incumbent</em>, <em class="sig-param">output_dir</em>, <em class="sig-param">marginal_threshold=0.05</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cave_forward_selection.html#CaveForwardSelection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cave_forward_selection.CaveForwardSelection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cave.analyzer.cave_parameter_importance.html#cave.analyzer.cave_parameter_importance.CaveParameterImportance" title="cave.analyzer.cave_parameter_importance.CaveParameterImportance"><code class="xref py py-class docutils literal notranslate"><span class="pre">cave.analyzer.cave_parameter_importance.CaveParameterImportance</span></code></a></p>
 <p>Wrapper for parameter_importance to save the importance-object</p>
 <dl class="method">
 <dt id="cave.analyzer.cave_forward_selection.CaveForwardSelection.get_html">
-<code class="descname">get_html</code><span class="sig-paren">(</span><em>d=None</em>, <em>tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cave_forward_selection.html#CaveForwardSelection.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cave_forward_selection.CaveForwardSelection.get_html" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_html</code><span class="sig-paren">(</span><em class="sig-param">d=None</em>, <em class="sig-param">tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cave_forward_selection.html#CaveForwardSelection.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cave_forward_selection.CaveForwardSelection.get_html" title="Permalink to this definition">¶</a></dt>
 <dd><p>General reports in html-format, to be easily integrated in html-code. ALSO FOR BOKEH-OUTPUT.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -256,18 +256,18 @@
 
 <dl class="method">
 <dt id="cave.analyzer.cave_forward_selection.CaveForwardSelection.get_jupyter">
-<code class="descname">get_jupyter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cave_forward_selection.html#CaveForwardSelection.get_jupyter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cave_forward_selection.CaveForwardSelection.get_jupyter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_jupyter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cave_forward_selection.html#CaveForwardSelection.get_jupyter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cave_forward_selection.CaveForwardSelection.get_jupyter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Depending on analysis, this creates jupyter-notebook compatible output.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.analyzer.cave_forward_selection.CaveForwardSelection.get_plots">
-<code class="descname">get_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cave_forward_selection.html#CaveForwardSelection.get_plots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cave_forward_selection.CaveForwardSelection.get_plots" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cave_forward_selection.html#CaveForwardSelection.get_plots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cave_forward_selection.CaveForwardSelection.get_plots" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="cave.analyzer.cave_forward_selection.CaveForwardSelection.get_static_plots">
-<code class="descname">get_static_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#cave.analyzer.cave_forward_selection.CaveForwardSelection.get_static_plots" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_static_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#cave.analyzer.cave_forward_selection.CaveForwardSelection.get_static_plots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns plot-paths, if any are available</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -281,13 +281,13 @@
 
 <dl class="method">
 <dt id="cave.analyzer.cave_forward_selection.CaveForwardSelection.get_table">
-<code class="descname">get_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.analyzer.cave_forward_selection.CaveForwardSelection.get_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.analyzer.cave_forward_selection.CaveForwardSelection.get_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get table, if available</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.analyzer.cave_forward_selection.CaveForwardSelection.parameter_importance">
-<code class="descname">parameter_importance</code><span class="sig-paren">(</span><em>modus</em><span class="sig-paren">)</span><a class="headerlink" href="#cave.analyzer.cave_forward_selection.CaveForwardSelection.parameter_importance" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">parameter_importance</code><span class="sig-paren">(</span><em class="sig-param">modus</em><span class="sig-paren">)</span><a class="headerlink" href="#cave.analyzer.cave_forward_selection.CaveForwardSelection.parameter_importance" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>modus: str</dt><dd><p>modus for parameter importance, from
 [forward-selection, ablation, fanova, lpi]</p>

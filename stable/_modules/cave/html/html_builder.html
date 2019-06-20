@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.html.html_builder &mdash; CAVE 1.1.6 documentation</title>
+  <title>cave.html.html_builder &mdash; CAVE 1.1.8.dev documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.6
+                1.1.8.dev
               </div>
             
           
@@ -322,15 +322,15 @@
 <span class="s1">&lt;link href=&quot;html/css/back-to-top.css&quot; rel=&quot;stylesheet&quot; /&gt;</span>
 <span class="s1">&lt;link href=&quot;html/css/tabs.css&quot; rel=&quot;stylesheet&quot; /&gt;</span>
 
-<span class="s1">&lt;link href=&quot;html/css/bokeh-1.0.1.min.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;&gt;</span>
-<span class="s1">&lt;link href=&quot;html/css/bokeh-widgets-1.0.1.min.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;&gt;</span>
-<span class="s1">&lt;link href=&quot;html/css/bokeh-tables-1.0.1.min.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;&gt;</span>
+<span class="s1">&lt;link href=&quot;html/css/bokeh-1.1.0.min.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;&gt;</span>
+<span class="s1">&lt;link href=&quot;html/css/bokeh-widgets-1.1.0.min.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;&gt;</span>
+<span class="s1">&lt;link href=&quot;html/css/bokeh-tables-1.1.0.min.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;&gt;</span>
 
 <span class="s1">&lt;script src=&quot;html/js/tabs.js&quot;&gt;&lt;/script&gt;</span>
 
-<span class="s1">&lt;script src=&quot;html/js/bokeh-1.0.1.min.js&quot;&gt;&lt;/script&gt;</span>
-<span class="s1">&lt;script src=&quot;html/js/bokeh-widgets-1.0.1.min.js&quot;&gt;&lt;/script&gt;</span>
-<span class="s1">&lt;script src=&quot;html/js/bokeh-tables-1.0.1.min.js&quot;&gt;&lt;/script&gt;</span>
+<span class="s1">&lt;script src=&quot;html/js/bokeh-1.1.0.min.js&quot;&gt;&lt;/script&gt;</span>
+<span class="s1">&lt;script src=&quot;html/js/bokeh-widgets-1.1.0.min.js&quot;&gt;&lt;/script&gt;</span>
+<span class="s1">&lt;script src=&quot;html/js/bokeh-tables-1.1.0.min.js&quot;&gt;&lt;/script&gt;</span>
 
 <span class="s1">&lt;!--Below here are the includes of scripts for the report (e.g. bokeh)--&gt;</span>
 <span class="s1">&#39;&#39;&#39;</span>
@@ -431,13 +431,11 @@
         <span class="n">script</span><span class="p">,</span> <span class="n">div</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
 
         <span class="c1"># Add tooltip, if possible</span>
-        <span class="n">tooltip</span> <span class="o">=</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tooltip&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">tooltip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tooltip</span> <span class="o">=</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tooltip&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tooltip</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
             <span class="n">tooltip</span> <span class="o">=</span> <span class="s2">&quot;&lt;div class=</span><span class="se">\&quot;</span><span class="s2">help-tip</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;p&gt;</span><span class="si">{}</span><span class="s2">&lt;/p&gt;&lt;/div&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tooltip</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">get_tooltip</span><span class="p">(</span><span class="n">layer_name</span><span class="p">):</span>  <span class="c1"># if no tooltip is parsed, try to look it up</span>
             <span class="n">tooltip</span> <span class="o">=</span> <span class="s2">&quot;&lt;div class=</span><span class="se">\&quot;</span><span class="s2">help-tip</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;p&gt;</span><span class="si">{}</span><span class="s2">&lt;/p&gt;&lt;/div&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">get_tooltip</span><span class="p">(</span><span class="n">layer_name</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">tooltip</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
         <span class="c1"># Start accordion-panel</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_tab</span><span class="p">:</span>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.utils.hpbandster2smac module &mdash; CAVE 1.1.6 documentation</title>
+  <title>cave.utils.hpbandster2smac module &mdash; CAVE 1.1.8.dev documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.6
+                1.1.8.dev
               </div>
             
           
@@ -237,11 +237,11 @@
 <span id="cave-utils-hpbandster2smac-module"></span><h1>cave.utils.hpbandster2smac module<a class="headerlink" href="#module-cave.utils.hpbandster2smac" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC">
-<em class="property">class </em><code class="descclassname">cave.utils.hpbandster2smac.</code><code class="descname">HpBandSter2SMAC</code><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cave.utils.hpbandster2smac.</code><code class="sig-name descname">HpBandSter2SMAC</code><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.convert">
-<code class="descname">convert</code><span class="sig-paren">(</span><em>folders</em>, <em>output_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.convert" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param">folders</em>, <em class="sig-param">output_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.convert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert hpbandster-results into smac-format, aggregating parallel runs along the budgets, so it is treated as
 one run with the same budgets. Throws ValueError when budgets of individual runs dont match.</p>
 <dl class="field-list simple">
@@ -264,12 +264,12 @@ one run with the same budgets. Throws ValueError when budgets of individual runs
 
 <dl class="method">
 <dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.get_incumbent_trajectory_for_budget">
-<code class="descname">get_incumbent_trajectory_for_budget</code><span class="sig-paren">(</span><em>result</em>, <em>budget</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.get_incumbent_trajectory_for_budget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.get_incumbent_trajectory_for_budget" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the best configurations over time</p>
+<code class="sig-name descname">get_incumbent_trajectory_for_budget</code><span class="sig-paren">(</span><em class="sig-param">result</em>, <em class="sig-param">budget</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.get_incumbent_trajectory_for_budget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.get_incumbent_trajectory_for_budget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the best configurations over time for a single budget</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>budget</strong> (<em>string</em>) – TODO</p></li>
+<li><p><strong>budget</strong> (<em>string</em>) – budget to be considered</p></li>
 <li><p><strong>result</strong> (<em>Result</em>) – result object with runs</p></li>
 </ul>
 </dd>
@@ -285,14 +285,14 @@ finished, their respective budgets, and corresponding losses</p>
 
 <dl class="method">
 <dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.get_trajectory">
-<code class="descname">get_trajectory</code><span class="sig-paren">(</span><em>folder2result</em>, <em>output_path</em>, <em>scenario</em>, <em>rh</em>, <em>budget=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.get_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.get_trajectory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_trajectory</code><span class="sig-paren">(</span><em class="sig-param">folder2result</em>, <em class="sig-param">output_path</em>, <em class="sig-param">scenario</em>, <em class="sig-param">rh</em>, <em class="sig-param">budget=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.get_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.get_trajectory" title="Permalink to this definition">¶</a></dt>
 <dd><p>If budget is specified, get trajectory for only that budget. Else use hpbandster’s averaging.
 If multiple results are specified, sort by times_finished and only add to combined trajectory if loss is better</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.hpbandster2smac">
-<code class="descname">hpbandster2smac</code><span class="sig-paren">(</span><em>folder2result</em>, <em>cs: ConfigSpace.configuration_space.ConfigurationSpace</em>, <em>backup_cs</em>, <em>output_dir: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.hpbandster2smac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.hpbandster2smac" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">hpbandster2smac</code><span class="sig-paren">(</span><em class="sig-param">folder2result</em>, <em class="sig-param">cs: ConfigSpace.configuration_space.ConfigurationSpace</em>, <em class="sig-param">backup_cs</em>, <em class="sig-param">output_dir: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.hpbandster2smac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.hpbandster2smac" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reading hpbandster-result-object and creating RunHistory and trajectory…
 treats each budget as an individual ‘smac’-run, creates an
 output-directory with subdirectories for each budget.</p>
@@ -310,7 +310,7 @@ output-directory with subdirectories for each budget.</p>
 
 <dl class="method">
 <dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.load_configspace">
-<code class="descname">load_configspace</code><span class="sig-paren">(</span><em>folder</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.load_configspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.load_configspace" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">load_configspace</code><span class="sig-paren">(</span><em class="sig-param">folder</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.load_configspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.load_configspace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Will try to load the configspace. If it’s a pcs-file, backup_cs will be a list containing all possible
 combinations of interpretation for Categoricals. If this issue will be fixed, we can drop this procedure.</p>
 </dd></dl>

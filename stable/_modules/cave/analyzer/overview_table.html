@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.overview_table &mdash; CAVE 1.1.6 documentation</title>
+  <title>cave.analyzer.overview_table &mdash; CAVE 1.1.8.dev documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.6
+                1.1.8.dev
               </div>
             
           
@@ -233,6 +233,8 @@
 <span class="kn">from</span> <span class="nn">pandas</span> <span class="k">import</span> <span class="n">DataFrame</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
+<span class="kn">from</span> <span class="nn">ConfigSpace.hyperparameters</span> <span class="k">import</span> <span class="n">NumericalHyperparameter</span><span class="p">,</span> <span class="n">CategoricalHyperparameter</span><span class="p">,</span> <span class="n">OrdinalHyperparameter</span><span class="p">,</span> <span class="n">Constant</span>
+
 <span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="k">import</span> <span class="n">BaseAnalyzer</span>
 <span class="kn">from</span> <span class="nn">cave.html.html_helpers</span> <span class="k">import</span> <span class="n">figure_to_html</span>
 <span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">get_config_origin</span>
@@ -257,27 +259,34 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">runs</span> <span class="o">=</span> <span class="n">runs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bohb_parallel</span> <span class="o">=</span> <span class="n">bohb_parallel</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">html_table_general</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">html_table_specific</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">html_table_general</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">html_table_specific</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">html_table_cs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 
 <div class="viewcode-block" id="OverviewTable.run"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Generate tables. &quot;&quot;&quot;</span>
         <span class="n">scenario</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scenario</span>
 
+        <span class="c1"># General infos</span>
         <span class="n">general_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_general_dict</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bohb_parallel</span><span class="p">)</span>
         <span class="n">html_table_general</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;General&#39;</span><span class="p">,</span> <span class="n">general_dict</span><span class="p">)]))</span>
         <span class="n">html_table_general</span> <span class="o">=</span> <span class="n">html_table_general</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">general_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
         <span class="n">html_table_general</span> <span class="o">=</span> <span class="n">html_table_general</span><span class="o">.</span><span class="n">to_html</span><span class="p">(</span><span class="n">escape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
 
+        <span class="c1"># Run-specific / budget specific infos</span>
         <span class="n">runspec_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runspec_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">)</span>
         <span class="n">order_spec</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">runspec_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>  <span class="c1"># Get keys of any sub-dict for order</span>
         <span class="n">html_table_specific</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">runspec_dict</span><span class="p">)</span>
         <span class="n">html_table_specific</span> <span class="o">=</span> <span class="n">html_table_specific</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">order_spec</span><span class="p">)</span>
         <span class="n">html_table_specific</span> <span class="o">=</span> <span class="n">html_table_specific</span><span class="o">.</span><span class="n">to_html</span><span class="p">(</span><span class="n">escape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">html_table_general</span><span class="p">,</span> <span class="n">html_table_specific</span></div>
+        <span class="c1"># ConfigSpace in tabular form</span>
+        <span class="n">cs_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_configspace</span><span class="p">(</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="p">)</span>
+        <span class="n">cs_table</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">cs_dict</span><span class="p">)</span>
+        <span class="n">html_table_cs</span> <span class="o">=</span> <span class="n">cs_table</span><span class="o">.</span><span class="n">to_html</span><span class="p">(</span><span class="n">escape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">html_table_general</span><span class="p">,</span> <span class="n">html_table_specific</span><span class="p">,</span> <span class="n">html_table_cs</span></div>
 
     <span class="k">def</span> <span class="nf">_general_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">bohb_parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Generate the meta-information that holds for all runs (scenario info etc) </span>
+        <span class="sd">&quot;&quot;&quot; Generate the meta-information that holds for all runs (scenario info etc)</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -366,6 +375,30 @@
 
         <span class="k">return</span> <span class="n">result</span>
 
+    <span class="k">def</span> <span class="nf">_configspace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return configspace in table-format &quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;Parameter&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+                         <span class="p">(</span><span class="s2">&quot;Type&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+                         <span class="p">(</span><span class="s2">&quot;Range/Choices&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+                         <span class="p">(</span><span class="s2">&quot;Default&quot;</span><span class="p">,</span> <span class="p">[])]</span>
+                        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">hp</span> <span class="ow">in</span> <span class="n">cs</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">():</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hp</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">hp</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hp</span><span class="p">,</span> <span class="n">NumericalHyperparameter</span><span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Range/Choices&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">]</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hp</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">hp</span><span class="o">.</span><span class="n">upper</span><span class="p">,</span> <span class="s1">&#39; (log)&#39;</span> <span class="k">if</span> <span class="n">hp</span><span class="o">.</span><span class="n">log</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hp</span><span class="p">,</span> <span class="n">CategoricalHyperparameter</span><span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Range/Choices&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hp</span><span class="o">.</span><span class="n">choices</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hp</span><span class="p">,</span> <span class="n">OrdinalHyperparameter</span><span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Range/Choices&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hp</span><span class="o">.</span><span class="n">sequence</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hp</span><span class="p">,</span> <span class="n">Constant</span><span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Range/Choices&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hp</span><span class="o">.</span><span class="n">default_value</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Range/Choices&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">)</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Default&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hp</span><span class="o">.</span><span class="n">default_value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">d</span>
+
 
 <div class="viewcode-block" id="OverviewTable.get_html"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable.get_html">[docs]</a>    <span class="k">def</span> <span class="nf">get_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">budget</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -374,8 +407,10 @@
             <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Run-Specific&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;table&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">html_table_specific</span><span class="p">,</span>
                                  <span class="s2">&quot;tooltip&quot;</span> <span class="p">:</span> <span class="s2">&quot;Information to specific runs (if there are multiple runs). Interesting &quot;</span>
                                              <span class="s2">&quot;for parallel optimizations or usage of budgets/fidelities.&quot;</span><span class="p">}</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Configuration Space&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;table&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">html_table_cs</span><span class="p">,</span>
+                            <span class="s2">&quot;tooltip&quot;</span> <span class="p">:</span> <span class="s2">&quot;The parameter configuration space. (See github.com/automl/ConfigSpace)&quot;</span><span class="p">}</span>
             <span class="n">d</span><span class="p">[</span><span class="s2">&quot;tooltip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tooltip</span>
-        <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">html_table_general</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">html_table_specific</span><span class="p">])</span></div>
+        <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">html_table_general</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">html_table_specific</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">html_table_cs</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="OverviewTable.get_jupyter"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable.get_jupyter">[docs]</a>    <span class="k">def</span> <span class="nf">get_jupyter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">IPython.core.display</span> <span class="k">import</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">display</span>

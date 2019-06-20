@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.cost_over_time &mdash; CAVE 1.1.6 documentation</title>
+  <title>cave.analyzer.cost_over_time &mdash; CAVE 1.1.8.dev documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.6
+                1.1.8.dev
               </div>
             
           
@@ -248,6 +248,7 @@
 <span class="kn">from</span> <span class="nn">cave.reader.configurator_run</span> <span class="k">import</span> <span class="n">ConfiguratorRun</span>
 <span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="k">import</span> <span class="n">BaseAnalyzer</span>
 <span class="kn">from</span> <span class="nn">cave.utils.bokeh_routines</span> <span class="k">import</span> <span class="n">get_checkbox</span>
+<span class="kn">from</span> <span class="nn">cave.utils.hpbandster_helpers</span> <span class="k">import</span> <span class="n">get_incumbent_trajectory</span><span class="p">,</span> <span class="n">format_budgets</span>
 
 <span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">show</span>
 <span class="kn">from</span> <span class="nn">bokeh.embed</span> <span class="k">import</span> <span class="n">components</span>
@@ -272,7 +273,9 @@
                  <span class="n">bohb_results</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">average_over_runs</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">output_fn</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;performance_over_time.png&quot;</span><span class="p">,</span>
-                 <span class="n">validator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">Validator</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                 <span class="n">validator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">Validator</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">cot_inc_traj</span><span class="o">=</span><span class="s1">&#39;racing&#39;</span><span class="p">,</span>
+                 <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Plot performance over time, using all trajectory entries</span>
 <span class="sd">            where max_time = max(wallclock_limit, the highest recorded time)</span>
 
@@ -294,6 +297,8 @@
 <span class="sd">                path to output-png for this analysis</span>
 <span class="sd">            validator: Validator or None</span>
 <span class="sd">                if given, use this epm to estimate costs for the individual incumbents (EPM)</span>
+<span class="sd">            cot_inc_traj: str</span>
+<span class="sd">                from [&#39;racing&#39;, &#39;minimum&#39;, &#39;prefer_higher_budget&#39;], defines incumbent trajectory from hpbandster result</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
@@ -305,10 +310,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">bohb_results</span> <span class="o">=</span> <span class="n">bohb_results</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">block_epm</span> <span class="o">=</span> <span class="n">block_epm</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">average_over_runs</span> <span class="o">=</span> <span class="n">average_over_runs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_fn</span> <span class="o">=</span><span class="n">output_fn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_fn</span> <span class="o">=</span> <span class="n">output_fn</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">validator</span> <span class="o">=</span> <span class="n">validator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cot_inc_traj</span> <span class="o">=</span> <span class="n">cot_inc_traj</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initialized CostOverTime with </span><span class="si">%d</span><span class="s2"> runs, output to </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
+
+        <span class="c1"># TODO to be replaced by base restruct</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bohb_results</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">formatted_budgets</span> <span class="o">=</span> <span class="n">format_budgets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bohb_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">HB_config</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">])</span>
 
         <span class="c1"># Will be set during execution:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plots</span> <span class="o">=</span> <span class="p">[]</span>                     <span class="c1"># List with paths to &#39;.png&#39;s</span>
@@ -451,24 +461,24 @@
         <span class="k">return</span> <span class="n">lines</span>
 
     <span class="k">def</span> <span class="nf">_get_bohb_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validator</span><span class="p">,</span> <span class="n">runs</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">budget</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;budget &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">budget</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">budget</span><span class="p">)</span><span class="o">.</span><span class="n">is_integer</span><span class="p">()</span> <span class="k">else</span> <span class="n">budget</span><span class="p">)</span> <span class="k">if</span> <span class="n">budget</span> <span class="k">else</span> <span class="s1">&#39;all budgets&#39;</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatted_budgets</span><span class="p">[</span><span class="n">budget</span><span class="p">]</span> <span class="k">if</span> <span class="n">budget</span> <span class="k">else</span> <span class="s1">&#39;all budgets&#39;</span>
         <span class="k">if</span> <span class="n">budget</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">budgets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bohb_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">HB_config</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">budgets</span> <span class="o">=</span> <span class="p">[</span><span class="n">budget</span><span class="p">]</span>
 
-        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">bohb_result</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bohb_results</span><span class="p">):</span>
             <span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;costs&#39;</span> <span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;times&#39;</span> <span class="p">:</span> <span class="p">[]}</span>
-            <span class="n">traj_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_incumbent_trajectory</span><span class="p">(</span><span class="n">bohb_result</span><span class="p">,</span> <span class="n">budgets</span><span class="p">)</span>
+            <span class="n">traj_dict</span> <span class="o">=</span> <span class="n">get_incumbent_trajectory</span><span class="p">(</span><span class="n">bohb_result</span><span class="p">,</span> <span class="n">budgets</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cot_inc_traj</span><span class="p">)</span>
             <span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s1">&#39;costs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">traj_dict</span><span class="p">[</span><span class="s1">&#39;losses&#39;</span><span class="p">]</span>
             <span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s1">&#39;times&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">traj_dict</span><span class="p">[</span><span class="s1">&#39;times_finished&#39;</span><span class="p">]</span>
 
         <span class="c1"># Average over parallel bohb iterations to get final values</span>
         <span class="n">f_time</span><span class="p">,</span> <span class="n">f_config</span><span class="p">,</span> <span class="n">f_mean</span><span class="p">,</span> <span class="n">f_std</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
 
-        <span class="n">pointer</span> <span class="o">=</span> <span class="p">{</span><span class="n">idx</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;cost&#39;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
-                          <span class="s1">&#39;time&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">}</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())}</span>
+        <span class="n">pointer</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="n">idx</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;cost&#39;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+                          <span class="s1">&#39;time&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">})</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())])</span>
 
         <span class="k">while</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
             <span class="n">next_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">({</span><span class="n">idx</span> <span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s1">&#39;times&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
@@ -488,80 +498,6 @@
         <span class="k">return</span> <span class="n">Line</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">),</span> <span class="n">time_double</span><span class="p">,</span> <span class="n">mean_double</span><span class="p">,</span>
                     <span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">mean_double</span><span class="p">,</span> <span class="n">std_double</span><span class="p">)],</span>
                     <span class="p">[</span><span class="n">x</span> <span class="o">-</span> <span class="n">y</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">mean_double</span><span class="p">,</span> <span class="n">std_double</span><span class="p">)],</span> <span class="n">configs_double</span><span class="p">)</span>
-
-<div class="viewcode-block" id="CostOverTime.get_incumbent_trajectory"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime.get_incumbent_trajectory">[docs]</a>    <span class="k">def</span> <span class="nf">get_incumbent_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">budgets</span><span class="p">,</span> <span class="n">bigger_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">non_decreasing_budget</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the best configurations over time</span>
-
-<span class="sd">        !! Copied from hpbandster and modified to enable getting trajectories for individual budgets !!</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">            result:</span>
-<span class="sd">                    result</span>
-<span class="sd">            budgets: List[budgets]</span>
-<span class="sd">                    budgets to be considered</span>
-<span class="sd">            bigger_is_better:bool</span>
-<span class="sd">                    flag whether an evaluation on a larger budget is always considered better.</span>
-<span class="sd">                    If True, the incumbent might increase for the first evaluations on a bigger budget</span>
-<span class="sd">            non_decreasing_budget: bool</span>
-<span class="sd">                    flag whether the budget of a new incumbent should be at least as big as the one for</span>
-<span class="sd">                    the current incumbent.</span>
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">            dict:</span>
-<span class="sd">                    dictionary with all the config IDs, the times the runs</span>
-<span class="sd">                    finished, their respective budgets, and corresponding losses</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">all_runs</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get_all_runs</span><span class="p">(</span><span class="n">only_largest_budget</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-        <span class="n">all_runs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">budget</span> <span class="ow">in</span> <span class="n">budgets</span><span class="p">,</span> <span class="n">all_runs</span><span class="p">))</span>
-
-        <span class="n">all_runs</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;finished&#39;</span><span class="p">])</span>
-
-        <span class="n">return_dict</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;config_ids&#39;</span> <span class="p">:</span> <span class="p">[],</span>
-                        <span class="s1">&#39;times_finished&#39;</span><span class="p">:</span> <span class="p">[],</span>
-                        <span class="s1">&#39;budgets&#39;</span>    <span class="p">:</span> <span class="p">[],</span>
-                        <span class="s1">&#39;losses&#39;</span>     <span class="p">:</span> <span class="p">[],</span>
-        <span class="p">}</span>
-
-        <span class="n">current_incumbent</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
-        <span class="n">incumbent_budget</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">budgets</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">all_runs</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">loss</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">continue</span>
-
-            <span class="n">new_incumbent</span> <span class="o">=</span> <span class="kc">False</span>
-
-            <span class="k">if</span> <span class="n">bigger_is_better</span> <span class="ow">and</span> <span class="n">r</span><span class="o">.</span><span class="n">budget</span> <span class="o">&gt;</span> <span class="n">incumbent_budget</span><span class="p">:</span>
-                <span class="n">new_incumbent</span> <span class="o">=</span> <span class="kc">True</span>
-
-            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">loss</span> <span class="o">&lt;</span> <span class="n">current_incumbent</span><span class="p">:</span>
-                <span class="n">new_incumbent</span> <span class="o">=</span> <span class="kc">True</span>
-
-            <span class="k">if</span> <span class="n">non_decreasing_budget</span> <span class="ow">and</span> <span class="n">r</span><span class="o">.</span><span class="n">budget</span> <span class="o">&lt;</span> <span class="n">incumbent_budget</span><span class="p">:</span>
-                <span class="n">new_incumbent</span> <span class="o">=</span> <span class="kc">False</span>
-
-            <span class="k">if</span> <span class="n">new_incumbent</span><span class="p">:</span>
-                <span class="n">current_incumbent</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">loss</span>
-                <span class="n">incumbent_budget</span>  <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">budget</span>
-
-                <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;config_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">config_id</span><span class="p">)</span>
-                <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;times_finished&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;finished&#39;</span><span class="p">])</span>
-                <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">budget</span><span class="p">)</span>
-                <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;losses&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">loss</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">current_incumbent</span> <span class="o">!=</span> <span class="n">r</span><span class="o">.</span><span class="n">loss</span><span class="p">:</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="n">all_runs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
-            <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;config_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;config_ids&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;times_finished&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;finished&#39;</span><span class="p">])</span>
-            <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;losses&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;losses&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-
-
-        <span class="k">return</span> <span class="p">(</span><span class="n">return_dict</span><span class="p">)</span></div>
-
 
 <div class="viewcode-block" id="CostOverTime.plot"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -587,6 +523,11 @@
             <span class="n">data</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">upper</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">config</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">l</span><span class="p">)):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Why is there a NaN? (</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;There is a NaN value in your data, this should be filtered out. &quot;</span>
+                                     <span class="s2">&quot;Please report this to github.com/automl/CAVE/issues and provide the &quot;</span>
+                                     <span class="s2">&quot;debug/debug.log and the output of `pip freeze`, if you can.&quot;</span><span class="p">)</span>
                 <span class="n">data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                 <span class="n">data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
                 <span class="n">data</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>

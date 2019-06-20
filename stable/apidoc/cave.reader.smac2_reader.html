@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.reader.smac2_reader module &mdash; CAVE 1.1.6 documentation</title>
+  <title>cave.reader.smac2_reader module &mdash; CAVE 1.1.8.dev documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.6
+                1.1.8.dev
               </div>
             
           
@@ -237,7 +237,7 @@
 <span id="cave-reader-smac2-reader-module"></span><h1>cave.reader.smac2_reader module<a class="headerlink" href="#module-cave.reader.smac2_reader" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.reader.smac2_reader.SMAC2Reader">
-<em class="property">class </em><code class="descclassname">cave.reader.smac2_reader.</code><code class="descname">SMAC2Reader</code><span class="sig-paren">(</span><em>folder</em>, <em>ta_exec_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/smac2_reader.html#SMAC2Reader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.smac2_reader.SMAC2Reader" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cave.reader.smac2_reader.</code><code class="sig-name descname">SMAC2Reader</code><span class="sig-paren">(</span><em class="sig-param">folder</em>, <em class="sig-param">ta_exec_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/smac2_reader.html#SMAC2Reader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.smac2_reader.SMAC2Reader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cave.reader.base_reader.html#cave.reader.base_reader.BaseReader" title="cave.reader.base_reader.BaseReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">cave.reader.base_reader.BaseReader</span></code></a></p>
 <p>Reader for SMAC2-output.
 The expected output-structure in the specified folder is:</p>
@@ -273,7 +273,7 @@ The expected output-structure in the specified folder is:</p>
 </div></blockquote>
 <dl class="method">
 <dt id="cave.reader.smac2_reader.SMAC2Reader.get_runhistory">
-<code class="descname">get_runhistory</code><span class="sig-paren">(</span><em>cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/smac2_reader.html#SMAC2Reader.get_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.smac2_reader.SMAC2Reader.get_runhistory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_runhistory</code><span class="sig-paren">(</span><em class="sig-param">cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/smac2_reader.html#SMAC2Reader.get_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.smac2_reader.SMAC2Reader.get_runhistory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expects the following files:</p>
 <ul class="simple">
 <li><p><cite>self.folder/smac-output/aclib/state-run1/runs_and_results(…).csv</cite></p></li>
@@ -291,7 +291,7 @@ The expected output-structure in the specified folder is:</p>
 
 <dl class="method">
 <dt id="cave.reader.smac2_reader.SMAC2Reader.get_scenario">
-<code class="descname">get_scenario</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/smac2_reader.html#SMAC2Reader.get_scenario"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.smac2_reader.SMAC2Reader.get_scenario" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_scenario</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/smac2_reader.html#SMAC2Reader.get_scenario"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.smac2_reader.SMAC2Reader.get_scenario" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expects <cite>self.folder/scenario.txt</cite> with appropriately formatted
 scenario-information (
 <a class="reference external" href="https://automl.github.io/SMAC3/stable/options.html#scenario">https://automl.github.io/SMAC3/stable/options.html#scenario</a>)</p>
@@ -299,7 +299,7 @@ scenario-information (
 
 <dl class="method">
 <dt id="cave.reader.smac2_reader.SMAC2Reader.get_trajectory">
-<code class="descname">get_trajectory</code><span class="sig-paren">(</span><em>cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/smac2_reader.html#SMAC2Reader.get_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.smac2_reader.SMAC2Reader.get_trajectory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_trajectory</code><span class="sig-paren">(</span><em class="sig-param">cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/smac2_reader.html#SMAC2Reader.get_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.smac2_reader.SMAC2Reader.get_trajectory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expects the following files:</p>
 <ul class="simple">
 <li><p><cite>self.folder/smac-output/aclib/state-run1/traj-run-(…).csv</cite></p></li>
@@ -308,7 +308,7 @@ scenario-information (
 
 <dl class="method">
 <dt id="cave.reader.smac2_reader.SMAC2Reader.get_validated_runhistory">
-<code class="descname">get_validated_runhistory</code><span class="sig-paren">(</span><em>cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/smac2_reader.html#SMAC2Reader.get_validated_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.smac2_reader.SMAC2Reader.get_validated_runhistory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_validated_runhistory</code><span class="sig-paren">(</span><em class="sig-param">cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/smac2_reader.html#SMAC2Reader.get_validated_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.smac2_reader.SMAC2Reader.get_validated_runhistory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expects the following files:</p>
 <ul class="simple">
 <li><p><cite>self.folder/validate-time-train/validationCallStrings(…).csv</cite></p></li>

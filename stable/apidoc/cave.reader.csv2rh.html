@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.reader.csv2rh module &mdash; CAVE 1.1.6 documentation</title>
+  <title>cave.reader.csv2rh module &mdash; CAVE 1.1.8.dev documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.6
+                1.1.8.dev
               </div>
             
           
@@ -237,16 +237,16 @@
 <span id="cave-reader-csv2rh-module"></span><h1>cave.reader.csv2rh module<a class="headerlink" href="#module-cave.reader.csv2rh" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.reader.csv2rh.CSV2RH">
-<em class="property">class </em><code class="descclassname">cave.reader.csv2rh.</code><code class="descname">CSV2RH</code><a class="reference internal" href="../_modules/cave/reader/csv2rh.html#CSV2RH"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv2rh.CSV2RH" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cave.reader.csv2rh.</code><code class="sig-name descname">CSV2RH</code><a class="reference internal" href="../_modules/cave/reader/csv2rh.html#CSV2RH"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv2rh.CSV2RH" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="cave.reader.csv2rh.CSV2RH.create_cs_from_pandaframe">
-<code class="descname">create_cs_from_pandaframe</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv2rh.html#CSV2RH.create_cs_from_pandaframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv2rh.CSV2RH.create_cs_from_pandaframe" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">create_cs_from_pandaframe</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv2rh.html#CSV2RH.create_cs_from_pandaframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv2rh.CSV2RH.create_cs_from_pandaframe" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="cave.reader.csv2rh.CSV2RH.extract_configs">
-<code class="descname">extract_configs</code><span class="sig-paren">(</span><em>data</em>, <em>cs: ConfigSpace.configuration_space.ConfigurationSpace</em>, <em>id_to_config=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv2rh.html#CSV2RH.extract_configs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv2rh.CSV2RH.extract_configs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">extract_configs</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">cs: ConfigSpace.configuration_space.ConfigurationSpace</em>, <em class="sig-param">id_to_config=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv2rh.html#CSV2RH.extract_configs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv2rh.CSV2RH.extract_configs" title="Permalink to this definition">¶</a></dt>
 <dd><p>After completion, every unique configuration in the data will have a
 corresponding id in the data-frame.
 The data-frame is expected to either contain a column for config-id OR
@@ -275,7 +275,7 @@ column for every individual parameter</p></li>
 
 <dl class="method">
 <dt id="cave.reader.csv2rh.CSV2RH.extract_instances">
-<code class="descname">extract_instances</code><span class="sig-paren">(</span><em>data</em>, <em>feature_names</em>, <em>features</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv2rh.html#CSV2RH.extract_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv2rh.CSV2RH.extract_instances" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">extract_instances</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">feature_names</em>, <em class="sig-param">features</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv2rh.html#CSV2RH.extract_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv2rh.CSV2RH.extract_instances" title="Permalink to this definition">¶</a></dt>
 <dd><p>After completion, every unique instance in the data will have a
 corresponding id in the data-frame.
 The data-frame is expected to either contain a column for instance-id OR
@@ -304,7 +304,7 @@ column for every individual instance-features</p></li>
 
 <dl class="method">
 <dt id="cave.reader.csv2rh.CSV2RH.read_csv_to_rh">
-<code class="descname">read_csv_to_rh</code><span class="sig-paren">(</span><em>data</em>, <em>cs: Union[None</em>, <em>str</em>, <em>ConfigSpace.configuration_space.ConfigurationSpace] = None</em>, <em>id_to_config: Union[None</em>, <em>dict] = None</em>, <em>train_inst: Union[None</em>, <em>str</em>, <em>list] = None</em>, <em>test_inst: Union[None</em>, <em>str</em>, <em>list] = None</em>, <em>instance_features: Union[None</em>, <em>str</em>, <em>dict] = None</em>, <em>logger=None</em>, <em>seed=42</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv2rh.html#CSV2RH.read_csv_to_rh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv2rh.CSV2RH.read_csv_to_rh" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">read_csv_to_rh</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">cs: Union[None</em>, <em class="sig-param">str</em>, <em class="sig-param">ConfigSpace.configuration_space.ConfigurationSpace] = None</em>, <em class="sig-param">id_to_config: Union[None</em>, <em class="sig-param">dict] = None</em>, <em class="sig-param">train_inst: Union[None</em>, <em class="sig-param">str</em>, <em class="sig-param">list] = None</em>, <em class="sig-param">test_inst: Union[None</em>, <em class="sig-param">str</em>, <em class="sig-param">list] = None</em>, <em class="sig-param">instance_features: Union[None</em>, <em class="sig-param">str</em>, <em class="sig-param">dict] = None</em>, <em class="sig-param">logger=None</em>, <em class="sig-param">seed=42</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv2rh.html#CSV2RH.read_csv_to_rh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv2rh.CSV2RH.read_csv_to_rh" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interpreting a .csv-file as runhistory.
 Valid values for the header of the csv-file/DataFrame are:
 [‘seed’, ‘cost’, ‘time’, ‘status’, ‘config_id’, ‘instance_id’] or any

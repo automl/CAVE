@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.reader.base_reader module &mdash; CAVE 1.1.6 documentation</title>
+  <title>cave.reader.base_reader module &mdash; CAVE 1.1.8.dev documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.6
+                1.1.8.dev
               </div>
             
           
@@ -237,19 +237,19 @@
 <span id="cave-reader-base-reader-module"></span><h1>cave.reader.base_reader module<a class="headerlink" href="#module-cave.reader.base_reader" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.reader.base_reader.BaseReader">
-<em class="property">class </em><code class="descclassname">cave.reader.base_reader.</code><code class="descname">BaseReader</code><span class="sig-paren">(</span><em>folder</em>, <em>ta_exec_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/base_reader.html#BaseReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.base_reader.BaseReader" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cave.reader.base_reader.</code><code class="sig-name descname">BaseReader</code><span class="sig-paren">(</span><em class="sig-param">folder</em>, <em class="sig-param">ta_exec_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/base_reader.html#BaseReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.base_reader.BaseReader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Abstract base class to inherit reader from. Reader load necessary objects
 (scenario, runhistory, trajectory) from files for different formats.</p>
 <dl class="method">
 <dt id="cave.reader.base_reader.BaseReader.get_runhistory">
-<code class="descname">get_runhistory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/base_reader.html#BaseReader.get_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.base_reader.BaseReader.get_runhistory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_runhistory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/base_reader.html#BaseReader.get_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.base_reader.BaseReader.get_runhistory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create RunHistory-object from files.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.reader.base_reader.BaseReader.get_scenario">
-<code class="descname">get_scenario</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/base_reader.html#BaseReader.get_scenario"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.base_reader.BaseReader.get_scenario" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_scenario</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/base_reader.html#BaseReader.get_scenario"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.base_reader.BaseReader.get_scenario" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expects <cite>self.folder/scenario.txt</cite> with appropriately formatted
 scenario-information (
 <a class="reference external" href="https://automl.github.io/SMAC3/stable/options.html#scenario">https://automl.github.io/SMAC3/stable/options.html#scenario</a>)</p>
@@ -257,13 +257,13 @@ scenario-information (
 
 <dl class="method">
 <dt id="cave.reader.base_reader.BaseReader.get_trajectory">
-<code class="descname">get_trajectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/base_reader.html#BaseReader.get_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.base_reader.BaseReader.get_trajectory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_trajectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/base_reader.html#BaseReader.get_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.base_reader.BaseReader.get_trajectory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create trajectory (list with dicts as entries)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.reader.base_reader.BaseReader.get_validated_runhistory">
-<code class="descname">get_validated_runhistory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/base_reader.html#BaseReader.get_validated_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.base_reader.BaseReader.get_validated_runhistory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_validated_runhistory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/base_reader.html#BaseReader.get_validated_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.base_reader.BaseReader.get_validated_runhistory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create validated runhistory from files, if available.</p>
 </dd></dl>
 
@@ -271,7 +271,7 @@ scenario-information (
 
 <dl class="function">
 <dt id="cave.reader.base_reader.changedir">
-<code class="descclassname">cave.reader.base_reader.</code><code class="descname">changedir</code><span class="sig-paren">(</span><em>newdir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/base_reader.html#changedir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.base_reader.changedir" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">cave.reader.base_reader.</code><code class="sig-name descname">changedir</code><span class="sig-paren">(</span><em class="sig-param">newdir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/base_reader.html#changedir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.base_reader.changedir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>

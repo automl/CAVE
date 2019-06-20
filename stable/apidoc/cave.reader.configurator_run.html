@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.reader.configurator_run module &mdash; CAVE 1.1.6 documentation</title>
+  <title>cave.reader.configurator_run module &mdash; CAVE 1.1.8.dev documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.6
+                1.1.8.dev
               </div>
             
           
@@ -237,7 +237,7 @@
 <span id="cave-reader-configurator-run-module"></span><h1>cave.reader.configurator_run module<a class="headerlink" href="#module-cave.reader.configurator_run" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.reader.configurator_run.ConfiguratorRun">
-<em class="property">class </em><code class="descclassname">cave.reader.configurator_run.</code><code class="descname">ConfiguratorRun</code><span class="sig-paren">(</span><em>folder: str</em>, <em>ta_exec_dir: str</em>, <em>file_format: str = 'SMAC3'</em>, <em>validation_format: str = 'NONE'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/configurator_run.html#ConfiguratorRun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cave.reader.configurator_run.</code><code class="sig-name descname">ConfiguratorRun</code><span class="sig-paren">(</span><em class="sig-param">folder: str</em>, <em class="sig-param">ta_exec_dir: str</em>, <em class="sig-param">file_format: str = 'SMAC3'</em>, <em class="sig-param">validation_format: str = 'NONE'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/configurator_run.html#ConfiguratorRun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">smac.facade.smac_facade.SMAC</span></code></p>
 <p>ConfiguratorRuns load and maintain information about individual configurator
 runs. There are three supported formats: SMAC3, SMAC2 and CSV
@@ -260,7 +260,7 @@ specify the path to the execution-dir of SMAC here</p></li>
 </dl>
 <dl class="method">
 <dt id="cave.reader.configurator_run.ConfiguratorRun.get_X_y">
-<code class="descname">get_X_y</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.get_X_y" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_X_y</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.get_X_y" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simple interface to obtain all data in runhistory in <code class="docutils literal notranslate"><span class="pre">X,</span> <span class="pre">y</span></code> format.</p>
 <p>Uses
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">smac.runhistory.runhistory2epm.AbstractRunHistory2EPM.get_X_y()</span></code>.</p>
@@ -278,12 +278,12 @@ specify the path to the execution-dir of SMAC here</p></li>
 
 <dl class="method">
 <dt id="cave.reader.configurator_run.ConfiguratorRun.get_incumbent">
-<code class="descname">get_incumbent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/configurator_run.html#ConfiguratorRun.get_incumbent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.get_incumbent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_incumbent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/configurator_run.html#ConfiguratorRun.get_incumbent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.get_incumbent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="cave.reader.configurator_run.ConfiguratorRun.get_runhistory">
-<code class="descname">get_runhistory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.get_runhistory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_runhistory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.get_runhistory" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Returns the runhistory (i.e., all evaluated configurations and</dt><dd><p>the results).</p>
 </dd>
@@ -300,7 +300,7 @@ specify the path to the execution-dir of SMAC here</p></li>
 
 <dl class="method">
 <dt id="cave.reader.configurator_run.ConfiguratorRun.get_tae_runner">
-<code class="descname">get_tae_runner</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.get_tae_runner" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_tae_runner</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.get_tae_runner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns target algorithm evaluator (TAE) object which can run the
 target algorithm given a configuration</p>
 <dl class="field-list simple">
@@ -315,7 +315,7 @@ target algorithm given a configuration</p>
 
 <dl class="method">
 <dt id="cave.reader.configurator_run.ConfiguratorRun.get_trajectory">
-<code class="descname">get_trajectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.get_trajectory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_trajectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.get_trajectory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the trajectory (i.e., all incumbent configurations over
 time).</p>
 <dl class="field-list simple">
@@ -330,7 +330,7 @@ time).</p>
 
 <dl class="method">
 <dt id="cave.reader.configurator_run.ConfiguratorRun.optimize">
-<code class="descname">optimize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.optimize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">optimize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.optimize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optimizes the algorithm provided in scenario (given in constructor)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -344,7 +344,7 @@ time).</p>
 
 <dl class="method">
 <dt id="cave.reader.configurator_run.ConfiguratorRun.validate">
-<code class="descname">validate</code><span class="sig-paren">(</span><em>config_mode: Union[List[ConfigSpace.configuration_space.Configuration], numpy.ndarray, str] = 'inc', instance_mode: Union[List[str], str] = 'train+test', repetitions: int = 1, use_epm: bool = False, n_jobs: int = -1, backend: str = 'threading'</em><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.validate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param">config_mode: Union[List[ConfigSpace.configuration_space.Configuration], numpy.ndarray, str] = 'inc', instance_mode: Union[List[str], str] = 'train+test', repetitions: int = 1, use_epm: bool = False, n_jobs: int = -1, backend: str = 'threading'</em><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.validate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create validator-object and run validation, using
 scenario-information, runhistory from smbo and tae_runner from intensify</p>
 <dl class="field-list simple">

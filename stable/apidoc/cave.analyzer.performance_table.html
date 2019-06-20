@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.performance_table module &mdash; CAVE 1.1.6 documentation</title>
+  <title>cave.analyzer.performance_table module &mdash; CAVE 1.1.8.dev documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.6
+                1.1.8.dev
               </div>
             
           
@@ -237,11 +237,11 @@
 <span id="cave-analyzer-performance-table-module"></span><h1>cave.analyzer.performance_table module<a class="headerlink" href="#module-cave.analyzer.performance_table" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.analyzer.performance_table.PerformanceTable">
-<em class="property">class </em><code class="descclassname">cave.analyzer.performance_table.</code><code class="descname">PerformanceTable</code><span class="sig-paren">(</span><em>instances: List[str], validated_rh: smac.runhistory.runhistory.RunHistory, default: ConfigSpace.configuration_space.Configuration, incumbent: ConfigSpace.configuration_space.Configuration, epm_rh: smac.runhistory.runhistory.RunHistory, scenario: smac.scenario.scenario.Scenario, rng: mtrand.RandomState</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/performance_table.html#PerformanceTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cave.analyzer.performance_table.</code><code class="sig-name descname">PerformanceTable</code><span class="sig-paren">(</span><em class="sig-param">instances: List[str], validated_rh: smac.runhistory.runhistory.RunHistory, default: ConfigSpace.configuration_space.Configuration, incumbent: ConfigSpace.configuration_space.Configuration, epm_rh: smac.runhistory.runhistory.RunHistory, scenario: smac.scenario.scenario.Scenario, rng: mtrand.RandomState</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/performance_table.html#PerformanceTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer" title="cave.analyzer.base_analyzer.BaseAnalyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">cave.analyzer.base_analyzer.BaseAnalyzer</span></code></a></p>
 <dl class="method">
 <dt id="cave.analyzer.performance_table.PerformanceTable.create_performance_table">
-<code class="descname">create_performance_table</code><span class="sig-paren">(</span><em>default</em>, <em>incumbent</em>, <em>epm_rh</em>, <em>oracle</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/performance_table.html#PerformanceTable.create_performance_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.create_performance_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">create_performance_table</code><span class="sig-paren">(</span><em class="sig-param">default</em>, <em class="sig-param">incumbent</em>, <em class="sig-param">epm_rh</em>, <em class="sig-param">oracle</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/performance_table.html#PerformanceTable.create_performance_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.create_performance_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create table, compare default against incumbent on train-,
 test- and combined instances. Listing PAR10, PAR1 and timeouts.
 Distinguishes between train and test, if available.</p>
@@ -249,7 +249,7 @@ Distinguishes between train and test, if available.</p>
 
 <dl class="method">
 <dt id="cave.analyzer.performance_table.PerformanceTable.get_html">
-<code class="descname">get_html</code><span class="sig-paren">(</span><em>d=None</em>, <em>tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/performance_table.html#PerformanceTable.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.get_html" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_html</code><span class="sig-paren">(</span><em class="sig-param">d=None</em>, <em class="sig-param">tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/performance_table.html#PerformanceTable.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.get_html" title="Permalink to this definition">¶</a></dt>
 <dd><p>General reports in html-format, to be easily integrated in html-code. ALSO FOR BOKEH-OUTPUT.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -263,13 +263,13 @@ Distinguishes between train and test, if available.</p>
 
 <dl class="method">
 <dt id="cave.analyzer.performance_table.PerformanceTable.get_jupyter">
-<code class="descname">get_jupyter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/performance_table.html#PerformanceTable.get_jupyter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.get_jupyter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_jupyter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/performance_table.html#PerformanceTable.get_jupyter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.get_jupyter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Depending on analysis, this creates jupyter-notebook compatible output.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.analyzer.performance_table.PerformanceTable.get_oracle">
-<code class="descname">get_oracle</code><span class="sig-paren">(</span><em>instances</em>, <em>rh</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/performance_table.html#PerformanceTable.get_oracle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.get_oracle" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_oracle</code><span class="sig-paren">(</span><em class="sig-param">instances</em>, <em class="sig-param">rh</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/performance_table.html#PerformanceTable.get_oracle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.get_oracle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Estimation of oracle performance. Collects best performance seen for each instance in any run.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -286,7 +286,7 @@ Distinguishes between train and test, if available.</p>
 
 <dl class="method">
 <dt id="cave.analyzer.performance_table.PerformanceTable.get_parX">
-<code class="descname">get_parX</code><span class="sig-paren">(</span><em>cost_dict</em>, <em>par=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/performance_table.html#PerformanceTable.get_parX"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.get_parX" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_parX</code><span class="sig-paren">(</span><em class="sig-param">cost_dict</em>, <em class="sig-param">par=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/performance_table.html#PerformanceTable.get_parX"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.get_parX" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate parX-values from given cost_dict.
 First determine PAR-timeouts for each run on each instances,
 Second average over train/test if available, else just average.</p>
@@ -309,7 +309,7 @@ else the general average</p>
 
 <dl class="method">
 <dt id="cave.analyzer.performance_table.PerformanceTable.get_static_plots">
-<code class="descname">get_static_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.get_static_plots" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_static_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.get_static_plots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns plot-paths, if any are available</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -323,13 +323,13 @@ else the general average</p>
 
 <dl class="method">
 <dt id="cave.analyzer.performance_table.PerformanceTable.get_table">
-<code class="descname">get_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.get_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.get_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get table, if available</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.analyzer.performance_table.PerformanceTable.timeouts_to_tuple">
-<code class="descname">timeouts_to_tuple</code><span class="sig-paren">(</span><em>timeouts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/performance_table.html#PerformanceTable.timeouts_to_tuple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.timeouts_to_tuple" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">timeouts_to_tuple</code><span class="sig-paren">(</span><em class="sig-param">timeouts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/performance_table.html#PerformanceTable.timeouts_to_tuple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.performance_table.PerformanceTable.timeouts_to_tuple" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get number of timeouts in config</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

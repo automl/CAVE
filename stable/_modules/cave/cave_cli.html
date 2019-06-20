@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.cave_cli &mdash; CAVE 1.1.6 documentation</title>
+  <title>cave.cave_cli &mdash; CAVE 1.1.8.dev documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.6
+                1.1.8.dev
               </div>
             
           
@@ -382,6 +382,19 @@
                                    <span class="s2">&quot;method if none is given. &quot;</span><span class="p">,</span>
                               <span class="n">default</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">p_choices</span><span class="p">)</span>
 
+        <span class="n">cot_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Cost Over Time&quot;</span><span class="p">,</span> <span class="s2">&quot;Finetune the cost over time plot&quot;</span><span class="p">)</span>
+        <span class="n">cot_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--cot_inc_traj&quot;</span><span class="p">,</span>
+                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;if the optimizer belongs to HpBandSter (e.g. bohb), you can choose how the &quot;</span>
+                                   <span class="s2">&quot;incumbent-trajectory will be interpreted with regards to the budget. You can &quot;</span>
+                                   <span class="s2">&quot;choose from &#39;racing&#39;, which will only accept a configuration of a higher budget &quot;</span>
+                                   <span class="s2">&quot;than the current incumbent&#39;s if the current incumbent has been evaluated on &quot;</span>
+                                   <span class="s2">&quot;the higher budget; &#39;minimum&#39;, which will only look at the current performance &quot;</span>
+                                   <span class="s2">&quot;no matter the budget; and &#39;prefer_higher_budget&#39;, which will always choose &quot;</span>
+                                   <span class="s2">&quot;a configuration on a higher budget as incumbent as soon as it is available &quot;</span>
+                                   <span class="s2">&quot;(this will likely lead to peaks, whenever a new budget is evaluated)&quot;</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="s2">&quot;racing&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span>
+                              <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;racing&quot;</span><span class="p">,</span> <span class="s2">&quot;minimum&quot;</span><span class="p">,</span> <span class="s2">&quot;prefer_higher_budget&quot;</span><span class="p">])</span>
+
         <span class="c1"># General analysis to be carried out</span>
         <span class="n">act_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Analysis&quot;</span><span class="p">,</span> <span class="s2">&quot;Which analysis methods should be carried out&quot;</span><span class="p">)</span>
         <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--parameter_importance&quot;</span><span class="p">,</span>
@@ -502,6 +515,7 @@
         <span class="n">parallel_coordinates</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">parallel_coordinates</span>
         <span class="n">pc_sort_by</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">pc_sort_by</span>
         <span class="n">cost_over_time</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">cost_over_time</span>
+        <span class="n">cot_inc_traj</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">cot_inc_traj</span>
         <span class="n">algorithm_footprints</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">algorithm_footprints</span>
         <span class="n">pimp_sort_table_by</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">pimp_sort_table_by</span>
         <span class="n">verbose_level</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">verbose_level</span>
@@ -543,6 +557,7 @@
                      <span class="n">cfp_number_quantiles</span><span class="o">=</span><span class="n">cfp_number_quantiles</span><span class="p">,</span>
                      <span class="n">parallel_coordinates</span><span class="o">=</span><span class="n">parallel_coordinates</span><span class="p">,</span>
                      <span class="n">cost_over_time</span><span class="o">=</span><span class="n">cost_over_time</span><span class="p">,</span>
+                     <span class="n">cot_inc_traj</span><span class="o">=</span><span class="n">cot_inc_traj</span><span class="p">,</span>
                      <span class="n">algo_footprint</span><span class="o">=</span><span class="n">algorithm_footprints</span><span class="p">,</span>
                      <span class="n">param_importance</span><span class="o">=</span><span class="n">param_imp</span><span class="p">,</span>
                      <span class="n">pimp_sort_table_by</span><span class="o">=</span><span class="n">pimp_sort_table_by</span><span class="p">,</span>

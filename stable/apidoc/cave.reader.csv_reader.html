@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.reader.csv_reader module &mdash; CAVE 1.1.6 documentation</title>
+  <title>cave.reader.csv_reader module &mdash; CAVE 1.1.8.dev documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.6
+                1.1.8.dev
               </div>
             
           
@@ -237,13 +237,13 @@
 <span id="cave-reader-csv-reader-module"></span><h1>cave.reader.csv_reader module<a class="headerlink" href="#module-cave.reader.csv_reader" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.reader.csv_reader.CSVReader">
-<em class="property">class </em><code class="descclassname">cave.reader.csv_reader.</code><code class="descname">CSVReader</code><span class="sig-paren">(</span><em>folder</em>, <em>ta_exec_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv_reader.html#CSVReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv_reader.CSVReader" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cave.reader.csv_reader.</code><code class="sig-name descname">CSVReader</code><span class="sig-paren">(</span><em class="sig-param">folder</em>, <em class="sig-param">ta_exec_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv_reader.html#CSVReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv_reader.CSVReader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cave.reader.base_reader.html#cave.reader.base_reader.BaseReader" title="cave.reader.base_reader.BaseReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">cave.reader.base_reader.BaseReader</span></code></a></p>
 <dl class="method">
 <dt id="cave.reader.csv_reader.CSVReader.get_runhistory">
-<code class="descname">get_runhistory</code><span class="sig-paren">(</span><em>cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv_reader.html#CSVReader.get_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv_reader.CSVReader.get_runhistory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_runhistory</code><span class="sig-paren">(</span><em class="sig-param">cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv_reader.html#CSVReader.get_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv_reader.CSVReader.get_runhistory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads runhistory in csv-format:</p>
-<table class="docutils align-center">
+<table class="docutils align-default">
 <colgroup>
 <col style="width: 30%" />
 <col style="width: 30%" />
@@ -292,7 +292,7 @@ individual parameters/instance features</p>
 
 <dl class="method">
 <dt id="cave.reader.csv_reader.CSVReader.get_scenario">
-<code class="descname">get_scenario</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv_reader.html#CSVReader.get_scenario"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv_reader.CSVReader.get_scenario" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_scenario</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv_reader.html#CSVReader.get_scenario"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv_reader.CSVReader.get_scenario" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expects <cite>self.folder/scenario.txt</cite> with appropriately formatted
 scenario-information (
 <a class="reference external" href="https://automl.github.io/SMAC3/stable/options.html#scenario">https://automl.github.io/SMAC3/stable/options.html#scenario</a>)</p>
@@ -300,9 +300,9 @@ scenario-information (
 
 <dl class="method">
 <dt id="cave.reader.csv_reader.CSVReader.get_trajectory">
-<code class="descname">get_trajectory</code><span class="sig-paren">(</span><em>cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv_reader.html#CSVReader.get_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv_reader.CSVReader.get_trajectory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_trajectory</code><span class="sig-paren">(</span><em class="sig-param">cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv_reader.html#CSVReader.get_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv_reader.CSVReader.get_trajectory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads <cite>self.folder/trajectory.csv</cite>, expected format:</p>
-<table class="docutils align-center">
+<table class="docutils align-default">
 <colgroup>
 <col style="width: 18%" />
 <col style="width: 11%" />
@@ -328,7 +328,7 @@ scenario-information (
 </tbody>
 </table>
 <p>or</p>
-<table class="docutils align-center">
+<table class="docutils align-default">
 <colgroup>
 <col style="width: 14%" />
 <col style="width: 8%" />
@@ -363,9 +363,9 @@ scenario-information (
 
 <dl class="method">
 <dt id="cave.reader.csv_reader.CSVReader.get_validated_runhistory">
-<code class="descname">get_validated_runhistory</code><span class="sig-paren">(</span><em>cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv_reader.html#CSVReader.get_validated_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv_reader.CSVReader.get_validated_runhistory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_validated_runhistory</code><span class="sig-paren">(</span><em class="sig-param">cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv_reader.html#CSVReader.get_validated_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv_reader.CSVReader.get_validated_runhistory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads runhistory in csv-format:</p>
-<table class="docutils align-center">
+<table class="docutils align-default">
 <colgroup>
 <col style="width: 30%" />
 <col style="width: 30%" />

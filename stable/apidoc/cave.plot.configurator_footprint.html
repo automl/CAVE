@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.plot.configurator_footprint module &mdash; CAVE 1.1.6 documentation</title>
+  <title>cave.plot.configurator_footprint module &mdash; CAVE 1.1.8.dev documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.6
+                1.1.8.dev
               </div>
             
           
@@ -237,7 +237,7 @@
 <span id="cave-plot-configurator-footprint-module"></span><h1>cave.plot.configurator_footprint module<a class="headerlink" href="#module-cave.plot.configurator_footprint" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter">
-<em class="property">class </em><code class="descclassname">cave.plot.configurator_footprint.</code><code class="descname">ConfiguratorFootprintPlotter</code><span class="sig-paren">(</span><em>scenario: smac.scenario.scenario.Scenario</em>, <em>rhs: smac.runhistory.runhistory.RunHistory</em>, <em>incs: list = None</em>, <em>final_incumbent=None</em>, <em>rh_labels=None</em>, <em>max_plot: int = -1</em>, <em>contour_step_size=0.2</em>, <em>use_timeslider: bool = False</em>, <em>num_quantiles: int = 10</em>, <em>timeslider_log: bool = True</em>, <em>output_dir: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cave.plot.configurator_footprint.</code><code class="sig-name descname">ConfiguratorFootprintPlotter</code><span class="sig-paren">(</span><em class="sig-param">scenario: smac.scenario.scenario.Scenario</em>, <em class="sig-param">rhs: smac.runhistory.runhistory.RunHistory</em>, <em class="sig-param">incs: list = None</em>, <em class="sig-param">final_incumbent=None</em>, <em class="sig-param">rh_labels=None</em>, <em class="sig-param">max_plot: int = -1</em>, <em class="sig-param">contour_step_size=0.2</em>, <em class="sig-param">use_timeslider: bool = False</em>, <em class="sig-param">num_quantiles: int = 10</em>, <em class="sig-param">timeslider_log: bool = True</em>, <em class="sig-param">output_dir: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Creating an interactive plot, visualizing the configuration search space.
 The runhistories are correlated to the individual runs.
@@ -263,7 +263,7 @@ INCREASES FILE-SIZE DRAMATICALLY</p></li>
 </dl>
 <dl class="method">
 <dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_conf_matrix">
-<code class="descname">get_conf_matrix</code><span class="sig-paren">(</span><em>rh</em>, <em>incs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.get_conf_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_conf_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_conf_matrix</code><span class="sig-paren">(</span><em class="sig-param">rh</em>, <em class="sig-param">incs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.get_conf_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_conf_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterates through runhistory to get a matrix of configurations (in
 vector representation), a list of configurations and the number of
 runs per configuration in a quantiled manner.</p>
@@ -290,7 +290,7 @@ in the plotting (but is arbitrarily determined)</p></li>
 
 <dl class="method">
 <dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_depth">
-<code class="descname">get_depth</code><span class="sig-paren">(</span><em>cs: ConfigSpace.configuration_space.ConfigurationSpace</em>, <em>param: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.get_depth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_depth" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_depth</code><span class="sig-paren">(</span><em class="sig-param">cs: ConfigSpace.configuration_space.ConfigurationSpace</em>, <em class="sig-param">param: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.get_depth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_depth" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get depth in configuration space of a given parameter name
 breadth search until reaching a leaf for the first time</p>
 <dl class="field-list simple">
@@ -305,7 +305,7 @@ breadth search until reaching a leaf for the first time</p>
 
 <dl class="method">
 <dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_distance">
-<code class="descname">get_distance</code><span class="sig-paren">(</span><em>conf_matrix</em>, <em>cs: ConfigSpace.configuration_space.ConfigurationSpace</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.get_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_distance" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_distance</code><span class="sig-paren">(</span><em class="sig-param">conf_matrix</em>, <em class="sig-param">cs: ConfigSpace.configuration_space.ConfigurationSpace</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.get_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_distance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the distance between all pairs of configurations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -325,7 +325,7 @@ breadth search until reaching a leaf for the first time</p>
 
 <dl class="method">
 <dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_mds">
-<code class="descname">get_mds</code><span class="sig-paren">(</span><em>dists</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.get_mds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_mds" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_mds</code><span class="sig-paren">(</span><em class="sig-param">dists</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.get_mds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_mds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute multi-dimensional scaling (using sklearn MDS) – nonlinear scaling</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -342,7 +342,7 @@ breadth search until reaching a leaf for the first time</p>
 
 <dl class="method">
 <dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_pred_surface">
-<code class="descname">get_pred_surface</code><span class="sig-paren">(</span><em>rh</em>, <em>X_scaled</em>, <em>conf_list: list</em>, <em>contour_step_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.get_pred_surface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_pred_surface" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_pred_surface</code><span class="sig-paren">(</span><em class="sig-param">rh</em>, <em class="sig-param">X_scaled</em>, <em class="sig-param">conf_list: list</em>, <em class="sig-param">contour_step_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.get_pred_surface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_pred_surface" title="Permalink to this definition">¶</a></dt>
 <dd><p>fit epm on the scaled input dimension and
 return data to plot a contour plot of the empirical performance</p>
 <dl class="field-list simple">
@@ -365,7 +365,7 @@ return data to plot a contour plot of the empirical performance</p>
 
 <dl class="method">
 <dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.plot">
-<code class="descname">plot</code><span class="sig-paren">(</span><em>X</em>, <em>conf_list: list</em>, <em>runs_per_quantile</em>, <em>inc_list: list = None</em>, <em>contour_data=None</em>, <em>use_timeslider=False</em>, <em>use_checkbox=True</em>, <em>timeslider_labels=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.plot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">conf_list: list</em>, <em class="sig-param">runs_per_quantile</em>, <em class="sig-param">inc_list: list = None</em>, <em class="sig-param">contour_data=None</em>, <em class="sig-param">use_timeslider=False</em>, <em class="sig-param">use_checkbox=True</em>, <em class="sig-param">timeslider_labels=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>plots sampled configuration in 2d-space;
 uses bokeh for interactive plot
 saves results in self.output, if set</p>
@@ -396,7 +396,7 @@ configurator run (for static evaluation)</p></li>
 
 <dl class="method">
 <dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.reduce_runhistory">
-<code class="descname">reduce_runhistory</code><span class="sig-paren">(</span><em>rh: smac.runhistory.runhistory.RunHistory</em>, <em>max_configs: int</em>, <em>keep=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.reduce_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.reduce_runhistory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">reduce_runhistory</code><span class="sig-paren">(</span><em class="sig-param">rh: smac.runhistory.runhistory.RunHistory</em>, <em class="sig-param">max_configs: int</em>, <em class="sig-param">keep=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.reduce_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.reduce_runhistory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reduce configs to desired number, by default just drop the configs with the fewest runs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -417,7 +417,7 @@ configurator run (for static evaluation)</p></li>
 
 <dl class="method">
 <dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.run">
-<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Uses available Configurator-data to perform a MDS, estimate performance
 data and plot the configurator footprint.</p>
 </dd></dl>
