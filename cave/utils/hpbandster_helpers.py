@@ -30,7 +30,7 @@ def format_budgets(budgets):
 
     return formatted_budgets
 
-def get_incumbent_trajectory(result, budgets, mode='racing'):
+def get_incumbent_trajectory(result, budgets=None, mode='racing'):
     """
     Parameters
     ----------
@@ -47,10 +47,13 @@ def get_incumbent_trajectory(result, budgets, mode='racing'):
         dictionary with all the config IDs, the times the runs finished, their respective budgets, and corresponding
         losses
     """
-    if budgets == 'all':
+    if budgets is None:
         budgets = list(result.HB_config['budgets'])
     if not isinstance(budgets, list):
         raise ValueError("%s not a valid argument for 'budgets'" % str(budgets))
+    if any([budget not in result.HB_config['budgets'] for budget in budgets]):
+        raise ValueError("Budget '{}' (type: {}) does not exist. Choose from {}".format(str(budget), str(type(budget)),
+            "[" + ", ".join([str(b) + " (type: " + str(type(b)) + ")" for b in result.HB_config['budgets']]) + "]"))
 
     if mode == 'racing':
         # Philipp's method

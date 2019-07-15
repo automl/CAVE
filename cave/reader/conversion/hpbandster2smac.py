@@ -29,21 +29,21 @@ class HpBandSter2SMAC(object):
         """Convert hpbandster-results into smac-format, aggregating parallel runs along the budgets, so it is treated as
         one run with the same budgets. Throws ValueError when budgets of individual runs dont match.
 
+        WIP: make hpbandsterconversion not aggregate parallel runs
+
         Parameters
         ----------
         folders: List[str]
-            list of runs to consider
+            list of parallel hpbandster-runs (folder paths!)
         output_dir: str
             path to CAVE's output-directory
 
         Returns
         -------
-        result: hpbandster.core.result
-            BOHB-result in original format
-        paths: List[str]
-            paths to converted data
-        budgets: List[int]
-            budgets, corresponding to paths
+        folder2result: {str : hpbandster.core.result}
+            map parallel-run-folder-paths to hpbandster-result in original format
+        folder2budgets: {str : {str or int or float : str}}
+            map folder to budget to pathpaths to converted data
         """
         try:
             from hpbandster.core.result import Result as HPBResult
@@ -51,29 +51,45 @@ class HpBandSter2SMAC(object):
         except ImportError as e:
             raise ImportError("To analyze BOHB-data, please install hpbandster (e.g. `pip install hpbandster`)")
 
+        # Original hpbandster-formatted result-object
         folder2result = OrderedDict([(f, logged_results_to_HBS_result(f)) for f in folders])
 
-        # backup_cs is a list with alternative interpretations of the configspace-file (if it's a .pcs-file)
-        cs, backup_cs = self.load_configspace(folders[0])
+        # Get a list with alternative interpretations of the configspace-file (if it's a .pcs-file, for .json-files it's
+        # only one element)
+        cs_interpretations = self.load_configspace(folders[0])
 
         # Using temporary files for the intermediate smac-result-like format
         if not output_dir:
             self.logger.debug("New outputdir")
             output_dir = tempfile.mkdtemp()
-        budgets, paths = zip(*self.hpbandster2smac(folder2result, cs, backup_cs, output_dir).items())
 
-        return list(folder2result.values()), paths, budgets
+        # Actual conversion
+        folder2budgets = self.hpbandster2smac(folder2result, cs_interpretations, output_dir)
+
+        return folder2result, folder2budgets
 
     def load_configspace(self, folder):
-        """Will try to load the configspace. If it's a pcs-file, backup_cs will be a list containing all possible
-        combinations of interpretation for Categoricals. If this issue will be fixed, we can drop this procedure."""
+        """Will try to load the configspace. cs_options will be a list containing all possible
+        combinations of interpretation for Categoricals. If this issue will be fixed, we can drop this procedure.
+
+        Parameters
+        ----------
+        folder: str
+            path to folder in which to look for configspace
+
+        Returns
+        -------
+        cs_options: list[ConfigurationSpace]
+            list with possible interpretations for config-space-file. Only contains multiple items if file-format is pcs.
+        """
+        cs_options = []
         cs_fn_json = os.path.join(folder, 'configspace.json')
         cs_fn_pcs = os.path.join(folder, 'configspace.pcs')
+
         if os.path.exists(cs_fn_json):
             with open(cs_fn_json, 'r') as fh:
-                cs = pcs_json.read(fh.read())
-                backup_cs = []
-            self.logger.debug("Detected and loaded \"%s\". No backup-cs necessary", cs_fn_json)
+                cs_options = [pcs_json.read(fh.read())]
+            self.logger.debug("Detected and loaded \"%s\". No alternative interpretations necessary", cs_fn_json)
         elif os.path.exists(cs_fn_pcs):
             with open(cs_fn_pcs, 'r') as fh:
                 cs = pcs_new.read(fh.readlines())
@@ -82,6 +98,8 @@ class HpBandSter2SMAC(object):
             non_categoricals = [hp for hp in cs.get_hyperparameters() if not isinstance(hp, CategoricalHyperparameter)]
 
             def _get_interpretations(choices):
+                """ Generate different interpretations for critical categorical hyperparameters that are not seamlessly
+                supported by pcs-format."""
                 result = []
                 if set(choices) == {"True", "False"}:
                     result.append([True, False])
@@ -93,7 +111,6 @@ class HpBandSter2SMAC(object):
             choices_per_cat = [_get_interpretations(hp.choices) for hp in categoricals]
             combinations = itertools.product(*choices_per_cat)
             self.logger.debug(combinations)
-            backup_cs = []
             for combi in combinations:
                 bcs = ConfigurationSpace()
                 for hp in non_categoricals:
@@ -101,14 +118,12 @@ class HpBandSter2SMAC(object):
                 for name, choices in zip([hp.name for hp in categoricals], combi):
                     bcs.add_hyperparameter(CategoricalHyperparameter(name, choices))
                 bcs.add_conditions(cs.get_conditions())
-                backup_cs.append(bcs)
+                cs_options.append(bcs)
 
-            self.logger.debug("Sampled %d interpretations of \"%s\"", len(backup_cs), cs_fn_pcs)
-            self.logger.debug(choices_per_cat)
+            self.logger.debug("Sampled %d interpretations of \"%s\"", len(cs_options), cs_fn_pcs)
         else:
             raise ValueError("Missing pcs-file at '%s.[pcs|json]'!" % os.path.join(folder, 'configspace'))
-        return cs, backup_cs
-
+        return cs_options
 
     def _get_config(self, config_id, id2config, cs):
         config = Configuration(cs, id2config[config_id]['config'])
@@ -116,56 +131,63 @@ class HpBandSter2SMAC(object):
             model_based_pick = id2config[config_id]['config_info']['model_based_pick']
             config.origin = 'Model based pick' if model_based_pick else 'Random'
         except KeyError:
-            self.logger.debug("No origin for config!", exc_info=True)
+            self.logger.debug("No origin for config (id %s)!" % str(config_id), exc_info=True)
         return config
 
-    def hpbandster2smac(self, folder2result, cs: ConfigurationSpace, backup_cs, output_dir: str):
-        """Reading hpbandster-result-object and creating RunHistory and trajectory...
-        treats each budget as an individual 'smac'-run, creates an
-        output-directory with subdirectories for each budget.
+    def hpbandster2smac(self, folder2result, cs_options, output_dir: str):
+        """Reading hpbandster-result-object and creating RunHistory and trajectory...  treats each budget as an
+        individual 'smac'-run, creates an output-directory with subdirectories for each budget.
 
         Parameters
         ----------
         folder2result: Dict(str : hpbandster.core.result.Result)
             folder mapping to bohb's result-objects
-        cs: ConfigurationSpace
-            the configuration space
-        backup_cs: List[ConfigurationSpace]
-            if loading a configuration fails, try configspaces from this list until succeed
+        cs_options: list[ConfigurationSpace]
+            the configuration spaces. in the best case it's a single element, but for pcs-format we need to guess
+            through a list of possible configspaces
         output_dir: str
             the output-dir to save the smac-runs to
+        
+        Returns
+        -------
+        folder2budgets: dict(dict(str) - str)
+            maps each folder (from parallel execution) to a dict, which in turn maps all budgets of
+            the specific parallel execution to their paths
         """
-        # Create runhistories (one per budget)
-        budget2rh = OrderedDict()
+        folder2budgets = OrderedDict()
+        self.logger.debug("Loading with %d configspace alternative options...", len(cs_options))
+        self.logger.info("Assuming BOHB treats target algorithms as deterministic (and does not re-evaluate)")
         for folder, result in folder2result.items():
+            folder2budgets[folder] = OrderedDict()
             self.logger.debug("Budgets for '%s': %s" % (folder, str(result.HB_config['budgets'])))
+            ##########################
+            # 1. Create runhistory   #
+            ##########################
             id2config_mapping = result.get_id2config_mapping()
             skipped = {'None' : 0, 'NaN' : 0}
+            budget2rh = OrderedDict()
             for run in result.get_all_runs():
+                # Choose runhistory to add run to
                 if not run.budget in budget2rh:
                     budget2rh[run.budget] = RunHistory(average_cost)
                 rh = budget2rh[run.budget]
 
                 # Load config...
-                try:
-                    config = self._get_config(run.config_id, id2config_mapping, cs)
-                except ValueError as err:
-                    self.logger.debug("Loading configuration failed... trying alternatives", exc_info=1)
-                    for bcs in backup_cs:
-                        try:
-                            config = self._get_config(run.config_id, id2config_mapping, bcs)
-                            cs = bcs
-                            break
-                        except ValueError:
-                            self.logger.debug("", exc_info=1)
-                            pass
-                    else:
+                config = None
+                while config is None:
+                    if len(cs_options) == 0:
                         self.logger.debug("None of the alternatives worked...")
                         raise ValueError("Your configspace seems to be corrupt. If you use floats (or mix up ints, bools and strings) as categoricals, "
                                          "please consider using the .json-format, as the .pcs-format cannot recover the type "
                                          "of categoricals. Otherwise please report this to "
                                          "https://github.com/automl/CAVE/issues (and attach the debug.log)")
+                    try:
+                        config = self._get_config(run.config_id, id2config_mapping, cs_options[0])
+                    except ValueError as err:
+                        self.logger.debug("Loading configuration failed... trying %d alternatives" % len(cs_options) - 1, exc_info=1)
+                        cs_options = cs_options[1:]  # remove the failing cs-version
 
+                # Filter corrupted loss-values (ignore them)
                 if run.loss is None:
                     skipped['None'] += 1
                     continue
@@ -182,34 +204,36 @@ class HpBandSter2SMAC(object):
 
             self.logger.debug("Skipped %d None- and %d NaN-loss-values in BOHB-result", skipped['None'], skipped['NaN'])
 
-        # Write to disk
-        budget2path = OrderedDict()  # paths to individual budgets
-        self.logger.info("Assuming BOHB treats target algorithms as deterministic (and does not re-evaluate)")
-        formatted_budgets = format_budgets(budget2rh.keys())
-        for b, rh in budget2rh.items():
-            output_path = os.path.join(output_dir, formatted_budgets[b])
-            budget2path[b] = output_path
+            ##########################
+            # 2. Create all else     #
+            ##########################
+            formatted_budgets = format_budgets(budget2rh.keys())  # Make budget-names readable [0.021311, 0.031211] to [0.02, 0.03]
+            for b, rh in budget2rh.items():
+                output_path = os.path.join(output_dir, folder, formatted_budgets[b])
+                folder2budgets[folder][b] = output_path
 
-            scenario = Scenario({'run_obj' : 'quality',
-                                 'cs' : cs,
-                                 'output_dir' : output_dir,
-                                 'deterministic' : True,  # At the time of writing, BOHB is always treating ta's as deterministic
-                                 })
-            scenario.output_dir_for_this_run = output_path
-            scenario.write()
+                scenario = Scenario({'run_obj' : 'quality',
+                                     'cs' : cs_options[0],
+                                     'output_dir' : output_dir,
+                                     'deterministic' : True,  # At the time of writing, BOHB is always treating ta's as deterministic
+                                     })
+                scenario.output_dir_for_this_run = output_path
+                scenario.write()
 
-            with open(os.path.join(output_path, 'configspace.json'), 'w') as fh:
-                fh.write(pcs_json.write(cs))
+                with open(os.path.join(output_path, 'configspace.json'), 'w') as fh:
+                    fh.write(pcs_json.write(cs_options[0]))
 
-            rh.save_json(fn=os.path.join(output_path, 'runhistory.json'))
-            self.get_trajectory(folder2result, output_path, scenario, rh, budget=b)
+                rh.save_json(fn=os.path.join(output_path, 'runhistory.json'))
 
-        return budget2path
+                self.get_trajectory(folder2result[folder], output_path, scenario, rh, budget=b)
 
-    def get_trajectory(self, folder2result, output_path, scenario, rh, budget=None):
+        return folder2budgets
+
+    def get_trajectory(self, result, output_path, scenario, rh, budget=None):
         """
         If budget is specified, get trajectory for only that budget. Else use hpbandster's averaging.
-        If multiple results are specified, sort by times_finished and only add to combined trajectory if loss is better
+
+        TODO: would like to be rewritten
         """
         cs = scenario.cs
 
@@ -218,30 +242,29 @@ class HpBandSter2SMAC(object):
 
         traj_logger = TrajLogger(output_path, Stats(scenario))
         total_traj_dict = []
-        for f, result in folder2result.items():
-            if budget:
-                traj_dict = self.get_incumbent_trajectory_for_budget(result, budget)
-            else:
-                traj_dict = result.get_incumbent_trajectory()
+        if budget:
+            traj_dict = get_incumbent_trajectory(result, [budget])
+        else:
+            traj_dict = result.get_incumbent_trajectory()
 
-            id2config_mapping = result.get_id2config_mapping()
+        id2config_mapping = result.get_id2config_mapping()
 
-            for config_id, time, budget, loss in zip(traj_dict['config_ids'],
-                                                     traj_dict['times_finished'],
-                                                     traj_dict['budgets'],
-                                                     traj_dict['losses']):
-                incumbent = self._get_config(config_id, id2config_mapping, cs)
-                try:
-                    incumbent_id = rh.config_ids[incumbent]
-                except KeyError as e:
-                    # This config was not evaluated on this budget, just skip it
-                    continue
-                except:
-                    raise
-                total_traj_dict.append({'config_id' : incumbent_id,
-                                        'time_finished' : time,
-                                        'budget' : budget,
-                                        'loss' : loss})
+        for config_id, time, budget, loss in zip(traj_dict['config_ids'],
+                                                 traj_dict['times_finished'],
+                                                 traj_dict['budgets'],
+                                                 traj_dict['losses']):
+            incumbent = self._get_config(config_id, id2config_mapping, cs)
+            try:
+                incumbent_id = rh.config_ids[incumbent]
+            except KeyError as e:
+                # This config was not evaluated on this budget, just skip it
+                continue
+            except:
+                raise
+            total_traj_dict.append({'config_id' : incumbent_id,
+                                    'time_finished' : time,
+                                    'budget' : budget,
+                                    'loss' : loss})
 
         last_loss = np.inf
         for element in sorted(total_traj_dict, key=lambda x: x['time_finished']):
@@ -289,4 +312,3 @@ class HpBandSter2SMAC(object):
         if not budget in result.HB_config['budgets']:
             raise ValueError("Budget '{}' (type: {}) does not exist. Choose from {}".format(str(budget), str(type(budget)),
                 "[" + ", ".join([str(b) + " (type: " +  str(type(b)) + ")" for b in result.HB_config['budgets']]) + "]"))
-        return get_incumbent_trajectory(result, [budget])
