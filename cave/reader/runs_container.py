@@ -21,6 +21,7 @@ from smac.utils.io.input_reader import InputReader
 
 from cave.reader.conversion.hpbandster2smac import HpBandSter2SMAC
 from cave.reader.configurator_run import ConfiguratorRun
+from cave.utils.helpers import combine_trajectories
 
 class RunsContainer(object):
 
@@ -39,6 +40,8 @@ class RunsContainer(object):
         ...       |      |     |      |
         b_2       |      |     |      |
         agg (None)|      |     |      |
+
+        The data is organized in folder2budgets as {pr : {b : path}} and in pRun2budget as {pr : {b : ConfiguratorRun}}.
 
         Parameters
         ----------
@@ -72,12 +75,12 @@ class RunsContainer(object):
         self.validation_format = validation_format
         self.use_budgets = self.file_format == "BOHB"
 
-        # Main focus on this mapping run2budget2data:
-        self.run2budget = {None : None}  # mapping parallel runs to their budgets
+        # Main focus on this mapping pRun2budget2data:
+        self.pRun2budget = {None : {}}  # mapping parallel runs to their budgets
         self.runs_list = []  # Just put all ConfiguratorRun-objects here
 
         ##########################################################################################
-        #  Convert if necessary, detemine what folders and what budgets                          #
+        #  Convert if necessary, deteirmine what folders and what budgets                         #
         ##########################################################################################
         # Both budgets and folders have "None" in the key-list for the aggregation over all available budgets/folders
         self.budgets = [None]
@@ -90,7 +93,6 @@ class RunsContainer(object):
             self.budgets.extend(list(self.folder2result.values())[0].HB_config['budgets'])
         else:
             self.folder2budgets = {f : {None : f} for f in self.folders}
-        self.folders.append(None)
 
         ##########################################################################################
         #  Read in folders, where folders are parallel runs and for each parallel-run/budget     #
@@ -98,7 +100,7 @@ class RunsContainer(object):
         ##########################################################################################
         self.logger.debug("Folders: %s, ta_exec_dirs: %s", str(folders), str(self.ta_exec_dirs))
         for f, ta_exec_dir in zip(self.folders, self.ta_exec_dirs):  # Iterating over parallel runs
-            self.run2budget[f] = {}
+            self.pRun2budget[f] = {}
             for b, path in self.folder2budgets[f].items():
                 # Using folder of (converted) data here
                 self.logger.debug(path)
@@ -108,8 +110,12 @@ class RunsContainer(object):
                                                  self.validation_format,
                                                  b,
                                                  self.output_dir)
-                self.run2budget[f][b] = cr
+                self.pRun2budget[f][b] = cr
                 self.runs_list.append(cr)
+
+        self.folders.append(None)
+        self.logger.debug(self.folder2budgets)
+        self.logger.debug(self.pRun2budget)
 
         self.scenario = self.runs_list[0].scenario
 
@@ -119,30 +125,38 @@ class RunsContainer(object):
     def __getitem__(self, key):
         """ Return highest budget for given folder. """
         if self.use_budgets:
-            return self.run2budgets[key][self.get_highest_budget()]
+            return self.pRun2budgets[key][self.get_highest_budget()]
         else:
-            return self.run2budget[key][None]
+            return self.pRun2budget[key][None]
 
     def get_all_runs(self):
         return self.runs_list
 
     def get_highest_budget(self):
-        return max(self.get_budgets) if self.use_budgets else None
+        return max(self.get_budgets()) if self.use_budgets else None
 
     def get_budgets(self):
         budgets = set()
         for f in self.get_folders():
-            budgets.update(set(self.run2budgets[f].values()))
-        return [b for b in budgets if b is not None]
+            budgets.update(set(self.pRun2budget[f].keys()))
+        budgets = sorted([b for b in budgets if b is not None])
+        self.logger.debug(budgets)
+        return budgets
 
-    def get_runs_for_budget(self, b):
-        return list(self.budgets2folders.values())
+
+    def get_runs_for_budget(self, target_b):
+        self.logger.debug(self.pRun2budget.items())
+        runs = [[cr for b, cr in self.pRun2budget[f].items() if b == target_b] for f in self.pRun2budget.keys() if f is
+                not None]
+        # Flatten list
+        runs = [a for b in runs for a in b]
+        return runs
 
     def get_folders(self):
-        return [folder for folder in self.run2budgets.keys() if folder is not None]
+        return [folder for folder in self.pRun2budget.keys() if folder is not None]
 
     def get_runs_for_folder(self, f):
-        return list(self.folders2budgets[f].values())
+        return list(self.pRun2budget[f].values())
 
     def get_aggregated(self, keep_budgets=True, keep_folders=False):
         """ Collapse data-structure along a given "axis".
@@ -157,25 +171,25 @@ class RunsContainer(object):
 
         # TODO foldername of aggregated runs
         if (not keep_budgets) and (not keep_folders):
-            if not None in self.run2budget[None].keys():
+            if None not in self.pRun2budget[None].keys():
                 self.logger.debug("Aggregating all runs")
-                aggregated = aggregate_configurator_runs(runs)
-                self.run2budget[None][None] = aggregated
-            return self.run2budget[None][None]
-        elif keep_budgets:
+                aggregated = self._aggregate(self.get_all_runs())
+                self.pRun2budget[None][None] = aggregated
+            return self.pRun2budget[None][None]
+        elif keep_budgets and not keep_folders:
             for b in self.get_budgets():
-                if not b in self.run2budget[None].keys():
+                if  b not in self.pRun2budget[None].keys():
                     self.logger.debug("Aggregating over parallel runs, keeping budgets")
-                    self.run2budget[None][b] = self._aggregate(self.get_runs_for_budget(b))
-            return {b : self.run2budget[None][b] for b in self.get_budgets()}
-        elif keep_folders:
+                    self.pRun2budget[None][b] = self._aggregate(self.get_runs_for_budget(b))
+            return {b : self.pRun2budget[None][b] for b in self.get_budgets()}
+        elif keep_folders and not keep_budgets:
             for f in self.get_folders():
-                if not None in self.run2budget[f].keys():
+                if None not in self.pRun2budget[f].keys():
                     self.logger.debug("Aggregating over parallel runs, keeping budgets")
-                    self.run2budget[f][None] = self._aggregate(self.get_runs_for_folder(f))
-            return {f : self.run2budget[f][None] for f in self.get_folders()}
+                    self.pRun2budget[f][None] = self._aggregate(self.get_runs_for_folder(f))
+            return {f : self.pRun2budget[f][None] for f in self.get_folders()}
         else:
-            return self.runs
+            return self.runs_list
 
     def _aggregate(self, runs):
         """
@@ -187,23 +201,19 @@ class RunsContainer(object):
             if run.validated_runhistory:
                 vali_rh.update(run.validated_runhistory, origin=DataOrigin.EXTERNAL_SAME_INSTANCES)
 
-        # Estimate missing costs for [def, inc1, inc2, ...]
-        self._validate_default_and_incumbents(self.validation_method, self.ta_exec_dir)
-        self.global_epm_rh.update(self.global_validated_rh)
-
-        for rh_name, rh in [("original", self.global_original_rh),
-                            ("validated", self.global_validated_rh),
-                            ("epm", self.global_epm_rh)]:
+        for rh_name, rh in [("original", orig_rh),
+                            ("validated", vali_rh),
+                            ]:
             self.logger.debug('Combined number of %s RunHistory data points: %d '
                               '# Configurations: %d. # Configurator runs: %d',
-                              rh_name, len(rh.data), len(rh.get_all_configs()), len(self.runs))
+                              rh_name, len(rh.data), len(rh.get_all_configs()), len(runs))
 
-        # Sort runs (best first)
-        runs = sorted(runs, key=lambda run: self.global_epm_rh.get_cost(run.solver.incumbent))
-        self.best_run = runs[0]
+        traj = combine_trajectories([run.trajectory for run in runs], self.logger)
 
-        self.incumbent = self.pimp.incumbent = self.best_run.solver.incumbent
-        self.logger.debug("Overall best run: %s, with incumbent: %s", self.best_run.folder, self.incumbent)
-
-        return ConfiguratorRun(scenario, orig_rh, vali_rh, traj, folder, '.',
-                               file_format, validation_format, budget)
+        new_cr = ConfiguratorRun(runs[0].scenario,
+                                 orig_rh,
+                                 vali_rh,
+                                 traj,
+                                 output_dir=runs[0].output_dir
+                                 )
+        return new_cr

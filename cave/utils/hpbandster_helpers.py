@@ -86,8 +86,6 @@ def get_incumbent_trajectory(result, budgets=None, mode='racing'):
         else:
             raise ValueError("'%s' not a supported method for get_incumbent_trajectory" % mode)
 
-
-
 def _compute_trajectory_racing(all_runs, budgets):
     """
     Computes the trajectory in racing mode.
@@ -172,7 +170,6 @@ def _compute_trajectory_racing(all_runs, budgets):
         # Update the finished time to the time of setting as incumbent
         incumbents[current_incumbent_budget].time_stamps['finished'] = run.time_stamps['finished']
         yield incumbents[current_incumbent_budget]
-
 
 def _get_incumbent_trajectory_hpbandster(result, budgets, bigger_is_better=True, non_decreasing_budget=True):
     """

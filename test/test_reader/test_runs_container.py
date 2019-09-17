@@ -10,8 +10,24 @@ class TestRunContainer(unittest.TestCase):
     def test_runs_container(self):
         """ test whether runs_container-methods work as expected """
         folders = ["examples/bohb"]
+        rc = RunsContainer(folders, file_format="BOHB")
 
-        runs_container = RunsContainer(folders, file_format="BOHB")
+        print(rc.get_all_runs())
+        self.assertEqual(rc.get_highest_budget(), 100)
+        self.assertEqual(rc.get_budgets(), [6.25, 12.5, 25.0, 50.0, 100.0])
+        print(rc.get_runs_for_budget(rc.get_highest_budget()))
+        print(rc.get_folders())
+        print(rc.get_runs_for_folder(folders[0]))
+
+    def test_runs_aggregation(self):
+        """ test whether runs_container-methods work as expected """
+        folders = ["examples/bohb"]
+        rc = RunsContainer(folders, file_format="BOHB")
+
+        print(rc.get_aggregated(True, True))
+        print(rc.get_aggregated(True, False))
+        print(rc.get_aggregated(False, True))
+        print(rc.get_aggregated(False, False))
 
 
         #folder = "test/test_files/test_reader/SMAC2/run-1"
