@@ -1,6 +1,6 @@
 import logging
 
-from smac.facade.smac_facade import SMAC
+from smac.facade.smac_ac_facade import SMAC4AC
 from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunHistory, DataOrigin
 
@@ -9,7 +9,7 @@ from cave.reader.smac2_reader import SMAC2Reader
 from cave.reader.csv_reader import CSVReader
 
 
-class ConfiguratorRun(SMAC):
+class ConfiguratorRun(SMAC4AC):
     """
     ConfiguratorRuns load and maintain information about individual configurator
     runs. There are three supported formats: SMAC3, SMAC2 and CSV

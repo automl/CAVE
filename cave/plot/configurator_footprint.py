@@ -1,4 +1,5 @@
 #!/bin/python
+from smac.utils.constants import MAXINT
 
 __author__ = "Marius Lindauer & Joshua Marben"
 __copyright__ = "Copyright 2016, ML4AAD"
@@ -58,6 +59,7 @@ class ConfiguratorFootprintPlotter(object):
                  use_timeslider: bool=False,
                  num_quantiles: int=10,
                  timeslider_log: bool=True,
+                 rng=None,
                  output_dir: str=None,
                  ):
         '''
@@ -88,10 +90,15 @@ class ConfiguratorFootprintPlotter(object):
             number of quantiles for the slider/ number of static pictures
         timeslider_log: bool
             whether to use a logarithmic scale for the timeslider/quantiles
+        rng: np.random.RandomState
+            random number generator
         output_dir: str
             output directory
         '''
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
+        self.rng = rng
+        if rng is None:
+            self.rng = np.random.RandomState(42)
 
         self.scenario = scenario
         self.rhs = rhs
@@ -178,7 +185,7 @@ class ConfiguratorFootprintPlotter(object):
 
         # convert the data to train EPM on 2-dim featurespace (for contour-data)
         self.logger.debug("Convert data for epm.")
-        X, y, types = convert_data_for_epm(scenario=scen, runhistory=rh, logger=self.logger)
+        X, y, types = convert_data_for_epm(scenario=self.scenario, runhistory=rh, impute_inactive_parameters=True, logger=self.logger)
         types = np.array(np.zeros((2 + scen.feature_array.shape[1])), dtype=np.uint)
         num_params = len(scen.cs.get_hyperparameters())
 
@@ -201,7 +208,9 @@ class ConfiguratorFootprintPlotter(object):
 
         self.logger.debug("Train random forest for contour-plot.")
         bounds = np.array([(0, np.nan), (0, np.nan)], dtype=object)
-        model = RandomForestWithInstances(types=types, bounds=bounds,
+        model = RandomForestWithInstances(cs_no_forbidden,
+                                          types, bounds,
+                                          seed = self.rng.randint(MAXINT),
                                           instance_features=np.array(scen.feature_array),
                                           ratio_features=1.0)
 

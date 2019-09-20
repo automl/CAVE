@@ -1,36 +1,32 @@
-import os
-import logging
-from typing import List, Union
-from collections import OrderedDict, namedtuple
 import itertools
+import logging
+import os
+from collections import OrderedDict, namedtuple
+from typing import List, Union
 
 import numpy as np
-
+from bokeh.embed import components
+from bokeh.io import output_notebook
+from bokeh.layouts import column, row, widgetbox
+from bokeh.models import HoverTool, Range1d, Legend
+from bokeh.models.filters import GroupFilter
+from bokeh.models.sources import CDSView
+from bokeh.palettes import Dark2_5
+from bokeh.plotting import figure, ColumnDataSource, show
 from smac.configspace import convert_configurations_to_array
 from smac.epm.rf_with_instances import RandomForestWithInstances
+from smac.epm.util_funcs import get_types
 from smac.optimizer.objective import _cost
-from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
 from smac.runhistory.runhistory import RunHistory
-from smac.utils.util_funcs import get_types
+from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
+from smac.utils.constants import MAXINT
 from smac.utils.validate import Validator
-from smac.optimizer.objective import average_cost
 
-from cave.utils.io import export_bokeh
-from cave.utils.hpbandster2smac import HpBandSter2SMAC
-from cave.reader.configurator_run import ConfiguratorRun
 from cave.analyzer.base_analyzer import BaseAnalyzer
+from cave.reader.configurator_run import ConfiguratorRun
 from cave.utils.bokeh_routines import get_checkbox
 from cave.utils.hpbandster_helpers import get_incumbent_trajectory, format_budgets
-
-from bokeh.plotting import figure, ColumnDataSource, show
-from bokeh.embed import components
-from bokeh.models import HoverTool, Range1d, Legend, CustomJS
-from bokeh.models.sources import CDSView
-from bokeh.models.filters import GroupFilter
-from bokeh.io import output_notebook
-from bokeh.palettes import Dark2_5
-from bokeh.layouts import column, row, widgetbox
-
+from cave.utils.io import export_bokeh
 
 Line = namedtuple('Line', ['name', 'time', 'mean', 'upper', 'lower', 'config'])
 
@@ -47,6 +43,7 @@ class CostOverTime(BaseAnalyzer):
                  output_fn: str="performance_over_time.png",
                  validator: Union[None, Validator]=None,
                  cot_inc_traj='racing',
+                 rng=None,
                  ):
         """ Plot performance over time, using all trajectory entries
             where max_time = max(wallclock_limit, the highest recorded time)
@@ -74,6 +71,9 @@ class CostOverTime(BaseAnalyzer):
         """
 
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
+        self.rng = rng
+        if rng is None:
+            self.rng = np.random.RandomState(42)
 
         self.scenario = scenario
         self.output_dir = output_dir
@@ -142,10 +142,11 @@ class CostOverTime(BaseAnalyzer):
                 self.logger.debug("Training model with data of shape X: %s, y: %s", str(X.shape), str(y.shape))
 
                 types, bounds = get_types(self.scenario.cs, self.scenario.feature_array)
-                epm = RandomForestWithInstances(types=types,
+                epm = RandomForestWithInstances(self.scenario.cs,
+                                                types=types,
                                                 bounds=bounds,
+                                                seed=self.rng.randint(MAXINT),
                                                 instance_features=self.scenario.feature_array,
-                                                # seed=self.rng.randint(MAXINT),
                                                 ratio_features=1.0)
                 epm.train(X, y)
             config_array = convert_configurations_to_array(configs)
