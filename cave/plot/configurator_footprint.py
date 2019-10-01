@@ -1,30 +1,27 @@
 #!/bin/python
-from smac.utils.constants import MAXINT
-
 __author__ = "Marius Lindauer & Joshua Marben"
 __copyright__ = "Copyright 2016, ML4AAD"
 __license__ = "BSD"
 __maintainer__ = "Joshua Marben"
 __email__ = "marbenj@cs.uni-freiburg.de"
 
-import os
-import sys
+import copy
 import inspect
 import logging
-import copy
+import os
+import sys
 import time
 
 import numpy as np
-from sklearn.manifold.mds import MDS
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
-
-from bokeh.plotting import figure, ColumnDataSource
-from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider
-from bokeh.models.sources import CDSView
-from bokeh.models.filters import GroupFilter, BooleanFilter
 from bokeh.layouts import column, row, widgetbox
-from bokeh.models.widgets import CheckboxButtonGroup, CheckboxGroup, RadioButtonGroup, Button, Select, Div
+from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider
+from bokeh.models.filters import GroupFilter, BooleanFilter
+from bokeh.models.sources import CDSView
+from bokeh.models.widgets import CheckboxButtonGroup, RadioButtonGroup, Button, Div
+from bokeh.plotting import figure, ColumnDataSource
+from sklearn.decomposition import PCA
+from sklearn.manifold.mds import MDS
+from sklearn.preprocessing import StandardScaler
 
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))  # noqa
 cmd_folder = os.path.realpath(os.path.join(cmd_folder, ".."))  # noqa
@@ -33,17 +30,17 @@ if cmd_folder not in sys.path:  # noqa
 
 from smac.scenario.scenario import Scenario
 from smac.runhistory.runhistory import RunHistory
+from smac.utils.constants import MAXINT
 from smac.optimizer.objective import average_cost
 from smac.epm.rf_with_instances import RandomForestWithInstances
-from smac.configspace import ConfigurationSpace
 from ConfigSpace.util import impute_inactive_values
 from ConfigSpace import CategoricalHyperparameter
+from ConfigSpace.configuration_space import Configuration, ConfigurationSpace
 
 from cave.utils.convert_for_epm import convert_data_for_epm
 from cave.utils.helpers import escape_parameter_name, get_config_origin, combine_runhistories
 from cave.utils.timing import timing
 from cave.utils.io import export_bokeh
-from cave.utils.bokeh_routines import get_checkbox, get_radiobuttongroup
 
 
 class ConfiguratorFootprintPlotter(object):
