@@ -182,7 +182,7 @@ class ConfiguratorFootprintPlotter(object):
 
         # convert the data to train EPM on 2-dim featurespace (for contour-data)
         self.logger.debug("Convert data for epm.")
-        X, y, types = convert_data_for_epm(scenario=self.scenario, runhistory=rh, impute_inactive_parameters=True, logger=self.logger)
+        X, y, types = convert_data_for_epm(scenario=scen, runhistory=rh, impute_inactive_parameters=True, logger=self.logger)
         types = np.array(np.zeros((2 + scen.feature_array.shape[1])), dtype=np.uint)
         num_params = len(scen.cs.get_hyperparameters())
 
@@ -196,16 +196,26 @@ class ConfiguratorFootprintPlotter(object):
             conf_list[idx] = impute_inactive_values(c)
             conf_dict[str(conf_list[idx].get_array())] = X_scaled[idx, :]
 
-        X_trans = []
+        # Debug compare elements:
+        c1, c2 = {str(z) for z in X}, {str(z) for z in conf_dict.keys()}
+        self.logger.debug("{} elements not in both sets, {} elements in both sets, X (len {}) and conf_dict (len {}) "
+                          "(might be a problem related to forbidden clauses?)".format(len(c1 ^ c2), len(c1 & c2), len(c1 ^ c2), len(c1), len(c2)))
+        # self.logger.debug("Elements: {}".format(str(c1 ^ c2)))
+
+        X_trans = []  # X_trans is the same as X but with reduced 2-dim features (so shape is (N, 2) instead of (N, M))
         for x in X:
             x_scaled_conf = conf_dict[str(x[:num_params])]
             # append scaled config + pca'ed features (total of 4 values) per config/feature-sample
             X_trans.append(np.concatenate((x_scaled_conf, x[num_params:]), axis=0))
         X_trans = np.array(X_trans)
 
-        self.logger.debug("Train random forest for contour-plot.")
+        self.logger.debug("Train random forest for contour-plot. Shape of X: {}, shape of X_trans: {}".format(X.shape, X_trans.shape))
+        self.logger.debug("Faking configspace to be able to train rf...")
+        # We need to fake config-space bypass imputation of inactive values in random forest implementation
+        fake_cs = ConfigurationSpace(name="fake-cs-for-configurator-footprint")
+
         bounds = np.array([(0, np.nan), (0, np.nan)], dtype=object)
-        model = RandomForestWithInstances(cs_no_forbidden,
+        model = RandomForestWithInstances(fake_cs,
                                           types, bounds,
                                           seed = self.rng.randint(MAXINT),
                                           instance_features=np.array(scen.feature_array),
