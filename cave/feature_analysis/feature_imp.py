@@ -9,14 +9,15 @@ import matplotlib.pyplot as plt
 
 from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
 from smac.epm.rf_with_instances import RandomForestWithInstances
-from smac.utils.util_funcs import get_types
+from smac.epm.util_funcs import get_types
 from smac.tae.execute_ta_run import StatusType
+from smac.utils.constants import MAXINT
 
 
 class FeatureForwardSelector():
     """ Inspired by forward selection of ParameterImportance-package. """
 
-    def __init__(self, scenario, runhistory, to_evaluate: int=3):
+    def __init__(self, scenario, runhistory, to_evaluate: int=3, rng=None):
         """
         Constructor
         :parameter:
@@ -27,6 +28,9 @@ class FeatureForwardSelector():
         """
         self.logger = logging.getLogger(
             self.__module__ + '.' + self.__class__.__name__)
+        self.rng = rng
+        if rng is None:
+            self.rng = np.random.RandomState(42)
 
         self.scenario = copy.deepcopy(scenario)
         self.cs = scenario.cs
@@ -139,7 +143,7 @@ class FeatureForwardSelector():
             corresponding y vector
         """
         # take at most 80% of the data per split to ensure enough data for oob error
-        self.model = RandomForestWithInstances(types=types, bounds=bounds, do_bootstrapping=True,
+        self.model = RandomForestWithInstances(self.cs, types=types, bounds=bounds, seed=self.rng.randint(MAXINT), do_bootstrapping=True,
                                                n_points_per_tree=int(X.shape[1]*0.8))
         self.model.rf_opts.compute_oob_error = True
         self.model.train(X, y)

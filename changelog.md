@@ -1,3 +1,14 @@
+# 1.1.8
+
+## Bug fixes
+
+* Fix args-Errors when trying to use with SMAC 0.11.x
+* Fix overflow in blcs checkboxes
+
+## Minor changes
+
+* Force pyimp >= 1.0.6
+
 # 1.1.7
 
 ## Bug fixes
