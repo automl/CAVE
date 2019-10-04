@@ -1,29 +1,27 @@
 #!/bin/python
-
 __author__ = "Marius Lindauer & Joshua Marben"
 __copyright__ = "Copyright 2016, ML4AAD"
 __license__ = "BSD"
 __maintainer__ = "Joshua Marben"
 __email__ = "marbenj@cs.uni-freiburg.de"
 
-import os
-import sys
+import copy
 import inspect
 import logging
-import copy
+import os
+import sys
 import time
 
 import numpy as np
-from sklearn.manifold.mds import MDS
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
-
-from bokeh.plotting import figure, ColumnDataSource
-from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider
-from bokeh.models.sources import CDSView
-from bokeh.models.filters import GroupFilter, BooleanFilter
 from bokeh.layouts import column, row, widgetbox
-from bokeh.models.widgets import CheckboxButtonGroup, CheckboxGroup, RadioButtonGroup, Button, Select, Div
+from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider
+from bokeh.models.filters import GroupFilter, BooleanFilter
+from bokeh.models.sources import CDSView
+from bokeh.models.widgets import CheckboxButtonGroup, RadioButtonGroup, Button, Div
+from bokeh.plotting import figure, ColumnDataSource
+from sklearn.decomposition import PCA
+from sklearn.manifold.mds import MDS
+from sklearn.preprocessing import StandardScaler
 
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))  # noqa
 cmd_folder = os.path.realpath(os.path.join(cmd_folder, ".."))  # noqa
@@ -32,17 +30,17 @@ if cmd_folder not in sys.path:  # noqa
 
 from smac.scenario.scenario import Scenario
 from smac.runhistory.runhistory import RunHistory
+from smac.utils.constants import MAXINT
 from smac.optimizer.objective import average_cost
 from smac.epm.rf_with_instances import RandomForestWithInstances
-from smac.configspace import ConfigurationSpace
 from ConfigSpace.util import impute_inactive_values
 from ConfigSpace import CategoricalHyperparameter
+from ConfigSpace.configuration_space import Configuration, ConfigurationSpace
 
 from cave.utils.convert_for_epm import convert_data_for_epm
 from cave.utils.helpers import escape_parameter_name, get_config_origin, combine_runhistories
 from cave.utils.timing import timing
 from cave.utils.io import export_bokeh
-from cave.utils.bokeh_routines import get_checkbox, get_radiobuttongroup
 
 
 class ConfiguratorFootprintPlotter(object):
@@ -58,6 +56,7 @@ class ConfiguratorFootprintPlotter(object):
                  use_timeslider: bool=False,
                  num_quantiles: int=10,
                  timeslider_log: bool=True,
+                 rng=None,
                  output_dir: str=None,
                  ):
         '''
@@ -88,10 +87,15 @@ class ConfiguratorFootprintPlotter(object):
             number of quantiles for the slider/ number of static pictures
         timeslider_log: bool
             whether to use a logarithmic scale for the timeslider/quantiles
+        rng: np.random.RandomState
+            random number generator
         output_dir: str
             output directory
         '''
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
+        self.rng = rng
+        if rng is None:
+            self.rng = np.random.RandomState(42)
 
         self.scenario = scenario
         self.rhs = rhs
@@ -178,7 +182,7 @@ class ConfiguratorFootprintPlotter(object):
 
         # convert the data to train EPM on 2-dim featurespace (for contour-data)
         self.logger.debug("Convert data for epm.")
-        X, y, types = convert_data_for_epm(scenario=scen, runhistory=rh, logger=self.logger)
+        X, y, types = convert_data_for_epm(scenario=scen, runhistory=rh, impute_inactive_parameters=True, logger=self.logger)
         types = np.array(np.zeros((2 + scen.feature_array.shape[1])), dtype=np.uint)
         num_params = len(scen.cs.get_hyperparameters())
 
@@ -192,16 +196,28 @@ class ConfiguratorFootprintPlotter(object):
             conf_list[idx] = impute_inactive_values(c)
             conf_dict[str(conf_list[idx].get_array())] = X_scaled[idx, :]
 
-        X_trans = []
+        # Debug compare elements:
+        c1, c2 = {str(z) for z in X}, {str(z) for z in conf_dict.keys()}
+        self.logger.debug("{} elements not in both sets, {} elements in both sets, X (len {}) and conf_dict (len {}) "
+                          "(might be a problem related to forbidden clauses?)".format(len(c1 ^ c2), len(c1 & c2), len(c1 ^ c2), len(c1), len(c2)))
+        # self.logger.debug("Elements: {}".format(str(c1 ^ c2)))
+
+        X_trans = []  # X_trans is the same as X but with reduced 2-dim features (so shape is (N, 2) instead of (N, M))
         for x in X:
             x_scaled_conf = conf_dict[str(x[:num_params])]
             # append scaled config + pca'ed features (total of 4 values) per config/feature-sample
             X_trans.append(np.concatenate((x_scaled_conf, x[num_params:]), axis=0))
         X_trans = np.array(X_trans)
 
-        self.logger.debug("Train random forest for contour-plot.")
+        self.logger.debug("Train random forest for contour-plot. Shape of X: {}, shape of X_trans: {}".format(X.shape, X_trans.shape))
+        self.logger.debug("Faking configspace to be able to train rf...")
+        # We need to fake config-space bypass imputation of inactive values in random forest implementation
+        fake_cs = ConfigurationSpace(name="fake-cs-for-configurator-footprint")
+
         bounds = np.array([(0, np.nan), (0, np.nan)], dtype=object)
-        model = RandomForestWithInstances(types=types, bounds=bounds,
+        model = RandomForestWithInstances(fake_cs,
+                                          types, bounds,
+                                          seed = self.rng.randint(MAXINT),
                                           instance_features=np.array(scen.feature_array),
                                           ratio_features=1.0)
 

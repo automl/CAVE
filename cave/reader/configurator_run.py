@@ -4,7 +4,7 @@ from collections import OrderedDict
 
 import numpy as np
 
-from smac.facade.smac_facade import SMAC
+from smac.facade.smac_ac_facade import SMAC4AC
 from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunHistory, DataOrigin
 from smac.utils.validate import Validator

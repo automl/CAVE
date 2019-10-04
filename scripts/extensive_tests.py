@@ -3,7 +3,7 @@ import logging
 import numpy as np
 import shutil
 
-from smac.facade.smac_facade import SMAC
+from smac.facade.smac_ac_facade import SMAC4AC
 from smac.scenario.scenario import Scenario
 
 import inspect
@@ -161,7 +161,7 @@ if __name__ == '__main__':
         generate_bohb_data()
         for scen in get_scenarios():
             scenario = Scenario(scen)
-            smac = SMAC(scenario=scenario, rng=np.random.RandomState(42))
+            smac = SMAC4AC(scenario=scenario, rng=np.random.RandomState(42))
             smac.optimize()
     elif sys.argv[1] == 'cave':
         failed = []
