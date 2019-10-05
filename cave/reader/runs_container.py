@@ -25,7 +25,12 @@ from cave.utils.helpers import combine_trajectories
 
 class RunsContainer(object):
 
-    def __init__(self, folders, ta_exec_dirs=None, output_dir=None, file_format=None, validation_format=None):
+    def __init__(self,
+                 folders,
+                 ta_exec_dirs=None,
+                 output_dir=None,
+                 file_format=None,
+                 validation_format=None):
         """
         Reads in optimizer runs. Converts data if necessary.
         There will be `(n_budgets +1) * (m_parallel_execution + 1)` ConfiguratorRuns in CAVE, each representing the data
@@ -42,6 +47,20 @@ class RunsContainer(object):
         agg (None)|      |     |      |
 
         The data is organized in folder2budgets as {pr : {b : path}} and in pRun2budget as {pr : {b : ConfiguratorRun}}.
+
+        In the internal data-management there are three types of runhistories: *original*, *validated* and *epm*.
+        - *original_rh* contain only runs that have been gathered during the optimization-process.
+        - *validated_rh* may contain original runs, but also data that was not gathered iteratively during the
+          optimization, but systematically through external validation of interesting configurations.
+          Important: NO ESTIMATED RUNS IN `validated` RUNHISTORIES!
+        - *epm_rh* contain runs that are gathered through empirical performance models.
+
+        Runhistories are organized as follows:
+        - each ConfiguratorRun has an *original_runhistory*- and a *combined_runhistory*-attribute
+        - if available, each ConfiguratorRun's *validated_runhistory* contains
+          a runhistory with validation-data gathered after the optimization
+        - *combined_runhistory* always contains as many real runs as possible
+
 
         Parameters
         ----------
@@ -64,6 +83,14 @@ class RunsContainer(object):
 
         self.folders = folders
         self.ta_exec_dirs = ta_exec_dirs if ta_exec_dirs else ['.' for f in folders]
+        # Fix wrong input to ta_exec_dir
+        if len(self.folders) < len(self.ta_exec_dirs):
+            raise ValueError("Too many ta_exec_dirs ({}) compared to the number of folders ({})".format(
+                                len(self.ta_exec_dirs), len(self.folders)))
+        elif len(self.folders) > len(self.ta_exec_dirs):
+            self.logger.info("Assuming ta_exec_dir is valid for all folders, expanding list")
+            self.ta_exec_dirs.extend([self.ta_exec_dirs[0] for _ in range(len(self.folders) - len(self.ta_exec_dirs))])
+
         self.output_dir = output_dir if output_dir else tempfile.mkdtemp()
 
         # TODO: detect file_format...
@@ -80,7 +107,7 @@ class RunsContainer(object):
         self.runs_list = []  # Just put all ConfiguratorRun-objects here
 
         ##########################################################################################
-        #  Convert if necessary, deteirmine what folders and what budgets                         #
+        #  Convert if necessary, determine what folders and what budgets                         #
         ##########################################################################################
         # Both budgets and folders have "None" in the key-list for the aggregation over all available budgets/folders
         self.budgets = [None]
@@ -91,6 +118,11 @@ class RunsContainer(object):
             # TODO make compatible with hpbandster
             self.folder2result, self.folder2budgets = hpbandster2smac.convert(self.folders, self.output_dir)
             self.budgets.extend(list(self.folder2result.values())[0].HB_config['budgets'])
+            #if "DEBUG" in self.verbose_level:
+            #    for f in folders:
+            #        debug_f = os.path.join(output_dir, 'debug', os.path.basename(f))
+            #        shutil.rmtree(debug_f, ignore_errors=True)
+            #        shutil.copytree(f, debug_f)
         else:
             self.folder2budgets = {f : {None : f} for f in self.folders}
 
@@ -98,24 +130,31 @@ class RunsContainer(object):
         #  Read in folders, where folders are parallel runs and for each parallel-run/budget     #
         #  combination there is one ConfiguratorRun-object (they can be easily aggregated)       #
         ##########################################################################################
-        self.logger.debug("Folders: %s, ta_exec_dirs: %s", str(folders), str(self.ta_exec_dirs))
+        self.logger.debug("Reading in folders: %s with ta_exec_dirs: %s", str(folders), str(self.ta_exec_dirs))
         for f, ta_exec_dir in zip(self.folders, self.ta_exec_dirs):  # Iterating over parallel runs
+            self.logger.debug("--Processing folder \"{}\" (and ta_exec_dir \"{}\")".format(f, ta_exec_dir))
             self.pRun2budget[f] = {}
             for b, path in self.folder2budgets[f].items():
+                self.logger.debug("----Processing budget \"{}\" (and path: \"{}\")".format(b, path))
                 # Using folder of (converted) data here
-                self.logger.debug(path)
-                cr = ConfiguratorRun.from_folder(path,
-                                                 ta_exec_dir,
-                                                 self.file_format,
-                                                 self.validation_format,
-                                                 b,
-                                                 self.output_dir)
+                try:
+                    cr = ConfiguratorRun.from_folder(path,
+                                                     ta_exec_dir,
+                                                     self.file_format,
+                                                     self.validation_format,
+                                                     b,
+                                                     self.output_dir)
+                except Exception as err:
+                    self.logger.warning("Folder %s could with ta_exec_dir %s not be loaded, failed with error message: %s",
+                                        f, ta_exec_dir, err)
+                    self.logger.exception(err)
+                    continue
                 self.pRun2budget[f][b] = cr
                 self.runs_list.append(cr)
 
         self.folders.append(None)
-        self.logger.debug(self.folder2budgets)
-        self.logger.debug(self.pRun2budget)
+        self.logger.debug("folder2budgets: " + str(self.folder2budgets))
+        self.logger.debug("pRun2budget: " + str(self.pRun2budget))
 
         self.scenario = self.runs_list[0].scenario
 
@@ -140,12 +179,11 @@ class RunsContainer(object):
         for f in self.get_folders():
             budgets.update(set(self.pRun2budget[f].keys()))
         budgets = sorted([b for b in budgets if b is not None])
-        self.logger.debug(budgets)
+        self.logger.debug("Budgets: " + str(budgets))
         return budgets
 
 
     def get_runs_for_budget(self, target_b):
-        self.logger.debug(self.pRun2budget.items())
         runs = [[cr for b, cr in self.pRun2budget[f].items() if b == target_b] for f in self.pRun2budget.keys() if f is
                 not None]
         # Flatten list
@@ -175,7 +213,7 @@ class RunsContainer(object):
                 self.logger.debug("Aggregating all runs")
                 aggregated = self._aggregate(self.get_all_runs())
                 self.pRun2budget[None][None] = aggregated
-            return self.pRun2budget[None][None]
+            return {None: self.pRun2budget[None][None]}
         elif keep_budgets and not keep_folders:
             for b in self.get_budgets():
                 if  b not in self.pRun2budget[None].keys():

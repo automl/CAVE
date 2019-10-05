@@ -1,12 +1,14 @@
 import logging
 import copy
+import os
 from collections import OrderedDict
+from contextlib import contextmanager
 
 import numpy as np
 
-from smac.facade.smac_ac_facade import SMAC4AC
 from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunHistory, DataOrigin
+from smac.utils.io.input_reader import InputReader
 from smac.utils.validate import Validator
 
 from pimp.importance.importance import Importance
@@ -20,9 +22,11 @@ from cave.utils.helpers import scenario_sanity_check
 class ConfiguratorRun(object):
     """
     ConfiguratorRuns load and maintain information about individual configurator
-    runs. There are three supported formats: SMAC3, SMAC2 and CSV
+    runs. There are different supported formats, like: BOHB, SMAC3, SMAC2 and CSV
     This class is responsible for providing a scenario, a runhistory and a
     trajectory and handling original/validated data appropriately.
+    To create a ConfiguratorRun from a folder, use Configurator.from_folder()
+
     """
     def __init__(self,
                  scenario,
@@ -87,7 +91,7 @@ class ConfiguratorRun(object):
         # Create combined runhistory to collect all "real" runs
         self.combined_runhistory = RunHistory(average_cost)
         self.combined_runhistory.update(self.original_runhistory, origin=DataOrigin.INTERNAL)
-        if self.validated_runhistory:
+        if self.validated_runhistory is not None:
             self.combined_runhistory.update(self.validated_runhistory, origin=DataOrigin.EXTERNAL_SAME_INSTANCES)
 
         # Create runhistory with estimated runs (create Importance-object of pimp and use epm-model for validation)
@@ -145,27 +149,19 @@ class ConfiguratorRun(object):
         original_runhistory = reader.get_runhistory(scenario.cs)
         validated_runhistory = None
 
-        if validation_format:
-            self.logger.debug('Using format %s for validation', validation_format)
-            reader = get_reader(validation_format)
-            reader.scen = scenario
-            validated_runhistory = reader.get_validated_runhistory(self.scenario.cs)
-            self._check_rh_for_inc_and_def(self.validated_runhistory, 'validated runhistory')
-            self.logger.info("Found validated runhistory for \"%s\" and using "
-                             "it for evaluation. #configs in validated rh: %d",
-                             self.folder, len(self.validated_runhistory.config_ids))
-
-        logger = logging.getLogger("cave.ConfiguratorRun.{}".format(folder))
-
-        logger.debug("Loading from \'%s\' with ta_exec_dir \'%s\'.",
-                          folder, ta_exec_dir)
-
-        if validation_format == 'NONE':
+        if validation_format == "NONE" or validation_format is None:
             validation_format = None
+        else:
+            logger.debug('Using format %s for validation', validation_format)
+            vali_reader = cls.get_reader(validation_format, folder, ta_exec_dir)
+            vali_reader.scen = scenario
+            validated_runhistory = vali_reader.get_validated_runhistory(scenario.cs)
+            #self._check_rh_for_inc_and_def(self.validated_runhistory, 'validated runhistory')
+            logger.info("Found validated runhistory for \"%s\" and using "
+                         "it for evaluation. #configs in validated rh: %d",
+                         folder, len(validated_runhistory.config_ids))
 
         trajectory = reader.get_trajectory(scenario.cs)
-        default = scenario.cs.get_default_configuration()
-        incumbent = trajectory[-1]['incumbent']
 
         return cls(scenario,
                    original_runhistory,
@@ -175,7 +171,7 @@ class ConfiguratorRun(object):
                    ta_exec_dir,
                    file_format,
                    validation_format,
-                   budget=None,
+                   budget=budget,
                    output_dir=output_dir,
                    )
 
@@ -185,9 +181,9 @@ class ConfiguratorRun(object):
     def _init_pimp_and_validator(self,
                                  alternative_output_dir=None,
                                  ):
-        """Create ParameterImportance-object and use it's trained model for validation and further predictions We pass a
-        combined (original + validated) runhistory, so that the returned model will be based on as much information as
-        possible
+        """Create ParameterImportance-object and use it's trained model for validation and further predictions.
+        We pass a combined (original + validated) runhistory, so that the returned model will be based on as much
+        information as possible
 
         Parameters
         ----------
@@ -270,7 +266,6 @@ class ConfiguratorRun(object):
             feat_names = copy.deepcopy(self.scenario.feature_names)
         return feat_names
 
-
     def _check_rh_for_inc_and_def(self, rh, name=''):
         """
         Check if default and incumbent are evaluated on all instances in this rh
@@ -317,3 +312,16 @@ class ConfiguratorRun(object):
             return CSVReader(folder, ta_exec_dir)
         else:
             raise ValueError("%s not supported as file-format" % name)
+
+@contextmanager
+def _changedir(newdir):
+    """ Helper function to change directory, for example to create a scenario
+    from file, where paths to the instance- and feature-files are relative to
+    the original SMAC-execution-directory. Same with target algorithms that need
+    be executed for validation. """
+    olddir = os.getcwd()
+    os.chdir(os.path.expanduser(newdir))
+    try:
+        yield
+    finally:
+        os.chdir(olddir)

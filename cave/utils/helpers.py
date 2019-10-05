@@ -163,7 +163,8 @@ def combine_trajectories(trajs, logger=None):
     # Sort by wallclock-time
     flattened_list.sort(key=lambda traj_entry: traj_entry['wallclock_time'])
     if logger:
-        logger.debug(flattened_list)
+        logger.debug("{} trajectories combined to one with {} elements".format(len(trajs), len(flattened_list)))
+        #logger.debug(flattened_list)
     # Now add one by one in order of time if better performance than before
     combined_traj = [flattened_list[0]]
     for entry in flattened_list:

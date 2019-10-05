@@ -21,28 +21,25 @@ class TestRunContainer(unittest.TestCase):
 
     def test_runs_aggregation(self):
         """ test whether runs_container-methods work as expected """
-        folders = ["examples/bohb"]
-        rc = RunsContainer(folders, file_format="BOHB")
+        folders = ["examples/smac3/example_output/run_1", "examples/smac3/example_output/run_2"]
+        ta_exec_dir = ["examples/smac3"]
+        rc = RunsContainer(folders, ta_exec_dirs=ta_exec_dir, file_format="SMAC3")
 
-        print(rc.get_aggregated(True, True))
-        print(rc.get_aggregated(True, False))
-        print(rc.get_aggregated(False, True))
-        print(rc.get_aggregated(False, False))
+        self.assertEqual(len(rc["examples/smac3/example_output/run_1"].original_runhistory.data), 461)
+        self.assertEqual(len(rc["examples/smac3/example_output/run_1"].original_runhistory.get_all_configs()), 71)
+        self.assertEqual(len(rc["examples/smac3/example_output/run_2"].original_runhistory.data), 394)
+        self.assertEqual(len(rc["examples/smac3/example_output/run_2"].original_runhistory.get_all_configs()), 83)
 
+        agg = rc.get_aggregated(keep_budgets=True, keep_folders=True)
+        self.assertEqual(len(agg), 2)
+        agg = rc.get_aggregated(keep_budgets=True, keep_folders=False)
+        self.assertIsInstance(agg, ConfiguratorRun)
+        self.assertEqual(len(agg.original_runhistory.data), 855)
+        self.assertEqual(len(agg.original_runhistory.get_all_configs()), 153)
+        agg = rc.get_aggregated(keep_budgets=False, keep_folders=True)
+        self.assertEqual(len(agg), 2)
+        agg = rc.get_aggregated(keep_budgets=False, keep_folders=False)
+        self.assertIsInstance(agg, ConfiguratorRun)
+        self.assertEqual(len(agg.original_runhistory.data), 855)
+        self.assertEqual(len(agg.original_runhistory.get_all_configs()), 153)
 
-        #folder = "test/test_files/test_reader/SMAC2/run-1"
-        #ta_exec_dir = "test/test_files/test_reader/SMAC2/run-1/smac-output/aclib/state-run1/"
-        #cr = ConfiguratorRun(folder, ta_exec_dir, file_format="SMAC2", validation_format=None)
-        #self.assertEqual(len(cr.original_runhistory.data), 99)
-        #self.assertEqual(len(cr.original_runhistory.get_all_configs()), 43)
-        #self.assertIsNone(cr.validated_runhistory)
-        #self.assertEqual(len(cr.combined_runhistory.data), 99)
-        #self.assertEqual(len(cr.combined_runhistory.get_all_configs()), 43)
-
-        #cr = ConfiguratorRun(folder, ta_exec_dir, file_format="SMAC2", validation_format="SMAC2")
-        #self.assertEqual(len(cr.original_runhistory.data), 99)
-        #self.assertEqual(len(cr.original_runhistory.get_all_configs()), 43)
-        #self.assertEqual(len(cr.validated_runhistory.data), 27)
-        #self.assertEqual(len(cr.validated_runhistory.get_all_configs()), 3)
-        #self.assertEqual(len(cr.combined_runhistory.data), 126)
-        #self.assertEqual(len(cr.combined_runhistory.get_all_configs()), 45)
