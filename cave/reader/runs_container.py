@@ -1,27 +1,15 @@
-import sys
-import os
 import logging
-from collections import OrderedDict
-from contextlib import contextmanager
-from importlib import reload
-import typing
-from typing import Union, List
 import tempfile
-import copy
-from functools import wraps
-import shutil
-import inspect
+from typing import List
 
-import numpy as np
-from pandas import DataFrame
-
+from numpy.random.mtrand import RandomState
 from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunHistory, DataOrigin
-from smac.utils.io.input_reader import InputReader
 
-from cave.reader.conversion.hpbandster2smac import HpBandSter2SMAC
 from cave.reader.configurator_run import ConfiguratorRun
+from cave.reader.conversion.hpbandster2smac import HpBandSter2SMAC
 from cave.utils.helpers import combine_trajectories
+
 
 class RunsContainer(object):
 
@@ -168,8 +156,17 @@ class RunsContainer(object):
         else:
             return self.pRun2budget[key][None]
 
+    def get_bohb_results(self):
+        if self.file_format == "BOHB":
+            return list(self.folder2result.values())
+        else:
+            return None
+
     def get_all_runs(self):
         return self.runs_list
+
+    def get_rng(self):
+        return RandomState(42)
 
     def get_highest_budget(self):
         return max(self.get_budgets()) if self.use_budgets else None
@@ -201,33 +198,34 @@ class RunsContainer(object):
 
         Returns
         -------
-        aggregated_runs: either ConfiguratorRun or Dict(str->ConfiguratorRun)
+        aggregated_runs: List[ConfiguratorRun]
             run(s) with aggregated data
         """
         if not self.use_budgets:
             keep_budgets = False
 
-        # TODO foldername of aggregated runs
         if (not keep_budgets) and (not keep_folders):
             if None not in self.pRun2budget[None].keys():
                 self.logger.debug("Aggregating all runs")
                 aggregated = self._aggregate(self.get_all_runs())
                 self.pRun2budget[None][None] = aggregated
-            return {None: self.pRun2budget[None][None]}
+            res = [self.pRun2budget[None][None]]
         elif keep_budgets and not keep_folders:
             for b in self.get_budgets():
-                if  b not in self.pRun2budget[None].keys():
+                if b not in self.pRun2budget[None].keys():
                     self.logger.debug("Aggregating over parallel runs, keeping budgets")
                     self.pRun2budget[None][b] = self._aggregate(self.get_runs_for_budget(b))
-            return {b : self.pRun2budget[None][b] for b in self.get_budgets()}
+            res = [self.pRun2budget[None][b] for b in self.get_budgets()]
         elif keep_folders and not keep_budgets:
             for f in self.get_folders():
                 if None not in self.pRun2budget[f].keys():
-                    self.logger.debug("Aggregating over parallel runs, keeping budgets")
+                    self.logger.debug("Aggregating over budgets, keeping parallel runs")
                     self.pRun2budget[f][None] = self._aggregate(self.get_runs_for_folder(f))
-            return {f : self.pRun2budget[f][None] for f in self.get_folders()}
+            res = [self.pRun2budget[f][None] for f in self.get_folders()]
         else:
-            return self.runs_list
+            res = self.runs_list
+        self.logger.debug("Aggregated: {}".format(str([r.get_identifier() for r in res])))
+        return res
 
     def _aggregate(self, runs):
         """
@@ -248,10 +246,16 @@ class RunsContainer(object):
 
         traj = combine_trajectories([run.trajectory for run in runs], self.logger)
 
+        path_to_folder = runs[0].path_to_folder if len(set([r.path_to_folder for r in runs])) == 1 else None
+        budget = runs[0].budget if len(set([r.budget for r in runs])) == 1 else None
+
         new_cr = ConfiguratorRun(runs[0].scenario,
                                  orig_rh,
                                  vali_rh,
                                  traj,
-                                 output_dir=runs[0].output_dir
+                                 output_dir=self.output_dir,
+                                 path_to_folder=path_to_folder,
+                                 budget=budget,
                                  )
         return new_cr
+

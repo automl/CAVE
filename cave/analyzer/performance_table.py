@@ -1,41 +1,71 @@
 import logging
-from collections import OrderedDict
-
-import numpy as np
-from pandas import DataFrame
 from typing import List
 
+import numpy as np
 from ConfigSpace.configuration_space import Configuration
+from pandas import DataFrame
 from smac.runhistory.runhistory import RunHistory
 from smac.scenario.scenario import Scenario
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.utils.helpers import get_cost_dict_for_config, get_timeout, combine_runhistories
+from cave.utils.hpbandster_helpers import format_budgets
 from cave.utils.statistical_tests import paired_permutation, paired_t_student
 from cave.utils.timing import timing
 
+
 class PerformanceTable(BaseAnalyzer):
+    """
+    If the run-objective is 'runtime': PAR stands for Penalized Average Runtime. If there is a timeout in the
+    scenario, runs that were thus cut off can be penalized with a factor (because we do not know how long it would
+    have run). PAR1 is no penalty, PAR10 will count all cutoffs with a factor of 10.
+
+    For timeouts: if there are multiple runs on the same configuration-instance pair (with different seeds), some
+    resulting in timeouts and some not, the majority decides here.
+
+    P-value (between 0 and 1) results from comparing default and incumbent using a paired permutation test with 10000 iterations
+    (permuting instances) and tests against the null-hypothesis that the mean of performance between default and
+    incumbent is equal.
+
+    Oracle performance searches for the best single run per instance (so the best seed/configuration-pair that was
+    seen) and aggregates over them.
+    """
 
     def __init__(self,
-                 instances: List[str],
-                 validated_rh: RunHistory,
-                 default: Configuration, incumbent: Configuration,
-                 epm_rh: RunHistory,
-                 scenario: Scenario,
-                 rng: np.random.RandomState):
-        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
-        self.instances = instances
-        self.validated_rh = validated_rh
-        self.default, self.incumbent = default, incumbent
-        self.epm_rh = epm_rh
-        self.scenario = scenario
-        self.rng = rng
+                 runscontainer,
+                 ):
+        super().__init__(runscontainer)
+        self.name = "Performance Table"
+
+        self.rng = self.runscontainer.get_rng()
+        self.scenario = self.runscontainer.scenario
+
+        formatted_budgets = format_budgets(self.runscontainer.get_budgets())
+        for run in self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False):
+            instances = [i for i in run.scenario.train_insts + run.scenario.test_insts if i]
+            self.result[formatted_budgets[run.budget]] = {
+                'table' : self.get_performance_table(
+                                instances,
+                                run.validated_runhistory,
+                                run.default,
+                                run.incumbent,
+                                run.epm_runhistory,
+                                run.scenario,
+                                ),
+            }
+
+    def get_performance_table(self,
+                              instances: List[str],
+                              validated_rh: RunHistory,
+                              default: Configuration, incumbent: Configuration,
+                              epm_rh: RunHistory,
+                              scenario: Scenario,
+                              ):
 
         oracle = self.get_oracle(instances, epm_rh)
         # To be set
-        self.table = None
-        self.dataframe = None
-        self.create_performance_table(default, incumbent, epm_rh, oracle)
+        table, dataframe = self.create_performance_table(default, incumbent, epm_rh, oracle)
+        return table
 
     def create_performance_table(self, default, incumbent, epm_rh, oracle):
         """Create table, compare default against incumbent on train-,
@@ -161,9 +191,7 @@ class PerformanceTable(BaseAnalyzer):
                         "</thead>\n"
             table = new_table + table
 
-        self.table = table
-        self.dataframe = df
-        return df
+        return table, df
 
     def get_parX(self, cost_dict, par=10):
         """Calculate parX-values from given cost_dict.
@@ -288,15 +316,4 @@ class PerformanceTable(BaseAnalyzer):
         p = paired_t_student(data1, data2, logger=self.logger)
         self.logger.debug("p-value for def/inc-difference: %f (paired t-test)", p)
         return p
-
-    def get_html(self, d=None, tooltip=None):
-        if d is not None:
-            d["table"] = self.table
-            d["tooltip"] = tooltip
-        return "", self.table
-
-    def get_jupyter(self):
-        from IPython.core.display import HTML, display
-        display(HTML(self.table))
-
 

@@ -1,25 +1,14 @@
-import sys
-import os
 import logging
-from collections import OrderedDict
-from importlib import reload
-import typing
-from typing import Union, List
-import tempfile
-import copy
-from functools import wraps
+import os
 import shutil
-import inspect
+import tempfile
+import typing
+from collections import OrderedDict
+from functools import wraps
+from importlib import reload
+from typing import Union, List
 
 import numpy as np
-from pandas import DataFrame
-
-from smac.optimizer.objective import average_cost
-from smac.runhistory.runhistory import RunHistory, DataOrigin
-from smac.utils.io.input_reader import InputReader
-from smac.utils.validate import Validator
-
-from pimp.importance.importance import Importance
 
 from cave.__version__ import __version__ as v
 from cave.analyzer.algorithm_footprint import AlgorithmFootprint
@@ -44,10 +33,7 @@ from cave.analyzer.pimp_comparison_table import PimpComparisonTable
 from cave.analyzer.plot_ecdf import PlotECDF
 from cave.analyzer.plot_scatter import PlotScatter
 from cave.html.html_builder import HTMLBuilder
-from cave.reader.configurator_run import ConfiguratorRun
 from cave.reader.runs_container import RunsContainer
-from cave.utils.helpers import scenario_sanity_check, combine_runhistories
-from cave.reader.conversion.hpbandster2smac import HpBandSter2SMAC
 from cave.utils.timing import timing
 
 __author__ = "Joshua Marben"
@@ -76,7 +62,7 @@ def _analyzer_type(f):
                     self.logger.info("Assuming that jupyter is not installed. Disable for rest of report.")
                     self.show_jupyter = False
             if isinstance(d, dict):
-                analyzer.get_html(d, tooltip=self._get_tooltip(f))
+                analyzer.get_html(d)
         self._build_website()
         return analyzer
     return wrap
@@ -163,14 +149,6 @@ class CAVE(object):
         self.pimp_max_samples = pimp_max_samples
         self.fanova_pairwise = fanova_pairwise
         self.pc_sort_by = pc_sort_by
-
-        # To be set during execution (used for dependencies of analysis-methods)
-        self.param_imp = OrderedDict()
-        self.feature_imp = OrderedDict()
-        self.evaluators = OrderedDict()
-        self.validator = None
-
-        self.feature_names = None
 
         self.num_bohb_results = 0
         self.bohb_results = None  # only relevant for bohb_result
@@ -280,95 +258,54 @@ class CAVE(object):
         for h in headings:
             self.website[h] = OrderedDict()
 
-        if self.use_budgets:
-            # The individual configurator runs are not directory comparable and cannot be aggregated.
-            # Nevertheless they need to be combined in one comprehensive report and some metrics are to be compared over
-            # the individual runs.
-            # TODO: Currently, the code below is configured for bohb... if we extend to other budget-driven configurators, review!
+        self.overview_table(d=self.website)
 
-            # Perform analysis for each run
-            if self.bohb_results:
-                self.website["Budget Correlation"] = OrderedDict()
-                self.budget_correlation(d=self.website["Budget Correlation"])
-                self.bohb_learning_curves(d=self.website)
-                self.website["Incumbents Over Budgets"] = OrderedDict()
-                self.bohb_incumbents_per_budget(d=self.website["Incumbents Over Budgets"])
-                # Move to second position
-                self.website.move_to_end("Budget Correlation", last=False)
-                self.website.move_to_end("BOHB Learning Curves", last=False)
-                self.website.move_to_end("Incumbents Over Budgets", last=False)
-                self.website.move_to_end("Meta Data", last=False)
+        ###################################################
+        #  Performance Analysis  #  Performance Analysis  #
+        ###################################################
+        if performance:
+            self.performance_table(d=self._get_dict(self.website, "Performance Analysis"))
+        if cdf:
+            self.plot_ecdf(d=self._get_dict(self.website, "Performance Analysis"))
+        if scatter:
+            self.plot_scatter(d=self._get_dict(self.website, "Performance Analysis"))
+        if algo_footprint and self.runscontainer.scenario.feature_dict:
+            self.algorithm_footprints(d=self._get_dict(self.website["Performance Analysis"],
+                                                       "Algorithm Footprints"),)
+        self.compare_default_incumbent(d=self._get_dict(self.website, "Meta Data"))
 
-            # Configurator Footprint always aggregated
-            if cfp:  # Configurator Footprint
-                self.configurator_footprint(d=self._get_dict(self.website["Configurators Behavior"], "Configurator Footprint"),
-                                            run=None,
-                                            use_timeslider=cfp_time_slider,
-                                            max_confs=cfp_max_plot,
-                                            num_quantiles=cfp_number_quantiles)
-                self.website["Configurators Behavior"]["Configurator Footprint"]["tooltip"] = self._get_tooltip(self.configurator_footprint)
-            if cost_over_time:
-                self.cost_over_time(d=self._get_dict(self.website["Configurators Behavior"], "Cost Over Time"),
-                                    run=None, cot_inc_traj=cot_inc_traj)
-                self.website["Configurators Behavior"]["Cost Over Time"]["tooltip"] = self._get_tooltip(self.cost_over_time)
-            self.overview_table(d=self._get_dict(self.website, "Meta Data"), run=None)
-            self.website["Meta Data"]["tooltip"] = self._get_tooltip(self.overview_table)
+        if self.runscontainer.use_budgets:
+            self.bohb_incumbents_per_budget(d=self._get_dict(self.website, "Budget Analysis"))
+            self.budget_correlation(d=self._get_dict(self.website, "Budget Analysis"))
+            self.bohb_learning_curves(d=self._get_dict(self.website, "Budget Analysis"))
 
-            for run in self.runs:
-                sub_sec = os.path.basename(run.folder)
-                # Set paths for each budget individual to avoid path-conflicts
-                sub_output_dir = os.path.join(self.output_dir, 'content', sub_sec)
-                os.makedirs(sub_output_dir, exist_ok=True)
-                # Set runhistories
-                self.global_original_rh = run.original_runhistory
-                self.global_validated_rh = run.combined_runhistory
-                self.global_epm_rh = RunHistory(average_cost)
-                # Train epm and stuff
-                self._init_pimp_and_validator(run.combined_runhistory, pimp_output_dir=sub_output_dir)
-                self._validate_default_and_incumbents(self.validation_method, run.ta_exec_dir)
-                self.pimp.incumbent = run.incumbent
-                self.incumbent = run.incumbent
-                run.epm_rh = self.global_epm_rh
-                self.best_run = run
-                # Perform analysis
-                self.website["Meta Data"]["tooltip"] = self._get_tooltip(self.overview_table)
-                self.parameter_importance(self.website["Parameter Importance"], sub_sec,
-                                          ablation=False, #'ablation' in param_importance,
-                                          fanova='fanova' in param_importance,
-                                          forward_selection='forward_selection' in param_importance,
-                                          lpi='lpi' in param_importance,
-                                          pimp_sort_table_by=pimp_sort_table_by)
-                self.configurators_behavior(self.website["Configurators Behavior"], sub_sec,
-                                            False, cot_inc_traj,
-                                            False, cfp_max_plot, cfp_time_slider, cfp_number_quantiles,
-                                            parallel_coordinates)
-                if self.feature_names:
-                    self.feature_analysis(self.website["Feature Analysis"], sub_sec,
-                                          box_violin='box_violin' in feature_analysis,
-                                          correlation='correlation' in feature_analysis,
-                                          clustering='clustering' in feature_analysis,
-                                          importance='importance' in feature_analysis)
-        else:
-            self.overview_table(d=self.website["Meta Data"], run=None)
-            self.compare_default_incumbent(d=self.website["Best Configuration"], run=None)
-            self.performance_analysis(self.website["Performance Analysis"], None,
-                                      performance, cdf, scatter, algo_footprint)
-            self.parameter_importance(self.website["Parameter Importance"], None,
-                                      ablation='ablation' in param_importance,
-                                      fanova='fanova' in param_importance,
-                                      forward_selection='forward_selection' in param_importance,
-                                      lpi='lpi' in param_importance,
-                                      pimp_sort_table_by=pimp_sort_table_by)
-            self.configurators_behavior(self.website["Configurators Behavior"], None,
-                                        cost_over_time, cot_inc_traj,
-                                        cfp, cfp_max_plot, cfp_time_slider, cfp_number_quantiles,
-                                        parallel_coordinates)
-            if self.feature_names:
-                self.feature_analysis(self.website["Feature Analysis"], None,
-                                      box_violin='box_violin' in feature_analysis,
-                                      correlation='correlation' in feature_analysis,
-                                      clustering='clustering' in feature_analysis,
-                                      importance='importance' in feature_analysis)
+
+        if cfp:  # Configurator Footprint
+            self.configurator_footprint(d=self._get_dict(self.website, "Configurators Behavior"),
+                                        use_timeslider=cfp_time_slider,
+                                        max_confs=cfp_max_plot,
+                                        num_quantiles=cfp_number_quantiles)
+
+        if cost_over_time:
+            self.cost_over_time(d=self._get_dict(self.website, "Configurators Behavior"),
+                                cot_inc_traj=cot_inc_traj)
+
+        self.parameter_importance(self.website["Parameter Importance"],
+                                  ablation='ablation' in param_importance,
+                                  fanova='fanova' in param_importance,
+                                  forward_selection='forward_selection' in param_importance,
+                                  lpi='lpi' in param_importance,
+                                  )
+
+        self.feature_analysis(self.website["Feature Analysis"],
+                              box_violin='box_violin' in feature_analysis,
+                              correlation='correlation' in feature_analysis,
+                              clustering='clustering' in feature_analysis,
+                              importance='importance' in feature_analysis)
+
+        # Should be after parameter importance, if performed.
+        if parallel_coordinates:
+            self.parallel_coordinates(d=self._get_dict(self.website, "Configurators Behavior"))
 
         self._build_website()
 
@@ -377,449 +314,157 @@ class CAVE(object):
 
         self.show_jupyter = flag_show_jupyter
 
-    def _get_dict(self, d, layername, run=None):
+    def _get_dict(self, d, layername):
         """ Get the appropriate sub-dict for this layer (or layer-run combination) and create it if necessary """
         if not isinstance(d, dict):
             raise ValueError("Pass a valid dict to _get_dict!")
         if not layername in d:
             d[layername] = OrderedDict()
-        if run is not None and not run in d[layername] and self.use_budgets:
-            d[layername][run] = OrderedDict()
-        if run is not None:
-            return d[layername][run]
         return d[layername]
 
     @_analyzer_type
-    def overview_table(self, cave):
-        """ Meta data, i.e. number of instances and parameters as well as configuration budget. Statistics apply to the
-        best run, if multiple configurator runs are compared.
-        """
-        return OverviewTable(cave.runs,
-                             cave.num_bohb_results,
-                             cave.output_dir)
+    def overview_table(self):
+        return OverviewTable(self.runscontainer)
 
     @_analyzer_type
-    def compare_default_incumbent(self, cave):
-        """
-        Comparing parameters of default and incumbent. Parameters that differ from default to incumbent are presented
-        first. Parameters that are inactive for both configurations are omitted.
-        """
-        return CompareDefaultIncumbent(cave.default, cave.incumbent)
-
-    def performance_analysis(self, d, run,
-                             performance, cdf, scatter, algo_footprint):
-        """Generate performance analysis.
-
-        Parameters
-        ----------
-        d: dictionary
-            dictionary to add entries to
-        performance, cdf, scatter, algo_footprint: bool
-            what analysis-methods to perform
-        """
-
-        if performance:
-            self.performance_table(d=self._get_dict(d, "Performance Table", run=run), run=run)
-        if cdf:
-            self.plot_ecdf(d=self._get_dict(d, "empirical Cumulative Distribution Function (eCDF)", run=run), run=run)
-        if scatter:
-            self.plot_scatter(d=self._get_dict(d, "Scatterplot", run=run), run=run)
-        if algo_footprint and self.scenario.feature_dict:
-            self.algorithm_footprints(d=self._get_dict(d, "Algorithm Footprints", run=run), run=run)
+    def compare_default_incumbent(self):
+        return CompareDefaultIncumbent(self.runscontainer)
 
     @_analyzer_type
-    def performance_table(self, cave):
-        """
-        If the run-objective is 'runtime': PAR stands for Penalized Average Runtime. If there is a timeout in the
-        scenario, runs that were thus cut off can be penalized with a factor (because we do not know how long it would
-        have run). PAR1 is no penalty, PAR10 will count all cutoffs with a factor of 10.
-
-        For timeouts: if there are multiple runs on the same configuration-instance pair (with different seeds), some
-        resulting in timeouts and some not, the majority decides here.
-
-        P-value (between 0 and 1) results from comparing default and incumbent using a paired permutation test with 10000 iterations
-        (permuting instances) and tests against the null-hypothesis that the mean of performance between default and
-        incumbent is equal.
-
-        Oracle performance searches for the best single run per instance (so the best seed/configuration-pair that was
-        seen) and aggregates over them.
-        """
-        instances = [i for i in cave.scenario.train_insts + cave.scenario.test_insts if i]
-        return PerformanceTable(instances, cave.global_validated_rh, cave.default, cave.incumbent,
-                                  cave.global_epm_rh, cave.scenario, cave.rng)
+    def performance_table(self):
+        return PerformanceTable(self.runscontainer)
 
     @_analyzer_type
-    def plot_scatter(self, cave):
-        """
-        Scatter plots show the costs of the default and optimized parameter configuration on each instance. Since this
-        looses detailed information about the individual cost on each instance by looking at aggregated cost values in
-        tables, scatter plots provide a more detailed picture. They provide insights whether overall performance
-        improvements can be explained only by some outliers or whether they are due to improvements on the entire
-        instance set. On the left side the training-data is scattered, on the right side the test-data is scattered.
-        """
-        return PlotScatter(default=cave.default,
-                           incumbent=cave.incumbent,
-                           rh=cave.global_epm_rh,
-                           train=cave.scenario.train_insts,
-                           test=cave.scenario.test_insts,
-                           run_obj=cave.scenario.run_obj,
-                           cutoff=cave.scenario.cutoff,
-                           output_dir=cave.output_dir,
-                           )
+    def plot_scatter(self):
+        return PlotScatter(self.runscontainer)
 
     @_analyzer_type
-    def plot_ecdf(self, cave):
-        """
-        Depicts cost distributions over the set of instances.  Since these are empirical distributions, the plots show
-        step functions. These plots provide insights into how well configurations perform up to a certain threshold. For
-        runtime scenarios this shows the probability of solving all instances from the set in a given timeframe. On the
-        left side the training-data is scattered, on the right side the test-data is scattered."""
-        return PlotECDF(cave.default, cave.incumbent, cave.global_epm_rh,
-                        cave.scenario.train_insts, cave.scenario.test_insts, cave.scenario.cutoff,
-                        cave.output_dir)
-
+    def plot_ecdf(self):
+        return PlotECDF(self.runscontainer)
 
     @_analyzer_type
-    def algorithm_footprints(self, cave):
-        """
-        The instance features are projected into a two/three dimensional space using principal component analysis (PCA)
-        and the footprint of each algorithm is plotted, i.e., on which instances the default or the optimized
-        configuration performs well. In contrast to the other analysis methods in this section, these plots allow
-        insights into which of the two configurations performs well on specific types or clusters of instances. Inspired
-        by Smith-Miles.
-        """
-        return AlgorithmFootprint(algorithms=[(cave.default, "default"), (cave.incumbent, "incumbent")],
-                                  epm_rh=cave.global_epm_rh,
-                                  train=cave.scenario.train_insts,
-                                  test=cave.scenario.test_insts,
-                                  features=cave.scenario.feature_dict,
-                                  cutoff=cave.scenario.cutoff,
-                                  output_dir=cave.output_dir,
-                                  rng=cave.rng,
-                                  )
+    def algorithm_footprints(self):
+        return AlgorithmFootprint(self.runscontainer)
 
     @_analyzer_type
-    def cost_over_time(self, cave,
+    def cost_over_time(self,
                        cot_inc_traj='racing'):
-        """
-        Depicts the average cost of the best so far found configuration (using all trajectory data) over the time spent
-        by the configurator (including target algorithm runs and the overhead generated by the configurator) If the
-        curve flattens out early, it indicates that too much time was spent for the configurator run; whereas a curve
-        that is still improving at the end of the budget indicates that one should increase the configuration budget.
-        The plotted standard deviation gives the uncertainty over multiple configurator runs.
-
-        Parameters
-        ----------
-        cot_inc_traj: str
-            from ['racing', 'minimum', 'prefer_higher_budget'], defines incumbent trajectory from hpbandster result
-        """
-        return CostOverTime(cave.scenario,
-                            cave.output_dir,
-                            cave.global_validated_rh,
-                            self.runs,
-                            block_epm=self.use_budgets,  # blocking epms if bohb is analyzed
-                            bohb_results=self.bohb_results,
-                            validator=cave.validator,
+        return CostOverTime(self.runscontainer,
                             cot_inc_traj=cot_inc_traj)
 
     @_analyzer_type
-    def parallel_coordinates(self, cave,
+    def parallel_coordinates(self,
                              params: Union[int, List[str]]=5,
                              n_configs: int=100,
-                             max_runs_epm: int=300000):
-        """
-        Previously used by Golovin et al.  to study the frequency of chosen parameter settings in
-        black-box-optimization.  Each line corresponds to one configuration in the runhistory and shows the parameter
-        settings and the corresponding (estimated) average cost. To handle large configuration spaces with hundreds of
-        parameters, the (at most) 10 most important parameters based on a fANOVA parameter importance analysis are
-        plotted.  To emphasize better configurations, the performance is encoded in the color of each line, ranging from
-        blue to red. These plots provide insights into whether the configurator focused on specific parameter values and
-        how these correlate to their costs.
-
-        NOTE: the given runhistory should contain only optimization and no
-        validation to analyze the explored parameter-space.
-
-        Parameters
-        ----------
-        params: List[str] or int
-            if int, plot at most params parameters, trying to determine with parameter importance.
-            if List of strings, the names of the parameters to be plotted
-        n_configs: int
-            number of configs. will try to find most interesting configs to plot
-        max_runs_epm: int
-            this is a maximum of runs to be used for training of the epm. use to avoid MemoryErrors
-        """
-        self.logger.info("    plotting %s parameters for (max) %s configurations", params, n_configs)
-
-        return ParallelCoordinates(original_rh=cave.global_original_rh,
-                                   validated_rh=cave.global_validated_rh,
-                                   validator=cave.validator,
-                                   scenario=cave.scenario,
-                                   default=cave.default, incumbent=cave.incumbent,
-                                   param_imp=cave.param_imp,
+                             max_runs_epm: int=300000,
+                             ):
+        return ParallelCoordinates(self.runscontainer,
                                    params=params,
                                    n_configs=n_configs,
                                    pc_sort_by=self.pc_sort_by,
                                    max_runs_epm=max_runs_epm,
-                                   output_dir=cave.output_dir,
-                                   cs=cave.scenario.cs,
-                                   runtime=(cave.scenario.run_obj == 'runtime'))
+                                   )
 
     @_analyzer_type
-    def configurator_footprint(self, cave,
-                               use_timeslider=False, max_confs=1000, num_quantiles=8):
-        """
-        Analysis of the iteratively sampled configurations during the optimization procedure.  Multi-dimensional scaling
-        (MDS) is used to reduce dimensionality of the search space and plot the distribution of evaluated
-        configurations. The larger the dot, the more often the configuration was evaluated on instances from the set.
-        Configurations that were incumbents at least once during optimization are marked as red squares.  Configurations
-        acquired through local search are marked with a 'x'.  The downward triangle denotes the final incumbent, whereas
-        the orange upward triangle denotes the default configuration.  The heatmap and the colorbar correspond to the
-        predicted performance in that part of the search space.
-
-        Parameters
-        ----------
-        use_timeslider: bool
-            whether to generate time-slíder widget in bokehplot (cool, but time-consuming)
-        max_confs: int
-            maximum number of configurations to consider for the plot
-        num_quantiles: int
-            number of quantiles for evolution over time (number of time-steps to look at)
-        """
-        self.logger.info("... visualizing explored configspace (this may take "
-                         "a long time, if there is a lot of data - deactive with --no_configurator_footprint)")
-
+    def configurator_footprint(self,
+                               use_timeslider=False,
+                               max_confs=1000,
+                               num_quantiles=8):
         return ConfiguratorFootprint(
-                 cave.scenario,
-                 cave.runs,
-                 cave.global_original_rh,
-                 final_incumbent=self.incumbent,
-                 output_dir=cave.output_dir,
+                 self.runscontainer,
                  max_confs=max_confs,
                  use_timeslider=use_timeslider,
                  num_quantiles=num_quantiles)
 
-    def configurators_behavior(self,
-                               d,
-                               run,
-                               cost_over_time=False,
-                               cot_inc_traj='racing',
-                               cfp=False,
-                               cfp_max_plot=-1,
-                               cfp_time_slider=False,
-                               cfp_number_quantiles=1,
-                               parallel_coordinates=False):
-
-        if cost_over_time:
-            self.cost_over_time(d=self._get_dict(d, "Cost Over Time", run=run), run=run,
-                                cot_inc_traj=cot_inc_traj)
-            d["Cost Over Time"]["tooltip"] = self._get_tooltip(self.cost_over_time)
-        if cfp:  # Configurator Footprint
-            self.configurator_footprint(d=self._get_dict(d, "Configurator Footprint", run=run), run=run,
-                                        use_timeslider=cfp_time_slider, max_confs=cfp_max_plot, num_quantiles=cfp_number_quantiles)
-            d["Configurator Footprint"]["tooltip"] = self._get_tooltip(self.configurator_footprint)
-        if parallel_coordinates:
-            # Should be after parameter importance, if performed.
-            self.parallel_coordinates(d=self._get_dict(d, "Parallel Coordinates", run=run), run=run)
-            d["Parallel Coordinates"]["tooltip"] = self._get_tooltip(self.parallel_coordinates)
-
     @_analyzer_type
-    def cave_fanova(self, cave):
-        """
-        fANOVA (functional analysis of variance) computes the fraction of the variance in the cost space explained by
-        changing a parameter by marginalizing over all other parameters, for each parameter (or for pairs of
-        parameters). Parameters with high importance scores will have a large impact on the performance.  To this end, a
-        random forest is trained as an empirical performance model on the available empirical data from the available
-        runhistories.
-        """
+    def cave_fanova(self):
         try:
-            fanova = CaveFanova(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
+            fanova = CaveFanova(self.runscontainer)
+
         except IndexError as err:
-            self.logger.debug("Error in fANOVA", exc_info=1)
+            self.logger.debug("Error in fANOVA (%s)", err, exc_info=1)
             raise IndexError("Error in fANOVA - please run with --pimp_no_fanova_pairs (this is due to a known issue "
                              "with ints and bools in categorical hyperparameters, see issue #192).")
-        cave.evaluators["fanova"] = cave.pimp.evaluator
-        cave.param_imp["fanova"] = cave.pimp.evaluator.evaluated_parameter_importance
-
         return fanova
 
     @_analyzer_type
-    def cave_ablation(self, cave):
-        """ Ablation Analysis is a method to determine parameter importance by comparing two parameter configurations,
-        typically the default and the optimized configuration.  It uses a greedy forward search to determine the order
-        of flipping the parameter settings from default configuration to incumbent such that in each step the cost is
-        maximally decreased."""
-
-        ablation = CaveAblation(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
-        cave.evaluators["ablation"] = cave.pimp.evaluator
-        cave.param_imp["ablation"] = cave.pimp.evaluator.evaluated_parameter_importance
-
-        return ablation
+    def cave_ablation(self):
+        return CaveAblation(self.runscontainer)
 
     @_analyzer_type
-    def pimp_forward_selection(self, cave):
-        """
-        Forward Selection is a generic method to obtain a subset of parameters to achieve the same prediction error as
-        with the full parameter set.  Each parameter is scored by how much the out-of-bag-error of an empirical
-        performance model based on a random forest is decreased."""
-        forward = CaveForwardSelection(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
-        cave.evaluators["forward-selection"] = cave.pimp.evaluator
-        cave.param_imp["forward-selection"] = cave.pimp.evaluator.evaluated_parameter_importance
-
-        return forward
+    def pimp_forward_selection(self):
+        return CaveForwardSelection(self.runscontainer)
 
     @_analyzer_type
-    def local_parameter_importance(self, cave):
-        """ Using an empirical performance model, performance changes of a configuration along each parameter are
-        calculated. To quantify the importance of a parameter value, the variance of all cost values by changing that
-        parameter are predicted and then the fraction of all variances is computed. This analysis is inspired by the
-        human behaviour to look for improvements in the neighborhood of individual parameters of a configuration."""
-
-        lpi = LocalParameterImportance(cave.pimp, cave.incumbent, os.path.join(cave.output_dir, 'content'))
-        cave.evaluators["lpi"] = cave.pimp.evaluator
-        cave.param_imp["lpi"] = cave.pimp.evaluator.evaluated_parameter_importance
-
-        return lpi
+    def local_parameter_importance(self):
+        return LocalParameterImportance(self.runscontainer)
 
     @_analyzer_type
-    def pimp_comparison_table(self, cave,
+    def pimp_comparison_table(self,
                               pimp_sort_table_by="average"):
-        """
-        Parameters are initially sorted by pimp_sort_table_by. Only parameters with an importance greater than 5 in any
-        of the methods are shown.  Note, that the values of the used methods are not directly comparable. For more
-        information on the metrics, see respective tooltips."""
-        return PimpComparisonTable(cave.pimp,
-                                   cave.evaluators,
+        return PimpComparisonTable(self.runscontainer,
                                    sort_table_by=pimp_sort_table_by,
-                                   cs=cave.scenario.cs,
-                                   out_fn=os.path.join(cave.output_dir, 'content', 'pimp.tex'),
                                    )
 
     def parameter_importance(self,
-                             d, run,
+                             d,
                              ablation=False, fanova=False,
-                             forward_selection=False, lpi=False, pimp_sort_table_by='average'):
+                             forward_selection=False, lpi=False):
         """Perform the specified parameter importance procedures. """
-        sum_ = 0
         if fanova:
-            self.logger.info("fANOVA...")
-            self.cave_fanova(d=self._get_dict(d, "fANOVA", run=run), run=run)
-            d["fANOVA"]["tooltip"] = self._get_tooltip(self.cave_fanova)
-            sum_ += 1
-
+            self.cave_fanova(d=d)
         if ablation:
-            self.logger.info("Ablation...")
-            self.cave_ablation(d=self._get_dict(d, "Ablation", run=run), run=run)
-            d["Ablation"]["tooltip"] = self._get_tooltip(self.cave_ablation)
-            sum_ += 1
-
+            self.cave_ablation(d=d)
         if forward_selection:
-            self.logger.info("Forward Selection...")
-            self.pimp_forward_selection(d=self._get_dict(d, "Forward Selection", run=run), run=run)
-            d["Forward Selection"]["tooltip"] = self._get_tooltip(self.pimp_forward_selection)
-            sum_ += 1
-
+            self.pimp_forward_selection(d=d)
         if lpi:
-            self.logger.info("Local EPM-predictions around incumbent...")
-            self.local_parameter_importance(d=self._get_dict(d, "Local Parameter Importance (LPI)", run=run), run=run)
-            d["Local Parameter Importance (LPI)"]["tooltip"] = self._get_tooltip(self.local_parameter_importance)
-            sum_ += 1
-
-        if sum_ >= 2:
-            self.pimp_comparison_table(d=self._get_dict(d, "Importance Table", run=run), run=run)
-            d.move_to_end("Importance Table", last=False)
-            d["Importance Table"]["tooltip"] = self._get_tooltip(self.pimp_comparison_table).replace('pimp_sort_table_by', pimp_sort_table_by)
+            self.local_parameter_importance(d=d)
+        if sum([fanova, ablation, forward_selection, lpi]) >= 2:
+            pct = self.pimp_comparison_table(d=d)
+            d.move_to_end(pct.name, last=False)
 
     @_analyzer_type
-    def feature_importance(self, cave):
-        res = FeatureImportance(cave.pimp, cave.output_dir)
-        cave.feature_imp = res.feat_importance
+    def feature_importance(self):
+        res = FeatureImportance(self.runscontainer)
         return res
 
     @_analyzer_type
-    def box_violin(self, cave):
-        """
-        Box and Violin Plots show the distribution of each feature value across the instances.  Box plots show the
-        quantiles of the distribution and violin plots show the approximated probability density of the feature values.
-        Such plots are useful to inspect the instances and to detect characteristics of the instances. For example, if
-        the distributions have two or more modes, it could indicate that the instance set is heterogeneous which could
-        cause problems in combination with racing strategies configurators typically use. NaN values are removed from
-        the data."""
-        return BoxViolin(cave.output_dir,
-                         cave.scenario,
-                         cave.feature_names,
-                         cave.feature_imp)
+    def box_violin(self):
+        return BoxViolin(self.runscontainer)
 
 
     @_analyzer_type
-    def feature_correlation(self, cave):
-        """
-        Correlation of features based on the Pearson product-moment correlation. Since instance features are used to train an
-        empirical performance model in model-based configurators, it can be important to remove correlated features in a
-        pre-processing step depending on the machine-learning algorithm.  Darker fields corresponds to a larger correlation
-        between the features."""
-        return FeatureCorrelation(cave.output_dir,
-                                  cave.scenario,
-                                  cave.feature_names,
-                                  cave.feature_imp)
+    def feature_correlation(self):
+        return FeatureCorrelation(self.runscontainer)
 
 
     @_analyzer_type
-    def feature_clustering(self, cave):
-        """ Clustering instances in 2d; the color encodes the cluster assigned to each cluster. Similar to ISAC, we use
-        a k-means to cluster the instances in the feature space. As pre-processing, we use standard scaling and a PCA to
-        2 dimensions. To guess the number of clusters, we use the silhouette score on the range of 2 to 12 in the number
-        of clusters"""
-        return FeatureClustering(cave.output_dir,
-                                 cave.scenario,
-                                 cave.feature_names,
-                                 cave.feature_imp)
+    def feature_clustering(self):
+        return FeatureClustering(self.runscontainer)
 
-    def feature_analysis(self, d, run,
+    def feature_analysis(self, d,
                          box_violin=False, correlation=False, clustering=False, importance=False):
         # feature importance using forward selection
         if importance:
-            self.feature_importance(d=self._get_dict(d, "Feature Importance", run=run), run=run)
-            d["Feature Importance"]["tooltip"] = self._get_tooltip(self.feature_importance)
+            self.feature_importance(d=d)
         if box_violin:
-            self.box_violin(d=self._get_dict(d, "Violin and Box Plots", run=run), run=run)
-            d["Violin and Box Plots"]["tooltip"] = self._get_tooltip(self.box_violin)
+            self.box_violin(d=d)
         if correlation:
-            self.feature_correlation(d=self._get_dict(d, "Correlation", run=run), run=run)
-            d["Correlation"]["tooltip"] = self._get_tooltip(self.feature_correlation)
+            self.feature_correlation(d=d)
         if clustering:
-            self.feature_clustering(d=self._get_dict(d, "Clustering", run=run), run=run)
-            d["Clustering"]["tooltip"] = self._get_tooltip(self.feature_clustering)
+            self.feature_clustering(d=d)
 
     @_analyzer_type
-    def bohb_learning_curves(self, cave):
-        """
-        Visualizing the learning curves of all individual HyperBand-iterations. Model-based picks are marked with a
-        cross. The config-id tuple denotes (iteration, stage, id_within_stage), where the iteration is the hyperband
-        iteration and the stage is the index of the budget in which the configuration was first sampled (should be 0).
-        The third index is just a sequential enumeration. This id can be interpreted as a nested index-identifier.
-        """
-        return BohbLearningCurves(self.scenario.cs.get_hyperparameter_names(), result_object=self.bohb_results[0])
+    def bohb_learning_curves(self):
+        return BohbLearningCurves(self.runscontainer)
 
     @_analyzer_type
-    def bohb_incumbents_per_budget(self, cave):
-        """
-        Show the incumbents for each budget (i.e. the best configuration by kernel-estimation using data from that
-        budget).
-        """
-        return BohbIncumbentsPerBudget([b.incumbent for b in self.runs],
-                                       [b.folder.replace('_', ' ') for b in self.runs],
-                                       [b.epm_runhistory for b in self.runs])
+    def bohb_incumbents_per_budget(self):
+        return BohbIncumbentsPerBudget(self.runscontainer)
 
     @_analyzer_type
-    def budget_correlation(self, cave):
-        """
-        Use spearman correlation to get a correlation-value and a p-value for every pairwise combination of budgets.
-        First value is the correlation, second is the p-value (the p-value roughly estimates the likelihood to obtain
-        this correlation coefficient with uncorrelated datasets).
-        This can be used to estimate how well a budget approximates the function to be optimized.
-        """
-        return BudgetCorrelation(self.runs)
+    def budget_correlation(self):
+        return BudgetCorrelation(self.runscontainer)
 
 
 ###########################################################################
@@ -828,40 +473,10 @@ class CAVE(object):
 
     def print_budgets(self):
         """If the analyzed configurator uses budgets, print a list of available budgets."""
-        if self.use_budgets:
-            print(list(self.folder_to_run.keys()))
-        else:
-            raise NotImplementedError("This CAVE instance does not seem to use budgets.")
-
-    def _get_tooltip(self, f):
-        """Extract tooltip from function-docstrings"""
-        tooltip = inspect.getdoc(f)
-        tooltip = tooltip.split("Parameters\n----------")[0] if tooltip is not None else ""
-        tooltip = tooltip.replace("\n", " ")
-        return tooltip
-
-    def _get_feature_names(self):
-        if not self.scenario.feature_dict:
-            self.logger.info("No features available. Skipping feature analysis.")
-            return
-        feat_fn = self.scenario.feature_fn
-        if not self.scenario.feature_names:
-            self.logger.debug("`scenario.feature_names` is not set. Loading from '%s'", feat_fn)
-            with _changedir(self.ta_exec_dir if self.ta_exec_dir else '.'):
-                if not feat_fn or not os.path.exists(feat_fn):
-                    self.logger.warning("Feature names are missing. Either provide valid feature_file in scenario "
-                                        "(currently %s) or set `scenario.feature_names` manually." % feat_fn)
-                    self.logger.error("Skipping Feature Analysis.")
-                    return
-                else:
-                    # Feature names are contained in feature-file and retrieved
-                    feat_names = InputReader().read_instance_features_file(feat_fn)[0]
-        else:
-            feat_names = copy.deepcopy(self.scenario.feature_names)
-        return feat_names
+        print(self.runscontainer.get_budgets())
 
     def _build_website(self):
-        self.builder.generate_html(self.website)
+        self.builder.generate_webpage(self.website)
 
     def set_verbosity(self, level):
         # Log to stream (console)
@@ -895,7 +510,8 @@ class CAVE(object):
         else:
             raise ValueError("%s not recognized as a verbosity level. Choose from DEBUG, DEV_DEBUG. INFO, WARNING, OFF.".format(level))
 
-        logging.getLogger().addHandler(stdout_handler)
+        #logging.getLogger().addHandler(stdout_handler)
+        # TODO how is this working?
         # Log to file is always debug
         debug_path = os.path.join(self.output_dir, "debug", "debug.log")
         logging.getLogger('cave.settings').debug("Output-file for debug-log: '%s'", debug_path)

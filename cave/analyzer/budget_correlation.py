@@ -1,46 +1,40 @@
-import os
-import logging
-from collections import OrderedDict
 import warnings
-
-import numpy as np
-from pandas import DataFrame
 from typing import List
+
 import scipy
-
-from ConfigSpace.configuration_space import Configuration
-from smac.runhistory.runhistory import RunHistory
-from smac.scenario.scenario import Scenario
-
-from bokeh.models import ColumnDataSource, CustomJS, Range1d
-from bokeh.models.widgets import DataTable, TableColumn, Select
 from bokeh.embed import components
-from bokeh.plotting import show, figure
 from bokeh.io import output_notebook
 from bokeh.layouts import column, row
-from bokeh.transform import jitter
+from bokeh.models import ColumnDataSource, CustomJS, Range1d
+from bokeh.models.widgets import DataTable, TableColumn, Select
+from bokeh.plotting import show, figure
+from pandas import DataFrame
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
-from cave.utils.helpers import get_cost_dict_for_config, get_timeout, combine_runhistories
-from cave.utils.statistical_tests import paired_permutation, paired_t_student
-from cave.utils.timing import timing
+from cave.utils.hpbandster_helpers import format_budgets
+
 
 class BudgetCorrelation(BaseAnalyzer):
+    """
+    Use spearman correlation to get a correlation-value and a p-value for every pairwise combination of budgets.
+    First value is the correlation, second is the p-value (the p-value roughly estimates the likelihood to obtain
+    this correlation coefficient with uncorrelated datasets).
+    This can be used to estimate how well a budget approximates the function to be optimized.
+    """
 
     def __init__(self,
-                 runs):
+                 runscontainer):
         """
         Parameters
         ----------
-        incumbents: List[Configuration]
-            incumbents per budget, assuming ascending order
-        budget_names: List[str]
-            budget-names as strings
-        epm_rhs: List[RunHistory]
-            estimated runhistories for budgets, same length and order as incumbents"""
-        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
+        runscontainer: RunsContainer
+            contains all important information about the configurator runs
+        """
+        super().__init__(runscontainer)
+        self.name = "Budget Correlation"
 
-        self.runs = runs
+        self.runs = sorted(self.runscontainer.get_aggregated(True, False), key=lambda x: x.budget)
+        self.budget_names = format_budgets(self.runscontainer.get_budgets(), allow_whitespace=True)
 
         # To be set
         self.dataframe = None
@@ -59,8 +53,8 @@ class BudgetCorrelation(BaseAnalyzer):
                 else:
                     table[-1].append("{:.2f} ({} samples)".format(rho, len(costs[0])))
 
-        budget_names = [os.path.basename(run.folder).replace('_', ' ') for run in runs]  # TODO
-        return DataFrame(data=table, columns=budget_names, index=budget_names)
+        sorted_budget_names = [self.budget_names[r.budget] for r in self.runs]
+        return DataFrame(data=table, columns=sorted_budget_names, index=sorted_budget_names)
 
     def plot(self):
         """Create table and plot that reacts to selection of cells by updating the plotted data to visualize
@@ -90,9 +84,9 @@ class BudgetCorrelation(BaseAnalyzer):
 
         # Create CDS for scatter-plot
         all_configs = set([a for b in [run.original_runhistory.get_all_configs() for run in runs] for a in b])
-        data = {os.path.basename(run.folder).replace('_', ' ')  : [run.original_runhistory.get_cost(c) if c in  # TODO
-                                                                   run.original_runhistory.get_all_configs() else
-                                                                   None for c in all_configs] for run in runs}
+        data = {self.budget_names[run.budget] : [run.original_runhistory.get_cost(c) if c in  # TODO
+                                                 run.original_runhistory.get_all_configs() else
+                                                 None for c in all_configs] for run in runs}
         data['x'] = []
         data['y'] = []
         # Default scatter should be lowest vs highest:
@@ -222,8 +216,10 @@ class BudgetCorrelation(BaseAnalyzer):
     def get_html(self, d=None, tooltip=None):
         script, div = components(self.plot())
         if d is not None:
-            d["bokeh"] = script, div
-            d["tooltip"] = tooltip
+            d["Budget Correlation"] = {
+                "bokeh" : (script, div),
+                "tooltip" : self.__doc__,
+            }
         return script, div
 
     def get_jupyter(self):

@@ -43,3 +43,28 @@ class TestRunContainer(unittest.TestCase):
         self.assertEqual(len(agg.original_runhistory.data), 855)
         self.assertEqual(len(agg.original_runhistory.get_all_configs()), 153)
 
+    def test_runs_aggregation_bohb(self):
+        """ test whether runs_container-methods work as expected """
+        # TODO extend to multiple bohb-dirs
+        folders = ["examples/bohb"]
+        ta_exec_dir = ["."]
+        rc = RunsContainer(folders, ta_exec_dirs=ta_exec_dir, file_format="BOHB")
+
+        self.assertEqual(len(rc["examples/bohb"].original_runhistory.data), 461)
+        self.assertEqual(len(rc["examples/smac3/example_output/run_1"].original_runhistory.get_all_configs()), 71)
+        self.assertEqual(len(rc["examples/smac3/example_output/run_2"].original_runhistory.data), 394)
+        self.assertEqual(len(rc["examples/smac3/example_output/run_2"].original_runhistory.get_all_configs()), 83)
+
+        agg = rc.get_aggregated(keep_budgets=True, keep_folders=True)
+        self.assertEqual(len(agg), 2)
+        agg = rc.get_aggregated(keep_budgets=True, keep_folders=False)
+        self.assertIsInstance(agg, ConfiguratorRun)
+        self.assertEqual(len(agg.original_runhistory.data), 855)
+        self.assertEqual(len(agg.original_runhistory.get_all_configs()), 153)
+        agg = rc.get_aggregated(keep_budgets=False, keep_folders=True)
+        self.assertEqual(len(agg), 2)
+        agg = rc.get_aggregated(keep_budgets=False, keep_folders=False)
+        self.assertIsInstance(agg, ConfiguratorRun)
+        self.assertEqual(len(agg.original_runhistory.data), 855)
+        self.assertEqual(len(agg.original_runhistory.get_all_configs()), 153)
+

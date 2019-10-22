@@ -1,41 +1,35 @@
+import operator
 import os
 from collections import OrderedDict
-import operator
-import logging
-
-from pandas import DataFrame
 
 from cave.analyzer.cave_parameter_importance import CaveParameterImportance
 from cave.html.html_helpers import figure_to_html
 
+
 class LocalParameterImportance(CaveParameterImportance):
+    """ Using an empirical performance model, performance changes of a configuration along each parameter are
+    calculated. To quantify the importance of a parameter value, the variance of all cost values by changing that
+    parameter are predicted and then the fraction of all variances is computed. This analysis is inspired by the
+    human behaviour to look for improvements in the neighborhood of individual parameters of a configuration."""
 
     def __init__(self,
-                 pimp,
-                 incumbent,
-                 output_dir,
+                 runscontainer,
                  marginal_threshold=0.05):
-        """Wrapper for parameter_importance to save the importance-object
-        """
 
-        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
-        super().__init__(pimp, incumbent, output_dir)
+        super().__init__(runscontainer)
+        self.name = "Local Parameter Importance (LPI)"
 
         self.parameter_importance("lpi")
-        self.plots = OrderedDict([])
-        for p, i in [(k, v) for k, v in sorted(self.param_imp['lpi'].items(),
-                     key=operator.itemgetter(1), reverse=True)]:
-            self.plots[p] = os.path.join(self.output_dir, 'lpi', p + '.png')
 
-    def get_plots(self):
-        return list(self.plots.values())
-
-    def get_html(self, d=None, tooltip=None):
-        if d is not None:
-            d["tooltip"] = tooltip
-            for param, plot in self.plots.items():
-                d[param] = {"figure": plot}
-        return figure_to_html(self.get_plots())
+    def postprocess(self, pimp, output_dir):
+        param_imp = pimp.evaluator.evaluated_parameter_importance
+        plots = OrderedDict()
+        for p, i in [(k, v) for k, v in sorted(param_imp.items(),
+                                               key=operator.itemgetter(1), reverse=True)]:
+            plots[p] = os.path.join(output_dir, 'lpi', p + '.png')
+        return OrderedDict([
+            (p, {'figure' : path}) for p, path in plots.items()
+        ])
 
     def get_jupyter(self):
         from IPython.core.display import HTML, display

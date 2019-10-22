@@ -68,16 +68,18 @@ class ConfiguratorRun(object):
         self.logger = logging.getLogger("cave.ConfiguratorRun.{}".format(path_to_folder))
         self.rng = np.random.RandomState(42)
 
+        self.path_to_folder = path_to_folder
+        self.budget = budget
+
         self.scenario = scenario
         self.original_runhistory = original_runhistory
         self.validated_runhistory = validated_runhistory
         self.trajectory = trajectory
-        self.path_to_folder = str(self.rng.randint(1000000)) if path_to_folder is None else path_to_folder
         self.ta_exec_dir = ta_exec_dir
         self.file_format = file_format
         self.validation_format = validation_format
-        self.budget = budget
-        self.output_dir = output_dir
+        self.output_dir = os.path.join(output_dir, 'analysis_data', self.get_identifier())
+        os.makedirs(self.output_dir, exist_ok=True)
         self.options = {'pimp_max_samples' : -1,
                         'fanova_pairwise' : True,
                         }
@@ -100,12 +102,24 @@ class ConfiguratorRun(object):
 
         # Initialize importance and validator
         self._init_pimp_and_validator()
+        self._validate_default_and_incumbents("epm", self.ta_exec_dir)
 
         # Set during execution, to share information between Analyzers
         self.share_information = {'parameter_importance' : OrderedDict(),
                                   'feature_importance' : OrderedDict(),
-                                  'evaluators' : [],
+                                  'evaluators' : OrderedDict(),
                                   'validator' : None}
+
+    def get_identifier(self):
+        path = self.path_to_folder if self.path_to_folder is not None else ""
+        budget = str(self.budget) if self.budget is not None else ""
+        if path and budget:
+            res = "_".join([path, budget])
+        elif not (path or budget):
+            res = 'aggregated'
+        else:
+            res = path if path else budget
+        return res.replace('/', '_')
 
     @classmethod
     def from_folder(cls,
@@ -222,7 +236,8 @@ class ConfiguratorRun(object):
         ta_exec_dir: str
             path from where the target algorithm can be executed as found in scenario (only used for actual validation)
         """
-        self.logger.debug("Validating %s using %s!", self.folder, method)
+        # TODO maybe just validate whole trajectory?
+        self.logger.debug("Validating %s using %s!", self.get_identifier(), method)
         self.validator.traj = self.trajectory
         if method == "validation":
             with _changedir(ta_exec_dir):

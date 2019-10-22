@@ -61,22 +61,23 @@ class HTMLBuilder(object):
 
         self.output_dn = output_dn
         self.unique_id_counter = 0
+        self.budget = ''
+
         self.relative_content_js = os.path.join('content', 'js')
         self.relative_content_images = os.path.join('content', 'images')
-        os.makedirs(os.path.join(self.output_dn, self.relative_content_js), exist_ok=True)
-        os.makedirs(os.path.join(self.output_dn, self.relative_content_images), exist_ok=True)
-        self.budget = ''
-        # todo make relative dirs again
-
-        # Copy subfolders
-        subfolders = ["css", "images", "js", "font"]
-        for sf in subfolders:
-            try:
-                shutil.rmtree(os.path.join(self.output_dn, "html", sf), ignore_errors=True)
-                shutil.copytree(os.path.join(self.own_folder, "web_files", sf),
-                                os.path.join(self.output_dn, "html", sf))
-            except OSError:
-                print_exc()
+        if output_dn:
+            os.makedirs(os.path.join(self.output_dn, self.relative_content_js), exist_ok=True)
+            os.makedirs(os.path.join(self.output_dn, self.relative_content_images), exist_ok=True)
+            # todo make relative dirs again
+            # Copy subfolders
+            subfolders = ["css", "images", "js", "font"]
+            for sf in subfolders:
+                try:
+                    shutil.rmtree(os.path.join(self.output_dn, "html", sf), ignore_errors=True)
+                    shutil.copytree(os.path.join(self.own_folder, "web_files", sf),
+                                    os.path.join(self.output_dn, "html", sf))
+                except OSError:
+                    print_exc()
 
         self.header_part_1 = '''
 <!DOCTYPE html>
@@ -147,7 +148,7 @@ for (i = 0; i < acc.length; i++) {
 </html>
 '''
 
-    def generate_html(self, data_dict: OrderedDict):
+    def generate_webpage(self, data_dict: OrderedDict):
         '''
         Arguments
         ---------
@@ -156,31 +157,40 @@ for (i = 0; i < acc.length; i++) {
         '''
         html_head, html_body = "", ""
         html_head += self.header_part_1
-        html_dict = OrderedDict()
         # Get components (script, div) for each entry in report
-        for k, v in data_dict.items():
-            if not v:  # ignore empty entry
-                self.logger.debug("No content for %s, skipping in html-generation", k)
-                continue
-            script, div = self.add_layer(layer_name=k, data_dict=v)
-            html_dict[k] = {'script': script, 'div': div}
+        scripts, divs = self.generate_html(data_dict)
+
         # Scripts go into header, divs go into body
-        for k, v in html_dict.items():
-            if v['script']:
-                html_head += v['script']  # e.g. bokeh-scripts used for hover
-            html_body += v['div']
+        for script in scripts:
+            html_head += script  # e.g. bokeh-scripts used for hover
+        for div in divs:
+            html_body += div
         html_head += self.header_part_2  # Close header after adding all scripts
         html = html_head + html_body + self.footer
 
+        # Write webpage to file
         with open(os.path.join(self.output_dn, "report.html"), "w") as fp:
             fp.write(html)
 
+        # If available, add custom logo
         if self.logo_custom:
             original_path = self.logo_fn
             self.logo_fn = os.path.join(self.output_dn, "html", 'images', 'custom_logo.png')
             self.logger.debug("Attempting to copy %s to %s", original_path, self.logo_fn)
             shutil.copyfile(original_path, self.logo_fn)
             self.logo_custom = False
+
+    def generate_html(self, data_dict: OrderedDict):
+        scripts, divs = [], []
+        for k, v in data_dict.items():
+            if not v:  # ignore empty entry
+                self.logger.debug("No content for %s, skipping in html-generation", k)
+                continue
+            script, div = self.add_layer(layer_name=k, data_dict=v)
+            if script:
+                scripts.append(script)
+            divs.append(div)
+        return scripts, divs
 
     def add_layer(self, layer_name, data_dict: OrderedDict, is_tab: bool=False):
         '''
@@ -201,6 +211,9 @@ for (i = 0; i < acc.length; i++) {
             script goes into header, div goes into body
         '''
         script, div = "", ""
+
+        if layer_name is None:
+            layer_name = ""
 
         # Add tooltip, if possible
         tooltip = data_dict.get("tooltip", None)
@@ -269,13 +282,20 @@ for (i = 0; i < acc.length; i++) {
                 path_script = path_script.translate({ord(c): None for c in ' \''})
 
                 # Write script to file
-                with open(os.path.join(self.output_dn, path_script), 'w') as fn:
-                    js_code = re.sub('<.*?>', '', v[0].strip())  # Remove script-tags
-                    fn.write(js_code)
-                script += "<script src=\"" + path_script + "\"></script>\n"
+                if self.output_dn:
+                    with open(os.path.join(self.output_dn, path_script), 'w') as fn:
+                        js_code = re.sub('<.*?>', '', v[0].strip())  # Remove script-tags
+                        fn.write(js_code)
+                    script += "<script src=\"" + path_script + "\"></script>\n"
+                else:
+                    script += v[0]
                 div += "<div align=\"center\">\n{}\n</div>\n".format(v[1])
             else:
-                div += v
+                try:
+                    div += v
+                except Exception as err:
+                    self.logger.warning("Failed on interpreting: %s, %s, %s (Error: %s)",
+                                        str(layer_name), str(k), str(v), err, exc_info=1)
 
         if use_tabs:  # close tab with selecting first element by default
             div += "<script> \n"

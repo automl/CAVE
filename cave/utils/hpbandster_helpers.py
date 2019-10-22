@@ -5,7 +5,7 @@ Here are helper functions needed to provide a certain behaviour of HpBandSter, s
 import numpy as np
 from collections import OrderedDict
 
-def format_budgets(budgets):
+def format_budgets(budgets, allow_whitespace=False):
     """
     Format budget-strings so that they are as short as possible while still distinguishable
 
@@ -13,12 +13,17 @@ def format_budgets(budgets):
     ----------
     budgets: List[str]
         list with budgets
+    allow_whitespace: bool
+        if set to True, will return "budget 10.5" else "budget_10.5
 
     Returns
     -------
     formatted_budgets: List[str]
         list with formatted budgets
     """
+    if len(budgets) == 0:
+        return {None : None}
+
     def format_budget(b, round_to):
         return 'budget_{}'.format(int(b)) if float(b).is_integer() else 'budget_{:.{}f}'.format(b, round_to)
 
@@ -27,6 +32,9 @@ def format_budgets(budgets):
     while len(set(formatted_budgets.values())) != len(formatted_budgets.values()):
         round_to += 1
         formatted_budgets = {b : format_budget(b, round_to) for b in budgets}
+
+    if allow_whitespace:
+        formatted_budgets = {b : str(f).replace("_", " ") for b, f in formatted_budgets.items()}
 
     return formatted_budgets
 
