@@ -1,47 +1,57 @@
 import os
 from collections import OrderedDict
-import operator
-import logging
 
-from pandas import DataFrame
 import numpy as np
+from bokeh.embed import components
+from bokeh.io import output_notebook
+from bokeh.plotting import show
+from pandas import DataFrame
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
-from cave.html.html_helpers import figure_to_html
 from cave.utils.bokeh_routines import array_to_bokeh_table
+from cave.utils.hpbandster_helpers import format_budgets
 
-from bokeh.embed import components
-from bokeh.plotting import show
-from bokeh.io import output_notebook
 
 class PimpComparisonTable(BaseAnalyzer):
+    """
+    Parameters are initially sorted by pimp_sort_table_by. Only parameters with an importance greater than 5 in any
+    of the methods are shown.  Note, that the values of the used methods are not directly comparable. For more
+    information on the metrics, see respective tooltips."""
 
     def __init__(self,
-                 pimp,
-                 evaluators,
+                 runscontainer,
                  sort_table_by,
-                 cs,
-                 out_fn,
                  threshold=0.05):
         """Create a html-table over all evaluated parameter-importance-methods.
         Parameters are sorted after their average importance."""
-        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
+        super().__init__(runscontainer)
+        self.name = "Importance Table"
 
-        self.pimp = pimp
-        self.evaluators = list(evaluators.values())
         self.sort_table_by = sort_table_by
-        self.cs = cs
-        self.out_fn = out_fn
         self.threshold = threshold
 
+    def run(self):
+        formatted_budgets = format_budgets(self.runscontainer.get_budgets(), allow_whitespace=True)
+        for run in self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False):
+            self.result[formatted_budgets[run.budget]] = self.plot(
+                pimp=run.pimp,
+                evaluators=list(run.share_information['evaluators'].values()),
+                cs=self.runscontainer.scenario.cs,
+                out_fn=os.path.join(run.output_dir, 'pimp.tex'),
+            )
 
-    def plot(self):
-        self.pimp.table_for_comparison(self.evaluators, self.out_fn, style='latex')
-        self.logger.info('Creating pimp latex table at %s' % self.out_fn)
+    def plot(self,
+             pimp,
+             evaluators,
+             cs,
+             out_fn,
+             ):
+        pimp.table_for_comparison(evaluators, out_fn, style='latex')
+        self.logger.info('Creating pimp latex table at %s' % out_fn)
 
-        parameters = [p.name for p in self.cs.get_hyperparameters()]
+        parameters = [p.name for p in cs.get_hyperparameters()]
         index, values, columns = [], [], []
-        columns = [e.name for e in self.evaluators]
+        columns = [e.name for e in evaluators]
         columns_lower = [c.lower() for c in columns]
 
         # SORT
@@ -50,12 +60,12 @@ class PimpComparisonTable(BaseAnalyzer):
             # Sort parameters after average importance
             p_avg = {}
             for p in parameters:
-                imps = [e.evaluated_parameter_importance[p] for e in self.evaluators if p in e.evaluated_parameter_importance]
+                imps = [e.evaluated_parameter_importance[p] for e in evaluators if p in e.evaluated_parameter_importance]
                 p_avg[p] = np.mean(imps) if imps else  0
             p_order = sorted(parameters, key=lambda p: p_avg[p], reverse=True)
         elif self.sort_table_by in columns_lower:
             def __get_key(p):
-                imp = self.evaluators[columns_lower.index(self.sort_table_by)].evaluated_parameter_importance
+                imp = evaluators[columns_lower.index(self.sort_table_by)].evaluated_parameter_importance
                 return imp[p] if p in imp else 0
             p_order = sorted(parameters, key=__get_key, reverse=True)
         else:
@@ -66,7 +76,7 @@ class PimpComparisonTable(BaseAnalyzer):
         for p in p_order:
             values_for_p = [p]
             add_parameter = False  # Only add parameters where at least one evaluator shows importance > threshold
-            for e in self.evaluators:
+            for e in evaluators:
                 if p in e.evaluated_parameter_importance:
                     # Check for threshold
                     value_to_add = e.evaluated_parameter_importance[p]
@@ -87,20 +97,34 @@ class PimpComparisonTable(BaseAnalyzer):
                 values.append(values_for_p)
 
         # CREATE TABLE
-        self.comp_table = DataFrame(values, columns=['Parameters'] + columns)
+        comp_table = DataFrame(values, columns=['Parameters'] + columns)
         sortable = {c : True for c in columns}
         width = {**{'Parameters' : 150}, **{c : 100 for c in columns}}
 
-        bokeh_table = array_to_bokeh_table(self.comp_table, sortable=sortable, width=width, logger=self.logger)
-        return bokeh_table
+        bokeh_table = array_to_bokeh_table(comp_table, sortable=sortable, width=width, logger=self.logger)
+        return {'bokeh' : bokeh_table}
 
     def get_html(self, d=None, tooltip=None):
-        script, div = components(self.plot())
+        self.run()
+        if len(self.result) == 1 and None in self.result:
+            self.logger.debug("Detected None-key, abstracting away...")
+            self.result = self.result[None]
         if d is not None:
-            d["bokeh"] = script, div
+            d[self.name] = OrderedDict()
+            script, div = "", ""
+        for b, t in self.result.items():
+            s_, d_ = components(t) if b == 'bokeh' else components(t['bokeh'])
+            script += s_
+            div += d_
+            if d is not None:
+                d[self.name][b] = {
+                    "bokeh" : (s_, d_),
+                    "tooltip" : self.__doc__,
+                }
         return script, div
 
     def get_jupyter(self):
+        self.run()
         output_notebook()
-        show(self.plot())
-
+        for b, t in self.result.items():
+            show(t['bokeh'])

@@ -13,12 +13,21 @@ Please refer to [LICENSE](https://github.com/automl/CAVE/blob/master/LICENSE)
 
 If you use out tool, please cite us:
 
-        @InProceedings{biedenkapp-lion18a,
+```bibtex
+@InProceedings{biedenkapp-lion18a,
             author = {A. Biedenkapp and J. Marben and M. Lindauer and F. Hutter},
             title = {{CAVE}: Configuration Assessment, Visualization and Evaluation},
             booktitle = {Proceedings of the International Conference on Learning and Intelligent Optimization (LION'18)},
-            year = {2018},
-            month = jun}
+            year = {2018}}
+
+@journal{
+    title   = {BOAH: A Tool Suite for Multi-Fidelity Bayesian Optimization & Analysis of Hyperparameters},
+    author  = {M. Lindauer and K. Eggensperger and M. Feurer and A. Biedenkapp and J. Marben and P. Müller and F. Hutter},
+    journal = {arXiv:1908.06756 {[cs.LG]}},
+    date    = {2019},
+}
+```
+
 
 
 # OVERVIEW 

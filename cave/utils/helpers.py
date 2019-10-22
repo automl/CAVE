@@ -141,6 +141,37 @@ def combine_runhistories(rhs, logger=None):
         logger.debug("number of elements in combined rh: " + str(len(combi_rh.data)))
     return combi_rh
 
+def combine_trajectories(trajs, logger=None):
+    """Combine trajectories. Trajectories are expected as an iterable of sorted lists, which are increasing in time.
+    A trajectory entry is expected as:
+    TrajEntry = collections.namedtuple(
+                  'TrajEntry', ['train_perf', 'incumbent_id', 'incumbent',
+                                'ta_runs', 'ta_time_used', 'wallclock_time'])
+
+    Parameters
+    ----------
+    trajs: List[List[TrajEntry]]
+        trajectories to be combined
+
+    Returns
+    -------
+    combined_traj: List[TrajEntry]
+        combined trajectory
+    """
+    # flatten list
+    flattened_list = [a for b in trajs for a in b]
+    # Sort by wallclock-time
+    flattened_list.sort(key=lambda traj_entry: traj_entry['wallclock_time'])
+    if logger:
+        logger.debug("{} trajectories combined to one with {} elements".format(len(trajs), len(flattened_list)))
+        #logger.debug(flattened_list)
+    # Now add one by one in order of time if better performance than before
+    combined_traj = [flattened_list[0]]
+    for entry in flattened_list:
+        if entry['cost'] < combined_traj[-1]['cost']:
+            combined_traj.append(entry)
+    return combined_traj
+
 class NotApplicableError(Exception):
     """Exception indicating that this analysis-method cannot be performed."""
     pass

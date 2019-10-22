@@ -3,7 +3,8 @@ import numpy as np
 import csv
 import unittest
 
-from cave.utils.hpbandster2smac import HpBandSter2SMAC
+from cave.reader.conversion.hpbandster2smac import HpBandSter2SMAC
+
 
 class TestHpbandster2Smac(unittest.TestCase):
 

@@ -31,17 +31,18 @@ def get_complete_configspace():
     hp['verbose'] = Constant("verbose", 1)
     # Add numericals
     # Add Floats
-    hp['beta1'] = UniformFloatHyperparameter("beta1", 0.85, 0.95, log=False)
+    hp['beta_1'] = UniformFloatHyperparameter("beta_1", 0.85, 0.95, log=False)
+    hp['beta_2'] = UniformFloatHyperparameter("beta_2", 0.85, 0.95, log=False)
     hp['power_t'] = NormalFloatHyperparameter("power_t", mu=0.5, sigma=0.1, log=False)
     # Add Ints
     hp['momentum'] = UniformIntegerHyperparameter("momentum", 0, 100, False)
-    hp['beta2'] = NormalIntegerHyperparameter("beta2", mu=1, sigma=0.001, log=False)
+    # # # hp['beta_2'] = NormalIntegerHyperparameter("beta_2", mu=0.85, sigma=0.001, log=False)  # not working - need beta smaller 1
     # Add Floats (log)
     hp['learning_rate_init'] = UniformFloatHyperparameter("learning_rate_init", 0.0001, 0.1, log=True)
-    hp['random1'] = NormalFloatHyperparameter("NormalFloat", mu=0, sigma=1, default_value=1, log=True)
+    #hp['random1'] = NormalFloatHyperparameter("NormalFloat", mu=0, sigma=1, default_value=1, log=True)
     # Add Ints (log)
-    hp['random2'] = UniformIntegerHyperparameter("UniformInt", 2, 100, log=True)
-    hp['random3'] = NormalIntegerHyperparameter("NormalInt", mu=0, sigma=1, default_value=1, log=True)
+    #hp['random2'] = UniformIntegerHyperparameter("UniformInt", 2, 100, log=True)
+    #hp['random3'] = NormalIntegerHyperparameter("NormalInt", mu=0, sigma=1, default_value=1, log=True)
     # Add Categorical for allowed types
     hp['activation'] = CategoricalHyperparameter('activation', choices=['identity', 'logistic', 'tanh', 'relu'])
     hp['solver'] = CategoricalHyperparameter('solver', choices=[-2, 0, 2])  # corrresponds to: ‘lbfgs’, ‘sgd’, ‘adam’
@@ -65,8 +66,8 @@ def get_complete_configspace():
     #cs.add_condition(AndConjunction(LessThanCondition(hp['power_t'], hp['solver'], 1),
     #                                GreaterThanCondition(hp['power_t'], hp['solver'], -1)))
     # betas with adam
-    cs.add_condition(EqualsCondition(hp['beta1'], hp['solver'], 2))
-    cs.add_condition(EqualsCondition(hp['beta2'], hp['solver'], 2))
+    cs.add_condition(EqualsCondition(hp['beta_1'], hp['solver'], 2))
+    cs.add_condition(EqualsCondition(hp['beta_2'], hp['solver'], 2))
 
     return cs
 
@@ -85,21 +86,21 @@ class MyWorker(Worker):
     def compute(self, config, budget=None, *args, **kwargs):
         """ overwrite the *compute* methode: the training of the model happens here """
 
-        kwargs = {hp_name : config[hp_name] for hp_name in config.cs.get_hyperparameter_names()}
+        print(config)
         # Modify if necessary
-        kwargs['momentum'] = kwargs.get('momentum', 0) / 100.0
-        kwargs['tol'] = float(kwargs['tol'])
-        kwargs['solver'] = {-2 : 'lbfgs', 0 : 'tanh', 2 : 'relu'}[kwargs['solver']]
-        kwargs['batch_size'] = 'auto' if kwargs['batch_size_auto'] else int(kwargs['batch_size'])
-        kwargs.pop('batch_size_auto')
-        kwargs['learning_rate'] = {-0.5 : 'constant', 0.0 : 'invscaling', 0.5 : 'adaptive'}[kwargs.get('learning_rate', 0.0)]
-        kwargs.pop('random1')
-        kwargs.pop('random2')
-        kwargs.pop('random3')
+        config['momentum'] = config.get('momentum', 0) / 100.0
+        config['tol'] = float(config['tol'])
+        config['solver'] = {-2 : 'lbfgs', 0 : 'tanh', 2 : 'relu'}[config['solver']]
+        config['batch_size'] = 'auto' if config['batch_size_auto'] else int(config['batch_size'])
+        config.pop('batch_size_auto')
+        config['learning_rate'] = {-0.5 : 'constant', 0.0 : 'invscaling', 0.5 : 'adaptive'}[config.get('learning_rate', 0.0)]
+        #config.pop('random1')
+        #config.pop('random2')
+        #config.pop('random3')
 
         clf = neural_network.MLPClassifier(max_iter=int(budget),
-                                           **kwargs
-                                          )
+                                           **config,
+                                           )
         clf.fit(self.train_x, self.train_y)
 
         predicted = clf.predict(self.valid_x)

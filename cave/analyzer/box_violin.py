@@ -1,37 +1,40 @@
-import os
-import logging
-from collections import OrderedDict
-
-from pandas import DataFrame
-import numpy as np
-
-from cave.feature_analysis.feature_analysis import FeatureAnalysis
 from cave.analyzer.base_analyzer import BaseAnalyzer
-from cave.html.html_helpers import figure_to_html
+from cave.feature_analysis.feature_analysis import FeatureAnalysis
+from cave.utils.hpbandster_helpers import format_budgets
+
 
 class BoxViolin(BaseAnalyzer):
-    def __init__(self, output_dir, scenario, feat_names, feat_importance):
-        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
+    """
+    Box and Violin Plots show the distribution of each feature value across the instances.  Box plots show the
+    quantiles of the distribution and violin plots show the approximated probability density of the feature values.
+    Such plots are useful to inspect the instances and to detect characteristics of the instances. For example, if
+    the distributions have two or more modes, it could indicate that the instance set is heterogeneous which could
+    cause problems in combination with racing strategies configurators typically use. NaN values are removed from
+    the data."""
 
-        self.output_dir = output_dir
+    def __init__(self,
+                 runscontainer,
+                 ):
+        super().__init__(runscontainer)
+        self.name = "Violin and Box Plots"
 
+        formatted_budgets = format_budgets(self.runscontainer.get_budgets())
+        for run in self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False):
+            self.result[formatted_budgets[run.budget]] = self.box_violin(
+                output_dir=run.output_dir,
+                scenario=run.scenario,
+                feat_names=run.feature_names,
+                feat_importance=run.share_information['feature_importance'],
+            )
+
+    def box_violin(self,
+                   output_dir,
+                   scenario,
+                   feat_names,
+                   feat_importance,
+                   ):
         feat_analysis = FeatureAnalysis(output_dn=output_dir,
                                         scenario=scenario,
                                         feat_names=feat_names,
                                         feat_importance=feat_importance)
-        self.name_plots = feat_analysis.get_box_violin_plots()
-
-    def get_plots(self):
-        return [x[1] for x in self.name_plots]
-
-    def get_html(self, d=None, tooltip=None):
-        if d is not None:
-            d["tooltip"] = tooltip
-            for plot_tuple in self.name_plots:
-                key = "%s" % (plot_tuple[0])
-                d[key] = {"figure": plot_tuple[1]}
-        return figure_to_html(self.get_plots(), max_in_a_row=3, true_break_between_rows=True)
-
-    def get_jupyter(self):
-        from IPython.core.display import HTML, display
-        display(HTML(self.get_html()))
+        return {_[0] : {'figure' : _[1]} for _ in feat_analysis.get_box_violin_plots()}

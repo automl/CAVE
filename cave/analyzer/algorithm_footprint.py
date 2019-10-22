@@ -1,23 +1,53 @@
 import os
-from collections import OrderedDict
-import logging
 
-from bokeh.plotting import show
-from bokeh.io import output_notebook
 from bokeh.embed import components
+from bokeh.io import output_notebook
+from bokeh.plotting import show
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.plot.algorithm_footprint import AlgorithmFootprintPlotter
 from cave.utils.timing import timing
 
+
 class AlgorithmFootprint(BaseAnalyzer):
+    """
+    The instance features are projected into a two/three dimensional space using principal component analysis (PCA)
+    and the footprint of each algorithm is plotted, i.e., on which instances the default or the optimized
+    configuration performs well. In contrast to the other analysis methods in this section, these plots allow
+    insights into which of the two configurations performs well on specific types or clusters of instances. Inspired
+    by Smith-Miles.
+    """
 
     @timing
-    def __init__(self, algorithms, epm_rh, train, test, features,
-                 cutoff, output_dir, rng, density=200, purity=0.95):
-        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
+    def __init__(self,
+                 runscontainer,
+                 density=200,
+                 purity=0.95):
+        """
+        Parameters
+        ----------
+        runscontainer: RunsContainer
+            contains all important information about the configurator runs
+        """
+        super().__init__(runscontainer)
+        self.name = "Algorithm Footprint"
+
+        # Aggregated run over current runscontainer
+        self.logger.info("Note: Algorithm Footprint does not support budgets / fidelities yet.")
+        agg_run = self.runscontainer.get_aggregated(False, False)[0]
+
+        algorithms = [(agg_run.default, "default"),
+                      (agg_run.incumbent, "incumbent")]
+        epm_rh = agg_run.epm_runhistory
+        train = agg_run.scenario.train_insts
+        test = agg_run.scenario.test_insts
+        features = agg_run.scenario.feature_dict
+        cutoff = agg_run.scenario.cutoff
+        output_dir = agg_run.output_dir
+        rng = agg_run.rng
 
         # filter instance features
+        self.logger.debug("Features: " + str(features))
         train_feats = {k: v for k, v in features.items() if k in train}
         test_feats = {k: v for k, v in features.items() if k in test}
         if not (train_feats or test_feats):
@@ -27,11 +57,11 @@ class AlgorithmFootprint(BaseAnalyzer):
 
         self.logger.info("... algorithm footprints for: {}".format(",".join([a[1] for a in algorithms])))
         self.footprint = AlgorithmFootprintPlotter(epm_rh,
-                                              train_feats, test_feats,
-                                              algorithms,
-                                              cutoff,
-                                              output_dir,
-                                              rng=rng)
+                                                   train_feats, test_feats,
+                                                   algorithms,
+                                                   cutoff,
+                                                   output_dir,
+                                                   rng=rng)
 
     def _plot(self):
         # Plot footprints
@@ -48,7 +78,7 @@ class AlgorithmFootprint(BaseAnalyzer):
         script, div = components(self._plot())
         bokeh_components = script, div
         if d is not None:
-            d["tooltip"] = tooltip
+            d["tooltip"] = self.__doc__
             # Interactive bokeh-plot
             d["Interactive Algorithm Footprint"] = {"bokeh" : (script, div)}
             for plots in self.plots3d:

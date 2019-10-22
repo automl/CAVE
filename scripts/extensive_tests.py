@@ -3,7 +3,7 @@ import logging
 import numpy as np
 import shutil
 
-from smac.facade.smac_facade import SMAC
+from smac.facade.smac_ac_facade import SMAC4AC
 from smac.scenario.scenario import Scenario
 
 import inspect
@@ -161,7 +161,7 @@ if __name__ == '__main__':
         generate_bohb_data()
         for scen in get_scenarios():
             scenario = Scenario(scen)
-            smac = SMAC(scenario=scenario, rng=np.random.RandomState(42))
+            smac = SMAC4AC(scenario=scenario, rng=np.random.RandomState(42))
             smac.optimize()
     elif sys.argv[1] == 'cave':
         failed = []
@@ -170,9 +170,10 @@ if __name__ == '__main__':
                 folder = [f for f in os.listdir(scen['output_dir']) if f.startswith('run')][0]
                 cave = CAVE([os.path.join(scen['output_dir'], folder)],
                             os.path.join(scen['output_dir'], 'CAVE_RESULT'),
-                            ta_exec_dir='.', validation_method='validation')
+                            ta_exec_dir=['.'], validation_method='validation')
                 cave.analyze(param_importance=['ablation', 'forward_selection', 'lpi'], cfp_number_quantiles=2)
             except:
+                raise
                 failed.append(scen['output_dir'])
         print("Failed: %s" % (str(failed)))
     elif sys.argv[1] == 'firefox':
