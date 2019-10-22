@@ -2,17 +2,17 @@ import os
 import shutil
 import typing
 
-from ConfigSpace.read_and_write import json as pcs_json
 from ConfigSpace.configuration_space import ConfigurationSpace, Configuration
 from ConfigSpace.hyperparameters import FloatHyperparameter, IntegerHyperparameter, Constant, CategoricalHyperparameter
-
+from ConfigSpace.read_and_write import json as pcs_json
 from smac.optimizer.objective import average_cost
-from smac.utils.io.input_reader import InputReader
-from smac.runhistory.runhistory import RunKey, RunValue, RunHistory, DataOrigin
-from smac.utils.io.traj_logging import TrajLogger
+from smac.runhistory.runhistory import RunHistory
 from smac.scenario.scenario import Scenario
+from smac.utils.io.input_reader import InputReader
+from smac.utils.io.traj_logging import TrajLogger
 
 from cave.reader.base_reader import BaseReader, changedir
+
 
 class SMAC3Reader(BaseReader):
 

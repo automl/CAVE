@@ -1,21 +1,17 @@
-import os
-import warnings
 import logging
-import csv
+import warnings
 from typing import Union
 
-import pandas as pd
 import numpy as np
-
-from smac.runhistory.runhistory import RunHistory, DataOrigin
-from smac.optimizer.objective import average_cost, _cost
-from smac.utils.io.input_reader import InputReader
-from smac.tae.execute_ta_run import StatusType
-
-from ConfigSpace.util import deactivate_inactive_hyperparameters, fix_types
-from ConfigSpace import Configuration, ConfigurationSpace
-from ConfigSpace.hyperparameters import UniformFloatHyperparameter, CategoricalHyperparameter
+import pandas as pd
+from ConfigSpace import ConfigurationSpace
+from ConfigSpace.hyperparameters import UniformFloatHyperparameter
 from ConfigSpace.read_and_write import pcs
+from ConfigSpace.util import deactivate_inactive_hyperparameters, fix_types
+from smac.optimizer.objective import average_cost
+from smac.runhistory.runhistory import RunHistory, DataOrigin
+from smac.tae.execute_ta_run import StatusType
+from smac.utils.io.input_reader import InputReader
 
 from cave.utils.io import load_csv_to_pandaframe
 

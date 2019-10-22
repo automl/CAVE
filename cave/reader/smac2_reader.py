@@ -1,22 +1,20 @@
-import re
-import os
-import shutil
 import csv
+import os
+import re
+import shutil
+
 import numpy as np
 import pandas as pd
-
-from ConfigSpace import Configuration, c_util
-from ConfigSpace.hyperparameters import IntegerHyperparameter, FloatHyperparameter
+from ConfigSpace import Configuration
 from ConfigSpace.util import deactivate_inactive_hyperparameters, fix_types
-from smac.optimizer.objective import average_cost
-from smac.utils.io.input_reader import InputReader
-from smac.runhistory.runhistory import RunKey, RunValue, RunHistory, DataOrigin
-from smac.utils.io.traj_logging import TrajLogger
+from smac.runhistory.runhistory import RunHistory
 from smac.scenario.scenario import Scenario
+from smac.utils.io.input_reader import InputReader
 
 from cave.reader.base_reader import BaseReader, changedir
 from cave.reader.csv2rh import CSV2RH
 from cave.utils.io import load_csv_to_pandaframe
+
 
 class SMAC2Reader(BaseReader):
     """Reader for SMAC2-output.

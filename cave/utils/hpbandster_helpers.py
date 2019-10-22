@@ -2,8 +2,10 @@
 Here are helper functions needed to provide a certain behaviour of HpBandSter, such as special trajectories.
 """
 
-import numpy as np
 from collections import OrderedDict
+
+import numpy as np
+
 
 def format_budgets(budgets, allow_whitespace=False):
     """

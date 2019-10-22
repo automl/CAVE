@@ -1,23 +1,22 @@
-import logging
 import copy
+import logging
 import os
 from collections import OrderedDict
 from contextlib import contextmanager
 
 import numpy as np
-
+from pimp.importance.importance import Importance
 from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunHistory, DataOrigin
 from smac.utils.io.input_reader import InputReader
 from smac.utils.validate import Validator
 
-from pimp.importance.importance import Importance
-
-from cave.reader.smac3_reader import SMAC3Reader
-from cave.reader.smac2_reader import SMAC2Reader
 from cave.reader.csv_reader import CSVReader
-from cave.utils.timing import timing
+from cave.reader.smac2_reader import SMAC2Reader
+from cave.reader.smac3_reader import SMAC3Reader
 from cave.utils.helpers import scenario_sanity_check
+from cave.utils.timing import timing
+
 
 class ConfiguratorRun(object):
     """

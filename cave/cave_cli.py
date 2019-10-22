@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 
-import os
-import sys
-from argparse import ArgumentParser, SUPPRESS
-import logging
 import glob
-from datetime import datetime as datetime
+import logging
+import sys
 import time
+from argparse import ArgumentParser, SUPPRESS
+from datetime import datetime as datetime
 
 import matplotlib
 

@@ -1,10 +1,11 @@
-import typing
-import numpy as np
 import logging
+import typing
 
+import numpy as np
 from ConfigSpace.configuration_space import Configuration
-from smac.runhistory.runhistory import RunHistory, RunKey
 from smac.optimizer.objective import average_cost
+from smac.runhistory.runhistory import RunHistory, RunKey
+
 
 # TODO Possibly inconsistent: median over timeouts is timeout, but mean over
 # costs is not. Possible?

@@ -1,21 +1,17 @@
+import copy
 import logging
 import os
-import copy
-
-import numpy as np
-from numpy import corrcoef
-
-from scipy.cluster.hierarchy import linkage
-
-from pandas import DataFrame
-
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
-from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
 
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
+from numpy import corrcoef
+from pandas import DataFrame
+from scipy.cluster.hierarchy import linkage
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.metrics import silhouette_score
+from sklearn.preprocessing import StandardScaler
 
 __author__ = "Marius Lindauer"
 __copyright__ = "Copyright 2016, ML4AAD"

@@ -1,16 +1,16 @@
+import inspect
 import logging
 import os
-import shutil
-import inspect
 import re
-from traceback import print_exc
+import shutil
 from collections import OrderedDict
+from traceback import print_exc
 
 from numpy import random
 
-from cave.utils.tooltips import get_tooltip
-from cave.html.html_helpers import figure_to_html
 from cave.__version__ import __version__ as version
+from cave.html.html_helpers import figure_to_html
+from cave.utils.tooltips import get_tooltip
 
 __author__ = "Marius Lindauer"
 __copyright__ = "Copyright 2016, ML4AAD"

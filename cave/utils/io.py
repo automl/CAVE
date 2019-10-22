@@ -1,12 +1,10 @@
 import os
-import csv
 import warnings
 
 import numpy as np
 import pandas as pd
-from bokeh.io import export_png, output_notebook
-
 from ConfigSpace.util import deactivate_inactive_hyperparameters, fix_types
+from bokeh.io import export_png
 
 from cave.utils.timing import timing
 

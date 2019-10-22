@@ -1,15 +1,14 @@
+import copy
+import logging
 import os
 import time
-import logging
 from collections import OrderedDict
-import copy
 
-import numpy as np
 import matplotlib.pyplot as plt
-
-from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
+import numpy as np
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.epm.util_funcs import get_types
+from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
 from smac.tae.execute_ta_run import StatusType
 from smac.utils.constants import MAXINT
 

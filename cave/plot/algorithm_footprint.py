@@ -1,11 +1,12 @@
-import os
+import itertools
 import logging
+import os
 import time
 from collections import OrderedDict
-import itertools
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+
 plt.style.use(os.path.join(os.path.dirname(__file__), 'mpl_style'))  # noqa
 from scipy import spatial
 from sklearn.decomposition import PCA
@@ -14,7 +15,6 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
 from bokeh.plotting import figure, ColumnDataSource
-from bokeh.embed import components
 from bokeh.models import HoverTool, CustomJS, CDSView, GroupFilter
 from bokeh.models.widgets import RadioButtonGroup
 from bokeh.models.ranges import DataRange1d

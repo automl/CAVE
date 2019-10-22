@@ -1,8 +1,5 @@
 from collections import OrderedDict
 
-from pimp.importance.importance import Importance
-from ConfigSpace.configuration_space import Configuration
-
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.utils.hpbandster_helpers import format_budgets
 
