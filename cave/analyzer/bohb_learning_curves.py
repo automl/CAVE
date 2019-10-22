@@ -26,14 +26,6 @@ class BohbLearningCurves(BaseAnalyzer):
     def __init__(self,
                  runscontainer,
                  ):
-        """
-        Visualize hpbandster learning curves in an interactive bokeh-plot.
-
-        Parameters
-        ----------
-        runscontainer: RunsContainer
-            contains all important information about the configurator runs
-        """
         super().__init__(runscontainer)
         try:
             from hpbandster.core.result import logged_results_to_HBS_result
@@ -47,6 +39,9 @@ class BohbLearningCurves(BaseAnalyzer):
         self.result_object = list(self.result_objects.values())[0]
         # TODO extend to support parallel runs
         self.lcs = self.result_object.get_learning_curves(lc_extractor=extract_HBS_learning_curves)
+
+    def get_name(self):
+        return "BOHB Learning Curves"
 
     def plot(self, reset_times=False):
         return self._plot(self.result_object, self.lcs, self.hp_names, reset_times=reset_times)

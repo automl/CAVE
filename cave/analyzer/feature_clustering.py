@@ -1,5 +1,6 @@
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.feature_analysis.feature_analysis import FeatureAnalysis
+from cave.utils.helpers import check_for_features
 from cave.utils.hpbandster_helpers import format_budgets
 
 
@@ -11,7 +12,7 @@ class FeatureClustering(BaseAnalyzer):
 
     def __init__(self, runscontainer):
         super().__init__(runscontainer)
-        self.name = "Feature Clustering"
+        check_for_features(runscontainer.scenario)
 
         formatted_budgets = format_budgets(self.runscontainer.get_budgets())
         for run in self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False):
@@ -21,6 +22,9 @@ class FeatureClustering(BaseAnalyzer):
                 feat_names=run.feature_names,
                 feat_importance=run.share_information['feature_importance'],
             )
+
+    def get_name(self):
+        return "Feature Clustering"
 
     def feat_analysis(self,
                       output_dir,

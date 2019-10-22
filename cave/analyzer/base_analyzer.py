@@ -7,6 +7,7 @@ from bokeh.plotting import show
 
 from cave.html.html_builder import HTMLBuilder
 from cave.reader.runs_container import RunsContainer
+from cave.utils.helpers import Deactivated
 
 
 class BaseAnalyzer(object):
@@ -17,13 +18,28 @@ class BaseAnalyzer(object):
                  **kwargs):
         """
         runscontainer: RunsContainer
-        contains all important information about the configurator runs
+            contains all important information about the configurator runs
         """
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
-        self.name = self.__class__.__name__  # Back-up, can be overwritten, will be used as a name for analysis
+        self.name = self.get_name()
         self.logger.debug("Initializing %s", self.name)
         self.runscontainer = runscontainer
         self.result = OrderedDict()
+
+        options = self.runscontainer.analyzing_options
+        if not self.name in options.sections():
+            raise ValueError("Please state in the analyzing options whether or not to run this Analyzer "
+                             "(simply add a line to the .ini file containing [{}])".format(self.name))
+        if not options[self.name].getboolean('run'):
+            raise Deactivated("This method has been deactivated in the options. To enable, just set "
+                                       "[{}][run] = True in the .ini file.".format(self.name))
+
+        self.options = options[self.name]
+        for k, v in kwargs.items():
+            if v is not None:
+                self.options[k] = v
+        self.logger.debug("{} initialized with options: {}".format(self.name, str(dict(self.options))))
+
 
     def plot_bokeh(self):
         """ This function needs to be called if bokeh-plots are to be displayed in notebook AND saved to webpage."""
@@ -76,3 +92,6 @@ class BaseAnalyzer(object):
             if k == 'bokeh':
                 result.append(v)
         return result
+
+    def get_name(self):
+        return self.__class__.__name__  # Back-up, can be overwritten, will be used as a name for analysis

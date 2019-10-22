@@ -8,7 +8,7 @@ from smac.runhistory.runhistory import RunHistory, DataOrigin
 
 from cave.reader.configurator_run import ConfiguratorRun
 from cave.reader.conversion.hpbandster2smac import HpBandSter2SMAC
-from cave.utils.helpers import combine_trajectories
+from cave.utils.helpers import combine_trajectories, load_default_options
 
 
 class RunsContainer(object):
@@ -18,7 +18,9 @@ class RunsContainer(object):
                  ta_exec_dirs=None,
                  output_dir=None,
                  file_format=None,
-                 validation_format=None):
+                 validation_format=None,
+                 analyzing_options=None,
+                 ):
         """
         Reads in optimizer runs. Converts data if necessary.
         There will be `(n_budgets +1) * (m_parallel_execution + 1)` ConfiguratorRuns in CAVE, each representing the data
@@ -81,6 +83,8 @@ class RunsContainer(object):
 
         self.output_dir = output_dir if output_dir else tempfile.mkdtemp()
 
+        self.analyzing_options = load_default_options() if analyzing_options is None else analyzing_options
+
         # TODO: detect file_format...
         if not file_format:
             raise ValueError("Automatic file-format detection will be implemented soon, until then please specify.")
@@ -128,6 +132,7 @@ class RunsContainer(object):
                 try:
                     cr = ConfiguratorRun.from_folder(path,
                                                      ta_exec_dir,
+                                                     self.analyzing_options,
                                                      self.file_format,
                                                      self.validation_format,
                                                      b,
@@ -253,6 +258,7 @@ class RunsContainer(object):
                                  orig_rh,
                                  vali_rh,
                                  traj,
+                                 self.analyzing_options,
                                  output_dir=self.output_dir,
                                  path_to_folder=path_to_folder,
                                  budget=budget,

@@ -7,7 +7,7 @@ from smac.runhistory.runhistory import RunHistory
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.plot.scatter import plot_scatter_plot
-from cave.utils.helpers import get_cost_dict_for_config
+from cave.utils.helpers import get_cost_dict_for_config, NotApplicable
 from cave.utils.hpbandster_helpers import format_budgets
 
 
@@ -27,7 +27,6 @@ class PlotScatter(BaseAnalyzer):
         Saves plot to file.
         """
         super().__init__(runscontainer)
-        self.name = "Scatterplot"
 
         formatted_budgets = format_budgets(self.runscontainer.get_budgets())
         for run in self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False):
@@ -41,6 +40,9 @@ class PlotScatter(BaseAnalyzer):
                     cutoff=run.scenario.cutoff,
                     output_dir=run.output_dir,
             )
+
+    def get_name(self):
+        return "Scatterplot"
 
     def _plot_scatter(self,
                       default: Configuration,
@@ -78,6 +80,8 @@ class PlotScatter(BaseAnalyzer):
         inc_costs = get_cost_dict_for_config(rh, incumbent).items()
 
         out_fns = []
+        if len(train) <= 1 and len(test) <= 1:
+            raise NotApplicable("No instances, so no scatter-plot.")
         for insts, name in [(train, 'train'), (test, 'test')]:
             if len(insts) <= 1:
                 self.logger.debug("No %s instances, skipping scatter", name)

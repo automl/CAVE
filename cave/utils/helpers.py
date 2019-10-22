@@ -1,3 +1,4 @@
+import configparser
 import logging
 import typing
 
@@ -5,10 +6,6 @@ import numpy as np
 from ConfigSpace.configuration_space import Configuration
 from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunHistory, RunKey
-
-
-# TODO Possibly inconsistent: median over timeouts is timeout, but mean over
-# costs is not. Possible?
 
 
 def get_timeout(rh, conf, cutoff):
@@ -29,6 +26,8 @@ def get_timeout(rh, conf, cutoff):
     timeouts: Dict(str: bool)
         mapping instances to [True, False], where True indicates a timeout
     """
+    # TODO Possibly inconsistent: median over timeouts is timeout, but mean over
+    # costs is not. Possible?
     if not cutoff:
         return {}
     # Check if config is in runhistory
@@ -173,10 +172,6 @@ def combine_trajectories(trajs, logger=None):
             combined_traj.append(entry)
     return combined_traj
 
-class NotApplicableError(Exception):
-    """Exception indicating that this analysis-method cannot be performed."""
-    pass
-
 class MissingInstancesError(Exception):
     """Exception indicating that instances are missing."""
     pass
@@ -204,3 +199,32 @@ def get_config_origin(c):
         logging.getLogger("cave.utils.helpers").debug("Cannot interpret origin: %s", c.origin)
         origin = "Unknown"
     return origin
+
+def check_for_features(scenario):
+    features = scenario.feature_dict
+    # filter instance features
+    train = scenario.train_insts
+    test = scenario.test_insts
+    train_feats = {k: v for k, v in features.items() if k in train}
+    test_feats = {k: v for k, v in features.items() if k in test}
+    if not (train_feats or test_feats):
+        raise NotApplicable("Could not detect any instances.")
+
+class Deactivated(Exception):
+    pass
+
+class NotApplicable(Exception):
+    pass
+
+def load_default_options(options=None):
+    # Load the configuration file
+    default_options = configparser.ConfigParser()
+    default_options.read('cave/default_analysis_options.ini')
+
+    if options is not None:
+        if isinstance(options, str):
+            default_options.read_file(options)
+        else:
+            default_options.read_dict(options)
+
+    return default_options

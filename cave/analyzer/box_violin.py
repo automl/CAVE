@@ -1,5 +1,6 @@
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.feature_analysis.feature_analysis import FeatureAnalysis
+from cave.utils.helpers import check_for_features
 from cave.utils.hpbandster_helpers import format_budgets
 
 
@@ -16,7 +17,7 @@ class BoxViolin(BaseAnalyzer):
                  runscontainer,
                  ):
         super().__init__(runscontainer)
-        self.name = "Violin and Box Plots"
+        check_for_features(runscontainer.scenario)
 
         formatted_budgets = format_budgets(self.runscontainer.get_budgets())
         for run in self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False):
@@ -26,6 +27,9 @@ class BoxViolin(BaseAnalyzer):
                 feat_names=run.feature_names,
                 feat_importance=run.share_information['feature_importance'],
             )
+
+    def get_name(self):
+        return "Violin and Box Plots"
 
     def box_violin(self,
                    output_dir,

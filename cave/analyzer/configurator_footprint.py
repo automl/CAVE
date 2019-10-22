@@ -22,10 +22,10 @@ class ConfiguratorFootprint(BaseAnalyzer):
 
     def __init__(self,
                  runscontainer,
-                 max_confs=1000,
-                 use_timeslider=False,
-                 num_quantiles=10,
-                 timeslider_log: bool=True,
+                 max_configurations_to_plot=None,
+                 time_slider=None,
+                 number_quantiles=None,
+                 timeslider_log: bool=None,
                  ):
         """Plot the visualization of configurations, highlighting the
         incumbents. Using original rh, so the explored configspace can be
@@ -35,12 +35,12 @@ class ConfiguratorFootprint(BaseAnalyzer):
         ----------
         runscontainer: RunsContainer
             contains all important information about the configurator runs
-        max_confs: int
+        max_configurations_to_plot: int
             maximum number of data-points to plot
-        use_timeslider: bool
+        time_slider: bool
             whether or not to have a time_slider-widget on cfp-plot
             INCREASES FILE-SIZE DRAMATICALLY
-        num_quantiles: int
+        number_quantiles: int
             if use_timeslider is not off, defines the number of quantiles for the
             slider/ number of static pictures
         timeslider_log: bool
@@ -56,8 +56,11 @@ class ConfiguratorFootprint(BaseAnalyzer):
             list with paths to the different quantiled timesteps of the
             configurator run (for static evaluation)
         """
-        super().__init__(runscontainer)
-        self.name = "Configurator Footprint"
+        super().__init__(runscontainer,
+                         max_configurations_to_plot=max_configurations_to_plot,
+                         time_slider=time_slider,
+                         number_quantiles=number_quantiles,
+                         timeslider_log=timeslider_log)
 
         self.logger.info("... visualizing explored configspace (this may take "
                          "a long time, if there is a lot of data - deactive with --no_configurator_footprint)")
@@ -69,10 +72,12 @@ class ConfiguratorFootprint(BaseAnalyzer):
         else:
             self.runs = self.runscontainer.get_aggregated(keep_folders=True, keep_budgets=False)
         self.logger.debug("Analyzing runs: {}".format(self.runs))
-        self.max_confs = max_confs
-        self.use_timeslider = use_timeslider
-        self.num_quantiles = num_quantiles
-        self.timeslider_log = timeslider_log
+
+        self.max_confs = self.options.getint('max_configurations_to_plot')
+        self.use_timeslider = self.options.getboolean('time_slider')
+        self.num_quantiles = self.options.getint('number_quantiles')
+        self.timeslider_log = self.options.getboolean('timeslider_log')
+
         incumbents = {r.trajectory[-1]['incumbent'] : r.trajectory[-1]['cost'] for r in self.runs}
         self.final_incumbent = min(incumbents, key=incumbents.get)
 
@@ -91,6 +96,8 @@ class ConfiguratorFootprint(BaseAnalyzer):
                        timeslider_log=self.timeslider_log,
                        output_dir=self.output_dir)
 
+    def get_name(self):
+        return "Configurator Footprint"
 
     def plot(self):
         try:

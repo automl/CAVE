@@ -28,6 +28,15 @@ class CaveParameterImportance(BaseAnalyzer):
             self.logger.info("... parameter importance {} on {}".format(modus, run.get_identifier()))
             if not formatted_budgets[run.budget] in self.result:
                 self.result[formatted_budgets[run.budget]] = OrderedDict()
+            n_configs = len(run.original_runhistory.get_all_configs())
+            n_params = len(run.scenario.cs.get_hyperparameters())
+            if n_configs < n_params:
+                self.result[formatted_budgets[run.budget]] = {
+                    'else' : "For this run there are only {} configs, "
+                             "but {} parameters. No reliable parameter importance analysis "
+                             "can be performed."}
+                continue
+
             try:
                 run.pimp.evaluate_scenario([modus], run.output_dir)
             except RuntimeError as e:

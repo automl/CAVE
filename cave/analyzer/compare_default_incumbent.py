@@ -14,7 +14,6 @@ class CompareDefaultIncumbent(BaseAnalyzer):
         Removes unused parameters.
         """
         super().__init__(runscontainer)
-        self.name = "Best Configuration"
 
         default = self.runscontainer.scenario.cs.get_default_configuration()
         runs = self.runscontainer.get_runs_for_budget(self.runscontainer.get_highest_budget())
@@ -39,3 +38,6 @@ class CompareDefaultIncumbent(BaseAnalyzer):
         keys, table = [k[0] for k in table], [k[1:] for k in table]
         df = DataFrame(data=table, columns=["Default", "Incumbent"], index=keys)
         self.result['table'] = df.to_html()
+
+    def get_name(self):
+        return "Best Configuration"

@@ -40,29 +40,19 @@ class CostOverTime(BaseAnalyzer):
 
     def __init__(self,
                  runscontainer: RunsContainer,
-                 average_over_runs: bool=True,
-                 output_fn: str="cost_over_time.png",
-                 cot_inc_traj='racing',
+                 incumbent_trajectory: str=None,
+                 average_over_runs: bool=None,
                  ):
         """
         Plot performance over time, using all trajectory entries
         where max_time = max(wallclock_limit, the highest recorded time)
-
-        Parameters
-        ----------
-        runscontainer: RunsContainer
-            contains all important information about the configurator runs
-        average_over_runs: bool
-            if True, average over plots. if False, all runs are treated individually with checkboxes
-        output_fn: str
-            path to output-png for this analysis
-        cot_inc_traj: str
-            from ['racing', 'minimum', 'prefer_higher_budget'], defines incumbent trajectory from hpbandster result
         """
-        super().__init__(runscontainer)
-        self.name = "Cost Over Time"
+        super().__init__(runscontainer,
+                         incumbent_trajectory=incumbent_trajectory,
+                         average_over_runs=average_over_runs)
 
         self.rng = self.runscontainer.get_rng()
+        self.output_fn = "cost_over_time.png"
 
         self.scenario = self.runscontainer.scenario
         self.output_dir = self.runscontainer.output_dir
@@ -74,10 +64,10 @@ class CostOverTime(BaseAnalyzer):
         else:
             self.runs = self.runscontainer.get_aggregated(keep_folders=True, keep_budgets=False)
         self.block_epm = self.runscontainer.file_format == "BOHB"
-        self.average_over_runs = average_over_runs
-        self.output_fn = output_fn
         self.validator = self.runscontainer.get_aggregated(False, False)[0].validator
-        self.cot_inc_traj = cot_inc_traj
+
+        self.average_over_runs = self.options.getboolean('average_over_runs')
+        self.cot_inc_traj = self.options['incumbent_trajectory']
 
         self.logger.debug("Initialized CostOverTime with %d runs, output to \"%s\"", len(self.runscontainer.get_folders()), self.output_dir)
 
@@ -86,6 +76,9 @@ class CostOverTime(BaseAnalyzer):
 
         # Will be set during execution:
         self.plots = []                     # List with paths to '.png's
+
+    def get_name(self):
+        return "Cost Over Time"
 
     def _get_mean_var_time(self, validator, traj, use_epm, rh):
         """

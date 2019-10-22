@@ -31,13 +31,15 @@ class BudgetCorrelation(BaseAnalyzer):
             contains all important information about the configurator runs
         """
         super().__init__(runscontainer)
-        self.name = "Budget Correlation"
 
         self.runs = sorted(self.runscontainer.get_aggregated(True, False), key=lambda x: x.budget)
         self.budget_names = format_budgets(self.runscontainer.get_budgets(), allow_whitespace=True)
 
         # To be set
         self.dataframe = None
+
+    def get_name(self):
+        return "Budget Correlation"
 
     def _get_table(self, runs):
         table = []

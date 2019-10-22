@@ -25,10 +25,12 @@ class PimpComparisonTable(BaseAnalyzer):
         """Create a html-table over all evaluated parameter-importance-methods.
         Parameters are sorted after their average importance."""
         super().__init__(runscontainer)
-        self.name = "Importance Table"
 
         self.sort_table_by = sort_table_by
         self.threshold = threshold
+
+    def get_name(self):
+        return "Performance Table"
 
     def run(self):
         formatted_budgets = format_budgets(self.runscontainer.get_budgets(), allow_whitespace=True)
@@ -117,10 +119,16 @@ class PimpComparisonTable(BaseAnalyzer):
             script += s_
             div += d_
             if d is not None:
-                d[self.name][b] = {
-                    "bokeh" : (s_, d_),
-                    "tooltip" : self.__doc__,
-                }
+                if b == 'bokeh':
+                    d[self.name] = {
+                     "bokeh" : (s_, d_),
+                     "tooltip" : self.__doc__,
+                    }
+                else:
+                    d[self.name][b] = {
+                        "bokeh" : (s_, d_),
+                        "tooltip" : self.__doc__,
+                    }
         return script, div
 
     def get_jupyter(self):

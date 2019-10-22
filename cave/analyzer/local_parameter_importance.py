@@ -17,9 +17,11 @@ class LocalParameterImportance(CaveParameterImportance):
                  marginal_threshold=0.05):
 
         super().__init__(runscontainer)
-        self.name = "Local Parameter Importance (LPI)"
 
         self.parameter_importance("lpi")
+
+    def get_name(self):
+        return "Local Parameter Importance (LPI)"
 
     def postprocess(self, pimp, output_dir):
         param_imp = pimp.evaluator.evaluated_parameter_importance
@@ -34,4 +36,3 @@ class LocalParameterImportance(CaveParameterImportance):
     def get_jupyter(self):
         from IPython.core.display import HTML, display
         display(HTML(figure_to_html(self.get_plots(), max_in_a_row=3, true_break_between_rows=True)))
-

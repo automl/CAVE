@@ -34,7 +34,6 @@ class PerformanceTable(BaseAnalyzer):
                  runscontainer,
                  ):
         super().__init__(runscontainer)
-        self.name = "Performance Table"
 
         self.rng = self.runscontainer.get_rng()
         self.scenario = self.runscontainer.scenario
@@ -52,6 +51,9 @@ class PerformanceTable(BaseAnalyzer):
                                 run.scenario,
                                 ),
             }
+
+    def get_name(self):
+        return "Performance Table"
 
     def get_performance_table(self,
                               instances: List[str],

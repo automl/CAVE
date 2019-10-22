@@ -15,11 +15,13 @@ class CaveForwardSelection(CaveParameterImportance):
                  runscontainer,
                  marginal_threshold=0.05):
         super().__init__(runscontainer)
-        self.name = "Forward Selection"
 
         self.marginal_threshold = marginal_threshold
 
         self.parameter_importance("forward-selection")
+
+    def get_name(self):
+        return "Forward Selection"
 
     def postprocess(self, pimp, output_dir):
         return OrderedDict([

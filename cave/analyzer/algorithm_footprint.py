@@ -6,6 +6,7 @@ from bokeh.plotting import show
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.plot.algorithm_footprint import AlgorithmFootprintPlotter
+from cave.utils.helpers import NotApplicable
 from cave.utils.timing import timing
 
 
@@ -30,7 +31,6 @@ class AlgorithmFootprint(BaseAnalyzer):
             contains all important information about the configurator runs
         """
         super().__init__(runscontainer)
-        self.name = "Algorithm Footprint"
 
         # Aggregated run over current runscontainer
         self.logger.info("Note: Algorithm Footprint does not support budgets / fidelities yet.")
@@ -53,7 +53,7 @@ class AlgorithmFootprint(BaseAnalyzer):
         if not (train_feats or test_feats):
             self.logger.warning("No instance-features could be detected. "
                                 "No algorithm footprints available.")
-            raise ValueError("Could not detect any instances.")
+            raise NotApplicable("Could not detect any instances.")
 
         self.logger.info("... algorithm footprints for: {}".format(",".join([a[1] for a in algorithms])))
         self.footprint = AlgorithmFootprintPlotter(epm_rh,
@@ -62,6 +62,9 @@ class AlgorithmFootprint(BaseAnalyzer):
                                                    cutoff,
                                                    output_dir,
                                                    rng=rng)
+
+    def get_name(self):
+        return "Algorithm Footprint"
 
     def _plot(self):
         # Plot footprints

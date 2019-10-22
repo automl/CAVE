@@ -20,7 +20,6 @@ class BohbIncumbentsPerBudget(BaseAnalyzer):
                  runscontainer,
                  ):
         super().__init__(runscontainer)
-        self.name = "Incumbents Over Budgets"
 
         runs = sorted(runscontainer.get_aggregated(True, False), key=lambda x: x.budget)
         incumbents = [r.incumbent for r in runs]
@@ -28,6 +27,9 @@ class BohbIncumbentsPerBudget(BaseAnalyzer):
         epm_rhs = [r.epm_runhistory for r in runs]
 
         self.create_table(incumbents, budget_names, epm_rhs)
+
+    def get_name(self):
+        return "Incumbents Over Budgets"
 
     def create_table(self, incumbents, budget_names, epm_rhs):
         """Create table.

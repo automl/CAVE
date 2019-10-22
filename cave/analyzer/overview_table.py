@@ -17,8 +17,6 @@ class OverviewTable(BaseAnalyzer):
     """
     def __init__(self, runscontainer):
         super().__init__(runscontainer)
-        self.name = "Meta Data"
-
         self.output_dir = runscontainer.output_dir
 
         html_table_general, html_table_specific, html_table_cs = self.run()
@@ -29,6 +27,9 @@ class OverviewTable(BaseAnalyzer):
                                                   "for parallel optimizations or usage of budgets/fidelities."}
         self.result["Configuration Space"] = {"table": html_table_cs,
                                               "tooltip": "The parameter configuration space. (See github.com/automl/ConfigSpace)"}
+
+    def get_name(self):
+        return "Meta Data"
 
     def run(self):
         """ Generate tables. """

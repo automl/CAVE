@@ -7,7 +7,7 @@ from smac.runhistory.runhistory import RunHistory
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.plot.cdf import plot_cdf
-from cave.utils.helpers import get_cost_dict_for_config
+from cave.utils.helpers import get_cost_dict_for_config, NotApplicable
 from cave.utils.hpbandster_helpers import format_budgets
 
 
@@ -27,7 +27,6 @@ class PlotECDF(BaseAnalyzer):
         Saves plot to file.
         """
         super().__init__(runscontainer)
-        self.name = "empirical Cumulative Distribution Function (eCDF)"
 
         formatted_budgets = format_budgets(self.runscontainer.get_budgets())
         for run in self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False):
@@ -39,6 +38,9 @@ class PlotECDF(BaseAnalyzer):
                 run.scenario.test_insts,
                 run.scenario.cutoff,
                 run.output_dir)
+
+    def get_name(self):
+        return "empirical Cumulative Distribution Function (eCDF)"
 
     def _plot_ecdf(self,
                    default: Configuration,
@@ -80,6 +82,8 @@ class PlotECDF(BaseAnalyzer):
         inc_costs = get_cost_dict_for_config(rh, incumbent).items()
 
         output_fns = []
+        if len(train) <= 1 and len(test) <= 1:
+            raise NotApplicable("No instances, so no eCDF-plot.")
         for insts, name in [(train, 'train'), (test, 'test')]:
             if len(insts) <= 1:
                 self.logger.debug("No %s instances, skipping cdf", name)

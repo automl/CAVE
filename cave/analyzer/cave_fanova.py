@@ -31,10 +31,12 @@ class CaveFanova(CaveParameterImportance):
             parameter/s must be at least this important to be mentioned
         """
         super().__init__(runscontainer)
-        self.name = 'fANOVA'
 
         self.marginal_threshold = marginal_threshold
         self.parameter_importance("fanova")
+
+    def get_name(self):
+        return 'fANOVA'
 
     def postprocess(self, pimp, output_dir):
         result = OrderedDict()

@@ -14,11 +14,13 @@ class CaveAblation(CaveParameterImportance):
                  runscontainer,
                  marginal_threshold=0.05):
         super().__init__(runscontainer)
-        self.name = "Ablation"
 
         self.marginal_threshold = marginal_threshold
 
         self.parameter_importance("ablation")
+
+    def get_name(self):
+        return "Ablation"
 
     def postprocess(self, pimp, output_dir):
         result = OrderedDict([

@@ -34,10 +34,10 @@ class ParallelCoordinates(BaseAnalyzer):
 
     def __init__(self,
                  runscontainer,
-                 params: Union[int, List[str]],
-                 pc_sort_by: str,
-                 n_configs: int,
-                 max_runs_epm: int=3000000,
+                 pc_sort_by: str=None,
+                 params: Union[int, List[str]]=None,
+                 n_configs: int=None,
+                 max_runs_epm: int=None,
                  ):
         """This function prepares the data from a SMAC-related
         format (using runhistories and parameters) to a more general format
@@ -56,13 +56,16 @@ class ParallelCoordinates(BaseAnalyzer):
         max_runs_epm: int
             maximum number of runs to train the epm with. this should prevent MemoryErrors
         """
-        super().__init__(runscontainer)
-        self.name = "Parallel Coordinates"
+        super().__init__(runscontainer,
+                         pc_sort_by=pc_sort_by,
+                         params=params,
+                         n_configs=n_configs,
+                         max_runs_epm=max_runs_epm)
 
-        self.params = params
-        self.n_configs = n_configs
-        self.max_runs_epm = max_runs_epm
-        self.pc_sort_by = pc_sort_by
+        self.params = self.options.getint('params')
+        self.n_configs = self.options.getint('n_configs')
+        self.max_runs_epm = self.options.getint('max_runs_epm')
+        self.pc_sort_by = self.options['pc_sort_by']
 
         formatted_budgets = format_budgets(self.runscontainer.get_budgets())
         for run in self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False):
@@ -76,6 +79,9 @@ class ParallelCoordinates(BaseAnalyzer):
                 output_dir=run.output_dir,
                 cs=run.scenario.cs,
                 runtime=(run.scenario.run_obj == 'runtime'))
+
+    def get_name(self):
+        return "Parallel Coordinates"
 
     def _plot_parallel_coordinates(self,
                                    original_rh: RunHistory,
@@ -180,6 +186,8 @@ class ParallelCoordinates(BaseAnalyzer):
             if importance:
                 params = min(params, max(3, len([x for x in importance.values() if x > 0.05])))
             params = hp_names[:params]
+        elif isinstance(params, str):
+            params = [p for p in params.strip('[]').split(', ')]
         self.logger.debug("Reduced to %s", str(params))
         return params
 

@@ -32,13 +32,13 @@ class ConfiguratorRun(object):
                  original_runhistory,
                  validated_runhistory,
                  trajectory,
+                 options,
                  path_to_folder=None,
                  ta_exec_dir=None,
                  file_format=None,
                  validation_format=None,
                  budget=None,
                  output_dir=None,
-                 options=None,
                  ):
         """
         Parameters
@@ -50,6 +50,8 @@ class ConfiguratorRun(object):
             where points of interest are reevaluated after the optimization process
         trajectory: List[dict]
             a trajectory of the best performing configurations at each point in time
+        options: dict
+            options can define a number of custom settings
         path_to_folder: str
             path to the physical folder containing the data
         ta_exec_dir: str
@@ -60,12 +62,10 @@ class ConfiguratorRun(object):
             a budget, with which this cr is associated
         output_dir: str
             where to save analysis-data for this cr
-        options: dict
-            options can define a number of custom settings
-
         """
         self.logger = logging.getLogger("cave.ConfiguratorRun.{}".format(path_to_folder))
         self.rng = np.random.RandomState(42)
+        self.options = options
 
         self.path_to_folder = path_to_folder
         self.budget = budget
@@ -79,11 +79,6 @@ class ConfiguratorRun(object):
         self.validation_format = validation_format
         self.output_dir = os.path.join(output_dir, 'analysis_data', self.get_identifier())
         os.makedirs(self.output_dir, exist_ok=True)
-        self.options = {'pimp_max_samples' : -1,
-                        'fanova_pairwise' : True,
-                        }
-        if options is not None:
-            self.options.update(**options)
 
         self.default = self.scenario.cs.get_default_configuration()
         self.incumbent = self.trajectory[-1]['incumbent'] if self.trajectory else None
@@ -124,6 +119,7 @@ class ConfiguratorRun(object):
     def from_folder(cls,
                     folder: str,
                     ta_exec_dir: str,
+                    options,
                     file_format: str='SMAC3',
                     validation_format: str='NONE',
                     budget=None,
@@ -180,6 +176,7 @@ class ConfiguratorRun(object):
                    original_runhistory,
                    validated_runhistory,
                    trajectory,
+                   options,
                    folder,
                    ta_exec_dir,
                    file_format,
@@ -210,8 +207,8 @@ class ConfiguratorRun(object):
                                incumbent=self.incumbent if self.incumbent else self.default,
                                save_folder=alternative_output_dir if alternative_output_dir is not None else self.output_dir,
                                seed=self.rng.randint(1, 100000),
-                               max_sample_size=self.options["pimp_max_samples"],
-                               fANOVA_pairwise=self.options["fanova_pairwise"],
+                               max_sample_size=self.options['fANOVA'].getint("pimp_max_samples"),
+                               fANOVA_pairwise=self.options['fANOVA'].getboolean("fanova_pairwise"),
                                preprocess=False,
                                verbose=1,  # disable progressbars
                                )

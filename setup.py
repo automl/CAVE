@@ -24,6 +24,9 @@ setuptools.setup(
     version=version,
     packages=['cave', 'cave.analyzer', 'cave.feature_analysis', 'cave.reader', 'cave.html', 'cave.plot', 'cave.utils'],
     package_data={
+        'cave' : [
+            'cave/default_analysis_options.ini'
+        ],
         'cave/analyzer': [
             'cave/analyzer/mpl_style'
         ],

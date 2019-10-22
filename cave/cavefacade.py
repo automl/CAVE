@@ -1,3 +1,4 @@
+import configparser
 import logging
 import os
 import shutil
@@ -34,6 +35,7 @@ from cave.analyzer.plot_ecdf import PlotECDF
 from cave.analyzer.plot_scatter import PlotScatter
 from cave.html.html_builder import HTMLBuilder
 from cave.reader.runs_container import RunsContainer
+from cave.utils.helpers import Deactivated, NotApplicable, load_default_options
 from cave.utils.timing import timing
 
 __author__ = "Joshua Marben"
@@ -49,6 +51,12 @@ def _analyzer_type(f):
         self.logger.debug("Args: %s, Kwargs: %s", str(args), str(kw))
         try:
             analyzer = f(self, *args, **kw)
+        except Deactivated as err:
+            self.logger.info(err)
+            return
+        except NotApplicable as err:
+            self.logger.debug("Skipping analyzer ({})".format(err))
+            return
         except Exception as err:
             self.logger.exception(err)
             raise
@@ -75,13 +83,12 @@ class CAVE(object):
                  file_format: str='SMAC3',
                  validation_format='NONE',
                  validation_method: str='epm',
-                 pimp_max_samples: int=-1,
-                 fanova_pairwise: bool=True,
-                 pc_sort_by: str='none',
-                 use_budgets: bool=False,
                  seed: int=42,
                  show_jupyter: bool=True,
-                 verbose_level: str='OFF'):
+                 verbose_level: str='OFF',
+                 analyzing_options=None,
+                 **kwargs,
+                 ):
         """
         Initialize CAVE facade to handle analyzing, plotting and building the report-page easily.
         During initialization, the analysis-infrastructure is built and the data is validated, the overall best
@@ -131,14 +138,8 @@ class CAVE(object):
 
         self.logger.debug("Running CAVE version %s", v)
 
-        # Methods that are never per-run, because they are inter-run-analysis by nature
-        self.always_aggregated = ['bohb_learning_curves', 'bohb_incumbents_per_budget', 'configurator_footprint',
-                                  'budget_correlation', 'cost_over_time',
-                                  'overview_table']  # these function-names will always be aggregated
-
         self.verbose_level = verbose_level
         self.rng = np.random.RandomState(seed)
-        self.use_budgets = use_budgets  # TODO?
         self.folders = folders
         self.ta_exec_dir = ta_exec_dir
         self.file_format = file_format
@@ -146,25 +147,21 @@ class CAVE(object):
         self.validation_method = validation_method
 
         # Configuration of analyzers (works as a default for report generation)
-        self.pimp_max_samples = pimp_max_samples
-        self.fanova_pairwise = fanova_pairwise
-        self.pc_sort_by = pc_sort_by
-
-        self.num_bohb_results = 0
-        self.bohb_results = None  # only relevant for bohb_result
+        analyzing_options = load_default_options(analyzing_options)
 
         self.runscontainer = RunsContainer(folders=self.folders,
                                            ta_exec_dirs=self.ta_exec_dir,
                                            output_dir=self.output_dir,
                                            file_format=self.file_format,  # TODO remove?
                                            validation_format=self.validation_format,  # TODO remove?
+                                           analyzing_options=analyzing_options,
                                            )
 
-        # Builder for html-website, decide for suitable logo
+        # create builder for html-website, decide for suitable logo
         custom_logo = './custom_logo.png'
-        if self.use_budgets:
+        if self.runscontainer.file_format == 'BOHB':
             logo_fn = 'BOHB_logo.png'
-        elif file_format.startswith('SMAC'):
+        elif self.runscontainer.file_format.startswith('SMAC'):
             logo_fn = 'SMAC_logo.png'
         elif os.path.exists(custom_logo):
             logo_fn = custom_logo
@@ -177,135 +174,69 @@ class CAVE(object):
 
     @timing
     def analyze(self,
-                performance=True,
-                cdf=True,
-                scatter=True,
-                cfp=True,
-                cfp_time_slider=False,
-                cfp_max_plot=-1,
-                cfp_number_quantiles=10,
-                param_importance=['lpi', 'fanova'],
-                pimp_sort_table_by: str="average",
-                feature_analysis=["box_violin", "correlation", "importance", "clustering", "feature_cdf"],
-                parallel_coordinates=True,
-                cost_over_time=True,
-                cot_inc_traj='racing',
-                algo_footprint=True):
+                options=None):
         """Analyze the available data and build HTML-webpage as dict.
         Save webpage in 'self.output_dir/CAVE/report.html'.
-        Analyzing is performed with the analyzer-instance that is initialized in
-        the __init__
 
         Parameters
         ----------
-        performance: bool
-            whether to calculate par10-values
-        cdf: bool
-            whether to plot cdf
-        scatter: bool
-            whether to plot scatter
-        cfp: bool
-            whether to perform configuration visualization
-        cfp_time_slider: bool
-            whether to include an interactive time-slider in configuration footprint
-        cfp_max_plot: int
-            limit number of configurations considered for configuration footprint (-1 -> all configs)
-        cfp_number_quantiles: int
-            number of steps over time generated in configuration footprint
-        param_importance: List[str]
-            containing methods for parameter importance
-        pimp_sort_table: str
-            in what order the parameter-importance overview should be organized
-        feature_analysis: List[str]
-            containing methods for feature analysis
-        parallel_coordinates: bool
-            whether to plot parallel coordinates
-        cost_over_time: bool
-            whether to plot cost over time
-        cot_inc_traj: str
-            from ['racing', 'minimum', 'prefer_higher_budget'], defines incumbent trajectory from hpbandster result
-        algo_footprint: bool
-            whether to plot algorithm footprints
+        options: Dict or str
+            either a dictionary or a path to an ini-file.
         """
         flag_show_jupyter = self.show_jupyter
         self.show_jupyter = False
-        # Check arguments
-        for p in param_importance:
-            if p not in ['forward_selection', 'ablation', 'fanova', 'lpi']:
-                raise ValueError("%s not a valid option for parameter importance!" % p)
-        for f in feature_analysis:
-            if f not in ["box_violin", "correlation", "importance", "clustering", "feature_cdf"]:
-                raise ValueError("%s not a valid option for feature analysis!" % f)
 
-        # Deactivate pimp for less configs than parameters
-        # TODO where should this go?
-        #num_configs = len(combine_runhistories([r.original_runhistory for r in self.runs]).get_all_configs())
-        #num_params = len(self.scenario.cs.get_hyperparameters())
-        #if num_configs < num_params:
-        #    self.logger.info("Deactivating parameter importance, since there are less configs than parameters (%d < %d)"
-        #                     % (num_configs, num_params))
-        #    param_importance = []
-
-        # Start analysis
-        headings = ["Meta Data",
-                    "Best Configuration",
-                    "Performance Analysis",
-                    "Configurators Behavior",
-                    "Parameter Importance",
-                    "Feature Analysis",
-                    "BOHB Plot",
-                    ]
-        for h in headings:
-            self.website[h] = OrderedDict()
+        # Process analyzing-options
+        if isinstance(options, str):
+            self.logger.debug("Loading \"{}\".".format(options))
+            self.runscontainer.analyzing_options.read(options)
+        elif isinstance(options, dict):
+            for k, v in options.items():
+                occurences = sum([1 for x in self.runscontainer.analyzing_options.sections() if k in x])
+                if occurences > 1:
+                    self.logger.warning("{} is an arbitrary option - to avoid collisions, "
+                                        "consider using a different name.")
+                if occurences == 0 and k not in self.runscontainer.analyzing_options.sections():
+                    self.logger.warning("{} is not found in default options. Are you sure you know what you are doing?")
+                for s in self.runscontainer.analyzing_options.sections():
+                    if s == k:
+                        self.runscontainer.analyzing_options[k]['run'] = v
+                    elif k in self.runscontainer.analyzing_options[s]:
+                        self.runscontainer.analyzing_options[s][k] = v
 
         self.overview_table(d=self.website)
 
         ###################################################
         #  Performance Analysis  #  Performance Analysis  #
         ###################################################
-        if performance:
-            self.performance_table(d=self._get_dict(self.website, "Performance Analysis"))
-        if cdf:
-            self.plot_ecdf(d=self._get_dict(self.website, "Performance Analysis"))
-        if scatter:
-            self.plot_scatter(d=self._get_dict(self.website, "Performance Analysis"))
-        if algo_footprint and self.runscontainer.scenario.feature_dict:
-            self.algorithm_footprints(d=self._get_dict(self.website["Performance Analysis"],
-                                                       "Algorithm Footprints"),)
+        self.performance_table(d=self._get_dict(self.website, "Performance Analysis"))
+        self.plot_ecdf(d=self._get_dict(self.website, "Performance Analysis"))
+        self.plot_scatter(d=self._get_dict(self.website, "Performance Analysis"))
+        self.algorithm_footprints(d=self._get_dict(self.website, "Performance Analysis"))
         self.compare_default_incumbent(d=self._get_dict(self.website, "Meta Data"))
 
+        ###################################################
+        #    Budget  Analysis    #    Budget  Analysis    #
+        ###################################################
         if self.runscontainer.use_budgets:
             self.bohb_incumbents_per_budget(d=self._get_dict(self.website, "Budget Analysis"))
             self.budget_correlation(d=self._get_dict(self.website, "Budget Analysis"))
             self.bohb_learning_curves(d=self._get_dict(self.website, "Budget Analysis"))
 
+        ###################################################
+        #            Configurator's Behaviour             #
+        ###################################################
+        self.configurator_footprint(d=self._get_dict(self.website, "Configurators Behavior"))
+        self.cost_over_time(d=self._get_dict(self.website, "Configurators Behavior"))
 
-        if cfp:  # Configurator Footprint
-            self.configurator_footprint(d=self._get_dict(self.website, "Configurators Behavior"),
-                                        use_timeslider=cfp_time_slider,
-                                        max_confs=cfp_max_plot,
-                                        num_quantiles=cfp_number_quantiles)
-
-        if cost_over_time:
-            self.cost_over_time(d=self._get_dict(self.website, "Configurators Behavior"),
-                                cot_inc_traj=cot_inc_traj)
-
-        self.parameter_importance(self.website["Parameter Importance"],
-                                  ablation='ablation' in param_importance,
-                                  fanova='fanova' in param_importance,
-                                  forward_selection='forward_selection' in param_importance,
-                                  lpi='lpi' in param_importance,
-                                  )
-
-        self.feature_analysis(self.website["Feature Analysis"],
-                              box_violin='box_violin' in feature_analysis,
-                              correlation='correlation' in feature_analysis,
-                              clustering='clustering' in feature_analysis,
-                              importance='importance' in feature_analysis)
+        ###################################################
+        #         Parameter- and Feature-Analysis         #
+        ###################################################
+        self.parameter_importance(self._get_dict(self.website, "Parameter Importance"))
+        self.feature_analysis(self._get_dict(self.website, "Feature Analysis"))
 
         # Should be after parameter importance, if performed.
-        if parallel_coordinates:
-            self.parallel_coordinates(d=self._get_dict(self.website, "Configurators Behavior"))
+        self.parallel_coordinates(d=self._get_dict(self.website, "Configurators Behavior"))
 
         self._build_website()
 
@@ -348,33 +279,33 @@ class CAVE(object):
 
     @_analyzer_type
     def cost_over_time(self,
-                       cot_inc_traj='racing'):
+                       incumbent_trajectory=None):
         return CostOverTime(self.runscontainer,
-                            cot_inc_traj=cot_inc_traj)
+                            incumbent_trajectory=incumbent_trajectory)
 
     @_analyzer_type
     def parallel_coordinates(self,
-                             params: Union[int, List[str]]=5,
-                             n_configs: int=100,
-                             max_runs_epm: int=300000,
+                             pc_sort_by: str=None,
+                             params: Union[int, List[str]]=None,
+                             n_configs: int=None,
+                             max_runs_epm: int=None,
                              ):
         return ParallelCoordinates(self.runscontainer,
+                                   pc_sort_by=pc_sort_by,
                                    params=params,
                                    n_configs=n_configs,
-                                   pc_sort_by=self.pc_sort_by,
                                    max_runs_epm=max_runs_epm,
                                    )
 
     @_analyzer_type
     def configurator_footprint(self,
-                               use_timeslider=False,
-                               max_confs=1000,
-                               num_quantiles=8):
-        return ConfiguratorFootprint(
-                 self.runscontainer,
-                 max_confs=max_confs,
-                 use_timeslider=use_timeslider,
-                 num_quantiles=num_quantiles)
+                               time_slider=None,
+                               max_configurations_to_plot=None,
+                               number_quantiles=None):
+        return ConfiguratorFootprint(self.runscontainer,
+                                     time_slider=time_slider,
+                                     max_configurations_to_plot=max_configurations_to_plot,
+                                     number_quantiles=number_quantiles)
 
     @_analyzer_type
     def cave_fanova(self):
@@ -407,19 +338,13 @@ class CAVE(object):
                                    )
 
     def parameter_importance(self,
-                             d,
-                             ablation=False, fanova=False,
-                             forward_selection=False, lpi=False):
+                             d):
         """Perform the specified parameter importance procedures. """
-        if fanova:
-            self.cave_fanova(d=d)
-        if ablation:
-            self.cave_ablation(d=d)
-        if forward_selection:
-            self.pimp_forward_selection(d=d)
-        if lpi:
-            self.local_parameter_importance(d=d)
-        if sum([fanova, ablation, forward_selection, lpi]) >= 2:
+        self.cave_fanova(d=d)
+        self.cave_ablation(d=d)
+        self.pimp_forward_selection(d=d)
+        self.local_parameter_importance(d=d)
+        if sum([1 for x in ['fANOVA', 'Ablation', 'Forward Selection', 'Local Parameter Importance (LPI)'] if self.runscontainer.analyzing_options[x]['run'] != 'False']) >= 2:
             pct = self.pimp_comparison_table(d=d)
             d.move_to_end(pct.name, last=False)
 
@@ -442,17 +367,12 @@ class CAVE(object):
     def feature_clustering(self):
         return FeatureClustering(self.runscontainer)
 
-    def feature_analysis(self, d,
-                         box_violin=False, correlation=False, clustering=False, importance=False):
+    def feature_analysis(self, d):
         # feature importance using forward selection
-        if importance:
-            self.feature_importance(d=d)
-        if box_violin:
-            self.box_violin(d=d)
-        if correlation:
-            self.feature_correlation(d=d)
-        if clustering:
-            self.feature_clustering(d=d)
+        self.feature_importance(d=d)
+        self.box_violin(d=d)
+        self.feature_correlation(d=d)
+        self.feature_clustering(d=d)
 
     @_analyzer_type
     def bohb_learning_curves(self):

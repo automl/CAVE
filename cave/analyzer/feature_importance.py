@@ -3,6 +3,7 @@ import os
 from pandas import DataFrame
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
+from cave.utils.helpers import check_for_features
 from cave.utils.hpbandster_helpers import format_budgets
 
 
@@ -11,7 +12,7 @@ class FeatureImportance(BaseAnalyzer):
                  runscontainer,
                  ):
         super().__init__(runscontainer)
-        self.name = "Feature Importance"
+        check_for_features(runscontainer.scenario)
 
         formatted_budgets = format_budgets(self.runscontainer.get_budgets())
         for run in self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False):
@@ -22,6 +23,9 @@ class FeatureImportance(BaseAnalyzer):
             self.result[formatted_budgets[run.budget]] = plots
            # Add to run so other analysis-methods can use the information
             run.share_information['feature_importance'] = feat_imp
+
+    def get_name(self):
+        return "Feature Importance"
 
     def feature_importance(self, pimp, output_dir):
         self.logger.info("... plotting feature importance")
