@@ -199,9 +199,9 @@ class CAVE(object):
                     self.logger.warning("{} is not found in default options. Are you sure you know what you are doing?")
                 for s in self.runscontainer.analyzing_options.sections():
                     if s == k:
-                        self.runscontainer.analyzing_options[k]['run'] = v
+                        self.runscontainer.analyzing_options[k]['run'] = str(v)
                     elif k in self.runscontainer.analyzing_options[s]:
-                        self.runscontainer.analyzing_options[s][k] = v
+                        self.runscontainer.analyzing_options[s][k] = str(v)
 
         self.overview_table(d=self.website)
 

@@ -171,7 +171,7 @@ if __name__ == '__main__':
                 cave = CAVE([os.path.join(scen['output_dir'], folder)],
                             os.path.join(scen['output_dir'], 'CAVE_RESULT'),
                             ta_exec_dir=['.'], validation_method='validation')
-                cave.analyze(param_importance=['ablation', 'forward_selection', 'lpi'], cfp_number_quantiles=2)
+                cave.analyze({'fANOVA' : False, 'number_quantiles' : 2})
             except:
                 raise
                 failed.append(scen['output_dir'])
