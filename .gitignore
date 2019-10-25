@@ -3,20 +3,12 @@
 data/
 output/
 results/
-vespy/
 _run_number.txt
-logo.py
-traj2csv.py
-rh2csv.py
 
 # Specific examples
 data/
 data_original/
 results/
-examples/spear_qcp_large/
-examples/spear_qcp_small/example_output_1/validated_rh.json
-examples/spear_qcp_small/example_output_2/validated_rh.json
-examples/spear_qcp_small/example_output_3/validated_rh.json
 
 # Old versions
 *.old
@@ -96,6 +88,7 @@ target/
 
 # pyenv
 .python-version
+.idea
 
 # celery beat schedule file
 celerybeat-schedule
