@@ -1,5 +1,7 @@
 import configparser
+import inspect
 import logging
+import os
 import typing
 
 import numpy as np
@@ -221,8 +223,9 @@ class NotUniqueError(Exception):
 
 def load_default_options(options=None):
     # Load the configuration file
+    own_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
     default_options = configparser.ConfigParser()
-    default_options.read('cave/default_analysis_options.ini')
+    default_options.read(os.path.join(own_folder, 'default_analysis_options.ini'))
 
     if options is not None:
         if isinstance(options, str):
