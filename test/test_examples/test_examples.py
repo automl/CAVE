@@ -33,7 +33,6 @@ class TestExamples(unittest.TestCase):
         self.cavecli = CaveCLI()
         self.cave_output_dir = "test/test_files/output_tmp"
         self.def_args_off = ["--parameter_importance", "none", "--feature_analysis", "none",
-                             #"--no_tabular_analysis",
                              "--no_ecdf", "--no_scatter_plots", "--no_cost_over_time",
                              "--no_configurator_footprint", "--no_parallel_coordinates", "--no_algorithm_footprints",
                              "--output", self.cave_output_dir]

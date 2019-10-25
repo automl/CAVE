@@ -146,10 +146,10 @@ def generate_bohb_data():
 def print_help():
     print("This script will generate scenarios for the corner cases of provided information (with/without features, instances, etc.) using toy data.\n"
           "Start this script with one of the following arguments in a suitable python-environment (that fulfills CAVE's requirements):\n"
-          "-- 'generate' will generate suitable test-cases using SMAC-optimization \n"
-          "-- 'cave' will analyze the results of the generate-option using cave \n"
-          "-- 'clean' will delete previous results \n"
-          "-- 'firefox' will open all reports in firefox.")
+          "'--generate' will generate suitable test-cases using SMAC-optimization \n"
+          "'--cave'     will analyze the results of the generate-option using cave \n"
+          "'--clean'    will delete previous results \n"
+          "'--firefox'  will open all reports in firefox.")
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
@@ -157,13 +157,13 @@ if __name__ == '__main__':
 
     if len(sys.argv) < 2:
         print_help()
-    elif sys.argv[1] == 'generate':
+    elif sys.argv[1] == '--generate':
         generate_bohb_data()
         for scen in get_scenarios():
             scenario = Scenario(scen)
             smac = SMAC4AC(scenario=scenario, rng=np.random.RandomState(42))
             smac.optimize()
-    elif sys.argv[1] == 'cave':
+    elif sys.argv[1] == '--cave':
         failed = []
         for scen in get_scenarios():
             try:
@@ -176,12 +176,12 @@ if __name__ == '__main__':
                 raise
                 failed.append(scen['output_dir'])
         print("Failed: %s" % (str(failed)))
-    elif sys.argv[1] == 'firefox':
+    elif sys.argv[1] == '--firefox':
         import webbrowser
         firefox = webbrowser.get('firefox')
         for url in [os.path.join(scen['output_dir'], 'CAVE_RESULT/report.html') for scen in get_scenarios()]:
             firefox.open_new_tab(url)
-    elif sys.argv[1] == 'clean':
+    elif sys.argv[1] == '--clean':
         shutil.rmtree('test/general_example/results')
     else:
         logging.error("%s not an option.", sys.argv[1])
