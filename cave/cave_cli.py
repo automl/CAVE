@@ -105,9 +105,9 @@ class CaveCLI(object):
                                type=int,
                                help="random seed used throughout analysis. ")
         cave_opts.add_argument("--file_format",
-                               default='SMAC3',
+                               default='auto',
                                help="specify the format of the configurator-files. ",
-                               choices=['SMAC2', 'SMAC3', 'CSV', 'BOHB'],
+                               choices=['auto', 'SMAC2', 'SMAC3', 'CSV', 'BOHB'],
                                type=str.upper)
         cave_opts.add_argument("--validation_format",
                                default='NONE',

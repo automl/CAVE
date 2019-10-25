@@ -135,3 +135,13 @@ class CSVReader(BaseReader):
             traj.append(new_entry)
         csv_data.apply(add_to_traj, axis=1)
         return traj
+
+    @classmethod
+    def check_for_files(cls, path):
+        if (os.path.isfile(os.path.join(path, 'scenario.txt'))
+            and os.path.isfile(os.path.join(path, 'runhistory.csv'))
+            and os.path.isfile(os.path.join(path, 'trajectory.csv'))
+        ):
+            return True
+        return False
+

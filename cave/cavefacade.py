@@ -1,4 +1,3 @@
-import configparser
 import logging
 import os
 import shutil
@@ -80,7 +79,7 @@ class CAVE(object):
                  folders: typing.List[str],
                  output_dir: str,
                  ta_exec_dir: typing.List[str],
-                 file_format: str='SMAC3',
+                 file_format: str='auto',
                  validation_format='NONE',
                  validation_method: str='epm',
                  seed: int=42,

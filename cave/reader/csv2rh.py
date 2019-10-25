@@ -235,8 +235,10 @@ class CSV2RH(object):
 
         # Check whether all config-ids are present
         if len(set(data['config_id']) - set(id_to_config.keys())) > 0:
-            raise ValueError("config id %s cannot be identified (is your "
-                             "configurations.csv complete?")
+            raise ValueError("config id {} cannot be identified (is your "
+                             "configurations.csv complete?".format(
+                set(data['config_id']) - set(id_to_config.keys())
+            ))
 
         return data, id_to_config
 

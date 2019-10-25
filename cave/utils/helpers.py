@@ -216,6 +216,9 @@ class Deactivated(Exception):
 class NotApplicable(Exception):
     pass
 
+class NotUniqueError(Exception):
+    pass
+
 def load_default_options(options=None):
     # Load the configuration file
     default_options = configparser.ConfigParser()
