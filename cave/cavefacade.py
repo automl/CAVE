@@ -86,7 +86,7 @@ class CAVE(object):
                  show_jupyter: bool=True,
                  verbose_level: str='OFF',
                  analyzing_options=None,
-                 **kwargs,
+                 **kwargs
                  ):
         """
         Initialize CAVE facade to handle analyzing, plotting and building the report-page easily.
