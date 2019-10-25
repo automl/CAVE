@@ -55,13 +55,18 @@ class CaveCLI(object):
         parser = ArgumentParser(formatter_class=SmartArgsDefHelpFormatter, add_help=False,
                                 description='CAVE: Configuration Assessment Vizualisation and Evaluation')
 
-        req_opts = parser.add_argument_group("Required Options")
-        req_opts.add_argument("--folders",
-                              required=True,
-                              nargs='+',
+        req_opts = parser.add_mutually_exclusive_group(required=True)
+        req_opts.add_argument("folders",
+                              nargs='*',
                               # strings prefixed with raw| can be manually split with \n
                               help="raw|path(s) to Configurator output-directory/ies",
                               default=SUPPRESS)
+
+        req_opts.add_argument("--folders",
+                              nargs='*',
+                              dest='folders',
+                              default=SUPPRESS,
+                              help=SUPPRESS)
 
         cave_opts = parser.add_argument_group("CAVE global options",
                                               "Options that configure the analysis in general and define behaviour.")
