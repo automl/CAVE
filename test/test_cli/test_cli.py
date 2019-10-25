@@ -1,21 +1,13 @@
-import sys
 import os
-import numpy as np
-import logging
 import shutil
-from contextlib import contextmanager
-
+import sys
 import unittest
+from contextlib import contextmanager
 from unittest import mock
-
-from smac.optimizer.objective import average_cost
-from smac.scenario.scenario import Scenario
-from smac.runhistory.runhistory import RunHistory
-from smac.utils.io.traj_logging import TrajLogger
-from smac.utils.validate import Validator
 
 from cave.cave_cli import CaveCLI
 from cave.cavefacade import CAVE
+
 
 @contextmanager
 def changedir(newdir):
@@ -67,9 +59,6 @@ class TestCLI(unittest.TestCase):
             testargs = ["scripts/cave", "--folders"]
             testargs.extend(folders)
             testargs.extend(self.def_args_off)
-            # No ta_exec -> scenario cannot be loaded
-            with mock.patch.object(sys, 'argv', testargs):
-                self.assertRaises(SystemExit, self.cavecli.main_cli)
             testargs.extend(["--ta_exec", "test/example_output"])
             with mock.patch.object(sys, 'argv', testargs):
                 with mock.patch.object(CAVE, '__init__', lambda *x, **y: None):
@@ -97,10 +86,6 @@ class TestCLI(unittest.TestCase):
                     with mock.patch.object(CAVE, '__init__', lambda *x, **y: None):
                         with mock.patch.object(CAVE, 'analyze', lambda *x, **y: None):
                             self.cavecli.main_cli()
-                # Wrong ta_exec -> scenario cannot be loaded
-                testargs.extend(["--ta_exec", "example_output"])
-                with mock.patch.object(sys, 'argv', testargs):
-                    self.assertRaises(SystemExit, self.cavecli.main_cli)
 
     def test_exceptions(self):
         test_folder = "test/example_output/example_output/run_1"

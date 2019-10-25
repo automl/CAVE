@@ -13,16 +13,15 @@ abstract methods for generation of callstring and parsing of solver output
 @warning:  use "--" after the last additional argument of the wrapper to deactivate prefix matching! 
 '''
 
-import sys
-import os
-import signal
-import time
-import re
-import random
-import traceback
-import shutil
 import json
-from argparse import ArgumentParser, RawDescriptionHelpFormatter
+import os
+import random
+import re
+import shutil
+import signal
+import sys
+import time
+import traceback
 from subprocess import Popen, PIPE
 from tempfile import NamedTemporaryFile, mkdtemp
 

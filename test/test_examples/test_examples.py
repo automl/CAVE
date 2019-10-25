@@ -2,7 +2,6 @@ import os
 import shutil
 import sys
 import unittest
-
 from contextlib import contextmanager
 from unittest import mock
 
@@ -63,9 +62,6 @@ class TestExamples(unittest.TestCase):
             testargs = ["scripts/cave", "--folders"]
             testargs.extend(folders)
             testargs.extend(self.def_args_off)
-            # No ta_exec -> scenario cannot be loaded
-            with mock.patch.object(sys, 'argv', testargs):
-                self.assertRaises(SystemExit, self.cavecli.main_cli)
             testargs.extend(["--ta_exec", "test/example_output"])
             with mock.patch.object(sys, 'argv', testargs):
                 with mock.patch.object(CAVE, '__init__', lambda *x, **y: None):
@@ -93,10 +89,6 @@ class TestExamples(unittest.TestCase):
                     with mock.patch.object(CAVE, '__init__', lambda *x, **y: None):
                         with mock.patch.object(CAVE, 'analyze', lambda *x, **y: None):
                             self.cavecli.main_cli()
-                # Wrong ta_exec -> scenario cannot be loaded
-                testargs.extend(["--ta_exec", "example_output"])
-                with mock.patch.object(sys, 'argv', testargs):
-                    self.assertRaises(SystemExit, self.cavecli.main_cli)
 
     def test_exceptions(self):
         test_folder = "test/example_output/example_output/run_1"

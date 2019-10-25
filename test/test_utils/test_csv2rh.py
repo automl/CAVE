@@ -1,10 +1,9 @@
-import os
-import numpy as np
 import csv
+import os
 import unittest
 
-from ConfigSpace import Configuration, ConfigurationSpace
-from smac.tae.execute_ta_run import StatusType
+import numpy as np
+
 
 class TestCSV2RH(unittest.TestCase):
 

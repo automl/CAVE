@@ -4,20 +4,18 @@ We optimize a simple SVM on the IRIS-benchmark.
 """
 
 import logging
-import numpy as np
-from sklearn import svm, datasets
-from sklearn.model_selection import cross_val_score
 
-# Import ConfigSpace and different types of parameters
-from smac.configspace import ConfigurationSpace
+import numpy as np
+from ConfigSpace.conditions import InCondition
 from ConfigSpace.hyperparameters import CategoricalHyperparameter, \
     UniformFloatHyperparameter, UniformIntegerHyperparameter
-from ConfigSpace.conditions import InCondition
-
-# Import SMAC-utilities
-from smac.tae.execute_func import ExecuteTAFuncDict
-from smac.scenario.scenario import Scenario
+from sklearn import svm, datasets
+# Import ConfigSpace and different types of parameters
+from smac.configspace import ConfigurationSpace
 from smac.facade.smac_facade import SMAC
+# Import SMAC-utilities
+from smac.scenario.scenario import Scenario
+
 
 def svm_from_cfg_with_instance(cfg, instance, seed):
     """ Creates a SVM based on a configuration and evaluates it on the

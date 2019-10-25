@@ -1,6 +1,7 @@
 import copy
 import logging
 import os
+import tempfile
 from collections import OrderedDict
 from contextlib import contextmanager
 
@@ -77,6 +78,9 @@ class ConfiguratorRun(object):
         self.ta_exec_dir = ta_exec_dir
         self.file_format = file_format
         self.validation_format = validation_format
+        if not output_dir:
+            self.logger.debug("New outputdir")
+            output_dir = tempfile.mkdtemp()
         self.output_dir = os.path.join(output_dir, 'analysis_data', self.get_identifier())
         os.makedirs(self.output_dir, exist_ok=True)
 

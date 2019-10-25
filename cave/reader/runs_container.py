@@ -158,7 +158,7 @@ class RunsContainer(object):
     def __getitem__(self, key):
         """ Return highest budget for given folder. """
         if self.use_budgets:
-            return self.pRun2budgets[key][self.get_highest_budget()]
+            return self.pRun2budget[key][self.get_highest_budget()]
         else:
             return self.pRun2budget[key][None]
 
