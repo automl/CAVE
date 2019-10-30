@@ -233,10 +233,13 @@ class CSV2RH(object):
             data = data.apply(add_config, axis=1)
             id_to_config = {conf : name for name, conf in config_to_id.items()}
 
+        data["config_id"] = pd.to_numeric(data["config_id"])
+
+
         # Check whether all config-ids are present
         if len(set(data['config_id']) - set(id_to_config.keys())) > 0:
             raise ValueError("config id {} cannot be identified (is your "
-                             "configurations.csv complete?".format(
+                             "configurations.csv complete? Or maybe this is a type-issue...".format(
                 set(data['config_id']) - set(id_to_config.keys())
             ))
 

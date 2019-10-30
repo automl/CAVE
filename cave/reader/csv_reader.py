@@ -1,6 +1,7 @@
 import os
 import shutil
 
+import pandas as pd
 from smac.runhistory.runhistory import RunHistory
 from smac.scenario.scenario import Scenario
 from smac.utils.io.input_reader import InputReader
