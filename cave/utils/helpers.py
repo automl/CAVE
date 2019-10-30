@@ -9,6 +9,11 @@ from ConfigSpace.configuration_space import Configuration
 from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunHistory, RunKey
 
+from cave.reader.csv_reader import CSVReader
+from cave.reader.smac2_reader import SMAC2Reader
+from cave.reader.smac3_reader import SMAC3Reader
+from cave.utils.exceptions import NotApplicable
+
 
 def get_timeout(rh, conf, cutoff):
     """Check for timeouts. If multiple runs for an inst/config-pair are
@@ -212,20 +217,11 @@ def check_for_features(scenario):
     if not (train_feats or test_feats):
         raise NotApplicable("Could not detect any instances.")
 
-class Deactivated(Exception):
-    pass
-
-class NotApplicable(Exception):
-    pass
-
-class NotUniqueError(Exception):
-    pass
-
-def load_default_options(options=None):
+def load_default_options(options=None, file_format=None):
     # Load the configuration file
     own_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
     default_options = configparser.ConfigParser()
-    default_options.read(os.path.join(own_folder, 'default_analysis_options.ini'))
+    default_options.read(os.path.join(own_folder, 'options/default_analysis_options.ini'))
 
     if options is not None:
         if isinstance(options, str):
@@ -233,4 +229,26 @@ def load_default_options(options=None):
         else:
             default_options.read_dict(options)
 
+    if file_format == "BOHB":
+        default_options.read(os.path.join(own_folder, 'options/default_bohb_analysis_options.ini'))
+
     return default_options
+
+def detect_fileformat(folders):
+    # Check if it's BOHB
+    bohb_files = ["configs.json", "results.json", "configspace.json"]
+    for f in folders:
+        if not all([os.path.isfile(os.path.join(f, sub)) for sub in bohb_files]):
+            break
+    else:
+        return "BOHB"
+    # Check if it's SMAC
+    if all([SMAC3Reader.check_for_files(f) for f in folders]):
+        return "SMAC3"
+    if all([SMAC2Reader.check_for_files(f) for f in folders]):
+        return "SMAC2"
+    # Check if it's CSV
+    if all([CSVReader.check_for_files(f) for f in folders]):
+        return "CSV"
+
+    raise RuntimeError("Autodetection of file-format failed. Please try to specify (using --file_format on cmd-line)")

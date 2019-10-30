@@ -3,7 +3,7 @@ import logging
 import os
 from contextlib import contextmanager
 
-from cave.utils.helpers import NotUniqueError
+from cave.utils.exceptions import NotUniqueError
 
 
 @contextmanager

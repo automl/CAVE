@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import glob
-import logging
 import sys
 import time
 from argparse import ArgumentParser, SUPPRESS
@@ -8,7 +7,7 @@ from datetime import datetime as datetime
 
 import matplotlib
 
-from cave.utils.helpers import load_default_options
+from cave.utils.helpers import load_default_options, detect_fileformat
 
 matplotlib.use('agg')  # noqa
 
@@ -282,7 +281,14 @@ class CaveCLI(object):
             else:
                 ta_exec_dir.append(t)
 
-        analyzing_options = load_default_options()
+        file_format = args_.file_format
+        validation_format = args_.validation_format
+        validation = args_.validation
+        seed = args_.seed
+        verbose_level = args_.verbose_level
+        show_jupyter = args_.jupyter == 'on'
+
+        analyzing_options = load_default_options(file_format=detect_fileformat(folders) if file_format.upper() == "AUTO" else file_format)
 
         analyzing_options["Ablation"]["run"] = str('ablation' in param_imp)
         analyzing_options["Algorithm Footprint"]["run"] = str(args_.algorithm_footprints)
@@ -309,13 +315,6 @@ class CaveCLI(object):
         analyzing_options["Parallel Coordinates"]["pc_sort_by"] = str(args_.pc_sort_by)
         analyzing_options["Performance Table"]["run"] = str(args_.performance_table)
 
-        file_format = args_.file_format
-        validation_format = args_.validation_format
-        validation = args_.validation
-        seed = args_.seed
-        verbose_level = args_.verbose_level
-        show_jupyter = args_.jupyter == 'on'
-
         cave = CAVE(folders,
                     output_dir,
                     ta_exec_dir,
@@ -328,7 +327,7 @@ class CaveCLI(object):
                     analyzing_options=analyzing_options,
                     )
 
-        logging.getLogger().debug("CAVE is called with arguments: " + str(args_))
+        cave.logger.debug("CAVE is called with arguments: " + str(args_))
 
         # Analyze
         cave.analyze()

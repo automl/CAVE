@@ -12,7 +12,7 @@ from cave.reader.conversion.hpbandster2smac import HpBandSter2SMAC
 from cave.reader.csv_reader import CSVReader
 from cave.reader.smac2_reader import SMAC2Reader
 from cave.reader.smac3_reader import SMAC3Reader
-from cave.utils.helpers import combine_trajectories, load_default_options
+from cave.utils.helpers import combine_trajectories, load_default_options, detect_fileformat
 
 
 class RunsContainer(object):
@@ -87,13 +87,13 @@ class RunsContainer(object):
 
         self.output_dir = output_dir if output_dir else tempfile.mkdtemp()
 
-        self.analyzing_options = load_default_options() if analyzing_options is None else analyzing_options
-
         if file_format.upper() == "AUTO":
-            file_format = self.detect_fileformat(self.folders, self.ta_exec_dirs)
+            file_format = detect_fileformat(folders=self.folders)
         self.file_format = file_format
         self.validation_format = validation_format
         self.use_budgets = self.file_format == "BOHB"
+
+        self.analyzing_options = load_default_options(analyzing_options, file_format)
 
         # Main focus on this mapping pRun2budget2data:
         self.pRun2budget = {None : {}}  # mapping parallel runs to their budgets
@@ -266,21 +266,3 @@ class RunsContainer(object):
                                  )
         return new_cr
 
-    def detect_fileformat(self, folders, ta_dirs):
-        # Check if it's BOHB
-        bohb_files = ["configs.json", "results.json", "configspace.json"]
-        for f in folders:
-            if not all([os.path.isfile(os.path.join(f, sub)) for sub in bohb_files]):
-                break
-        else:
-            return "BOHB"
-        # Check if it's SMAC
-        if all([SMAC3Reader.check_for_files(f) for f in folders]):
-            return "SMAC3"
-        if all([SMAC2Reader.check_for_files(f) for f in folders]):
-            return "SMAC2"
-        # Check if it's CSV
-        if all([CSVReader.check_for_files(f) for f in folders]):
-            return "CSV"
-
-        raise RuntimeError("Autodetection of file-format failed. Please try to specify (using --file_format on cmd-line)")

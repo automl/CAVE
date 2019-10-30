@@ -34,7 +34,8 @@ from cave.analyzer.plot_ecdf import PlotECDF
 from cave.analyzer.plot_scatter import PlotScatter
 from cave.html.html_builder import HTMLBuilder
 from cave.reader.runs_container import RunsContainer
-from cave.utils.helpers import Deactivated, NotApplicable, load_default_options
+from cave.utils.exceptions import Deactivated, NotApplicable
+from cave.utils.helpers import load_default_options
 from cave.utils.timing import timing
 
 __author__ = "Joshua Marben"
@@ -146,7 +147,7 @@ class CAVE(object):
         self.validation_method = validation_method
 
         # Configuration of analyzers (works as a default for report generation)
-        analyzing_options = load_default_options(analyzing_options)
+        analyzing_options = load_default_options(analyzing_options, file_format)
 
         self.runscontainer = RunsContainer(folders=self.folders,
                                            ta_exec_dirs=self.ta_exec_dir,

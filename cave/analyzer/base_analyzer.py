@@ -7,7 +7,7 @@ from bokeh.plotting import show
 
 from cave.html.html_builder import HTMLBuilder
 from cave.reader.runs_container import RunsContainer
-from cave.utils.helpers import Deactivated
+from cave.utils.exceptions import Deactivated
 
 
 class BaseAnalyzer(object):
