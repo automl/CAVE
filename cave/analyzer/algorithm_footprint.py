@@ -56,12 +56,17 @@ class AlgorithmFootprint(BaseAnalyzer):
             raise NotApplicable("Could not detect any instances.")
 
         self.logger.info("... algorithm footprints for: {}".format(",".join([a[1] for a in algorithms])))
-        self.footprint = AlgorithmFootprintPlotter(epm_rh,
+
+        try:
+            self.footprint = AlgorithmFootprintPlotter(epm_rh,
                                                    train_feats, test_feats,
                                                    algorithms,
                                                    cutoff,
                                                    output_dir,
                                                    rng=rng)
+        except ValueError as err:
+            self.logger.debug(err, exc_info=1)
+            self.error = str(err)
 
     def get_name(self):
         return "Algorithm Footprint"
@@ -78,18 +83,22 @@ class AlgorithmFootprint(BaseAnalyzer):
         show(bokeh_plot)
 
     def get_html(self, d=None, tooltip=None):
-        script, div = components(self._plot())
-        bokeh_components = script, div
-        if d is not None:
-            d["tooltip"] = self.__doc__
-            # Interactive bokeh-plot
-            d["Interactive Algorithm Footprint"] = {"bokeh" : (script, div)}
-            for plots in self.plots3d:
-                header = os.path.splitext(os.path.split(plots[0])[1])[0][10:-2]
-                header = header[0].upper() + header[1:].replace('_', ' ')
-                d[header] = {"figure_x2": plots}
 
-        return bokeh_components
+        if self.error:
+            if d is not None:
+                d["Algorithm Footprint"] = {"else": self.error}
+            return self.error
+        else:
+            bokeh_components = components(self._plot())
+            if d is not None:
+                d["Algorithm Footprint"] = {"tooltip" : self.__doc__}
+                # Interactive bokeh-plot
+                d["Algorithm Footprint"]["Interactive Algorithm Footprint"] = {"bokeh" : bokeh_components}
+                for plots in self.plots3d:
+                    header = os.path.splitext(os.path.split(plots[0])[1])[0][10:-2]
+                    header = header[0].upper() + header[1:].replace('_', ' ')
+                    d["Algorithm Footprint"][header] = {"figure_x2": plots}
+            return bokeh_components
 
     def get_plots(self):
         all_plots = []

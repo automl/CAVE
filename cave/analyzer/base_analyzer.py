@@ -25,6 +25,7 @@ class BaseAnalyzer(object):
         self.logger.debug("Initializing %s", self.name)
         self.runscontainer = runscontainer
         self.result = OrderedDict()
+        self.error = False
 
         options = self.runscontainer.analyzing_options
         if not self.name in options.sections():
