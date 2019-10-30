@@ -30,7 +30,7 @@ class PimpComparisonTable(BaseAnalyzer):
         self.threshold = threshold
 
     def get_name(self):
-        return "Performance Table"
+        return "Importance Table"
 
     def run(self):
         formatted_budgets = format_budgets(self.runscontainer.get_budgets(), allow_whitespace=True)
