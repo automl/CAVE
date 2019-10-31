@@ -12,8 +12,5 @@ phantomjs or `bokeh <https://bokeh.pydata.org/en/latest/docs/user_guide/export.h
 
 The `ta_exec_dir` specifies the target algorithm execution directory. With this option you can run *CAVE* from any
 folder, just make sure the relative paths in the scenario can be found from the path you specify in `ta_exec_dir`.
+This option is currently needed for SMAC-file format (and CSV, depending on the data).
 
-.. rubric:: I experience problems with the origins in the configuration footprint when using SMAC3-data...
-
-Configuration origins may require you to install SMAC3's development branch with `pip install -e
-git+git://github.com/automl/SMAC3@development#egg=smac`.

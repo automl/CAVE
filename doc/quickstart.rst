@@ -14,14 +14,14 @@ Run
 
 .. code-block:: bash
 
-    cave --folders examples/smac3/example_output/* --ta_exec_dir examples/smac3/ --output CAVE_OUTPUT
+    cave examples/smac3/example_output/* --ta_exec_dir examples/smac3/ --output output/smac3_example
 
-to start the example (assuming you cloned the GitHub-repository in which the example is included).
+to start the example.
 By default, CAVE will execute all parts of the analysis. To disable certain (timeconsuming) parts
 of the analysis, please see the section `commandline-options <manualdoc/commandline.html>`_.
 
-Most importantly though: ``--folders`` takes one or several paths to directories with configurator output.
-*glob*-extension is supported.
+Most importantly though: CAVE will process one or several paths to directories with configurator output.
+`glob <https://docs.python.org/3/library/glob.html>`_ -extension is supported.
 ``--ta_exec_dir`` defines a directory, from which the configurator was run - in case that
 there are relative paths while loading the data (e.g. instance-file-paths in SMAC's scenario-file). Here also one or more values are valid,
 however either one path for all ``--folders``-paths or exactly as many (one-to-one mapping).
@@ -41,7 +41,6 @@ To run the smac3-example (within a notebook):
     cave = CAVE(folders=["examples/smac3/example_output/run_1"],
                 output_dir="test_jupyter_smac",
                 ta_exec_dir=["examples/smac3"],
-                file_format='SMAC3',
                )
     cave.performance_table()
 
