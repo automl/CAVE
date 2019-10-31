@@ -5,7 +5,6 @@ import tempfile
 import typing
 from collections import OrderedDict
 from functools import wraps
-from importlib import reload
 from typing import Union, List
 
 import numpy as np
@@ -123,10 +122,6 @@ class CAVE(object):
             from [OFF, INFO, DEBUG, DEV_DEBUG and WARNING]
         """
         self.show_jupyter = show_jupyter
-        if self.show_jupyter:
-            # Reset logging module (needs to happen before logger initalization)
-            logging.shutdown()
-            reload(logging)
 
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
         self.output_dir = output_dir
@@ -399,8 +394,8 @@ class CAVE(object):
         self.builder.generate_webpage(self.website)
 
     def set_verbosity(self, level):
-        # Log to stream (console)
         logging.getLogger().setLevel(logging.DEBUG)
+        # Log to stream (console)
         formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
         stdout_handler = logging.StreamHandler()
         stdout_handler.setFormatter(formatter)
@@ -430,17 +425,19 @@ class CAVE(object):
         else:
             raise ValueError("%s not recognized as a verbosity level. Choose from DEBUG, DEV_DEBUG. INFO, WARNING, OFF.".format(level))
 
-        #logging.getLogger().addHandler(stdout_handler)
-        # TODO how is this working?
+        logging.getLogger().addHandler(stdout_handler)
+
         # Log to file is always debug
         debug_path = os.path.join(self.output_dir, "debug", "debug.log")
         logging.getLogger('cave.settings').debug("Output-file for debug-log: '%s'", debug_path)
         self._create_outputdir(self.output_dir)
         os.makedirs(os.path.split(debug_path)[0])
-        fh = logging.FileHandler(debug_path, "w")
+        fh = logging.FileHandler(debug_path, "a")
         fh.setLevel(logging.DEBUG)
         fh.setFormatter(formatter)
         logging.getLogger().addHandler(fh)
+        
+        self.logger.debug("Existing loggers: %s", str(logging.root.manager.loggerDict))
 
     def _create_outputdir(self, output_dir):
         """ Creates output-dir, if necessary. Also sets the 'self.output_dir_created'-flag, so this only happens once.

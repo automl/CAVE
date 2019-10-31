@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 import glob
+import logging
 import sys
 import time
 from argparse import ArgumentParser, SUPPRESS
 from datetime import datetime as datetime
+from importlib import reload
 
 import matplotlib
 
@@ -32,6 +34,10 @@ class CaveCLI(object):
         """
         Main cli, implementing comparison between and analysis of Configuration-results.
         """
+        # Reset logging module (needs to happen before logger initalization)
+        logging.shutdown()
+        reload(logging)
+
         # Some choice-blocks, that can be reused throughout the CLI
         p_choices = [
                      "all",
