@@ -25,8 +25,9 @@ CAVE integrates seamlessly with [jupyter-notebooks](https://automl.github.io/CAV
 - ParameterImportance and all its dependencies
 - HpBandSter and all its dependencies
 - everything specified in requirements.txt
+
 Some of the plots in the report are generated using [bokeh](https://bokeh.pydata.org/en/latest/). To automagically export them as `.png`s, you need to also install [phantomjs-prebuilt](https://www.npmjs.com/package/phantomjs-prebuilt). CAVE will run without it, but you will need to manually export the plots if you wish to use them (which is easily done through a button in the report).
-- phatomjs-prebuilt
+
 
 # INSTALLATION
 You can install CAVE from pip:
