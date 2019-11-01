@@ -333,7 +333,11 @@ class CaveCLI(object):
                     analyzing_options=analyzing_options,
                     )
 
-        cave.logger.debug("CAVE is called with arguments: " + str(args_))
+        try:
+            cave.logger.debug("CAVE is called with arguments: " + str(args_))
+        except AttributeError as err:
+            logging.getLogger().warning("Something went wrong with CAVE-initialization... (it's fine for running nosetests)")
+            logging.getLogger().debug("CAVE is called with arguments: " + str(args_))
 
         # Analyze
         cave.analyze()
