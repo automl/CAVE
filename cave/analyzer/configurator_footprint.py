@@ -1,29 +1,31 @@
 import os
-from collections import OrderedDict
-import logging
 
 import numpy as np
 from bokeh.embed import components
+from bokeh.io import output_notebook
+from bokeh.plotting import show
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
-from cave.utils.helpers import scenario_sanity_check, combine_runhistories
 from cave.plot.configurator_footprint import ConfiguratorFootprintPlotter
 
-from bokeh.plotting import show
-from bokeh.io import output_notebook
 
 class ConfiguratorFootprint(BaseAnalyzer):
+    """
+    Analysis of the iteratively sampled configurations during the optimization procedure.  Multi-dimensional scaling
+    (MDS) is used to reduce dimensionality of the search space and plot the distribution of evaluated
+    configurations. The larger the dot, the more often the configuration was evaluated on instances from the set.
+    Configurations that were incumbents at least once during optimization are marked as red squares.  Configurations
+    acquired through local search are marked with a 'x'.  The downward triangle denotes the final incumbent, whereas
+    the orange upward triangle denotes the default configuration.  The heatmap and the colorbar correspond to the
+    predicted performance in that part of the search space.
+    """
 
     def __init__(self,
-                 scenario,
-                 runs,
-                 runhistory,
-                 final_incumbent,
-                 output_dir,
-                 max_confs=1000,
-                 use_timeslider=False,
-                 num_quantiles=10,
-                 timeslider_log: bool=True,
+                 runscontainer,
+                 max_configurations_to_plot=None,
+                 time_slider=None,
+                 number_quantiles=None,
+                 timeslider_log: bool=None,
                  ):
         """Plot the visualization of configurations, highlighting the
         incumbents. Using original rh, so the explored configspace can be
@@ -31,20 +33,14 @@ class ConfiguratorFootprint(BaseAnalyzer):
 
         Parameters
         ----------
-        scenario: Scenario
-            deepcopy of scenario-object
-        runs: List[ConfiguratorRun]
-            holding information about original runhistories, trajectories, incumbents, etc.
-        runhistory: RunHistory
-            with maximum number of real (not estimated) runs to train best-possible epm
-        final_incumbent: Configuration
-            final incumbent (best of all (highest budget) runs)
-        max_confs: int
+        runscontainer: RunsContainer
+            contains all important information about the configurator runs
+        max_configurations_to_plot: int
             maximum number of data-points to plot
-        use_timeslider: bool
+        time_slider: bool
             whether or not to have a time_slider-widget on cfp-plot
             INCREASES FILE-SIZE DRAMATICALLY
-        num_quantiles: int
+        number_quantiles: int
             if use_timeslider is not off, defines the number of quantiles for the
             slider/ number of static pictures
         timeslider_log: bool
@@ -60,39 +56,48 @@ class ConfiguratorFootprint(BaseAnalyzer):
             list with paths to the different quantiled timesteps of the
             configurator run (for static evaluation)
         """
-        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
+        super().__init__(runscontainer,
+                         max_configurations_to_plot=max_configurations_to_plot,
+                         time_slider=time_slider,
+                         number_quantiles=number_quantiles,
+                         timeslider_log=timeslider_log)
+
         self.logger.info("... visualizing explored configspace (this may take "
                          "a long time, if there is a lot of data - deactive with --no_configurator_footprint)")
+        self.output_dir = self.runscontainer.output_dir
+        self.scenario = self.runscontainer.scenario
+        # Run-specific / budget specific infos
+        if len(self.runscontainer.get_budgets()) > 1:
+            self.runs = self.runscontainer.get_aggregated(keep_folders=False, keep_budgets=True)
+        else:
+            self.runs = self.runscontainer.get_aggregated(keep_folders=True, keep_budgets=False)
+        self.logger.debug("Analyzing runs: {}".format(self.runs))
 
-        self.scenario = scenario
-        self.runs = runs
-        self.runhistory = runhistory if runhistory else combine_runhistories([r.combined_runhistory for r in runs])
-        self.final_incumbent = final_incumbent
-        self.output_dir = output_dir
-        self.max_confs = max_confs
-        self.use_timeslider = use_timeslider
-        self.num_quantiles = num_quantiles
-        self.timeslider_log = timeslider_log
+        self.max_confs = self.options.getint('max_configurations_to_plot')
+        self.use_timeslider = self.options.getboolean('time_slider')
+        self.num_quantiles = self.options.getint('number_quantiles')
+        self.timeslider_log = self.options.getboolean('timeslider_log')
 
-        if scenario.feature_array is None:
-            scenario.feature_array = np.array([[]])
+        incumbents = {r.trajectory[-1]['incumbent'] : r.trajectory[-1]['cost'] for r in self.runs}
+        self.final_incumbent = min(incumbents, key=incumbents.get)
 
-        # Sort runhistories and incs wrt cost
-        incumbents = list(map(lambda x: x['incumbent'], runs[0].traj))
-        assert(incumbents[-1] == runs[0].traj[-1]['incumbent'])
+        if self.scenario.feature_array is None:
+            self.scenario.feature_array = np.array([[]])
 
         self.cfp = ConfiguratorFootprintPlotter(
                        scenario=self.scenario,
                        rhs=[r.original_runhistory for r in self.runs],
-                       incs=[[entry['incumbent'] for entry in r.traj] for r in self.runs],
+                       incs=[list(incumbents.keys())],
                        final_incumbent=self.final_incumbent,
-                       rh_labels=[os.path.basename(r.folder).replace('_', ' ') for r in self.runs],
+                       rh_labels=[os.path.basename(r.path_to_folder).replace('_', ' ') for r in self.runs],
                        max_plot=self.max_confs,
                        use_timeslider=self.use_timeslider and self.num_quantiles > 1,
                        num_quantiles=self.num_quantiles,
                        timeslider_log=self.timeslider_log,
                        output_dir=self.output_dir)
 
+    def get_name(self):
+        return "Configurator Footprint"
 
     def plot(self):
         try:
@@ -105,7 +110,6 @@ class ConfiguratorFootprint(BaseAnalyzer):
 
         bokeh_plot, self.cfp_paths = res
         return bokeh_plot
-        #self.script, self.div = components(self.bokeh_plot)
 
     def get_jupyter(self):
         bokeh_plot = self.plot()
@@ -116,15 +120,19 @@ class ConfiguratorFootprint(BaseAnalyzer):
         bokeh_components = components(self.plot())
         if d is not None:
             if self.num_quantiles == 1 or self.use_timeslider:  # No need for "Static" with one plot / time slider activated
-                d["bokeh"] = (bokeh_components)
-                d["tooltip"] = tooltip
+                d[self.name] = {
+                    "bokeh" : bokeh_components,
+                    "tooltip": self.__doc__,
+                }
             else:
-                d["tooltip"] = tooltip
-                d["Interactive"] = {"bokeh": (bokeh_components)}
+                d[self.name] = {
+                    "tooltip": self.__doc__,
+                    "Interactive" : {"bokeh": (bokeh_components)},
+                }
                 if all([True for p in self.cfp_paths if os.path.exists(p)]):  # If the plots were actually generated
-                    d["Static"] = {"figure": self.cfp_paths}
+                    d[self.name]["Static"] = {"figure": self.cfp_paths}
                 else:
-                    d["Static"] = {
+                    d[self.name]["Static"] = {
                             "else": "This plot is missing. Maybe it was not generated? "
                                     "Check if you installed selenium and phantomjs "
                                     "correctly to activate bokeh-exports. "

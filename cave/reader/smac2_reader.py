@@ -1,22 +1,20 @@
-import re
-import os
-import shutil
 import csv
+import os
+import re
+import shutil
+
 import numpy as np
 import pandas as pd
-
-from ConfigSpace import Configuration, c_util
-from ConfigSpace.hyperparameters import IntegerHyperparameter, FloatHyperparameter
+from ConfigSpace import Configuration
 from ConfigSpace.util import deactivate_inactive_hyperparameters, fix_types
-from smac.optimizer.objective import average_cost
-from smac.utils.io.input_reader import InputReader
-from smac.runhistory.runhistory import RunKey, RunValue, RunHistory, DataOrigin
-from smac.utils.io.traj_logging import TrajLogger
+from smac.runhistory.runhistory import RunHistory
 from smac.scenario.scenario import Scenario
+from smac.utils.io.input_reader import InputReader
 
 from cave.reader.base_reader import BaseReader, changedir
 from cave.reader.csv2rh import CSV2RH
 from cave.utils.io import load_csv_to_pandaframe
+
 
 class SMAC2Reader(BaseReader):
     """Reader for SMAC2-output.
@@ -42,6 +40,8 @@ class SMAC2Reader(BaseReader):
         in_reader = InputReader()
         # Create Scenario (disable output_dir to avoid cluttering)
         scen_fn = os.path.join(self.folder, 'smac-output/aclib/state-run1/scenario.txt')
+        if not scen_fn:
+            scen_fn = self.get_glob_file(self.folder, 'scenario.txt')
         scen_dict = in_reader.read_scenario_file(scen_fn)
         scen_dict['output_dir'] = ""
         with changedir(self.ta_exec_dir):
@@ -65,20 +65,9 @@ class SMAC2Reader(BaseReader):
         rh: RunHistory
             runhistory
         """
-        folder = os.path.join(self.folder, 'smac-output/aclib/state-run1')
-        rh_fn = re.search(r'runs\_and\_results.*?\.csv', str(os.listdir(folder)))
-        if not rh_fn:
-            raise FileNotFoundError("Specified format is \'SMAC2\', but no "
-                                    "\'runs_and_results\'-file could be found "
-                                    "in %s" % folder)
-        rh_fn = os.path.join(folder, rh_fn.group())
+        rh_fn = self.get_glob_file(self.folder, 'runs_and_results*.csv')
         self.logger.debug("Runhistory loaded as csv from %s", rh_fn)
-        configs_fn = re.search(r'paramstrings.*?\.txt', str(os.listdir(folder)))
-        if not configs_fn:
-            raise FileNotFoundError("Specified format is \'SMAC2\', but no "
-                                    "\'paramstrings\'-file could be found "
-                                    "in %s" % folder)
-        configs_fn = os.path.join(folder, configs_fn.group())
+        configs_fn = self.get_glob_file(self.folder, 'paramstrings*.txt')
         self.logger.debug("Configurations loaded from %s", configs_fn)
         # Translate smac2 to csv
         csv_data = load_csv_to_pandaframe(rh_fn, self.logger)
@@ -204,13 +193,7 @@ class SMAC2Reader(BaseReader):
 
         - `self.folder/smac-output/aclib/state-run1/traj-run-(...).csv`
         """
-        folder = os.path.join(self.folder, "smac-output/aclib/state-run1")
-        traj_fn = re.search(r'traj-run-\d*.txt', str(os.listdir(os.path.join(folder, '..'))))
-        if not traj_fn:
-            raise FileNotFoundError("Specified format is \'SMAC2\', but no "
-                                    "\'../traj-run\'-file could be found "
-                                    "in %s" % folder)
-        traj_fn = os.path.join(folder, '..', traj_fn.group())
+        traj_fn = self.get_glob_file(self.folder, 'traj-run-*.txt')
         with open(traj_fn, 'r') as csv_file:
             csv_data = list(csv.reader(csv_file, delimiter=',',
                                        skipinitialspace=True))
@@ -229,4 +212,16 @@ class SMAC2Reader(BaseReader):
             traj.append(new_entry)
         csv_data.apply(add_to_traj, axis=1)
         return traj
+
+
+    @classmethod
+    def check_for_files(cls, path):
+        if ((os.path.isfile(os.path.join(path, 'smac-output/aclib/state-run1/scenario.txt'))
+             or cls.get_glob_file(path, 'scenario.txt'))
+            and cls.get_glob_file(path, 'runs_and_results*.csv', 0)
+            and cls.get_glob_file(path, 'paramstrings*.txt', 0)
+            and cls.get_glob_file(path, 'traj-run-*.txt', 0)
+        ):
+            return True
+        return False
 

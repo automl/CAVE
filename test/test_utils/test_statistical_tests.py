@@ -1,6 +1,7 @@
-import numpy as np
 import logging
 import unittest
+
+import numpy as np
 
 from cave.utils.statistical_tests import paired_permutation, paired_t_student
 

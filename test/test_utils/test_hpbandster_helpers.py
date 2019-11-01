@@ -1,8 +1,10 @@
 import unittest
-import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
 from hpbandster.core.result import Run, logged_results_to_HBS_result
+
 from cave.utils.hpbandster_helpers import _compute_trajectory_racing, get_incumbent_trajectory
+
 
 class TestHpbandsterHelpers(unittest.TestCase):
 

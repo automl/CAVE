@@ -2,17 +2,17 @@ import os
 import shutil
 import typing
 
-from ConfigSpace.read_and_write import json as pcs_json
 from ConfigSpace.configuration_space import ConfigurationSpace, Configuration
 from ConfigSpace.hyperparameters import FloatHyperparameter, IntegerHyperparameter, Constant, CategoricalHyperparameter
-
+from ConfigSpace.read_and_write import json as pcs_json
 from smac.optimizer.objective import average_cost
-from smac.utils.io.input_reader import InputReader
-from smac.runhistory.runhistory import RunKey, RunValue, RunHistory, DataOrigin
-from smac.utils.io.traj_logging import TrajLogger
+from smac.runhistory.runhistory import RunHistory
 from smac.scenario.scenario import Scenario
+from smac.utils.io.input_reader import InputReader
+from smac.utils.io.traj_logging import TrajLogger
 
 from cave.reader.base_reader import BaseReader, changedir
+
 
 class SMAC3Reader(BaseReader):
 
@@ -21,6 +21,8 @@ class SMAC3Reader(BaseReader):
         in_reader = InputReader()
         # Create Scenario (disable output_dir to avoid cluttering)
         scen_fn = os.path.join(self.folder, 'scenario.txt')
+        if not os.path.isfile(scen_fn):
+            scen_fn = self.get_glob_file(self.folder, 'scenario.txt')
         scen_dict = in_reader.read_scenario_file(scen_fn)
         scen_dict['output_dir'] = ""
 
@@ -49,7 +51,8 @@ class SMAC3Reader(BaseReader):
             runhistory
         """
         rh_fn = os.path.join(self.folder, 'runhistory.json')
-        validated_rh_fn = os.path.join(self.folder, 'validated_runhistory.json')
+        if not os.path.isfile(rh_fn):
+            rh_fn = self.get_glob_file(self.folder, 'runhistory.json')
         rh = RunHistory(average_cost)
         try:
             rh.load_json(rh_fn, cs)
@@ -110,6 +113,17 @@ class SMAC3Reader(BaseReader):
 
 
         traj_fn = os.path.join(self.folder, 'traj_aclib2.json')
+        if not os.path.isfile(traj_fn):
+            traj_fn = self.get_glob_file(self.folder, 'traj_aclib2.json')
         traj = TrajLogger.read_traj_aclib_format(fn=traj_fn, cs=cs)
         return traj
 
+    @classmethod
+    def check_for_files(cls, path):
+        for f in ["scenario.txt", 'runhistory.json', "traj_aclib2.json"]:
+            if not (cls.get_glob_file(path, f, 0)
+                    or os.path.isfile(os.path.join(path, f))):
+                break
+        else:
+            return True
+        return False

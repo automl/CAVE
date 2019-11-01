@@ -1,13 +1,18 @@
-import typing
-import numpy as np
+import configparser
+import inspect
 import logging
+import os
+import typing
 
+import numpy as np
 from ConfigSpace.configuration_space import Configuration
-from smac.runhistory.runhistory import RunHistory, RunKey
 from smac.optimizer.objective import average_cost
+from smac.runhistory.runhistory import RunHistory, RunKey
 
-# TODO Possibly inconsistent: median over timeouts is timeout, but mean over
-# costs is not. Possible?
+from cave.reader.csv_reader import CSVReader
+from cave.reader.smac2_reader import SMAC2Reader
+from cave.reader.smac3_reader import SMAC3Reader
+from cave.utils.exceptions import NotApplicable
 
 
 def get_timeout(rh, conf, cutoff):
@@ -28,6 +33,8 @@ def get_timeout(rh, conf, cutoff):
     timeouts: Dict(str: bool)
         mapping instances to [True, False], where True indicates a timeout
     """
+    # TODO Possibly inconsistent: median over timeouts is timeout, but mean over
+    # costs is not. Possible?
     if not cutoff:
         return {}
     # Check if config is in runhistory
@@ -141,9 +148,36 @@ def combine_runhistories(rhs, logger=None):
         logger.debug("number of elements in combined rh: " + str(len(combi_rh.data)))
     return combi_rh
 
-class NotApplicableError(Exception):
-    """Exception indicating that this analysis-method cannot be performed."""
-    pass
+def combine_trajectories(trajs, logger=None):
+    """Combine trajectories. Trajectories are expected as an iterable of sorted lists, which are increasing in time.
+    A trajectory entry is expected as:
+    TrajEntry = collections.namedtuple(
+                  'TrajEntry', ['train_perf', 'incumbent_id', 'incumbent',
+                                'ta_runs', 'ta_time_used', 'wallclock_time'])
+
+    Parameters
+    ----------
+    trajs: List[List[TrajEntry]]
+        trajectories to be combined
+
+    Returns
+    -------
+    combined_traj: List[TrajEntry]
+        combined trajectory
+    """
+    # flatten list
+    flattened_list = [a for b in trajs for a in b]
+    # Sort by wallclock-time
+    flattened_list.sort(key=lambda traj_entry: traj_entry['wallclock_time'])
+    if logger:
+        logger.debug("{} trajectories combined to one with {} elements".format(len(trajs), len(flattened_list)))
+        #logger.debug(flattened_list)
+    # Now add one by one in order of time if better performance than before
+    combined_traj = [flattened_list[0]]
+    for entry in flattened_list:
+        if entry['cost'] < combined_traj[-1]['cost']:
+            combined_traj.append(entry)
+    return combined_traj
 
 class MissingInstancesError(Exception):
     """Exception indicating that instances are missing."""
@@ -172,3 +206,49 @@ def get_config_origin(c):
         logging.getLogger("cave.utils.helpers").debug("Cannot interpret origin: %s", c.origin)
         origin = "Unknown"
     return origin
+
+def check_for_features(scenario):
+    features = scenario.feature_dict
+    # filter instance features
+    train = scenario.train_insts
+    test = scenario.test_insts
+    train_feats = {k: v for k, v in features.items() if k in train}
+    test_feats = {k: v for k, v in features.items() if k in test}
+    if not (train_feats or test_feats):
+        raise NotApplicable("Could not detect any instances.")
+
+def load_default_options(options=None, file_format=None):
+    # Load the configuration file
+    own_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
+    default_options = configparser.ConfigParser()
+    default_options.read(os.path.join(own_folder, 'options/default_analysis_options.ini'))
+
+    if options is not None:
+        if isinstance(options, str):
+            default_options.read_file(options)
+        else:
+            default_options.read_dict(options)
+
+    if file_format == "BOHB":
+        default_options.read(os.path.join(own_folder, 'options/default_bohb_analysis_options.ini'))
+
+    return default_options
+
+def detect_fileformat(folders):
+    # Check if it's BOHB
+    bohb_files = ["configs.json", "results.json", "configspace.json"]
+    for f in folders:
+        if not all([os.path.isfile(os.path.join(f, sub)) for sub in bohb_files]):
+            break
+    else:
+        return "BOHB"
+    # Check if it's SMAC
+    if all([SMAC3Reader.check_for_files(f) for f in folders]):
+        return "SMAC3"
+    if all([SMAC2Reader.check_for_files(f) for f in folders]):
+        return "SMAC2"
+    # Check if it's CSV
+    if all([CSVReader.check_for_files(f) for f in folders]):
+        return "CSV"
+
+    raise RuntimeError("Autodetection of file-format failed. Please try to specify (using --file_format on cmd-line)")

@@ -1,6 +1,8 @@
-import sys
 import csv
+import sys
+
 import numpy as np
+
 
 def get_branin(param1, param2, param3, inst, rnd):
     a, b, c = inst

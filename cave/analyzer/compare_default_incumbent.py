@@ -1,24 +1,24 @@
-import os
-import logging
-from collections import OrderedDict
-
 from pandas import DataFrame
-import numpy as np
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
-from cave.html.html_helpers import figure_to_html
+
 
 class CompareDefaultIncumbent(BaseAnalyzer):
-    def __init__(self, default, incumbent):
+    """
+    Comparing parameters of default and incumbent. Parameters that differ from default to incumbent are presented
+    first. Parameters that are inactive for both configurations are omitted.
+    """
+
+    def __init__(self, runscontainer):
         """ Create comparison table of default and incumbent
         Removes unused parameters.
-
-        Parameters
-        ----------
-        default, incumbent: Configuration
-            configurations to be compared
         """
-        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
+        super().__init__(runscontainer)
+
+        default = self.runscontainer.scenario.cs.get_default_configuration()
+        runs = self.runscontainer.get_runs_for_budget(self.runscontainer.get_highest_budget())
+        incumbents = {r.incumbent : r.epm_runhistory.get_cost(r.incumbent) for r in runs}
+        incumbent = max(incumbents, key=lambda key: incumbents[key])
 
         # Remove unused parameters
         keys = [k for k in default.configuration_space.get_hyperparameter_names() if default[k] or incumbent[k]]
@@ -36,19 +36,8 @@ class CompareDefaultIncumbent(BaseAnalyzer):
             table.extend([(15 * '-' + ' Unchanged parameters: ' + 15 * '-', 5 * '-', 5 * '-')])
             table.extend(same)
         keys, table = [k[0] for k in table], [k[1:] for k in table]
-        self.table = df = DataFrame(data=table, columns=["Default", "Incumbent"], index=keys)
-        self.html_table = df.to_html()
+        df = DataFrame(data=table, columns=["Default", "Incumbent"], index=keys)
+        self.result['table'] = df.to_html()
 
-    def get_table(self):
-        return self.table
-
-    def get_html(self, d=None, tooltip=None):
-        if d is not None:
-            d["table"] = self.html_table
-            d["tooltip"] = tooltip
-        return self.html_table
-
-    def get_jupyter(self):
-        from IPython.core.display import HTML, display
-        display(HTML(self.get_html()))
-
+    def get_name(self):
+        return "Best Configuration"

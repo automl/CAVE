@@ -1,9 +1,9 @@
-import os
-import numpy as np
-import csv
 import unittest
 
-from cave.utils.hpbandster2smac import HpBandSter2SMAC
+import numpy as np
+
+from cave.reader.conversion.hpbandster2smac import HpBandSter2SMAC
+
 
 class TestHpbandster2Smac(unittest.TestCase):
 

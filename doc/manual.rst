@@ -12,4 +12,5 @@ Manual
     manualdoc/jupyternotebook
     manualdoc/fileformats
     manualdoc/budgets
+    manualdoc/internal_data_processing
 

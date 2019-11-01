@@ -1,6 +1,6 @@
+import logging
 from functools import wraps
 from time import time
-import logging
 
 
 def timing(f):
