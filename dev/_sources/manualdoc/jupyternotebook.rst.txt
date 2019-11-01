@@ -27,7 +27,6 @@ This also holds for budget-based optimizers.
 
     cave = CAVE(folders=["examples/bohb"],
                 output_dir="test_jupyter_bohb",
-                ta_exec_dir=["examples/bohb"],
                 show_jupyter=True,
                )
     cave.performance_table()
