@@ -1,5 +1,4 @@
 import logging
-import os
 import tempfile
 from typing import List
 
@@ -9,9 +8,6 @@ from smac.runhistory.runhistory import RunHistory, DataOrigin
 
 from cave.reader.configurator_run import ConfiguratorRun
 from cave.reader.conversion.hpbandster2smac import HpBandSter2SMAC
-from cave.reader.csv_reader import CSVReader
-from cave.reader.smac2_reader import SMAC2Reader
-from cave.reader.smac3_reader import SMAC3Reader
 from cave.utils.helpers import combine_trajectories, load_default_options, detect_fileformat
 
 
@@ -33,27 +29,35 @@ class RunsContainer(object):
         Aggregated entries can be accessed via a None-key.
 
         pr: parallel run, b: budget, agg: aggregated
-                  | pr_1 | ... | pr_m | agg (None)
-        ------------------------------------------
-        b_1       |      |     |      |
-        ...       |      |     |      |
-        b_2       |      |     |      |
-        agg (None)|      |     |      |
+
+        +----------+------+-----+------+-----------+
+        |          | pr_1 | ... | pr_m | agg (None)|
+        +==========================================+
+        |b_1       |      |     |      |           +
+        +----------+------+-----+------+-----------+
+        |...       |      |     |      |           +
+        +----------+------+-----+------+-----------+
+        |b_2       |      |     |      |           +
+        +----------+------+-----+------+-----------+
+        |agg (None)|      |     |      |           +
+        +----------+------+-----+------+-----------+
 
         The data is organized in folder2budgets as {pr : {b : path}} and in pRun2budget as {pr : {b : ConfiguratorRun}}.
 
         In the internal data-management there are three types of runhistories: *original*, *validated* and *epm*.
-        - *original_rh* contain only runs that have been gathered during the optimization-process.
-        - *validated_rh* may contain original runs, but also data that was not gathered iteratively during the
+
+        * *original_rh* contain only runs that have been gathered during the optimization-process.
+        * *validated_rh* may contain original runs, but also data that was not gathered iteratively during the
           optimization, but systematically through external validation of interesting configurations.
           Important: NO ESTIMATED RUNS IN `validated` RUNHISTORIES!
-        - *epm_rh* contain runs that are gathered through empirical performance models.
+        * *epm_rh* contain runs that are gathered through empirical performance models.
 
         Runhistories are organized as follows:
-        - each ConfiguratorRun has an *original_runhistory*- and a *combined_runhistory*-attribute
-        - if available, each ConfiguratorRun's *validated_runhistory* contains
+
+        * each ConfiguratorRun has an *original_runhistory*- and a *combined_runhistory*-attribute
+        * if available, each ConfiguratorRun's *validated_runhistory* contains
           a runhistory with validation-data gathered after the optimization
-        - *combined_runhistory* always contains as many real runs as possible
+        * *combined_runhistory* always contains as many real runs as possible
 
 
         Parameters

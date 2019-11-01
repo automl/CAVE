@@ -5,6 +5,7 @@ import tempfile
 import typing
 from collections import OrderedDict
 from functools import wraps
+from importlib import reload
 from typing import Union, List
 
 import numpy as np
@@ -103,25 +104,24 @@ class CAVE(object):
             execution directory for target algorithm (to find instance.txt specified in scenario, ..)
         file_format: str
             what format the rundata is in, options are [SMAC3, SMAC2, BOHB and CSV]
-        file_format: str
+        validation_format: str
             what format the validation rundata is in, options are [SMAC3, SMAC2, CSV and None]
         validation_method: string
             from [validation, epm], how to estimate missing runs
-        pimp_max_samples: int
-            passed to PIMP for configuration
-        fanova_pairwise: bool
-            whether to calculate pairwise marginals for fanova
-        use_budgets: bool
-            if true, individual runs are treated as different budgets. they are not evaluated together, but compared
-            against each other. runs are expected in ascending budget-size.
         seed: int
             random seed for analysis (e.g. the random forests)
         show_jupyter: bool
             default True, tries to output plots and tables to jupyter-frontend, if available
         verbose_level: str
             from [OFF, INFO, DEBUG, DEV_DEBUG and WARNING]
+        analyzing_options: str or dict
+            options-dictionary following CAVE's options-syntax
         """
         self.show_jupyter = show_jupyter
+        if self.show_jupyter:
+            # Reset logging module (needs to happen before logger initalization)
+            logging.shutdown()
+            reload(logging)
 
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
         self.output_dir = output_dir
@@ -200,29 +200,25 @@ class CAVE(object):
                         self.runscontainer.analyzing_options[s][k] = str(v)
 
         self.overview_table(d=self.website)
+        self.compare_default_incumbent(d=self._get_dict(self.website, "Meta Data"))
 
         ###################################################
         #  Performance Analysis  #  Performance Analysis  #
         ###################################################
-        self.performance_table(d=self._get_dict(self.website, "Performance Analysis"))
-        self.plot_ecdf(d=self._get_dict(self.website, "Performance Analysis"))
-        self.plot_scatter(d=self._get_dict(self.website, "Performance Analysis"))
-        self.algorithm_footprints(d=self._get_dict(self.website, "Performance Analysis"))
-        self.compare_default_incumbent(d=self._get_dict(self.website, "Meta Data"))
+        title = "Performance Analysis"
+        self.performance_table(d=self._get_dict(self.website, title))
+        self.plot_ecdf(d=self._get_dict(self.website, title))
+        self.plot_scatter(d=self._get_dict(self.website, title))
+        self.algorithm_footprints(d=self._get_dict(self.website, title))
 
         ###################################################
         #    Budget  Analysis    #    Budget  Analysis    #
         ###################################################
+        title = "Budget Analysis"
         if self.runscontainer.use_budgets:
-            self.bohb_incumbents_per_budget(d=self._get_dict(self.website, "Budget Analysis"))
-            self.budget_correlation(d=self._get_dict(self.website, "Budget Analysis"))
-            self.bohb_learning_curves(d=self._get_dict(self.website, "Budget Analysis"))
-
-        ###################################################
-        #            Configurator's Behaviour             #
-        ###################################################
-        self.configurator_footprint(d=self._get_dict(self.website, "Configurators Behavior"))
-        self.cost_over_time(d=self._get_dict(self.website, "Configurators Behavior"))
+            self.bohb_incumbents_per_budget(d=self._get_dict(self.website, title))
+            self.budget_correlation(d=self._get_dict(self.website, title))
+            self.bohb_learning_curves(d=self._get_dict(self.website, title))
 
         ###################################################
         #         Parameter- and Feature-Analysis         #
@@ -230,8 +226,14 @@ class CAVE(object):
         self.parameter_importance(self._get_dict(self.website, "Parameter Importance"))
         self.feature_analysis(self._get_dict(self.website, "Feature Analysis"))
 
-        # Should be after parameter importance, if performed.
-        self.parallel_coordinates(d=self._get_dict(self.website, "Configurators Behavior"))
+        ###################################################
+        #            Configurator's Behaviour             #
+        ###################################################
+        title = "Configurators Behavior"
+        self.configurator_footprint(d=self._get_dict(self.website, title))
+        self.cost_over_time(d=self._get_dict(self.website, title))
+        # Parallel Coordinates should be after parameter importance, if performed.
+        self.parallel_coordinates(d=self._get_dict(self.website, title))
 
         self._build_website()
 
