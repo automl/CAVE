@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.feature_correlation &mdash; CAVE 1.1.8.dev documentation</title>
+  <title>cave.analyzer.feature_correlation &mdash; CAVE 1.2.0.dev documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.8.dev
+                1.2.0.dev
               </div>
             
           
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
@@ -143,6 +144,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -150,9 +152,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -226,42 +228,50 @@
            <div itemprop="articleBody">
             
   <h1>Source code for cave.analyzer.feature_correlation</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-
-<span class="kn">from</span> <span class="nn">pandas</span> <span class="k">import</span> <span class="n">DataFrame</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
+<span></span><span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="k">import</span> <span class="n">BaseAnalyzer</span>
 <span class="kn">from</span> <span class="nn">cave.feature_analysis.feature_analysis</span> <span class="k">import</span> <span class="n">FeatureAnalysis</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="k">import</span> <span class="n">BaseAnalyzer</span>
-<span class="kn">from</span> <span class="nn">cave.html.html_helpers</span> <span class="k">import</span> <span class="n">figure_to_html</span>
+<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">check_for_features</span>
+<span class="kn">from</span> <span class="nn">cave.utils.hpbandster_helpers</span> <span class="k">import</span> <span class="n">format_budgets</span>
+
 
 <div class="viewcode-block" id="FeatureCorrelation"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.feature_correlation.html#cave.analyzer.feature_correlation.FeatureCorrelation">[docs]</a><span class="k">class</span> <span class="nc">FeatureCorrelation</span><span class="p">(</span><span class="n">BaseAnalyzer</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">feat_names</span><span class="p">,</span> <span class="n">feat_importance</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Correlation of features based on the Pearson product-moment correlation. Since instance features are used to train an</span>
+<span class="sd">    empirical performance model in model-based configurators, it can be important to remove correlated features in a</span>
+<span class="sd">    pre-processing step depending on the machine-learning algorithm.  Darker fields corresponds to a larger correlation</span>
+<span class="sd">    between the features.&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">runscontainer</span><span class="p">,</span>
+                 <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">runscontainer</span><span class="p">)</span>
+        <span class="n">check_for_features</span><span class="p">(</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">scenario</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">feat_analysis</span> <span class="o">=</span> <span class="n">FeatureAnalysis</span><span class="p">(</span><span class="n">output_dn</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span>
-                                             <span class="n">scenario</span><span class="o">=</span><span class="n">scenario</span><span class="p">,</span>
-                                             <span class="n">feat_names</span><span class="o">=</span><span class="n">feat_names</span><span class="p">,</span>
-                                             <span class="n">feat_importance</span><span class="o">=</span><span class="n">feat_importance</span><span class="p">)</span>
+        <span class="n">formatted_budgets</span> <span class="o">=</span> <span class="n">format_budgets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_budgets</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="n">keep_budgets</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keep_folders</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">formatted_budgets</span><span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">budget</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feat_analysis</span><span class="p">(</span>
+                <span class="n">output_dir</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+                <span class="n">scenario</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span>
+                <span class="n">feat_names</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">feature_names</span><span class="p">,</span>
+                <span class="n">feat_importance</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">share_information</span><span class="p">[</span><span class="s1">&#39;feature_importance&#39;</span><span class="p">],</span>
+            <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">feat_analysis</span><span class="o">.</span><span class="n">correlation_plot</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">correlation_plot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feat_analysis</span><span class="o">.</span><span class="n">correlation_plot</span><span class="p">(</span><span class="n">imp</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="viewcode-block" id="FeatureCorrelation.get_name"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.feature_correlation.html#cave.analyzer.feature_correlation.FeatureCorrelation.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Feature Correlation&quot;</span></div>
 
-<div class="viewcode-block" id="FeatureCorrelation.get_plots"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.feature_correlation.html#cave.analyzer.feature_correlation.FeatureCorrelation.get_plots">[docs]</a>    <span class="k">def</span> <span class="nf">get_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">correlation_plot</span><span class="p">]</span></div>
+<div class="viewcode-block" id="FeatureCorrelation.feat_analysis"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.feature_correlation.html#cave.analyzer.feature_correlation.FeatureCorrelation.feat_analysis">[docs]</a>    <span class="k">def</span> <span class="nf">feat_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                      <span class="n">output_dir</span><span class="p">,</span>
+                      <span class="n">scenario</span><span class="p">,</span>
+                      <span class="n">feat_names</span><span class="p">,</span>
+                      <span class="n">feat_importance</span><span class="p">,</span>
+                      <span class="p">):</span>
+        <span class="n">feat_analysis</span> <span class="o">=</span> <span class="n">FeatureAnalysis</span><span class="p">(</span><span class="n">output_dn</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span>
+                                        <span class="n">scenario</span><span class="o">=</span><span class="n">scenario</span><span class="p">,</span>
+                                        <span class="n">feat_names</span><span class="o">=</span><span class="n">feat_names</span><span class="p">,</span>
+                                        <span class="n">feat_importance</span><span class="o">=</span><span class="n">feat_importance</span><span class="p">)</span>
 
-<div class="viewcode-block" id="FeatureCorrelation.get_html"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.feature_correlation.html#cave.analyzer.feature_correlation.FeatureCorrelation.get_html">[docs]</a>    <span class="k">def</span> <span class="nf">get_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;figure&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">correlation_plot</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;tooltip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tooltip</span>
-        <span class="k">return</span> <span class="n">figure_to_html</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_plots</span><span class="p">())</span></div>
-
-<div class="viewcode-block" id="FeatureCorrelation.get_jupyter"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.feature_correlation.html#cave.analyzer.feature_correlation.FeatureCorrelation.get_jupyter">[docs]</a>    <span class="k">def</span> <span class="nf">get_jupyter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">IPython.core.display</span> <span class="k">import</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">display</span>
-        <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_html</span><span class="p">()))</span></div></div>
+        <span class="c1">##  feat_analysis.correlation_plot()  # Generate an additional plot</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;figure&#39;</span> <span class="p">:</span>  <span class="n">feat_analysis</span><span class="o">.</span><span class="n">correlation_plot</span><span class="p">(</span><span class="n">imp</span><span class="o">=</span><span class="kc">False</span><span class="p">)}</span></div></div>
 </pre></div>
 
            </div>

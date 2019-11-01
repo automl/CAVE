@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.pimp_comparison_table &mdash; CAVE 1.1.8.dev documentation</title>
+  <title>cave.analyzer.pimp_comparison_table &mdash; CAVE 1.2.0.dev documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.8.dev
+                1.2.0.dev
               </div>
             
           
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
@@ -143,6 +144,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -150,9 +152,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -228,48 +230,60 @@
   <h1>Source code for cave.analyzer.pimp_comparison_table</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
-<span class="kn">import</span> <span class="nn">operator</span>
-<span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">pandas</span> <span class="k">import</span> <span class="n">DataFrame</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">bokeh.embed</span> <span class="k">import</span> <span class="n">components</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_notebook</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="k">import</span> <span class="n">DataFrame</span>
 
 <span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="k">import</span> <span class="n">BaseAnalyzer</span>
-<span class="kn">from</span> <span class="nn">cave.html.html_helpers</span> <span class="k">import</span> <span class="n">figure_to_html</span>
 <span class="kn">from</span> <span class="nn">cave.utils.bokeh_routines</span> <span class="k">import</span> <span class="n">array_to_bokeh_table</span>
+<span class="kn">from</span> <span class="nn">cave.utils.hpbandster_helpers</span> <span class="k">import</span> <span class="n">format_budgets</span>
 
-<span class="kn">from</span> <span class="nn">bokeh.embed</span> <span class="k">import</span> <span class="n">components</span>
-<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">show</span>
-<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_notebook</span>
 
 <div class="viewcode-block" id="PimpComparisonTable"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.pimp_comparison_table.html#cave.analyzer.pimp_comparison_table.PimpComparisonTable">[docs]</a><span class="k">class</span> <span class="nc">PimpComparisonTable</span><span class="p">(</span><span class="n">BaseAnalyzer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters are initially sorted by pimp_sort_table_by. Only parameters with an importance greater than 5 in any</span>
+<span class="sd">    of the methods are shown.  Note, that the values of the used methods are not directly comparable. For more</span>
+<span class="sd">    information on the metrics, see respective tooltips.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">pimp</span><span class="p">,</span>
-                 <span class="n">evaluators</span><span class="p">,</span>
+                 <span class="n">runscontainer</span><span class="p">,</span>
                  <span class="n">sort_table_by</span><span class="p">,</span>
-                 <span class="n">cs</span><span class="p">,</span>
-                 <span class="n">out_fn</span><span class="p">,</span>
                  <span class="n">threshold</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a html-table over all evaluated parameter-importance-methods.</span>
 <span class="sd">        Parameters are sorted after their average importance.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">runscontainer</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">pimp</span> <span class="o">=</span> <span class="n">pimp</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">evaluators</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">evaluators</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sort_table_by</span> <span class="o">=</span> <span class="n">sort_table_by</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cs</span> <span class="o">=</span> <span class="n">cs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">out_fn</span> <span class="o">=</span> <span class="n">out_fn</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
 
+<div class="viewcode-block" id="PimpComparisonTable.get_name"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.pimp_comparison_table.html#cave.analyzer.pimp_comparison_table.PimpComparisonTable.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Importance Table&quot;</span></div>
 
-<div class="viewcode-block" id="PimpComparisonTable.plot"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.pimp_comparison_table.html#cave.analyzer.pimp_comparison_table.PimpComparisonTable.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">table_for_comparison</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluators</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_fn</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;latex&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating pimp latex table at </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_fn</span><span class="p">)</span>
+<div class="viewcode-block" id="PimpComparisonTable.run"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.pimp_comparison_table.html#cave.analyzer.pimp_comparison_table.PimpComparisonTable.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">formatted_budgets</span> <span class="o">=</span> <span class="n">format_budgets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_budgets</span><span class="p">(),</span> <span class="n">allow_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="n">keep_budgets</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keep_folders</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">formatted_budgets</span><span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">budget</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">pimp</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">pimp</span><span class="p">,</span>
+                <span class="n">evaluators</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">share_information</span><span class="p">[</span><span class="s1">&#39;evaluators&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+                <span class="n">cs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="p">,</span>
+                <span class="n">out_fn</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;pimp.tex&#39;</span><span class="p">),</span>
+            <span class="p">)</span></div>
 
-        <span class="n">parameters</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cs</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">()]</span>
+<div class="viewcode-block" id="PimpComparisonTable.plot"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.pimp_comparison_table.html#cave.analyzer.pimp_comparison_table.PimpComparisonTable.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+             <span class="n">pimp</span><span class="p">,</span>
+             <span class="n">evaluators</span><span class="p">,</span>
+             <span class="n">cs</span><span class="p">,</span>
+             <span class="n">out_fn</span><span class="p">,</span>
+             <span class="p">):</span>
+        <span class="n">pimp</span><span class="o">.</span><span class="n">table_for_comparison</span><span class="p">(</span><span class="n">evaluators</span><span class="p">,</span> <span class="n">out_fn</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;latex&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating pimp latex table at </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">out_fn</span><span class="p">)</span>
+
+        <span class="n">parameters</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">cs</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">()]</span>
         <span class="n">index</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
-        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluators</span><span class="p">]</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">evaluators</span><span class="p">]</span>
         <span class="n">columns_lower</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">]</span>
 
         <span class="c1"># SORT</span>
@@ -278,12 +292,12 @@
             <span class="c1"># Sort parameters after average importance</span>
             <span class="n">p_avg</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
-                <span class="n">imps</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">evaluated_parameter_importance</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluators</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">evaluated_parameter_importance</span><span class="p">]</span>
+                <span class="n">imps</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">evaluated_parameter_importance</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">evaluators</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">evaluated_parameter_importance</span><span class="p">]</span>
                 <span class="n">p_avg</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">imps</span><span class="p">)</span> <span class="k">if</span> <span class="n">imps</span> <span class="k">else</span>  <span class="mi">0</span>
             <span class="n">p_order</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p_avg</span><span class="p">[</span><span class="n">p</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_table_by</span> <span class="ow">in</span> <span class="n">columns_lower</span><span class="p">:</span>
             <span class="k">def</span> <span class="nf">__get_key</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-                <span class="n">imp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluators</span><span class="p">[</span><span class="n">columns_lower</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sort_table_by</span><span class="p">)]</span><span class="o">.</span><span class="n">evaluated_parameter_importance</span>
+                <span class="n">imp</span> <span class="o">=</span> <span class="n">evaluators</span><span class="p">[</span><span class="n">columns_lower</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sort_table_by</span><span class="p">)]</span><span class="o">.</span><span class="n">evaluated_parameter_importance</span>
                 <span class="k">return</span> <span class="n">imp</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">imp</span> <span class="k">else</span> <span class="mi">0</span>
             <span class="n">p_order</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">__get_key</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -294,7 +308,7 @@
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">p_order</span><span class="p">:</span>
             <span class="n">values_for_p</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">]</span>
             <span class="n">add_parameter</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Only add parameters where at least one evaluator shows importance &gt; threshold</span>
-            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluators</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">evaluators</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">evaluated_parameter_importance</span><span class="p">:</span>
                     <span class="c1"># Check for threshold</span>
                     <span class="n">value_to_add</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">evaluated_parameter_importance</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
@@ -315,23 +329,43 @@
                 <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">values_for_p</span><span class="p">)</span>
 
         <span class="c1"># CREATE TABLE</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">comp_table</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">columns</span><span class="p">)</span>
+        <span class="n">comp_table</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">columns</span><span class="p">)</span>
         <span class="n">sortable</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span> <span class="p">:</span> <span class="kc">True</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">}</span>
         <span class="n">width</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="p">{</span><span class="s1">&#39;Parameters&#39;</span> <span class="p">:</span> <span class="mi">150</span><span class="p">},</span> <span class="o">**</span><span class="p">{</span><span class="n">c</span> <span class="p">:</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">}}</span>
 
-        <span class="n">bokeh_table</span> <span class="o">=</span> <span class="n">array_to_bokeh_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comp_table</span><span class="p">,</span> <span class="n">sortable</span><span class="o">=</span><span class="n">sortable</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">bokeh_table</span></div>
+        <span class="n">bokeh_table</span> <span class="o">=</span> <span class="n">array_to_bokeh_table</span><span class="p">(</span><span class="n">comp_table</span><span class="p">,</span> <span class="n">sortable</span><span class="o">=</span><span class="n">sortable</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;bokeh&#39;</span> <span class="p">:</span> <span class="n">bokeh_table</span><span class="p">}</span></div>
 
 <div class="viewcode-block" id="PimpComparisonTable.get_html"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.pimp_comparison_table.html#cave.analyzer.pimp_comparison_table.PimpComparisonTable.get_html">[docs]</a>    <span class="k">def</span> <span class="nf">get_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">script</span><span class="p">,</span> <span class="n">div</span> <span class="o">=</span> <span class="n">components</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="kc">None</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Detected None-key, abstracting away...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;bokeh&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">script</span><span class="p">,</span> <span class="n">div</span>
+            <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+            <span class="n">script</span><span class="p">,</span> <span class="n">div</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">s_</span><span class="p">,</span> <span class="n">d_</span> <span class="o">=</span> <span class="n">components</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">if</span> <span class="n">b</span> <span class="o">==</span> <span class="s1">&#39;bokeh&#39;</span> <span class="k">else</span> <span class="n">components</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="s1">&#39;bokeh&#39;</span><span class="p">])</span>
+            <span class="n">script</span> <span class="o">+=</span> <span class="n">s_</span>
+            <span class="n">div</span> <span class="o">+=</span> <span class="n">d_</span>
+            <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">b</span> <span class="o">==</span> <span class="s1">&#39;bokeh&#39;</span><span class="p">:</span>
+                    <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                     <span class="s2">&quot;bokeh&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="n">s_</span><span class="p">,</span> <span class="n">d_</span><span class="p">),</span>
+                     <span class="s2">&quot;tooltip&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s2">&quot;bokeh&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="n">s_</span><span class="p">,</span> <span class="n">d_</span><span class="p">),</span>
+                        <span class="s2">&quot;tooltip&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
+                    <span class="p">}</span>
         <span class="k">return</span> <span class="n">script</span><span class="p">,</span> <span class="n">div</span></div>
 
 <div class="viewcode-block" id="PimpComparisonTable.get_jupyter"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.pimp_comparison_table.html#cave.analyzer.pimp_comparison_table.PimpComparisonTable.get_jupyter">[docs]</a>    <span class="k">def</span> <span class="nf">get_jupyter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
         <span class="n">output_notebook</span><span class="p">()</span>
-        <span class="n">show</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">())</span></div></div>
-
+        <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">show</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="s1">&#39;bokeh&#39;</span><span class="p">])</span></div></div>
 </pre></div>
 
            </div>

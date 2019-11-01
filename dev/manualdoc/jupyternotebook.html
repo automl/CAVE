@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Jupyter Notebook &mdash; CAVE 1.1.8.dev documentation</title>
+  <title>Jupyter Notebook &mdash; CAVE 1.2.0.dev documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.8.dev
+                1.2.0.dev
               </div>
             
           
@@ -95,6 +95,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">F.A.Q.</a></li>
@@ -145,6 +146,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -152,9 +154,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../apidoc/cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -241,7 +243,7 @@ To use CAVE in such an interactive mode, you have to create a <a class="referenc
 <span class="n">cave</span> <span class="o">=</span> <span class="n">CAVE</span><span class="p">(</span><span class="n">folders</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;examples/smac3/example_output/run_1&quot;</span><span class="p">],</span>
             <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;test_jupyter_smac&quot;</span><span class="p">,</span>
             <span class="n">ta_exec_dir</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;examples/smac3&quot;</span><span class="p">],</span>
-            <span class="n">file_format</span><span class="o">=</span><span class="s1">&#39;SMAC3&#39;</span><span class="p">,</span>
+            <span class="n">show_jupyter</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
            <span class="p">)</span>
 </pre></div>
 </div>
@@ -249,14 +251,13 @@ To use CAVE in such an interactive mode, you have to create a <a class="referenc
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cave</span><span class="o">.</span><span class="n">performance_table</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>When using budgets, you can specify which budget you want to plot/analyze:</p>
+<p>This also holds for budget-based optimizers.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cave</span> <span class="o">=</span> <span class="n">CAVE</span><span class="p">(</span><span class="n">folders</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;examples/bohb&quot;</span><span class="p">],</span>
             <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;test_jupyter_bohb&quot;</span><span class="p">,</span>
             <span class="n">ta_exec_dir</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;examples/bohb&quot;</span><span class="p">],</span>
-            <span class="n">file_format</span><span class="o">=</span><span class="s1">&#39;BOHB&#39;</span><span class="p">,</span>
+            <span class="n">show_jupyter</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
            <span class="p">)</span>
-<span class="n">cave</span><span class="o">.</span><span class="n">print_budgets</span><span class="p">()</span>
-<span class="n">cave</span><span class="o">.</span><span class="n">performance_table</span><span class="p">(</span><span class="s1">&#39;budget_42&#39;</span><span class="p">)</span>
+<span class="n">cave</span><span class="o">.</span><span class="n">performance_table</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

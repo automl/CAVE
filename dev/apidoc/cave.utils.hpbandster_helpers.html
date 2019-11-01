@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.utils.html_helpers module &mdash; CAVE 1.1.8.dev documentation</title>
+  <title>cave.utils.hpbandster_helpers module &mdash; CAVE 1.2.0.dev documentation</title>
   
 
   
@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="cave.utils.io module" href="cave.utils.io.html" />
-    <link rel="prev" title="cave.utils.hpbandster2smac module" href="cave.utils.hpbandster2smac.html" /> 
+    <link rel="prev" title="cave.utils.helpers module" href="cave.utils.helpers.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.8.dev
+                1.2.0.dev
               </div>
             
           
@@ -95,6 +95,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">F.A.Q.</a></li>
@@ -145,6 +146,7 @@
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -152,9 +154,9 @@
 <li class="toctree-l2 current"><a class="reference internal" href="cave.utils.html">cave.utils package</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -214,13 +216,13 @@
         
           <li><a href="cave.utils.html">cave.utils package</a> &raquo;</li>
         
-      <li>cave.utils.html_helpers module</li>
+      <li>cave.utils.hpbandster_helpers module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/apidoc/cave.utils.html_helpers.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/apidoc/cave.utils.hpbandster_helpers.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -233,8 +235,50 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="cave-utils-html-helpers-module">
-<h1>cave.utils.html_helpers module<a class="headerlink" href="#cave-utils-html-helpers-module" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-cave.utils.hpbandster_helpers">
+<span id="cave-utils-hpbandster-helpers-module"></span><h1>cave.utils.hpbandster_helpers module<a class="headerlink" href="#module-cave.utils.hpbandster_helpers" title="Permalink to this headline">¶</a></h1>
+<p>Here are helper functions needed to provide a certain behaviour of HpBandSter, such as special trajectories.</p>
+<dl class="function">
+<dt id="cave.utils.hpbandster_helpers.format_budgets">
+<code class="sig-prename descclassname">cave.utils.hpbandster_helpers.</code><code class="sig-name descname">format_budgets</code><span class="sig-paren">(</span><em class="sig-param">budgets</em>, <em class="sig-param">allow_whitespace=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster_helpers.html#format_budgets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster_helpers.format_budgets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format budget-strings so that they are as short as possible while still distinguishable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>budgets</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list with budgets</p></li>
+<li><p><strong>allow_whitespace</strong> (<em>bool</em>) – if set to True, will return “budget 10.5” else “budget_10.5</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>formatted_budgets</strong> – list with formatted budgets</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cave.utils.hpbandster_helpers.get_incumbent_trajectory">
+<code class="sig-prename descclassname">cave.utils.hpbandster_helpers.</code><code class="sig-name descname">get_incumbent_trajectory</code><span class="sig-paren">(</span><em class="sig-param">result</em>, <em class="sig-param">budgets=None</em>, <em class="sig-param">mode='racing'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster_helpers.html#get_incumbent_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster_helpers.get_incumbent_trajectory" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>result</strong> (<em>hpbandster.core.result.Result</em>) – result object</p></li>
+<li><p><strong>budgets</strong> (<em>List</em><em>[</em><em>str|int|float</em><em>] or </em><em>'all'</em>) – if a list of budgets, only consider those budgets (to enable trajectories for only a single budget)</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – from [‘racing’, ‘minimum’, ‘prefer_higher_budget’]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>trajectory</strong> – dictionary with all the config IDs, the times the runs finished, their respective budgets, and corresponding
+losses</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 
@@ -248,7 +292,7 @@
         <a href="cave.utils.io.html" class="btn btn-neutral float-right" title="cave.utils.io module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="cave.utils.hpbandster2smac.html" class="btn btn-neutral float-left" title="cave.utils.hpbandster2smac module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="cave.utils.helpers.html" class="btn btn-neutral float-left" title="cave.utils.helpers module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

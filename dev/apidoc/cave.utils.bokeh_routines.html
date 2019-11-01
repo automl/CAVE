@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.utils.bokeh_routines module &mdash; CAVE 1.1.8.dev documentation</title>
+  <title>cave.utils.bokeh_routines module &mdash; CAVE 1.2.0.dev documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.8.dev
+                1.2.0.dev
               </div>
             
           
@@ -95,6 +95,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">F.A.Q.</a></li>
@@ -145,6 +146,7 @@
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -152,9 +154,9 @@
 <li class="toctree-l2 current"><a class="reference internal" href="cave.utils.html">cave.utils package</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -237,7 +239,7 @@
 <span id="cave-utils-bokeh-routines-module"></span><h1>cave.utils.bokeh_routines module<a class="headerlink" href="#module-cave.utils.bokeh_routines" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="cave.utils.bokeh_routines.array_to_bokeh_table">
-<code class="descclassname">cave.utils.bokeh_routines.</code><code class="descname">array_to_bokeh_table</code><span class="sig-paren">(</span><em>df</em>, <em>sortable=None</em>, <em>width=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/bokeh_routines.html#array_to_bokeh_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.bokeh_routines.array_to_bokeh_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">cave.utils.bokeh_routines.</code><code class="sig-name descname">array_to_bokeh_table</code><span class="sig-paren">(</span><em class="sig-param">df</em>, <em class="sig-param">sortable=None</em>, <em class="sig-param">width=None</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/bokeh_routines.html#array_to_bokeh_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.bokeh_routines.array_to_bokeh_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create bokeh-table from array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -259,7 +261,7 @@
 
 <dl class="function">
 <dt id="cave.utils.bokeh_routines.get_checkbox">
-<code class="descclassname">cave.utils.bokeh_routines.</code><code class="descname">get_checkbox</code><span class="sig-paren">(</span><em>glyph_renderers</em>, <em>labels</em>, <em>max_checkbox_length=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/bokeh_routines.html#get_checkbox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.bokeh_routines.get_checkbox" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">cave.utils.bokeh_routines.</code><code class="sig-name descname">get_checkbox</code><span class="sig-paren">(</span><em class="sig-param">glyph_renderers</em>, <em class="sig-param">labels</em>, <em class="sig-param">max_checkbox_length=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/bokeh_routines.html#get_checkbox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.bokeh_routines.get_checkbox" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -280,7 +282,7 @@
 
 <dl class="function">
 <dt id="cave.utils.bokeh_routines.get_radiobuttongroup">
-<code class="descclassname">cave.utils.bokeh_routines.</code><code class="descname">get_radiobuttongroup</code><span class="sig-paren">(</span><em>glyph_renderers</em>, <em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/bokeh_routines.html#get_radiobuttongroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.bokeh_routines.get_radiobuttongroup" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">cave.utils.bokeh_routines.</code><code class="sig-name descname">get_radiobuttongroup</code><span class="sig-paren">(</span><em class="sig-param">glyph_renderers</em>, <em class="sig-param">labels</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/bokeh_routines.html#get_radiobuttongroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.bokeh_routines.get_radiobuttongroup" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

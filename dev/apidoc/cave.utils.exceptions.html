@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.utils.hpbandster2smac module &mdash; CAVE 1.1.8.dev documentation</title>
+  <title>cave.utils.exceptions module &mdash; CAVE 1.2.0.dev documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="cave.utils.html_helpers module" href="cave.utils.html_helpers.html" />
-    <link rel="prev" title="cave.utils.helpers module" href="cave.utils.helpers.html" /> 
+    <link rel="next" title="cave.utils.helpers module" href="cave.utils.helpers.html" />
+    <link rel="prev" title="cave.utils.convert_for_epm module" href="cave.utils.convert_for_epm.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.8.dev
+                1.2.0.dev
               </div>
             
           
@@ -95,6 +95,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">F.A.Q.</a></li>
@@ -145,6 +146,7 @@
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -152,9 +154,9 @@
 <li class="toctree-l2 current"><a class="reference internal" href="cave.utils.html">cave.utils package</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -214,13 +216,13 @@
         
           <li><a href="cave.utils.html">cave.utils package</a> &raquo;</li>
         
-      <li>cave.utils.hpbandster2smac module</li>
+      <li>cave.utils.exceptions module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/apidoc/cave.utils.hpbandster2smac.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/apidoc/cave.utils.exceptions.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -233,86 +235,58 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-cave.utils.hpbandster2smac">
-<span id="cave-utils-hpbandster2smac-module"></span><h1>cave.utils.hpbandster2smac module<a class="headerlink" href="#module-cave.utils.hpbandster2smac" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC">
-<em class="property">class </em><code class="descclassname">cave.utils.hpbandster2smac.</code><code class="descname">HpBandSter2SMAC</code><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.convert">
-<code class="descname">convert</code><span class="sig-paren">(</span><em>folders</em>, <em>output_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.convert" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert hpbandster-results into smac-format, aggregating parallel runs along the budgets, so it is treated as
-one run with the same budgets. Throws ValueError when budgets of individual runs dont match.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>folders</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of runs to consider</p></li>
-<li><p><strong>output_dir</strong> (<em>str</em>) – path to CAVE’s output-directory</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>result</strong> (<em>hpbandster.core.result</em>) – BOHB-result in original format</p></li>
-<li><p><strong>paths</strong> (<em>List[str]</em>) – paths to converted data</p></li>
-<li><p><strong>budgets</strong> (<em>List[int]</em>) – budgets, corresponding to paths</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
+  <div class="section" id="module-cave.utils.exceptions">
+<span id="cave-utils-exceptions-module"></span><h1>cave.utils.exceptions module<a class="headerlink" href="#module-cave.utils.exceptions" title="Permalink to this headline">¶</a></h1>
+<dl class="exception">
+<dt id="cave.utils.exceptions.Deactivated">
+<em class="property">exception </em><code class="sig-prename descclassname">cave.utils.exceptions.</code><code class="sig-name descname">Deactivated</code><a class="reference internal" href="../_modules/cave/utils/exceptions.html#Deactivated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.exceptions.Deactivated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<dl class="attribute">
+<dt id="cave.utils.exceptions.Deactivated.args">
+<code class="sig-name descname">args</code><a class="headerlink" href="#cave.utils.exceptions.Deactivated.args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
-<dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.get_incumbent_trajectory_for_budget">
-<code class="descname">get_incumbent_trajectory_for_budget</code><span class="sig-paren">(</span><em>result</em>, <em>budget</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.get_incumbent_trajectory_for_budget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.get_incumbent_trajectory_for_budget" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the best configurations over time for a single budget</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>budget</strong> (<em>string</em>) – budget to be considered</p></li>
-<li><p><strong>result</strong> (<em>Result</em>) – result object with runs</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>dictionary with all the config IDs, the times the runs
-finished, their respective budgets, and corresponding losses</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
+<dt id="cave.utils.exceptions.Deactivated.with_traceback">
+<code class="sig-name descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.utils.exceptions.Deactivated.with_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception.with_traceback(tb) –
+set self.__traceback__ to tb and return self.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.get_trajectory">
-<code class="descname">get_trajectory</code><span class="sig-paren">(</span><em>folder2result</em>, <em>output_path</em>, <em>scenario</em>, <em>rh</em>, <em>budget=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.get_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.get_trajectory" title="Permalink to this definition">¶</a></dt>
-<dd><p>If budget is specified, get trajectory for only that budget. Else use hpbandster’s averaging.
-If multiple results are specified, sort by times_finished and only add to combined trajectory if loss is better</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.hpbandster2smac">
-<code class="descname">hpbandster2smac</code><span class="sig-paren">(</span><em>folder2result</em>, <em>cs: ConfigSpace.configuration_space.ConfigurationSpace</em>, <em>backup_cs</em>, <em>output_dir: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.hpbandster2smac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.hpbandster2smac" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reading hpbandster-result-object and creating RunHistory and trajectory…
-treats each budget as an individual ‘smac’-run, creates an
-output-directory with subdirectories for each budget.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>folder2result</strong> (<em>Dict</em><em>(</em><em>str : hpbandster.core.result.Result</em><em>)</em>) – folder mapping to bohb’s result-objects</p></li>
-<li><p><strong>cs</strong> (<em>ConfigurationSpace</em>) – the configuration space</p></li>
-<li><p><strong>backup_cs</strong> (<em>List</em><em>[</em><em>ConfigurationSpace</em><em>]</em>) – if loading a configuration fails, try configspaces from this list until succeed</p></li>
-<li><p><strong>output_dir</strong> (<em>str</em>) – the output-dir to save the smac-runs to</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
+<dl class="exception">
+<dt id="cave.utils.exceptions.NotApplicable">
+<em class="property">exception </em><code class="sig-prename descclassname">cave.utils.exceptions.</code><code class="sig-name descname">NotApplicable</code><a class="reference internal" href="../_modules/cave/utils/exceptions.html#NotApplicable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.exceptions.NotApplicable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<dl class="attribute">
+<dt id="cave.utils.exceptions.NotApplicable.args">
+<code class="sig-name descname">args</code><a class="headerlink" href="#cave.utils.exceptions.NotApplicable.args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
-<dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.load_configspace">
-<code class="descname">load_configspace</code><span class="sig-paren">(</span><em>folder</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.load_configspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.load_configspace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Will try to load the configspace. If it’s a pcs-file, backup_cs will be a list containing all possible
-combinations of interpretation for Categoricals. If this issue will be fixed, we can drop this procedure.</p>
+<dt id="cave.utils.exceptions.NotApplicable.with_traceback">
+<code class="sig-name descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.utils.exceptions.NotApplicable.with_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception.with_traceback(tb) –
+set self.__traceback__ to tb and return self.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="cave.utils.exceptions.NotUniqueError">
+<em class="property">exception </em><code class="sig-prename descclassname">cave.utils.exceptions.</code><code class="sig-name descname">NotUniqueError</code><a class="reference internal" href="../_modules/cave/utils/exceptions.html#NotUniqueError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.exceptions.NotUniqueError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<dl class="attribute">
+<dt id="cave.utils.exceptions.NotUniqueError.args">
+<code class="sig-name descname">args</code><a class="headerlink" href="#cave.utils.exceptions.NotUniqueError.args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cave.utils.exceptions.NotUniqueError.with_traceback">
+<code class="sig-name descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.utils.exceptions.NotUniqueError.with_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception.with_traceback(tb) –
+set self.__traceback__ to tb and return self.</p>
 </dd></dl>
 
 </dd></dl>
@@ -327,10 +301,10 @@ combinations of interpretation for Categoricals. If this issue will be fixed, we
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="cave.utils.html_helpers.html" class="btn btn-neutral float-right" title="cave.utils.html_helpers module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="cave.utils.helpers.html" class="btn btn-neutral float-right" title="cave.utils.helpers module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="cave.utils.helpers.html" class="btn btn-neutral float-left" title="cave.utils.helpers module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="cave.utils.convert_for_epm.html" class="btn btn-neutral float-left" title="cave.utils.convert_for_epm module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

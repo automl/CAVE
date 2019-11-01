@@ -1,0 +1,532 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>cave.utils.hpbandster_helpers &mdash; CAVE 1.2.0.dev documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> CAVE
+          
+
+          
+            
+            <img src="../../../_static/cave.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.2.0.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../manual.html">Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/commandline.html">Commandline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.analyzer.html">cave.analyzer package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.algorithm_footprint.html">cave.analyzer.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.base_analyzer.html">cave.analyzer.base_analyzer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.bohb_incumbents_per_budget.html">cave.analyzer.bohb_incumbents_per_budget module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.bohb_learning_curves.html">cave.analyzer.bohb_learning_curves module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.box_violin.html">cave.analyzer.box_violin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.budget_correlation.html">cave.analyzer.budget_correlation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cave_ablation.html">cave.analyzer.cave_ablation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cave_fanova.html">cave.analyzer.cave_fanova module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cave_forward_selection.html">cave.analyzer.cave_forward_selection module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cave_parameter_importance.html">cave.analyzer.cave_parameter_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.compare_default_incumbent.html">cave.analyzer.compare_default_incumbent module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.configurator_footprint.html">cave.analyzer.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cost_over_time.html">cave.analyzer.cost_over_time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_clustering.html">cave.analyzer.feature_clustering module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_correlation.html">cave.analyzer.feature_correlation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_importance.html">cave.analyzer.feature_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.local_parameter_importance.html">cave.analyzer.local_parameter_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.overview_table.html">cave.analyzer.overview_table module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.parallel_coordinates.html">cave.analyzer.parallel_coordinates module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.performance_table.html">cave.analyzer.performance_table module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.pimp_comparison_table.html">cave.analyzer.pimp_comparison_table module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.plot_ecdf.html">cave.analyzer.plot_ecdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.plot_scatter.html">cave.analyzer.plot_scatter module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.cave_cli.html">cave.cave_cli module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.cavefacade.html">cave.cavefacade module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.plot.html">cave.plot package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.html.html">cave.html package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.html.html_builder.html">cave.html.html_builder module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.html.html_helpers.html">cave.html.html_helpers module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.tooltips.html">cave.utils.tooltips module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contact.html">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CAVE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>cave.utils.hpbandster_helpers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for cave.utils.hpbandster_helpers</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Here are helper functions needed to provide a certain behaviour of HpBandSter, such as special trajectories.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="format_budgets"><a class="viewcode-back" href="../../../apidoc/cave.utils.hpbandster_helpers.html#cave.utils.hpbandster_helpers.format_budgets">[docs]</a><span class="k">def</span> <span class="nf">format_budgets</span><span class="p">(</span><span class="n">budgets</span><span class="p">,</span> <span class="n">allow_whitespace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Format budget-strings so that they are as short as possible while still distinguishable</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    budgets: List[str]</span>
+<span class="sd">        list with budgets</span>
+<span class="sd">    allow_whitespace: bool</span>
+<span class="sd">        if set to True, will return &quot;budget 10.5&quot; else &quot;budget_10.5</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    formatted_budgets: List[str]</span>
+<span class="sd">        list with formatted budgets</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">budgets</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="kc">None</span> <span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">format_budget</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">round_to</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;budget_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">is_integer</span><span class="p">()</span> <span class="k">else</span> <span class="s1">&#39;budget_{:.</span><span class="si">{}</span><span class="s1">f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">round_to</span><span class="p">)</span>
+
+    <span class="n">round_to</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">formatted_budgets</span> <span class="o">=</span> <span class="p">{</span><span class="n">b</span> <span class="p">:</span> <span class="n">format_budget</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">round_to</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">budgets</span><span class="p">}</span>
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">formatted_budgets</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">formatted_budgets</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+        <span class="n">round_to</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">formatted_budgets</span> <span class="o">=</span> <span class="p">{</span><span class="n">b</span> <span class="p">:</span> <span class="n">format_budget</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">round_to</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">budgets</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">allow_whitespace</span><span class="p">:</span>
+        <span class="n">formatted_budgets</span> <span class="o">=</span> <span class="p">{</span><span class="n">b</span> <span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">formatted_budgets</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="k">return</span> <span class="n">formatted_budgets</span></div>
+
+<div class="viewcode-block" id="get_incumbent_trajectory"><a class="viewcode-back" href="../../../apidoc/cave.utils.hpbandster_helpers.html#cave.utils.hpbandster_helpers.get_incumbent_trajectory">[docs]</a><span class="k">def</span> <span class="nf">get_incumbent_trajectory</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">budgets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;racing&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    result: hpbandster.core.result.Result</span>
+<span class="sd">        result object</span>
+<span class="sd">    budgets: List[str|int|float] or &#39;all&#39;</span>
+<span class="sd">        if a list of budgets, only consider those budgets (to enable trajectories for only a single budget)</span>
+<span class="sd">    mode: str</span>
+<span class="sd">        from [&#39;racing&#39;, &#39;minimum&#39;, &#39;prefer_higher_budget&#39;]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    trajectory: dict</span>
+<span class="sd">        dictionary with all the config IDs, the times the runs finished, their respective budgets, and corresponding</span>
+<span class="sd">        losses</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">budgets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">budgets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">HB_config</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">budgets</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> not a valid argument for &#39;budgets&#39;&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">budgets</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">budget</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">HB_config</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">budget</span> <span class="ow">in</span> <span class="n">budgets</span><span class="p">]):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Budget &#39;</span><span class="si">{}</span><span class="s2">&#39; (type: </span><span class="si">{}</span><span class="s2">) does not exist. Choose from </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">budget</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">budget</span><span class="p">)),</span>
+            <span class="s2">&quot;[&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; (type: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">HB_config</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">]])</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;racing&#39;</span><span class="p">:</span>
+        <span class="c1"># Philipp&#39;s method</span>
+        <span class="n">all_runs</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get_all_runs</span><span class="p">(</span><span class="n">only_largest_budget</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">all_runs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">budget</span> <span class="ow">in</span> <span class="n">budgets</span><span class="p">,</span> <span class="n">all_runs</span><span class="p">))</span>
+        <span class="n">all_runs</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">run</span><span class="p">:</span> <span class="n">run</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;finished&#39;</span><span class="p">])</span>  <span class="c1"># ensure that all_runs and budgets is sorted in ascending order</span>
+        <span class="n">budgets</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+        <span class="n">return_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;config_ids&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                       <span class="s1">&#39;times_finished&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                       <span class="s1">&#39;budgets&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                       <span class="s1">&#39;losses&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="n">last_run</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">_compute_trajectory_racing</span><span class="p">(</span><span class="n">all_runs</span><span class="p">,</span> <span class="n">budgets</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">last_run</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">last_run</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">r</span><span class="p">:</span>
+                <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;config_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">config_id</span><span class="p">)</span>
+                <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;times_finished&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;finished&#39;</span><span class="p">])</span>
+                <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">budget</span><span class="p">)</span>
+                <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;losses&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">loss</span><span class="p">)</span>
+            <span class="n">last_run</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="k">return</span> <span class="n">return_dict</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># HpBandSter&#39;s method (adapted for single budgets)</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;minimum&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_get_incumbent_trajectory_hpbandster</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">budgets</span><span class="p">,</span> <span class="n">bigger_is_better</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                        <span class="n">non_decreasing_budget</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;prefer_higher_budget&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_get_incumbent_trajectory_hpbandster</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">budgets</span><span class="p">,</span> <span class="n">bigger_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                        <span class="n">non_decreasing_budget</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39; not a supported method for get_incumbent_trajectory&quot;</span> <span class="o">%</span> <span class="n">mode</span><span class="p">)</span></div>
+
+<span class="k">def</span> <span class="nf">_compute_trajectory_racing</span><span class="p">(</span><span class="n">all_runs</span><span class="p">,</span> <span class="n">budgets</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the trajectory in racing mode.</span>
+<span class="sd">    If there is at time T a current incumbent I on budget B, a configuration C</span>
+<span class="sd">    can become a incumbent on a higher budget only if I is also evaluated on C.</span>
+<span class="sd">    This means a configuration C can only be incumbent if the current incumbent</span>
+<span class="sd">    is evaluated on the same budget.</span>
+
+<span class="sd">    If the current incumbent is not available for a higher budget, the incumbent</span>
+<span class="sd">    candidate for this higher budget is chosen as incumbent.</span>
+
+<span class="sd">    If a configuration &#39;waits&#39; for the incumbent to be evaluated on the same</span>
+<span class="sd">    budget, its finishing time is set to the time the old incumbent is evaluated</span>
+<span class="sd">    on the higher budget.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        all_runs : list(hpbandster.core.Run)</span>
+<span class="sd">            list of all hpbandster runs sorted ascending by its finishing time</span>
+<span class="sd">        budgets : list(float)</span>
+<span class="sd">            list of all budgets in ascending order</span>
+
+<span class="sd">    Returns : Generator</span>
+<span class="sd">        Generator representing the incumbents in order of appearance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_runs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="c1"># The current incumbents for all budgets</span>
+    <span class="c1"># - key is the budget and value is the incumbent</span>
+    <span class="n">incumbents</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+
+    <span class="c1"># The configurations seen for each budget</span>
+    <span class="n">seen</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="n">x</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">budgets</span><span class="p">])</span>
+    <span class="c1"># The configurations which are available for each budget.</span>
+    <span class="c1"># It is used to perform a lookup if a configuration is actually evaluated</span>
+    <span class="c1"># on a budget.</span>
+    <span class="n">upcoming</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="n">x</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">budgets</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">all_runs</span><span class="p">:</span>
+        <span class="n">upcoming</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">budget</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">config_id</span><span class="p">)</span>
+
+    <span class="c1"># The current incumbent to observe</span>
+    <span class="n">current_incumbent_budget</span> <span class="o">=</span> <span class="n">budgets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Iterate over all timestamps (ordered)</span>
+    <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">all_runs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">run</span><span class="o">.</span><span class="n">loss</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">loss</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># Add config id to seen list for this budget</span>
+        <span class="n">seen</span><span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">budget</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">config_id</span><span class="p">)</span>
+
+        <span class="c1"># Update incumbent for budget if for a budget no configuration has been</span>
+        <span class="c1"># seen or the loss is smaller than the current incumbent on this budget</span>
+        <span class="k">if</span> <span class="n">run</span><span class="o">.</span><span class="n">budget</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">incumbents</span> \
+                <span class="ow">or</span> <span class="n">run</span><span class="o">.</span><span class="n">loss</span> <span class="o">&lt;</span> <span class="n">incumbents</span><span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">budget</span><span class="p">]</span><span class="o">.</span><span class="n">loss</span><span class="p">:</span>
+            <span class="n">incumbents</span><span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">budget</span><span class="p">]</span> <span class="o">=</span> <span class="n">run</span>
+
+        <span class="c1"># Make a forward check if the current incumbent is actually available</span>
+        <span class="c1"># on the higher budget. Set the incumbent candidate of the higher budget</span>
+        <span class="c1"># to the current incumbent if the incumbent on the current budget is not</span>
+        <span class="c1"># available on the next budget</span>
+        <span class="k">if</span> <span class="n">budgets</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">budget</span><span class="p">)</span> <span class="o">==</span> <span class="n">budgets</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">current_incumbent_budget</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> \
+                 <span class="ow">and</span> <span class="n">incumbents</span><span class="p">[</span><span class="n">current_incumbent_budget</span><span class="p">]</span><span class="o">.</span><span class="n">config_id</span> <span class="ow">not</span> <span class="ow">in</span> \
+                 <span class="n">upcoming</span><span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">budget</span><span class="p">]:</span>
+            <span class="n">current_incumbent_budget</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">budget</span>
+
+        <span class="c1"># If there are potential candidates for the higher budgets, a change of</span>
+        <span class="c1"># the incumbent on the current budget could lead to a series of new</span>
+        <span class="c1"># incumbents on the higher budgets. Therefore, iterate over the higher</span>
+        <span class="c1"># budgets and check if there are new incumbents</span>
+        <span class="k">if</span> <span class="n">run</span><span class="o">.</span><span class="n">config_id</span> <span class="o">==</span> <span class="n">incumbents</span><span class="p">[</span><span class="n">current_incumbent_budget</span><span class="p">]</span><span class="o">.</span><span class="n">config_id</span><span class="p">:</span>
+            <span class="c1"># Go through all higher budgets in order</span>
+            <span class="k">for</span> <span class="n">next_budget</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">budgets</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">current_incumbent_budget</span><span class="p">]:</span>
+                <span class="c1"># Check if changing the last incumbent is also tested on a</span>
+                <span class="c1"># higher budget. Break if it is not</span>
+                <span class="k">if</span> <span class="n">next_budget</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">incumbents</span> <span class="ow">or</span> \
+                        <span class="p">(</span><span class="n">incumbents</span><span class="p">[</span><span class="n">current_incumbent_budget</span><span class="p">]</span><span class="o">.</span><span class="n">config_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">[</span><span class="n">next_budget</span><span class="p">]</span>
+                         <span class="ow">and</span> <span class="n">incumbents</span><span class="p">[</span><span class="n">current_incumbent_budget</span><span class="p">]</span><span class="o">.</span><span class="n">config_id</span> <span class="ow">in</span> <span class="n">upcoming</span><span class="p">[</span><span class="n">next_budget</span><span class="p">]):</span>
+                        <span class="k">break</span>
+                <span class="c1"># Increase the budget to be shown</span>
+                <span class="n">current_incumbent_budget</span> <span class="o">=</span> <span class="n">next_budget</span>
+
+        <span class="c1"># Update the finished time to the time of setting as incumbent</span>
+        <span class="n">incumbents</span><span class="p">[</span><span class="n">current_incumbent_budget</span><span class="p">]</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;finished&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;finished&#39;</span><span class="p">]</span>
+        <span class="k">yield</span> <span class="n">incumbents</span><span class="p">[</span><span class="n">current_incumbent_budget</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">_get_incumbent_trajectory_hpbandster</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">budgets</span><span class="p">,</span> <span class="n">bigger_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">non_decreasing_budget</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the best configurations over time</span>
+
+<span class="sd">    !! Copied from hpbandster and modified to enable getting trajectories for individual budgets !!</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        result:</span>
+<span class="sd">                result</span>
+<span class="sd">        budgets: List[budgets] or &#39;all&#39; or &#39;only_largest&#39;</span>
+<span class="sd">                budgets to be considered</span>
+<span class="sd">        bigger_is_better:bool</span>
+<span class="sd">                flag whether an evaluation on a larger budget is always considered better.</span>
+<span class="sd">                If True, the incumbent might increase for the first evaluations on a bigger budget</span>
+<span class="sd">        non_decreasing_budget: bool</span>
+<span class="sd">                flag whether the budget of a new incumbent should be at least as big as the one for</span>
+<span class="sd">                the current incumbent.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        dict:</span>
+<span class="sd">                dictionary with all the config IDs, the times the runs</span>
+<span class="sd">                finished, their respective budgets, and corresponding losses</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">all_runs</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get_all_runs</span><span class="p">(</span><span class="n">only_largest_budget</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">budgets</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">all_runs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">budget</span> <span class="ow">in</span> <span class="n">budgets</span><span class="p">,</span> <span class="n">all_runs</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">budgets</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">budgets</span> <span class="o">==</span> <span class="s1">&#39;only_largest&#39;</span><span class="p">:</span>
+        <span class="n">all_runs</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get_all_runs</span><span class="p">(</span><span class="n">only_largest_budget</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">all_runs</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;finished&#39;</span><span class="p">])</span>
+
+    <span class="n">return_dict</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;config_ids&#39;</span> <span class="p">:</span> <span class="p">[],</span>
+                    <span class="s1">&#39;times_finished&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                    <span class="s1">&#39;budgets&#39;</span>    <span class="p">:</span> <span class="p">[],</span>
+                    <span class="s1">&#39;losses&#39;</span>     <span class="p">:</span> <span class="p">[],</span>
+    <span class="p">}</span>
+
+    <span class="n">current_incumbent</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
+    <span class="n">incumbent_budget</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">HB_config</span><span class="p">[</span><span class="s1">&#39;min_budget&#39;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">all_runs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">loss</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">loss</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="n">new_incumbent</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">bigger_is_better</span> <span class="ow">and</span> <span class="n">r</span><span class="o">.</span><span class="n">budget</span> <span class="o">&gt;</span> <span class="n">incumbent_budget</span><span class="p">:</span>
+            <span class="n">new_incumbent</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">loss</span> <span class="o">&lt;</span> <span class="n">current_incumbent</span><span class="p">:</span>
+            <span class="n">new_incumbent</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">non_decreasing_budget</span> <span class="ow">and</span> <span class="n">r</span><span class="o">.</span><span class="n">budget</span> <span class="o">&lt;</span> <span class="n">incumbent_budget</span><span class="p">:</span>
+            <span class="n">new_incumbent</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">new_incumbent</span><span class="p">:</span>
+            <span class="n">current_incumbent</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">loss</span>
+            <span class="n">incumbent_budget</span>  <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">budget</span>
+
+            <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;config_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">config_id</span><span class="p">)</span>
+            <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;times_finished&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;finished&#39;</span><span class="p">])</span>
+            <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">budget</span><span class="p">)</span>
+            <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;losses&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">loss</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">current_incumbent</span> <span class="o">!=</span> <span class="n">r</span><span class="o">.</span><span class="n">loss</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">all_runs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;config_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;config_ids&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;times_finished&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;finished&#39;</span><span class="p">])</span>
+        <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;losses&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;losses&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">return_dict</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017-2019, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

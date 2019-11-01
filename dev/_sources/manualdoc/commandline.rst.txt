@@ -5,21 +5,21 @@ When running CAVE via the commandline you can use the following arguments to con
 
 Mandatory:
 
-- ``--folders``: path(s) to folder(s) containing the SMAC3-output (works with
-  `output/run_*`)
+- (``--folders``): path(s) to folder(s) containing the (parallel) configurator-output (works with
+  `output/run_*`). while the explicit call with `--folders` is still supported, CAVE will interpret all positional arguments as folders
 
 Meta-parameters:
 
 - ``--output``: where to save the CAVE-output
-- ``--file_format``: of results to be analyzed, choose from `SMAC3 <https://github.com/automl/SMAC3>`_, `SMAC2 <https://www.cs.ubc.ca/labs/beta/Projects/SMAC>`_,
+- ``--file_format``: only use this if automatic file format detection fails. choose from `SMAC3 <https://github.com/automl/SMAC3>`_, `SMAC2 <https://www.cs.ubc.ca/labs/beta/Projects/SMAC>`_,
   `CSV <fileformats.html#csv>`_ or `BOHB <https://github.com/automl/HpBandSter>`_.
 - ``--validation_format``: of (optional) validation data (to enhance epm-quality where appropriate), choose from
   `SMAC3 <https://github.com/automl/SMAC3>`_, `SMAC2 <https://www.cs.ubc.ca/labs/beta/Projects/SMAC>`_,
   `CSV <fileformats.html#csv>`_ or None.
-- ``--ta_exec_dir``: target algorithm execution directory, this should be a path to
-  the directory from which the Configurator was run initially (e.g. used to find relative instance-files and
-  if necessary execute the `algo`-parameter of the SMAC-scenario). (DEFAULT:
-  current working directory)
+- ``--ta_exec_dir``: only used for SMAC-results (and possibly CSV-results). path to the execution-directory of the configurator run. this is the path from
+  which the scenario is loaded, so the instance-/pcs-files specified in the
+  scenario, so they are relative to this path
+  (e.g. 'ta_exec_dir/path_to_train_inst_specified_in_scenario.txt').
 
 Analysis-control (what methods to use in what way):
 
@@ -28,9 +28,9 @@ Analysis-control (what methods to use in what way):
   and/or `lpi`.
   either provide a combination of those or use `all` or `none`
 - ``--feature_analysis``: analysis of features is expensive, so you can specify which
-  algorithm to run: `box_violin`, `clustering`, `importance` and/or `feature_cdf`.
+  algorithm to run: `box_violin`, `clustering`, `importance` and/or `correlation`.
   either provide a combination of those or use `all` or `none`
-- ``--no_tabular_analysis``: toggles the tabular analysis
+- ``--performance_table``: toggles the tabular analysis
 - ``--no_ecdf``, ``--no_scatter_plots``: toggle ecdf- and scatter-plots
 - ``--no_cost_over_time``: toggles the cost-over-time plot
 - ``--no_parallel_coordinates``: toggles the parallel-coordinates plot

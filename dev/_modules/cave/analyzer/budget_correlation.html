@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.budget_correlation &mdash; CAVE 1.1.8.dev documentation</title>
+  <title>cave.analyzer.budget_correlation &mdash; CAVE 1.2.0.dev documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.8.dev
+                1.2.0.dev
               </div>
             
           
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
@@ -143,6 +144,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -150,9 +152,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -226,52 +228,48 @@
            <div itemprop="articleBody">
             
   <h1>Source code for cave.analyzer.budget_correlation</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pandas</span> <span class="k">import</span> <span class="n">DataFrame</span>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+
 <span class="kn">import</span> <span class="nn">scipy</span>
-
-<span class="kn">from</span> <span class="nn">ConfigSpace.configuration_space</span> <span class="k">import</span> <span class="n">Configuration</span>
-<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span>
-<span class="kn">from</span> <span class="nn">smac.scenario.scenario</span> <span class="k">import</span> <span class="n">Scenario</span>
-
-<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">CustomJS</span><span class="p">,</span> <span class="n">Range1d</span>
-<span class="kn">from</span> <span class="nn">bokeh.models.widgets</span> <span class="k">import</span> <span class="n">DataTable</span><span class="p">,</span> <span class="n">TableColumn</span><span class="p">,</span> <span class="n">Select</span>
 <span class="kn">from</span> <span class="nn">bokeh.embed</span> <span class="k">import</span> <span class="n">components</span>
-<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">show</span><span class="p">,</span> <span class="n">figure</span>
 <span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_notebook</span>
 <span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="k">import</span> <span class="n">column</span><span class="p">,</span> <span class="n">row</span>
-<span class="kn">from</span> <span class="nn">bokeh.transform</span> <span class="k">import</span> <span class="n">jitter</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">CustomJS</span><span class="p">,</span> <span class="n">Range1d</span>
+<span class="kn">from</span> <span class="nn">bokeh.models.widgets</span> <span class="k">import</span> <span class="n">DataTable</span><span class="p">,</span> <span class="n">TableColumn</span><span class="p">,</span> <span class="n">Select</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">show</span><span class="p">,</span> <span class="n">figure</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="k">import</span> <span class="n">DataFrame</span>
 
 <span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="k">import</span> <span class="n">BaseAnalyzer</span>
-<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">get_cost_dict_for_config</span><span class="p">,</span> <span class="n">get_timeout</span><span class="p">,</span> <span class="n">combine_runhistories</span>
-<span class="kn">from</span> <span class="nn">cave.utils.statistical_tests</span> <span class="k">import</span> <span class="n">paired_permutation</span><span class="p">,</span> <span class="n">paired_t_student</span>
-<span class="kn">from</span> <span class="nn">cave.utils.timing</span> <span class="k">import</span> <span class="n">timing</span>
+<span class="kn">from</span> <span class="nn">cave.utils.hpbandster_helpers</span> <span class="k">import</span> <span class="n">format_budgets</span>
+
 
 <div class="viewcode-block" id="BudgetCorrelation"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.budget_correlation.html#cave.analyzer.budget_correlation.BudgetCorrelation">[docs]</a><span class="k">class</span> <span class="nc">BudgetCorrelation</span><span class="p">(</span><span class="n">BaseAnalyzer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Use spearman correlation to get a correlation-value and a p-value for every pairwise combination of budgets.</span>
+<span class="sd">    First value is the correlation, second is the p-value (the p-value roughly estimates the likelihood to obtain</span>
+<span class="sd">    this correlation coefficient with uncorrelated datasets).</span>
+<span class="sd">    This can be used to estimate how well a budget approximates the function to be optimized.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">runs</span><span class="p">):</span>
+                 <span class="n">runscontainer</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        incumbents: List[Configuration]</span>
-<span class="sd">            incumbents per budget, assuming ascending order</span>
-<span class="sd">        budget_names: List[str]</span>
-<span class="sd">            budget-names as strings</span>
-<span class="sd">        epm_rhs: List[RunHistory]</span>
-<span class="sd">            estimated runhistories for budgets, same length and order as incumbents&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="sd">        runscontainer: RunsContainer</span>
+<span class="sd">            contains all important information about the configurator runs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">runscontainer</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">runs</span> <span class="o">=</span> <span class="n">runs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">budget</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">budget_names</span> <span class="o">=</span> <span class="n">format_budgets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_budgets</span><span class="p">(),</span> <span class="n">allow_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># To be set</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="BudgetCorrelation.get_name"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.budget_correlation.html#cave.analyzer.budget_correlation.BudgetCorrelation.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Budget Correlation&quot;</span></div>
 
     <span class="k">def</span> <span class="nf">_get_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runs</span><span class="p">):</span>
         <span class="n">table</span> <span class="o">=</span> <span class="p">[]</span>
@@ -287,8 +285,8 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">table</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.2f}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2"> samples)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">costs</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
 
-        <span class="n">budget_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">folder</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">]</span>  <span class="c1"># TODO</span>
-        <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">table</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">budget_names</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">budget_names</span><span class="p">)</span>
+        <span class="n">sorted_budget_names</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">budget_names</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">budget</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">table</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">sorted_budget_names</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">sorted_budget_names</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BudgetCorrelation.plot"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.budget_correlation.html#cave.analyzer.budget_correlation.BudgetCorrelation.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create table and plot that reacts to selection of cells by updating the plotted data to visualize</span>
@@ -318,9 +316,9 @@
 
         <span class="c1"># Create CDS for scatter-plot</span>
         <span class="n">all_configs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">a</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">original_runhistory</span><span class="o">.</span><span class="n">get_all_configs</span><span class="p">()</span> <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">b</span><span class="p">])</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">folder</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>  <span class="p">:</span> <span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">original_runhistory</span><span class="o">.</span><span class="n">get_cost</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span>  <span class="c1"># TODO</span>
-                                                                   <span class="n">run</span><span class="o">.</span><span class="n">original_runhistory</span><span class="o">.</span><span class="n">get_all_configs</span><span class="p">()</span> <span class="k">else</span>
-                                                                   <span class="kc">None</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_configs</span><span class="p">]</span> <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">}</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">budget_names</span><span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">budget</span><span class="p">]</span> <span class="p">:</span> <span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">original_runhistory</span><span class="o">.</span><span class="n">get_cost</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span>  <span class="c1"># TODO</span>
+                                                 <span class="n">run</span><span class="o">.</span><span class="n">original_runhistory</span><span class="o">.</span><span class="n">get_all_configs</span><span class="p">()</span> <span class="k">else</span>
+                                                 <span class="kc">None</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_configs</span><span class="p">]</span> <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">}</span>
         <span class="n">data</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">data</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># Default scatter should be lowest vs highest:</span>
@@ -450,8 +448,10 @@
 <div class="viewcode-block" id="BudgetCorrelation.get_html"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.budget_correlation.html#cave.analyzer.budget_correlation.BudgetCorrelation.get_html">[docs]</a>    <span class="k">def</span> <span class="nf">get_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">script</span><span class="p">,</span> <span class="n">div</span> <span class="o">=</span> <span class="n">components</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;bokeh&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">script</span><span class="p">,</span> <span class="n">div</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;tooltip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tooltip</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Budget Correlation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;bokeh&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="n">div</span><span class="p">),</span>
+                <span class="s2">&quot;tooltip&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
+            <span class="p">}</span>
         <span class="k">return</span> <span class="n">script</span><span class="p">,</span> <span class="n">div</span></div>
 
 <div class="viewcode-block" id="BudgetCorrelation.get_jupyter"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.budget_correlation.html#cave.analyzer.budget_correlation.BudgetCorrelation.get_jupyter">[docs]</a>    <span class="k">def</span> <span class="nf">get_jupyter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.reader.configurator_run module &mdash; CAVE 1.1.8.dev documentation</title>
+  <title>cave.reader.configurator_run module &mdash; CAVE 1.2.0.dev documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.8.dev
+                1.2.0.dev
               </div>
             
           
@@ -95,6 +95,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">F.A.Q.</a></li>
@@ -145,6 +146,7 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -152,9 +154,9 @@
 <li class="toctree-l2"><a class="reference internal" href="cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -237,18 +239,37 @@
 <span id="cave-reader-configurator-run-module"></span><h1>cave.reader.configurator_run module<a class="headerlink" href="#module-cave.reader.configurator_run" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.reader.configurator_run.ConfiguratorRun">
-<em class="property">class </em><code class="descclassname">cave.reader.configurator_run.</code><code class="descname">ConfiguratorRun</code><span class="sig-paren">(</span><em>folder: str</em>, <em>ta_exec_dir: str</em>, <em>file_format: str = 'SMAC3'</em>, <em>validation_format: str = 'NONE'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/configurator_run.html#ConfiguratorRun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">smac.facade.smac_facade.SMAC</span></code></p>
+<em class="property">class </em><code class="sig-prename descclassname">cave.reader.configurator_run.</code><code class="sig-name descname">ConfiguratorRun</code><span class="sig-paren">(</span><em class="sig-param">scenario</em>, <em class="sig-param">original_runhistory</em>, <em class="sig-param">validated_runhistory</em>, <em class="sig-param">trajectory</em>, <em class="sig-param">options</em>, <em class="sig-param">path_to_folder=None</em>, <em class="sig-param">ta_exec_dir=None</em>, <em class="sig-param">file_format=None</em>, <em class="sig-param">validation_format=None</em>, <em class="sig-param">budget=None</em>, <em class="sig-param">output_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/configurator_run.html#ConfiguratorRun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>ConfiguratorRuns load and maintain information about individual configurator
-runs. There are three supported formats: SMAC3, SMAC2 and CSV
+runs. There are different supported formats, like: BOHB, SMAC3, SMAC2 and CSV
 This class is responsible for providing a scenario, a runhistory and a
-trajectory and handling original/validated data appropriately.</p>
-<p>Initialize scenario, runhistory and incumbent from folder, execute
-init-method of SMAC facade (so you could simply use SMAC-instances instead)</p>
+trajectory and handling original/validated data appropriately.
+To create a ConfiguratorRun from a folder, use Configurator.from_folder()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>folder</strong> (<em>string</em>) – output-dir of this run</p></li>
+<li><p><strong>scenario</strong> (<em>Scenario</em>) – scenario</p></li>
+<li><p><strong>validated_runhistory</strong> (<em>original_runhistory</em><em>,</em>) – runhistores containing only the original evaluated data (during optimization process) or the validated data
+where points of interest are reevaluated after the optimization process</p></li>
+<li><p><strong>trajectory</strong> (<em>List</em><em>[</em><em>dict</em><em>]</em>) – a trajectory of the best performing configurations at each point in time</p></li>
+<li><p><strong>options</strong> (<em>dict</em>) – options can define a number of custom settings</p></li>
+<li><p><strong>path_to_folder</strong> (<em>str</em>) – path to the physical folder containing the data</p></li>
+<li><p><strong>ta_exec_dir</strong> (<em>str</em>) – path to the target-algorithm-execution-directory. This is only important for SMAC-optimized data</p></li>
+<li><p><strong>validation_format</strong> (<em>file_format</em><em>,</em>) – will be autodetected some point soon, until then, specify the file-format (SMAC2, SMAC3, BOHB, etc…)</p></li>
+<li><p><strong>budget</strong> (<em>str int</em><em> or </em><em>float</em>) – a budget, with which this cr is associated</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – where to save analysis-data for this cr</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="cave.reader.configurator_run.ConfiguratorRun.from_folder">
+<em class="property">classmethod </em><code class="sig-name descname">from_folder</code><span class="sig-paren">(</span><em class="sig-param">folder: str</em>, <em class="sig-param">ta_exec_dir: str</em>, <em class="sig-param">options</em>, <em class="sig-param">file_format: str = 'SMAC3'</em>, <em class="sig-param">validation_format: str = 'NONE'</em>, <em class="sig-param">budget=None</em>, <em class="sig-param">output_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/configurator_run.html#ConfiguratorRun.from_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.from_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize scenario, runhistory and incumbent from folder</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>folder</strong> (<em>string</em>) – output-dir of this configurator-run -&gt; this is also the ‘id’ for a single run in parallel optimization</p></li>
 <li><p><strong>ta_exec_dir</strong> (<em>string</em>) – if the execution directory for the SMAC-run differs from the cwd,
 there might be problems loading instance-, feature- or PCS-files
 in the scenario-object. since instance- and PCS-files are necessary,
@@ -258,118 +279,22 @@ specify the path to the execution-dir of SMAC here</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="method">
-<dt id="cave.reader.configurator_run.ConfiguratorRun.get_X_y">
-<code class="descname">get_X_y</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.get_X_y" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simple interface to obtain all data in runhistory in <code class="docutils literal notranslate"><span class="pre">X,</span> <span class="pre">y</span></code> format.</p>
-<p>Uses
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">smac.runhistory.runhistory2epm.AbstractRunHistory2EPM.get_X_y()</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p><strong>X</strong> (<em>numpy.ndarray</em>) – matrix of all configurations (+ instance features)</p></li>
-<li><p><strong>y</strong> (<em>numpy.ndarray</em>) – vector of cost values; can include censored runs</p></li>
-<li><p><strong>cen</strong> (<em>numpy.ndarray</em>) – vector of bools indicating whether the y-value is censored</p></li>
-</ul>
-</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="method">
-<dt id="cave.reader.configurator_run.ConfiguratorRun.get_incumbent">
-<code class="descname">get_incumbent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/configurator_run.html#ConfiguratorRun.get_incumbent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.get_incumbent" title="Permalink to this definition">¶</a></dt>
+<dt id="cave.reader.configurator_run.ConfiguratorRun.get_identifier">
+<code class="sig-name descname">get_identifier</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/configurator_run.html#ConfiguratorRun.get_identifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.get_identifier" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="cave.reader.configurator_run.ConfiguratorRun.get_runhistory">
-<code class="descname">get_runhistory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.get_runhistory" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Returns the runhistory (i.e., all evaluated configurations and</dt><dd><p>the results).</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>Runhistory</strong></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>smac.runhistory.runhistory.RunHistory</p>
-</dd>
-</dl>
-</dd></dl>
+<dt id="cave.reader.configurator_run.ConfiguratorRun.get_incumbent">
+<code class="sig-name descname">get_incumbent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/configurator_run.html#ConfiguratorRun.get_incumbent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.get_incumbent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
-<dt id="cave.reader.configurator_run.ConfiguratorRun.get_tae_runner">
-<code class="descname">get_tae_runner</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.get_tae_runner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns target algorithm evaluator (TAE) object which can run the
-target algorithm given a configuration</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>TAE</strong></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>smac.tae.execute_ta_run.ExecuteTARun</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="cave.reader.configurator_run.ConfiguratorRun.get_trajectory">
-<code class="descname">get_trajectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.get_trajectory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the trajectory (i.e., all incumbent configurations over
-time).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>Trajectory</strong></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>List of <code class="xref py py-class docutils literal notranslate"><span class="pre">TrajEntry</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="cave.reader.configurator_run.ConfiguratorRun.optimize">
-<code class="descname">optimize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.optimize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Optimizes the algorithm provided in scenario (given in constructor)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>incumbent</strong> – Best found configuration</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Configuration</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="cave.reader.configurator_run.ConfiguratorRun.validate">
-<code class="descname">validate</code><span class="sig-paren">(</span><em>config_mode: Union[List[ConfigSpace.configuration_space.Configuration], numpy.ndarray, str] = 'inc', instance_mode: Union[List[str], str] = 'train+test', repetitions: int = 1, use_epm: bool = False, n_jobs: int = -1, backend: str = 'threading'</em><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create validator-object and run validation, using
-scenario-information, runhistory from smbo and tae_runner from intensify</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>config_mode</strong> (<em>str</em><em> or </em><em>list&lt;Configuration&gt;</em>) – string or directly a list of Configuration
-str from [def, inc, def+inc, wallclock_time, cpu_time, all]
-time evaluates at cpu- or wallclock-timesteps of:
-[max_time/2^0, max_time/2^1, max_time/2^3, …, default]
-with max_time being the highest recorded time</p></li>
-<li><p><strong>instance_mode</strong> (<em>string</em>) – what instances to use for validation, from [train, test, train+test]</p></li>
-<li><p><strong>repetitions</strong> (<em>int</em>) – number of repetitions in nondeterministic algorithms (in
-deterministic will be fixed to 1)</p></li>
-<li><p><strong>use_epm</strong> (<em>bool</em>) – whether to use an EPM instead of evaluating all runs with the TAE</p></li>
-<li><p><strong>n_jobs</strong> (<em>int</em>) – number of parallel processes used by joblib</p></li>
-<li><p><strong>backend</strong> (<em>string</em>) – what backend to be used by joblib</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>runhistory</strong> – runhistory containing all specified runs</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>RunHistory</p>
-</dd>
-</dl>
+<dt id="cave.reader.configurator_run.ConfiguratorRun.get_reader">
+<em class="property">classmethod </em><code class="sig-name descname">get_reader</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">folder</em>, <em class="sig-param">ta_exec_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/configurator_run.html#ConfiguratorRun.get_reader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.configurator_run.ConfiguratorRun.get_reader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an appropriate reader for the specified format.</p>
 </dd></dl>
 
 </dd></dl>

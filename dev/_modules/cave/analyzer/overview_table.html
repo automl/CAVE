@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.overview_table &mdash; CAVE 1.1.8.dev documentation</title>
+  <title>cave.analyzer.overview_table &mdash; CAVE 1.2.0.dev documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.8.dev
+                1.2.0.dev
               </div>
             
           
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
@@ -143,6 +144,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -150,9 +152,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -227,52 +229,54 @@
             
   <h1>Source code for cave.analyzer.overview_table</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
 
-<span class="kn">from</span> <span class="nn">pandas</span> <span class="k">import</span> <span class="n">DataFrame</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="kn">from</span> <span class="nn">ConfigSpace.hyperparameters</span> <span class="k">import</span> <span class="n">NumericalHyperparameter</span><span class="p">,</span> <span class="n">CategoricalHyperparameter</span><span class="p">,</span> <span class="n">OrdinalHyperparameter</span><span class="p">,</span> <span class="n">Constant</span>
+<span class="kn">from</span> <span class="nn">ConfigSpace.hyperparameters</span> <span class="k">import</span> <span class="n">NumericalHyperparameter</span><span class="p">,</span> <span class="n">CategoricalHyperparameter</span><span class="p">,</span> <span class="n">OrdinalHyperparameter</span><span class="p">,</span> \
+    <span class="n">Constant</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="k">import</span> <span class="n">DataFrame</span>
 
 <span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="k">import</span> <span class="n">BaseAnalyzer</span>
-<span class="kn">from</span> <span class="nn">cave.html.html_helpers</span> <span class="k">import</span> <span class="n">figure_to_html</span>
 <span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">get_config_origin</span>
-<span class="kn">from</span> <span class="nn">cave.utils.bokeh_routines</span> <span class="k">import</span> <span class="n">array_to_bokeh_table</span>
+
 
 <div class="viewcode-block" id="OverviewTable"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable">[docs]</a><span class="k">class</span> <span class="nc">OverviewTable</span><span class="p">(</span><span class="n">BaseAnalyzer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Meta data, i.e. number of instances and parameters as well as configuration budget. Statistics apply to the</span>
+<span class="sd">    best run, if multiple configurator runs are compared.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runscontainer</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">runscontainer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">runscontainer</span><span class="o">.</span><span class="n">output_dir</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runs</span><span class="p">,</span> <span class="n">bohb_parallel</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Create overview-table.</span>
+        <span class="n">html_table_general</span><span class="p">,</span> <span class="n">html_table_specific</span><span class="p">,</span> <span class="n">html_table_cs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;General&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;table&quot;</span><span class="p">:</span> <span class="n">html_table_general</span><span class="p">,</span>
+                                  <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="s2">&quot;General information about the optimization scenario.&quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;Run-Specific&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;table&quot;</span><span class="p">:</span> <span class="n">html_table_specific</span><span class="p">,</span>
+                                       <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="s2">&quot;Information to specific runs (if there are multiple runs). Interesting &quot;</span>
+                                                  <span class="s2">&quot;for parallel optimizations or usage of budgets/fidelities.&quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;Configuration Space&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;table&quot;</span><span class="p">:</span> <span class="n">html_table_cs</span><span class="p">,</span>
+                                              <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="s2">&quot;The parameter configuration space. (See github.com/automl/ConfigSpace)&quot;</span><span class="p">}</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        runs: List[ConfiguratorRun]</span>
-<span class="sd">            list with all runs</span>
-<span class="sd">        bohb_parallel: False or int</span>
-<span class="sd">            number of parallel bohb-runs if present</span>
-<span class="sd">        output_dir: str</span>
-<span class="sd">            output-directory for CAVE</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">runs</span> <span class="o">=</span> <span class="n">runs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bohb_parallel</span> <span class="o">=</span> <span class="n">bohb_parallel</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">html_table_general</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">html_table_specific</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">html_table_cs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<div class="viewcode-block" id="OverviewTable.get_name"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Meta Data&quot;</span></div>
 
 <div class="viewcode-block" id="OverviewTable.run"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Generate tables. &quot;&quot;&quot;</span>
-        <span class="n">scenario</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scenario</span>
+        <span class="n">scenario</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">scenario</span>
 
         <span class="c1"># General infos</span>
-        <span class="n">general_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_general_dict</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bohb_parallel</span><span class="p">)</span>
+        <span class="n">general_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_general_dict</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>
         <span class="n">html_table_general</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;General&#39;</span><span class="p">,</span> <span class="n">general_dict</span><span class="p">)]))</span>
         <span class="n">html_table_general</span> <span class="o">=</span> <span class="n">html_table_general</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">general_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
         <span class="n">html_table_general</span> <span class="o">=</span> <span class="n">html_table_general</span><span class="o">.</span><span class="n">to_html</span><span class="p">(</span><span class="n">escape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
 
         <span class="c1"># Run-specific / budget specific infos</span>
-        <span class="n">runspec_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runspec_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_budgets</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">runs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="n">keep_folders</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">keep_budgets</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">runs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="n">keep_folders</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keep_budgets</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">runspec_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runspec_dict</span><span class="p">(</span><span class="n">runs</span><span class="p">)</span>
         <span class="n">order_spec</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">runspec_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>  <span class="c1"># Get keys of any sub-dict for order</span>
         <span class="n">html_table_specific</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">runspec_dict</span><span class="p">)</span>
         <span class="n">html_table_specific</span> <span class="o">=</span> <span class="n">html_table_specific</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">order_spec</span><span class="p">)</span>
@@ -285,15 +289,13 @@
 
         <span class="k">return</span> <span class="n">html_table_general</span><span class="p">,</span> <span class="n">html_table_specific</span><span class="p">,</span> <span class="n">html_table_cs</span></div>
 
-    <span class="k">def</span> <span class="nf">_general_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">bohb_parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_general_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Generate the meta-information that holds for all runs (scenario info etc)</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        scenario: smac.Scenario</span>
 <span class="sd">            scenario file to get information from</span>
-<span class="sd">        bohb_parallel: Union[False, int]</span>
-<span class="sd">            if set, defines number of parallel runs</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># general stores information that holds for all runs, runspec holds information on a run-basis</span>
         <span class="n">general</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
@@ -303,9 +305,8 @@
         <span class="c1">#if num_conf_runs != 1:</span>
         <span class="c1">#    overview[&#39;Number of configurator runs&#39;] = num_conf_runs</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;bohb_parallel in overview: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">bohb_parallel</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">bohb_parallel</span><span class="p">:</span>
-            <span class="n">general</span><span class="p">[</span><span class="s1">&#39;# aggregated parallel BOHB runs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bohb_parallel</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_budgets</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">general</span><span class="p">[</span><span class="s1">&#39;# aggregated parallel BOHB runs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_folders</span><span class="p">())</span>
 
         <span class="c1"># Scenario related</span>
         <span class="n">general</span><span class="p">[</span><span class="s1">&#39;# parameters&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">())</span>
@@ -336,12 +337,11 @@
         <span class="n">runspec</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">folder</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>  <span class="c1"># TODO this should be changed with multiple BOHB-folder suppor (no basename should be necessary)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">path_to_folder</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>  <span class="c1"># TODO this should be changed with multiple BOHB-folder suppor (no basename should be necessary)</span>
             <span class="n">runspec</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stats_for_run</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">original_runhistory</span><span class="p">,</span>
                                                 <span class="n">run</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span>
                                                 <span class="n">run</span><span class="o">.</span><span class="n">incumbent</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">runspec</span>
-
 
     <span class="k">def</span> <span class="nf">_stats_for_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">incumbent</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
@@ -396,26 +396,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Range/Choices&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">)</span>
             <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Default&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hp</span><span class="o">.</span><span class="n">default_value</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">d</span>
-
-
-<div class="viewcode-block" id="OverviewTable.get_html"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable.get_html">[docs]</a>    <span class="k">def</span> <span class="nf">get_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">budget</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;General&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;table&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">html_table_general</span><span class="p">,</span>
-                            <span class="s2">&quot;tooltip&quot;</span> <span class="p">:</span> <span class="s2">&quot;General information about the optimization scenario.&quot;</span><span class="p">}</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Run-Specific&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;table&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">html_table_specific</span><span class="p">,</span>
-                                 <span class="s2">&quot;tooltip&quot;</span> <span class="p">:</span> <span class="s2">&quot;Information to specific runs (if there are multiple runs). Interesting &quot;</span>
-                                             <span class="s2">&quot;for parallel optimizations or usage of budgets/fidelities.&quot;</span><span class="p">}</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Configuration Space&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;table&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">html_table_cs</span><span class="p">,</span>
-                            <span class="s2">&quot;tooltip&quot;</span> <span class="p">:</span> <span class="s2">&quot;The parameter configuration space. (See github.com/automl/ConfigSpace)&quot;</span><span class="p">}</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;tooltip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tooltip</span>
-        <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">html_table_general</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">html_table_specific</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">html_table_cs</span><span class="p">])</span></div>
-
-<div class="viewcode-block" id="OverviewTable.get_jupyter"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable.get_jupyter">[docs]</a>    <span class="k">def</span> <span class="nf">get_jupyter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">IPython.core.display</span> <span class="k">import</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">display</span>
-        <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_html</span><span class="p">()))</span></div></div>
-
+        <span class="k">return</span> <span class="n">d</span></div>
 </pre></div>
 
            </div>

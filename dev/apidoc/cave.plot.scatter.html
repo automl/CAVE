@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.plot.scatter module &mdash; CAVE 1.1.8.dev documentation</title>
+  <title>cave.plot.scatter module &mdash; CAVE 1.2.0.dev documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.8.dev
+                1.2.0.dev
               </div>
             
           
@@ -95,6 +95,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">F.A.Q.</a></li>
@@ -145,6 +146,7 @@
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -152,9 +154,9 @@
 <li class="toctree-l2"><a class="reference internal" href="cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -237,7 +239,7 @@
 <span id="cave-plot-scatter-module"></span><h1>cave.plot.scatter module<a class="headerlink" href="#module-cave.plot.scatter" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="cave.plot.scatter.plot_scatter_plot">
-<code class="descclassname">cave.plot.scatter.</code><code class="descname">plot_scatter_plot</code><span class="sig-paren">(</span><em>x_data</em>, <em>y_data</em>, <em>labels</em>, <em>title=''</em>, <em>min_val=None</em>, <em>max_val=1000</em>, <em>grey_factor=1</em>, <em>linefactors=None</em>, <em>user_fontsize=22</em>, <em>dpi=100</em>, <em>metric='runtime'</em>, <em>jitter_timeout=True</em>, <em>markers=None</em>, <em>sizes=None</em>, <em>out_fn=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/scatter.html#plot_scatter_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.scatter.plot_scatter_plot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">cave.plot.scatter.</code><code class="sig-name descname">plot_scatter_plot</code><span class="sig-paren">(</span><em class="sig-param">x_data</em>, <em class="sig-param">y_data</em>, <em class="sig-param">labels</em>, <em class="sig-param">title=''</em>, <em class="sig-param">min_val=None</em>, <em class="sig-param">max_val=1000</em>, <em class="sig-param">grey_factor=1</em>, <em class="sig-param">linefactors=None</em>, <em class="sig-param">user_fontsize=22</em>, <em class="sig-param">dpi=100</em>, <em class="sig-param">metric='runtime'</em>, <em class="sig-param">jitter_timeout=True</em>, <em class="sig-param">markers=None</em>, <em class="sig-param">sizes=None</em>, <em class="sig-param">out_fn=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/scatter.html#plot_scatter_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.scatter.plot_scatter_plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to generate a scatter plot
 :param x_data: performance values of one algorithm
 :type x_data: numpy.array

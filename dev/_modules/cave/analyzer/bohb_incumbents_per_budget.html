@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.bohb_incumbents_per_budget &mdash; CAVE 1.1.8.dev documentation</title>
+  <title>cave.analyzer.bohb_incumbents_per_budget &mdash; CAVE 1.2.0.dev documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.8.dev
+                1.2.0.dev
               </div>
             
           
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
@@ -143,6 +144,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -150,9 +152,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -226,43 +228,38 @@
            <div itemprop="articleBody">
             
   <h1>Source code for cave.analyzer.bohb_incumbents_per_budget</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pandas</span> <span class="k">import</span> <span class="n">DataFrame</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
-
 <span class="kn">from</span> <span class="nn">ConfigSpace.configuration_space</span> <span class="k">import</span> <span class="n">Configuration</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="k">import</span> <span class="n">DataFrame</span>
 <span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span>
-<span class="kn">from</span> <span class="nn">smac.scenario.scenario</span> <span class="k">import</span> <span class="n">Scenario</span>
 
 <span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="k">import</span> <span class="n">BaseAnalyzer</span>
-<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">get_cost_dict_for_config</span><span class="p">,</span> <span class="n">get_timeout</span><span class="p">,</span> <span class="n">combine_runhistories</span>
-<span class="kn">from</span> <span class="nn">cave.utils.statistical_tests</span> <span class="k">import</span> <span class="n">paired_permutation</span><span class="p">,</span> <span class="n">paired_t_student</span>
-<span class="kn">from</span> <span class="nn">cave.utils.timing</span> <span class="k">import</span> <span class="n">timing</span>
+<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">get_cost_dict_for_config</span>
+<span class="kn">from</span> <span class="nn">cave.utils.hpbandster_helpers</span> <span class="k">import</span> <span class="n">format_budgets</span>
+
 
 <div class="viewcode-block" id="BohbIncumbentsPerBudget"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.bohb_incumbents_per_budget.html#cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget">[docs]</a><span class="k">class</span> <span class="nc">BohbIncumbentsPerBudget</span><span class="p">(</span><span class="n">BaseAnalyzer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Show the incumbents for each budget (i.e. the best configuration by kernel-estimation using data from that</span>
+<span class="sd">    budget).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">incumbents</span><span class="p">,</span>
-                 <span class="n">budget_names</span><span class="p">,</span>
-                 <span class="n">epm_rhs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        incumbents: List[Configuration]</span>
-<span class="sd">            incumbents per budget, assuming ascending order</span>
-<span class="sd">        budget_names: List[str]</span>
-<span class="sd">            budget-names as strings</span>
-<span class="sd">        epm_rhs: List[RunHistory]</span>
-<span class="sd">            estimated runhistories for budgets, same length and order as incumbents&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                 <span class="n">runscontainer</span><span class="p">,</span>
+                 <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">runscontainer</span><span class="p">)</span>
 
-        <span class="c1"># To be set</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">runs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">budget</span><span class="p">)</span>
+        <span class="n">incumbents</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">incumbent</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">]</span>
+        <span class="n">budget_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">format_budgets</span><span class="p">(</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_budgets</span><span class="p">(),</span> <span class="n">allow_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+        <span class="n">epm_rhs</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">epm_runhistory</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">]</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="n">incumbents</span><span class="p">,</span> <span class="n">budget_names</span><span class="p">,</span> <span class="n">epm_rhs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BohbIncumbentsPerBudget.get_name"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.bohb_incumbents_per_budget.html#cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Incumbents Over Budgets&quot;</span></div>
 
 <div class="viewcode-block" id="BohbIncumbentsPerBudget.create_table"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.bohb_incumbents_per_budget.html#cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget.create_table">[docs]</a>    <span class="k">def</span> <span class="nf">create_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">incumbents</span><span class="p">,</span> <span class="n">budget_names</span><span class="p">,</span> <span class="n">epm_rhs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create table.</span>
@@ -274,12 +271,12 @@
 <span class="sd">        budget_names: List[str]</span>
 <span class="sd">            budget-names as strings</span>
 <span class="sd">        epm_rhs: List[RunHistory]</span>
-<span class="sd">            estimated runhistories for budgets, same length and order as incumbents&quot;&quot;&quot;</span>
+<span class="sd">            estimated runhistories for budgets, same length and order as incumbents</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;... create performance table&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">incumbents</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">epm_rhs</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">incumbents</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">budget_names</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of incumbents must equal number of names and runhistories&quot;</span><span class="p">)</span>
 
-        <span class="n">budget_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">budget_names</span><span class="p">]</span>
         <span class="n">dec_place</span> <span class="o">=</span> <span class="mi">3</span>
 
         <span class="c1"># Get costs</span>
@@ -298,20 +295,8 @@
         <span class="n">keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Cost&#39;</span><span class="p">)</span>
         <span class="n">table</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="o">*</span><span class="n">values</span><span class="p">))</span>
         <span class="n">keys</span><span class="p">,</span> <span class="n">table</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">table</span><span class="p">],</span> <span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">table</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">table</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">budget_names</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">keys</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">html_table</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_html</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="BohbIncumbentsPerBudget.get_html"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.bohb_incumbents_per_budget.html#cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget.get_html">[docs]</a>    <span class="k">def</span> <span class="nf">get_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;table&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">html_table</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;tooltip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tooltip</span> <span class="k">if</span> <span class="n">tooltip</span> <span class="k">else</span> <span class="s2">&quot;Compare hyperparameters and estimated cost of incumbents over budget-steps.&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">html_table</span></div>
-
-<div class="viewcode-block" id="BohbIncumbentsPerBudget.get_jupyter"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.bohb_incumbents_per_budget.html#cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget.get_jupyter">[docs]</a>    <span class="k">def</span> <span class="nf">get_jupyter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">IPython.core.display</span> <span class="k">import</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">display</span>
-        <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">html_table</span><span class="p">))</span></div></div>
-
-
+        <span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">table</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">budget_names</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">keys</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;table&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_html</span><span class="p">()</span></div></div>
 </pre></div>
 
            </div>

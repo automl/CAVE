@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.cost_over_time module &mdash; CAVE 1.1.8.dev documentation</title>
+  <title>cave.analyzer.cost_over_time module &mdash; CAVE 1.2.0.dev documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.8.dev
+                1.2.0.dev
               </div>
             
           
@@ -95,6 +95,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">F.A.Q.</a></li>
@@ -145,6 +146,7 @@
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -152,9 +154,9 @@
 <li class="toctree-l2"><a class="reference internal" href="cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -237,128 +239,117 @@
 <span id="cave-analyzer-cost-over-time-module"></span><h1>cave.analyzer.cost_over_time module<a class="headerlink" href="#module-cave.analyzer.cost_over_time" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="cave.analyzer.cost_over_time.CostOverTime">
-<em class="property">class </em><code class="descclassname">cave.analyzer.cost_over_time.</code><code class="descname">CostOverTime</code><span class="sig-paren">(</span><em>scenario, output_dir, rh: smac.runhistory.runhistory.RunHistory, runs: List[cave.reader.configurator_run.ConfiguratorRun], block_epm: bool = False, bohb_results=None, average_over_runs: bool = True, output_fn: str = 'performance_over_time.png', validator: Union[None, smac.utils.validate.Validator] = None, cot_inc_traj='racing'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cost_over_time.html#CostOverTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cave.analyzer.cost_over_time.</code><code class="sig-name descname">CostOverTime</code><span class="sig-paren">(</span><em class="sig-param">runscontainer: cave.reader.runs_container.RunsContainer</em>, <em class="sig-param">incumbent_trajectory: str = None</em>, <em class="sig-param">average_over_runs: bool = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cost_over_time.html#CostOverTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer" title="cave.analyzer.base_analyzer.BaseAnalyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">cave.analyzer.base_analyzer.BaseAnalyzer</span></code></a></p>
+<p>Depicts the average cost of the best so far found configuration (using all trajectory data) over the time spent
+by the configurator (including target algorithm runs and the overhead generated by the configurator) If the
+curve flattens out early, it indicates that too much time was spent for the configurator run; whereas a curve
+that is still improving at the end of the budget indicates that one should increase the configuration budget.
+The plotted standard deviation gives the uncertainty over multiple configurator runs.</p>
 <p>Plot performance over time, using all trajectory entries
 where max_time = max(wallclock_limit, the highest recorded time)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>scenario</strong> (<em>smac.scenario.scenario.Scenario</em>) – scenario object with necessary information</p></li>
-<li><p><strong>output_dir</strong> (<em>str</em>) – output-directory for smac-object</p></li>
-<li><p><strong>rh</strong> (<em>smac.runhistory.runhistory.RunHistory</em>) – runhistory to use</p></li>
-<li><p><strong>runs</strong> (<em>List</em><em>[</em><a class="reference internal" href="cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun" title="cave.reader.configurator_run.ConfiguratorRun"><em>ConfiguratorRun</em></a><em>]</em>) – list of configurator-runs</p></li>
-<li><p><strong>block_epm</strong> (<em>bool</em>) – if block_epm, only use given runs to estimate cost</p></li>
-<li><p><strong>average_over_runs</strong> (<em>bool</em>) – if True, average over plots. if False, all runs are treated individually with checkboxes</p></li>
-<li><p><strong>output_fn</strong> (<em>str</em>) – path to output-png for this analysis</p></li>
-<li><p><strong>validator</strong> (<em>Validator</em><em> or </em><em>None</em>) – if given, use this epm to estimate costs for the individual incumbents (EPM)</p></li>
-<li><p><strong>cot_inc_traj</strong> (<em>str</em>) – from [‘racing’, ‘minimum’, ‘prefer_higher_budget’], defines incumbent trajectory from hpbandster result</p></li>
-</ul>
-</dd>
-</dl>
+<dl class="method">
+<dt id="cave.analyzer.cost_over_time.CostOverTime.check_for_bokeh">
+<em class="property">classmethod </em><code class="sig-name descname">check_for_bokeh</code><span class="sig-paren">(</span><em class="sig-param">d</em><span class="sig-paren">)</span><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime.check_for_bokeh" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="cave.analyzer.cost_over_time.CostOverTime.get_html">
-<code class="descname">get_html</code><span class="sig-paren">(</span><em>d=None</em>, <em>tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cost_over_time.html#CostOverTime.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime.get_html" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_html</code><span class="sig-paren">(</span><em class="sig-param">d=None</em>, <em class="sig-param">tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cost_over_time.html#CostOverTime.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime.get_html" title="Permalink to this definition">¶</a></dt>
 <dd><p>General reports in html-format, to be easily integrated in html-code. ALSO FOR BOKEH-OUTPUT.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>script, div</strong> – header and body part of html-code</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> (<em>Dictionary</em>) – a dictionary that will be later turned into a website</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>str, str</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>script, div</strong> – header and body part of html-code</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str, str</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.analyzer.cost_over_time.CostOverTime.get_jupyter">
-<code class="descname">get_jupyter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cost_over_time.html#CostOverTime.get_jupyter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime.get_jupyter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_jupyter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cost_over_time.html#CostOverTime.get_jupyter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime.get_jupyter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Depending on analysis, this creates jupyter-notebook compatible output.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="cave.analyzer.cost_over_time.CostOverTime.get_plots">
-<code class="descname">get_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cost_over_time.html#CostOverTime.get_plots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime.get_plots" title="Permalink to this definition">¶</a></dt>
+<dt id="cave.analyzer.cost_over_time.CostOverTime.get_name">
+<code class="sig-name descname">get_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cost_over_time.html#CostOverTime.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime.get_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="cave.analyzer.cost_over_time.CostOverTime.get_static_plots">
-<code class="descname">get_static_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime.get_static_plots" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns plot-paths, if any are available</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>plot_paths</strong> – returns list of strings</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>List[str]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="cave.analyzer.cost_over_time.CostOverTime.get_table">
-<code class="descname">get_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime.get_table" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get table, if available</p>
-</dd></dl>
+<dt id="cave.analyzer.cost_over_time.CostOverTime.get_plots">
+<code class="sig-name descname">get_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cost_over_time.html#CostOverTime.get_plots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime.get_plots" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="cave.analyzer.cost_over_time.CostOverTime.plot">
-<code class="descname">plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cost_over_time.html#CostOverTime.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime.plot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/cost_over_time.html#CostOverTime.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot performance over time, using all trajectory entries.
 max_time denotes max(wallclock_limit, highest recorded time).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.analyzer.cost_over_time.CostOverTime.plot_bokeh">
+<code class="sig-name descname">plot_bokeh</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.analyzer.cost_over_time.CostOverTime.plot_bokeh" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function needs to be called if bokeh-plots are to be displayed in notebook AND saved to webpage.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="cave.analyzer.cost_over_time.Line">
-<em class="property">class </em><code class="descclassname">cave.analyzer.cost_over_time.</code><code class="descname">Line</code><span class="sig-paren">(</span><em>name</em>, <em>time</em>, <em>mean</em>, <em>upper</em>, <em>lower</em>, <em>config</em><span class="sig-paren">)</span><a class="headerlink" href="#cave.analyzer.cost_over_time.Line" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">cave.analyzer.cost_over_time.</code><code class="sig-name descname">Line</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">time</em>, <em class="sig-param">mean</em>, <em class="sig-param">upper</em>, <em class="sig-param">lower</em>, <em class="sig-param">config</em><span class="sig-paren">)</span><a class="headerlink" href="#cave.analyzer.cost_over_time.Line" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
 <p>Create new instance of Line(name, time, mean, upper, lower, config)</p>
-<dl class="attribute">
+<dl class="method">
 <dt id="cave.analyzer.cost_over_time.Line.config">
-<code class="descname">config</code><a class="headerlink" href="#cave.analyzer.cost_over_time.Line.config" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">config</code><a class="headerlink" href="#cave.analyzer.cost_over_time.Line.config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 5</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="cave.analyzer.cost_over_time.Line.count">
-<code class="descname">count</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span> &#x2192; integer -- return number of occurrences of value<a class="headerlink" href="#cave.analyzer.cost_over_time.Line.count" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">count</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span> &#x2192; integer -- return number of occurrences of value<a class="headerlink" href="#cave.analyzer.cost_over_time.Line.count" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="cave.analyzer.cost_over_time.Line.index">
-<code class="descname">index</code><span class="sig-paren">(</span><em>value</em><span class="optional">[</span>, <em>start</em><span class="optional">[</span>, <em>stop</em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; integer -- return first index of value.<a class="headerlink" href="#cave.analyzer.cost_over_time.Line.index" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">index</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="optional">[</span>, <em class="sig-param">start</em><span class="optional">[</span>, <em class="sig-param">stop</em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; integer -- return first index of value.<a class="headerlink" href="#cave.analyzer.cost_over_time.Line.index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raises ValueError if the value is not present.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="cave.analyzer.cost_over_time.Line.lower">
-<code class="descname">lower</code><a class="headerlink" href="#cave.analyzer.cost_over_time.Line.lower" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">lower</code><a class="headerlink" href="#cave.analyzer.cost_over_time.Line.lower" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 4</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="cave.analyzer.cost_over_time.Line.mean">
-<code class="descname">mean</code><a class="headerlink" href="#cave.analyzer.cost_over_time.Line.mean" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">mean</code><a class="headerlink" href="#cave.analyzer.cost_over_time.Line.mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 2</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="cave.analyzer.cost_over_time.Line.name">
-<code class="descname">name</code><a class="headerlink" href="#cave.analyzer.cost_over_time.Line.name" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#cave.analyzer.cost_over_time.Line.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 0</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="cave.analyzer.cost_over_time.Line.time">
-<code class="descname">time</code><a class="headerlink" href="#cave.analyzer.cost_over_time.Line.time" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">time</code><a class="headerlink" href="#cave.analyzer.cost_over_time.Line.time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 1</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="cave.analyzer.cost_over_time.Line.upper">
-<code class="descname">upper</code><a class="headerlink" href="#cave.analyzer.cost_over_time.Line.upper" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">upper</code><a class="headerlink" href="#cave.analyzer.cost_over_time.Line.upper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 3</p>
 </dd></dl>
 

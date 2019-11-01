@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.utils.helpers module &mdash; CAVE 1.1.8.dev documentation</title>
+  <title>cave.utils.helpers module &mdash; CAVE 1.2.0.dev documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="cave.utils.hpbandster2smac module" href="cave.utils.hpbandster2smac.html" />
-    <link rel="prev" title="cave.utils.convert_for_epm module" href="cave.utils.convert_for_epm.html" /> 
+    <link rel="next" title="cave.utils.hpbandster_helpers module" href="cave.utils.hpbandster_helpers.html" />
+    <link rel="prev" title="cave.utils.exceptions module" href="cave.utils.exceptions.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.8.dev
+                1.2.0.dev
               </div>
             
           
@@ -95,6 +95,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">F.A.Q.</a></li>
@@ -145,6 +146,7 @@
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -152,9 +154,9 @@
 <li class="toctree-l2 current"><a class="reference internal" href="cave.utils.html">cave.utils package</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -237,36 +239,17 @@
 <span id="cave-utils-helpers-module"></span><h1>cave.utils.helpers module<a class="headerlink" href="#module-cave.utils.helpers" title="Permalink to this headline">¶</a></h1>
 <dl class="exception">
 <dt id="cave.utils.helpers.MissingInstancesError">
-<em class="property">exception </em><code class="descclassname">cave.utils.helpers.</code><code class="descname">MissingInstancesError</code><a class="reference internal" href="../_modules/cave/utils/helpers.html#MissingInstancesError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.MissingInstancesError" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><code class="sig-prename descclassname">cave.utils.helpers.</code><code class="sig-name descname">MissingInstancesError</code><a class="reference internal" href="../_modules/cave/utils/helpers.html#MissingInstancesError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.MissingInstancesError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 <p>Exception indicating that instances are missing.</p>
 <dl class="attribute">
 <dt id="cave.utils.helpers.MissingInstancesError.args">
-<code class="descname">args</code><a class="headerlink" href="#cave.utils.helpers.MissingInstancesError.args" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">args</code><a class="headerlink" href="#cave.utils.helpers.MissingInstancesError.args" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="cave.utils.helpers.MissingInstancesError.with_traceback">
-<code class="descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.utils.helpers.MissingInstancesError.with_traceback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Exception.with_traceback(tb) –
-set self.__traceback__ to tb and return self.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="exception">
-<dt id="cave.utils.helpers.NotApplicableError">
-<em class="property">exception </em><code class="descclassname">cave.utils.helpers.</code><code class="descname">NotApplicableError</code><a class="reference internal" href="../_modules/cave/utils/helpers.html#NotApplicableError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.NotApplicableError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
-<p>Exception indicating that this analysis-method cannot be performed.</p>
-<dl class="attribute">
-<dt id="cave.utils.helpers.NotApplicableError.args">
-<code class="descname">args</code><a class="headerlink" href="#cave.utils.helpers.NotApplicableError.args" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="cave.utils.helpers.NotApplicableError.with_traceback">
-<code class="descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.utils.helpers.NotApplicableError.with_traceback" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.utils.helpers.MissingInstancesError.with_traceback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception.with_traceback(tb) –
 set self.__traceback__ to tb and return self.</p>
 </dd></dl>
@@ -274,14 +257,49 @@ set self.__traceback__ to tb and return self.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="cave.utils.helpers.check_for_features">
+<code class="sig-prename descclassname">cave.utils.helpers.</code><code class="sig-name descname">check_for_features</code><span class="sig-paren">(</span><em class="sig-param">scenario</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#check_for_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.check_for_features" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="cave.utils.helpers.combine_runhistories">
-<code class="descclassname">cave.utils.helpers.</code><code class="descname">combine_runhistories</code><span class="sig-paren">(</span><em>rhs</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#combine_runhistories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.combine_runhistories" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">cave.utils.helpers.</code><code class="sig-name descname">combine_runhistories</code><span class="sig-paren">(</span><em class="sig-param">rhs</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#combine_runhistories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.combine_runhistories" title="Permalink to this definition">¶</a></dt>
 <dd><p>Combine list of given runhistories. interleaving to best approximate execution order</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="cave.utils.helpers.combine_trajectories">
+<code class="sig-prename descclassname">cave.utils.helpers.</code><code class="sig-name descname">combine_trajectories</code><span class="sig-paren">(</span><em class="sig-param">trajs</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#combine_trajectories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.combine_trajectories" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combine trajectories. Trajectories are expected as an iterable of sorted lists, which are increasing in time.
+A trajectory entry is expected as:
+TrajEntry = collections.namedtuple(</p>
+<blockquote>
+<div><dl class="simple">
+<dt>‘TrajEntry’, [‘train_perf’, ‘incumbent_id’, ‘incumbent’,</dt><dd><p>‘ta_runs’, ‘ta_time_used’, ‘wallclock_time’])</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>trajs</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><em>TrajEntry</em><em>]</em><em>]</em>) – trajectories to be combined</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>combined_traj</strong> – combined trajectory</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[TrajEntry]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cave.utils.helpers.detect_fileformat">
+<code class="sig-prename descclassname">cave.utils.helpers.</code><code class="sig-name descname">detect_fileformat</code><span class="sig-paren">(</span><em class="sig-param">folders</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#detect_fileformat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.detect_fileformat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="cave.utils.helpers.escape_parameter_name">
-<code class="descclassname">cave.utils.helpers.</code><code class="descname">escape_parameter_name</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#escape_parameter_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.escape_parameter_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">cave.utils.helpers.</code><code class="sig-name descname">escape_parameter_name</code><span class="sig-paren">(</span><em class="sig-param">p</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#escape_parameter_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.escape_parameter_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Necessary because:
 1. parameters called ‘size’ or ‘origin’ might exist in cs
 2. ‘-‘ not allowed in bokeh’s CDS</p>
@@ -289,7 +307,7 @@ set self.__traceback__ to tb and return self.</p>
 
 <dl class="function">
 <dt id="cave.utils.helpers.get_config_origin">
-<code class="descclassname">cave.utils.helpers.</code><code class="descname">get_config_origin</code><span class="sig-paren">(</span><em>c</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#get_config_origin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.get_config_origin" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">cave.utils.helpers.</code><code class="sig-name descname">get_config_origin</code><span class="sig-paren">(</span><em class="sig-param">c</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#get_config_origin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.get_config_origin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return appropriate configuration origin</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -306,7 +324,7 @@ set self.__traceback__ to tb and return self.</p>
 
 <dl class="function">
 <dt id="cave.utils.helpers.get_cost_dict_for_config">
-<code class="descclassname">cave.utils.helpers.</code><code class="descname">get_cost_dict_for_config</code><span class="sig-paren">(</span><em>rh: smac.runhistory.runhistory.RunHistory</em>, <em>conf: ConfigSpace.configuration_space.Configuration</em>, <em>par: int = 1</em>, <em>cutoff: Optional[float] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#get_cost_dict_for_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.get_cost_dict_for_config" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">cave.utils.helpers.</code><code class="sig-name descname">get_cost_dict_for_config</code><span class="sig-paren">(</span><em class="sig-param">rh: smac.runhistory.runhistory.RunHistory</em>, <em class="sig-param">conf: ConfigSpace.configuration_space.Configuration</em>, <em class="sig-param">par: int = 1</em>, <em class="sig-param">cutoff: Optional[float] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#get_cost_dict_for_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.get_cost_dict_for_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Aggregates loss for configuration on evaluated instances over seeds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -328,7 +346,7 @@ set self.__traceback__ to tb and return self.</p>
 
 <dl class="function">
 <dt id="cave.utils.helpers.get_timeout">
-<code class="descclassname">cave.utils.helpers.</code><code class="descname">get_timeout</code><span class="sig-paren">(</span><em>rh</em>, <em>conf</em>, <em>cutoff</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#get_timeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.get_timeout" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">cave.utils.helpers.</code><code class="sig-name descname">get_timeout</code><span class="sig-paren">(</span><em class="sig-param">rh</em>, <em class="sig-param">conf</em>, <em class="sig-param">cutoff</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#get_timeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.get_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check for timeouts. If multiple runs for an inst/config-pair are
 available, using the median (not the mean: no fractional timeouts)</p>
 <dl class="field-list simple">
@@ -349,8 +367,13 @@ available, using the median (not the mean: no fractional timeouts)</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="cave.utils.helpers.load_default_options">
+<code class="sig-prename descclassname">cave.utils.helpers.</code><code class="sig-name descname">load_default_options</code><span class="sig-paren">(</span><em class="sig-param">options=None</em>, <em class="sig-param">file_format=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#load_default_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.load_default_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="cave.utils.helpers.scenario_sanity_check">
-<code class="descclassname">cave.utils.helpers.</code><code class="descname">scenario_sanity_check</code><span class="sig-paren">(</span><em>s</em>, <em>logger</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#scenario_sanity_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.scenario_sanity_check" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">cave.utils.helpers.</code><code class="sig-name descname">scenario_sanity_check</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">logger</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#scenario_sanity_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.scenario_sanity_check" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check scenario for number of train- and test-instances, (duplicate) features and inconsistencies.
 Logs information and raises ValueError if train-features available, but test-features not.</p>
 </dd></dl>
@@ -365,10 +388,10 @@ Logs information and raises ValueError if train-features available, but test-fea
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="cave.utils.hpbandster2smac.html" class="btn btn-neutral float-right" title="cave.utils.hpbandster2smac module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="cave.utils.hpbandster_helpers.html" class="btn btn-neutral float-right" title="cave.utils.hpbandster_helpers module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="cave.utils.convert_for_epm.html" class="btn btn-neutral float-left" title="cave.utils.convert_for_epm module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="cave.utils.exceptions.html" class="btn btn-neutral float-left" title="cave.utils.exceptions module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
