@@ -1,7 +1,7 @@
-cave.analyzer.plot\_scatter module
+cave.reader.runs\_container module
 ==================================
 
-.. automodule:: cave.analyzer.plot_scatter
+.. automodule:: cave.reader.runs_container
    :members:
    :undoc-members:
    :show-inheritance:

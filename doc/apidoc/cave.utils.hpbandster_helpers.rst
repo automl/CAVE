@@ -1,7 +1,7 @@
-cave.plot.algorithm\_footprint module
+cave.utils.hpbandster\_helpers module
 =====================================
 
-.. automodule:: cave.plot.algorithm_footprint
+.. automodule:: cave.utils.hpbandster_helpers
    :members:
    :undoc-members:
    :show-inheritance:
