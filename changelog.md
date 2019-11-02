@@ -1,3 +1,24 @@
+# 1.2.0
+
+## Bug fixes
+
+* Fix tooltips sometimes not showing
+* Fix docu-build
+* Fix logging (was printing sometimes)
+* Fix bug in reading in configuration in CSV-data
+
+## Major changes
+
+* Change internal structure from cave-in-cave to proper data-handling using a RunsContainer with individual ConfiguratorRuns (per budget/parallel-run combination)
+* Add options-file in .ini format to increase flexibility on default options (and technically enable using options-file for CAVE, though not supported by cmdline yet, only in python/jupyter)
+* Make the `--folders`-cmd line argument positional (though the keyword `--folders` is still supported)
+* Enable automatic file-format detection (`--file_format`-cmd line argument still supported)
+
+## Minor changes
+
+* Add whitebox-tests and script to execute all examples
+* Add exceptions for Deactivated and NotApplicable errors and load a lot more work onto BaseAnalyzer
+
 # 1.1.8
 
 ## Bug fixes
