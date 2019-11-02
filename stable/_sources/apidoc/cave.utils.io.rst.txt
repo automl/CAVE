@@ -2,7 +2,7 @@ cave.utils.io module
 ====================
 
 .. automodule:: cave.utils.io
-    :members:
-    :undoc-members:
-    :show-inheritance:
-    :inherited-members:
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :inherited-members:

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.cost_over_time &mdash; CAVE 1.1.7 documentation</title>
+  <title>cave.analyzer.cost_over_time &mdash; CAVE 1.2.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.7
+                1.2.0
               </div>
             
           
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
@@ -143,6 +144,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -150,9 +152,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -226,102 +228,87 @@
            <div itemprop="articleBody">
             
   <h1>Source code for cave.analyzer.cost_over_time</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">namedtuple</span>
-<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
+<span class="kn">from</span> <span class="nn">bokeh.embed</span> <span class="k">import</span> <span class="n">components</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_notebook</span>
+<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="k">import</span> <span class="n">column</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">widgetbox</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="n">Range1d</span><span class="p">,</span> <span class="n">Legend</span>
+<span class="kn">from</span> <span class="nn">bokeh.models.filters</span> <span class="k">import</span> <span class="n">GroupFilter</span>
+<span class="kn">from</span> <span class="nn">bokeh.models.sources</span> <span class="k">import</span> <span class="n">CDSView</span>
+<span class="kn">from</span> <span class="nn">bokeh.palettes</span> <span class="k">import</span> <span class="n">Dark2_5</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">show</span>
 <span class="kn">from</span> <span class="nn">smac.configspace</span> <span class="k">import</span> <span class="n">convert_configurations_to_array</span>
 <span class="kn">from</span> <span class="nn">smac.epm.rf_with_instances</span> <span class="k">import</span> <span class="n">RandomForestWithInstances</span>
+<span class="kn">from</span> <span class="nn">smac.epm.util_funcs</span> <span class="k">import</span> <span class="n">get_types</span>
 <span class="kn">from</span> <span class="nn">smac.optimizer.objective</span> <span class="k">import</span> <span class="n">_cost</span>
-<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory2epm</span> <span class="k">import</span> <span class="n">RunHistory2EPM4Cost</span>
 <span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span>
-<span class="kn">from</span> <span class="nn">smac.utils.util_funcs</span> <span class="k">import</span> <span class="n">get_types</span>
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory2epm</span> <span class="k">import</span> <span class="n">RunHistory2EPM4Cost</span>
+<span class="kn">from</span> <span class="nn">smac.utils.constants</span> <span class="k">import</span> <span class="n">MAXINT</span>
 <span class="kn">from</span> <span class="nn">smac.utils.validate</span> <span class="k">import</span> <span class="n">Validator</span>
-<span class="kn">from</span> <span class="nn">smac.optimizer.objective</span> <span class="k">import</span> <span class="n">average_cost</span>
 
-<span class="kn">from</span> <span class="nn">cave.utils.io</span> <span class="k">import</span> <span class="n">export_bokeh</span>
-<span class="kn">from</span> <span class="nn">cave.utils.hpbandster2smac</span> <span class="k">import</span> <span class="n">HpBandSter2SMAC</span>
-<span class="kn">from</span> <span class="nn">cave.reader.configurator_run</span> <span class="k">import</span> <span class="n">ConfiguratorRun</span>
 <span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="k">import</span> <span class="n">BaseAnalyzer</span>
+<span class="kn">from</span> <span class="nn">cave.reader.runs_container</span> <span class="k">import</span> <span class="n">RunsContainer</span>
 <span class="kn">from</span> <span class="nn">cave.utils.bokeh_routines</span> <span class="k">import</span> <span class="n">get_checkbox</span>
 <span class="kn">from</span> <span class="nn">cave.utils.hpbandster_helpers</span> <span class="k">import</span> <span class="n">get_incumbent_trajectory</span><span class="p">,</span> <span class="n">format_budgets</span>
-
-<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">show</span>
-<span class="kn">from</span> <span class="nn">bokeh.embed</span> <span class="k">import</span> <span class="n">components</span>
-<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="n">Range1d</span><span class="p">,</span> <span class="n">Legend</span><span class="p">,</span> <span class="n">CustomJS</span>
-<span class="kn">from</span> <span class="nn">bokeh.models.sources</span> <span class="k">import</span> <span class="n">CDSView</span>
-<span class="kn">from</span> <span class="nn">bokeh.models.filters</span> <span class="k">import</span> <span class="n">GroupFilter</span>
-<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_notebook</span>
-<span class="kn">from</span> <span class="nn">bokeh.palettes</span> <span class="k">import</span> <span class="n">Dark2_5</span>
-<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="k">import</span> <span class="n">column</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">widgetbox</span>
-
+<span class="kn">from</span> <span class="nn">cave.utils.io</span> <span class="k">import</span> <span class="n">export_bokeh</span>
 
 <span class="n">Line</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Line&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="s1">&#39;upper&#39;</span><span class="p">,</span> <span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">])</span>
 
 <div class="viewcode-block" id="CostOverTime"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime">[docs]</a><span class="k">class</span> <span class="nc">CostOverTime</span><span class="p">(</span><span class="n">BaseAnalyzer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Depicts the average cost of the best so far found configuration (using all trajectory data) over the time spent</span>
+<span class="sd">    by the configurator (including target algorithm runs and the overhead generated by the configurator) If the</span>
+<span class="sd">    curve flattens out early, it indicates that too much time was spent for the configurator run; whereas a curve</span>
+<span class="sd">    that is still improving at the end of the budget indicates that one should increase the configuration budget.</span>
+<span class="sd">    The plotted standard deviation gives the uncertainty over multiple configurator runs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">scenario</span><span class="p">,</span>
-                 <span class="n">output_dir</span><span class="p">,</span>
-                 <span class="n">rh</span><span class="p">:</span> <span class="n">RunHistory</span><span class="p">,</span>
-                 <span class="n">runs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ConfiguratorRun</span><span class="p">],</span>
-                 <span class="n">block_epm</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">bohb_results</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">average_over_runs</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                 <span class="n">output_fn</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;performance_over_time.png&quot;</span><span class="p">,</span>
-                 <span class="n">validator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">Validator</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">cot_inc_traj</span><span class="o">=</span><span class="s1">&#39;racing&#39;</span><span class="p">,</span>
+                 <span class="n">runscontainer</span><span class="p">:</span> <span class="n">RunsContainer</span><span class="p">,</span>
+                 <span class="n">incumbent_trajectory</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">average_over_runs</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Plot performance over time, using all trajectory entries</span>
-<span class="sd">            where max_time = max(wallclock_limit, the highest recorded time)</span>
-
-<span class="sd">            Parameters</span>
-<span class="sd">            ----------</span>
-<span class="sd">            scenario: smac.scenario.scenario.Scenario</span>
-<span class="sd">                scenario object with necessary information</span>
-<span class="sd">            output_dir: str</span>
-<span class="sd">                output-directory for smac-object</span>
-<span class="sd">            rh: smac.runhistory.runhistory.RunHistory</span>
-<span class="sd">                runhistory to use</span>
-<span class="sd">            runs: List[ConfiguratorRun]</span>
-<span class="sd">                list of configurator-runs</span>
-<span class="sd">            block_epm: bool</span>
-<span class="sd">                if block_epm, only use given runs to estimate cost</span>
-<span class="sd">            average_over_runs: bool</span>
-<span class="sd">                if True, average over plots. if False, all runs are treated individually with checkboxes</span>
-<span class="sd">            output_fn: str</span>
-<span class="sd">                path to output-png for this analysis</span>
-<span class="sd">            validator: Validator or None</span>
-<span class="sd">                if given, use this epm to estimate costs for the individual incumbents (EPM)</span>
-<span class="sd">            cot_inc_traj: str</span>
-<span class="sd">                from [&#39;racing&#39;, &#39;minimum&#39;, &#39;prefer_higher_budget&#39;], defines incumbent trajectory from hpbandster result</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot performance over time, using all trajectory entries</span>
+<span class="sd">        where max_time = max(wallclock_limit, the highest recorded time)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">runscontainer</span><span class="p">,</span>
+                         <span class="n">incumbent_trajectory</span><span class="o">=</span><span class="n">incumbent_trajectory</span><span class="p">,</span>
+                         <span class="n">average_over_runs</span><span class="o">=</span><span class="n">average_over_runs</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rng</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_rng</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_fn</span> <span class="o">=</span> <span class="s2">&quot;cost_over_time.png&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rh</span> <span class="o">=</span> <span class="n">rh</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">runs</span> <span class="o">=</span> <span class="n">runs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bohb_results</span> <span class="o">=</span> <span class="n">bohb_results</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">block_epm</span> <span class="o">=</span> <span class="n">block_epm</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">average_over_runs</span> <span class="o">=</span> <span class="n">average_over_runs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_fn</span> <span class="o">=</span> <span class="n">output_fn</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">validator</span> <span class="o">=</span> <span class="n">validator</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cot_inc_traj</span> <span class="o">=</span> <span class="n">cot_inc_traj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">scenario</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">output_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">validated_runhistory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bohb_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_bohb_results</span><span class="p">()</span>
+        <span class="c1"># Run-specific / budget specific infos</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_budgets</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">runs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="n">keep_folders</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">keep_budgets</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">runs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="n">keep_folders</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keep_budgets</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_epm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">file_format</span> <span class="o">==</span> <span class="s2">&quot;BOHB&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">validator</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initialized CostOverTime with </span><span class="si">%d</span><span class="s2"> runs, output to </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">average_over_runs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;average_over_runs&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cot_inc_traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;incumbent_trajectory&#39;</span><span class="p">]</span>
 
-        <span class="c1"># TODO to be replaced by base restruct</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initialized CostOverTime with </span><span class="si">%d</span><span class="s2"> runs, output to </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_folders</span><span class="p">()),</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bohb_results</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">formatted_budgets</span> <span class="o">=</span> <span class="n">format_budgets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bohb_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">HB_config</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">formatted_budgets</span> <span class="o">=</span> <span class="n">format_budgets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_budgets</span><span class="p">())</span>
 
         <span class="c1"># Will be set during execution:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plots</span> <span class="o">=</span> <span class="p">[]</span>                     <span class="c1"># List with paths to &#39;.png&#39;s</span>
+
+<div class="viewcode-block" id="CostOverTime.get_name"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Cost Over Time&quot;</span></div>
 
     <span class="k">def</span> <span class="nf">_get_mean_var_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validator</span><span class="p">,</span> <span class="n">traj</span><span class="p">,</span> <span class="n">use_epm</span><span class="p">,</span> <span class="n">rh</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -370,10 +357,11 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Training model with data of shape X: </span><span class="si">%s</span><span class="s2">, y: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
 
                 <span class="n">types</span><span class="p">,</span> <span class="n">bounds</span> <span class="o">=</span> <span class="n">get_types</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">feature_array</span><span class="p">)</span>
-                <span class="n">epm</span> <span class="o">=</span> <span class="n">RandomForestWithInstances</span><span class="p">(</span><span class="n">types</span><span class="o">=</span><span class="n">types</span><span class="p">,</span>
+                <span class="n">epm</span> <span class="o">=</span> <span class="n">RandomForestWithInstances</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="p">,</span>
+                                                <span class="n">types</span><span class="o">=</span><span class="n">types</span><span class="p">,</span>
                                                 <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span>
+                                                <span class="n">seed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">MAXINT</span><span class="p">),</span>
                                                 <span class="n">instance_features</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">feature_array</span><span class="p">,</span>
-                                                <span class="c1"># seed=self.rng.randint(MAXINT),</span>
                                                 <span class="n">ratio_features</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
                 <span class="n">epm</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
             <span class="n">config_array</span> <span class="o">=</span> <span class="n">convert_configurations_to_array</span><span class="p">(</span><span class="n">configs</span><span class="p">)</span>
@@ -402,7 +390,7 @@
         <span class="n">means</span><span class="p">,</span> <span class="n">times</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">:</span>
             <span class="c1"># Ignore variances as we plot variance over runs</span>
-            <span class="n">mean</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_mean_var_time</span><span class="p">(</span><span class="n">validator</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">traj</span><span class="p">,</span> <span class="ow">not</span> <span class="n">run</span><span class="o">.</span><span class="n">validated_runhistory</span><span class="p">,</span> <span class="n">rh</span><span class="p">)</span>
+            <span class="n">mean</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_mean_var_time</span><span class="p">(</span><span class="n">validator</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">trajectory</span><span class="p">,</span> <span class="ow">not</span> <span class="n">run</span><span class="o">.</span><span class="n">validated_runhistory</span><span class="p">,</span> <span class="n">rh</span><span class="p">)</span>
             <span class="n">means</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mean</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
             <span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
         <span class="n">all_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">sorted</span><span class="p">([</span><span class="n">a</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">times</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">b</span><span class="p">]))</span>  <span class="c1"># flatten times</span>
@@ -451,13 +439,13 @@
         <span class="c1"># TODO add configs to tooltips (first to data)</span>
         <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">:</span>
             <span class="n">validated</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">run</span><span class="o">.</span><span class="n">validated_runhistory</span> <span class="k">else</span> <span class="kc">False</span>
-            <span class="n">mean</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">configs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_mean_var_time</span><span class="p">(</span><span class="n">validator</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">traj</span><span class="p">,</span> <span class="ow">not</span> <span class="n">validated</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">combined_runhistory</span><span class="p">)</span>
+            <span class="n">mean</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">configs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_mean_var_time</span><span class="p">(</span><span class="n">validator</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">trajectory</span><span class="p">,</span> <span class="ow">not</span> <span class="n">validated</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">combined_runhistory</span><span class="p">)</span>
             <span class="n">mean</span> <span class="o">=</span> <span class="n">mean</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
 
             <span class="c1"># doubling for step-effect TODO if step works with hover in bokeh, consider changing this</span>
             <span class="n">time_double</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">sub</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">mean_double</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">mean</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">sub</span><span class="p">][:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Line</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">folder</span><span class="p">),</span> <span class="n">time_double</span><span class="p">,</span> <span class="n">mean_double</span><span class="p">,</span> <span class="n">mean_double</span><span class="p">,</span> <span class="n">mean_double</span><span class="p">,</span> <span class="n">configs</span><span class="p">))</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Line</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">path_to_folder</span><span class="p">),</span> <span class="n">time_double</span><span class="p">,</span> <span class="n">mean_double</span><span class="p">,</span> <span class="n">mean_double</span><span class="p">,</span> <span class="n">mean_double</span><span class="p">,</span> <span class="n">configs</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">lines</span>
 
     <span class="k">def</span> <span class="nf">_get_bohb_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validator</span><span class="p">,</span> <span class="n">runs</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">budget</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -620,15 +608,18 @@
 
         <span class="k">return</span> <span class="n">layout</span></div>
 
+<div class="viewcode-block" id="CostOverTime.get_plots"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime.get_plots">[docs]</a>    <span class="k">def</span> <span class="nf">get_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span></div>
+
+
 <div class="viewcode-block" id="CostOverTime.get_html"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime.get_html">[docs]</a>    <span class="k">def</span> <span class="nf">get_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">script</span><span class="p">,</span> <span class="n">div</span> <span class="o">=</span> <span class="n">components</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;bokeh&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="n">div</span><span class="p">)</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;tooltip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tooltip</span>
+            <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;bokeh&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="n">div</span><span class="p">),</span>
+                <span class="s2">&quot;tooltip&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
+            <span class="p">}</span>
         <span class="k">return</span> <span class="n">script</span><span class="p">,</span> <span class="n">div</span></div>
-
-<div class="viewcode-block" id="CostOverTime.get_plots"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime.get_plots">[docs]</a>    <span class="k">def</span> <span class="nf">get_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span></div>
 
 <div class="viewcode-block" id="CostOverTime.get_jupyter"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime.get_jupyter">[docs]</a>    <span class="k">def</span> <span class="nf">get_jupyter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">output_notebook</span><span class="p">()</span>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.reader.csv_reader module &mdash; CAVE 1.1.7 documentation</title>
+  <title>cave.reader.csv_reader module &mdash; CAVE 1.2.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="cave.reader.smac2_reader module" href="cave.reader.smac2_reader.html" />
+    <link rel="next" title="cave.reader.runs_container module" href="cave.reader.runs_container.html" />
     <link rel="prev" title="cave.reader.csv2rh module" href="cave.reader.csv2rh.html" /> 
 </head>
 
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.7
+                1.2.0
               </div>
             
           
@@ -95,6 +95,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">F.A.Q.</a></li>
@@ -145,6 +146,7 @@
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -152,9 +154,9 @@
 <li class="toctree-l2"><a class="reference internal" href="cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -239,6 +241,17 @@
 <dt id="cave.reader.csv_reader.CSVReader">
 <em class="property">class </em><code class="sig-prename descclassname">cave.reader.csv_reader.</code><code class="sig-name descname">CSVReader</code><span class="sig-paren">(</span><em class="sig-param">folder</em>, <em class="sig-param">ta_exec_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv_reader.html#CSVReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv_reader.CSVReader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cave.reader.base_reader.html#cave.reader.base_reader.BaseReader" title="cave.reader.base_reader.BaseReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">cave.reader.base_reader.BaseReader</span></code></a></p>
+<dl class="method">
+<dt id="cave.reader.csv_reader.CSVReader.check_for_files">
+<em class="property">classmethod </em><code class="sig-name descname">check_for_files</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv_reader.html#CSVReader.check_for_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv_reader.CSVReader.check_for_files" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cave.reader.csv_reader.CSVReader.get_glob_file">
+<em class="property">classmethod </em><code class="sig-name descname">get_glob_file</code><span class="sig-paren">(</span><em class="sig-param">folder</em>, <em class="sig-param">fn</em>, <em class="sig-param">raise_on_failure=True</em><span class="sig-paren">)</span><a class="headerlink" href="#cave.reader.csv_reader.CSVReader.get_glob_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>If a file is not found in the expected path structure, we can check if it’s unique in the subfolders and if so, return it.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="cave.reader.csv_reader.CSVReader.get_runhistory">
 <code class="sig-name descname">get_runhistory</code><span class="sig-paren">(</span><em class="sig-param">cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv_reader.html#CSVReader.get_runhistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv_reader.CSVReader.get_runhistory" title="Permalink to this definition">¶</a></dt>
@@ -424,7 +437,7 @@ individual parameters/instance features</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="cave.reader.smac2_reader.html" class="btn btn-neutral float-right" title="cave.reader.smac2_reader module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="cave.reader.runs_container.html" class="btn btn-neutral float-right" title="cave.reader.runs_container module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="cave.reader.csv2rh.html" class="btn btn-neutral float-left" title="cave.reader.csv2rh module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

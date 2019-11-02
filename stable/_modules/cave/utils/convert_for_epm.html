@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.utils.convert_for_epm &mdash; CAVE 1.1.7 documentation</title>
+  <title>cave.utils.convert_for_epm &mdash; CAVE 1.2.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.7
+                1.2.0
               </div>
             
           
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
@@ -143,6 +144,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -150,9 +152,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -229,19 +231,18 @@
 <span></span><span class="ch">#!/bin/python3</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="kn">from</span> <span class="nn">smac.scenario.scenario</span> <span class="k">import</span> <span class="n">Scenario</span>
-<span class="kn">from</span> <span class="nn">smac.tae.execute_ta_run</span> <span class="k">import</span> <span class="n">StatusType</span>
-
-<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span>
-<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory2epm</span> <span class="k">import</span> <span class="n">RunHistory2EPM4LogCost</span><span class="p">,</span> <span class="n">RunHistory2EPM4Cost</span>
-<span class="kn">from</span> <span class="nn">smac.utils.util_funcs</span> <span class="k">import</span> <span class="n">get_types</span>
-
+<span class="kn">from</span> <span class="nn">ConfigSpace.util</span> <span class="k">import</span> <span class="n">impute_inactive_values</span>
 <span class="kn">from</span> <span class="nn">smac.epm.rf_with_instances</span> <span class="k">import</span> <span class="n">RandomForestWithInstances</span>
 <span class="kn">from</span> <span class="nn">smac.epm.rfr_imputator</span> <span class="k">import</span> <span class="n">RFRImputator</span>
+<span class="kn">from</span> <span class="nn">smac.epm.util_funcs</span> <span class="k">import</span> <span class="n">get_types</span>
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span>
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory2epm</span> <span class="k">import</span> <span class="n">RunHistory2EPM4LogCost</span><span class="p">,</span> <span class="n">RunHistory2EPM4Cost</span>
+<span class="kn">from</span> <span class="nn">smac.scenario.scenario</span> <span class="k">import</span> <span class="n">Scenario</span>
+<span class="kn">from</span> <span class="nn">smac.tae.execute_ta_run</span> <span class="k">import</span> <span class="n">StatusType</span>
+<span class="kn">from</span> <span class="nn">smac.utils.constants</span> <span class="k">import</span> <span class="n">MAXINT</span>
 
 
-<div class="viewcode-block" id="convert_data_for_epm"><a class="viewcode-back" href="../../../apidoc/cave.utils.convert_for_epm.html#cave.utils.convert_for_epm.convert_data_for_epm">[docs]</a><span class="k">def</span> <span class="nf">convert_data_for_epm</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span> <span class="n">runhistory</span><span class="p">:</span> <span class="n">RunHistory</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="convert_data_for_epm"><a class="viewcode-back" href="../../../apidoc/cave.utils.convert_for_epm.html#cave.utils.convert_for_epm.convert_data_for_epm">[docs]</a><span class="k">def</span> <span class="nf">convert_data_for_epm</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span> <span class="n">runhistory</span><span class="p">:</span> <span class="n">RunHistory</span><span class="p">,</span> <span class="n">impute_inactive_parameters</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    converts data from runhistory into EPM format</span>
 
@@ -251,6 +252,8 @@
 <span class="sd">        smac.scenario.scenario.Scenario Object</span>
 <span class="sd">    runhistory: RunHistory</span>
 <span class="sd">        smac.runhistory.runhistory.RunHistory Object with all necessary data</span>
+<span class="sd">    impute_inactive_parameters: bool</span>
+<span class="sd">        whether to impute all inactive parameters in all configurations - this is needed for random forests, as they do not accept nan-values</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -261,8 +264,16 @@
 <span class="sd">    types: np.array</span>
 <span class="sd">        types of X cols -- necessary to train our RF implementation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">impute_inactive_parameters</span><span class="p">:</span>
+        <span class="n">runhistory</span> <span class="o">=</span> <span class="n">force_finite_runhistory</span><span class="p">(</span><span class="n">runhistory</span><span class="p">)</span>
+
     <span class="n">types</span><span class="p">,</span> <span class="n">bounds</span> <span class="o">=</span> <span class="n">get_types</span><span class="p">(</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="p">,</span> <span class="n">scenario</span><span class="o">.</span><span class="n">feature_array</span><span class="p">)</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">RandomForestWithInstances</span><span class="p">(</span><span class="n">types</span><span class="p">,</span> <span class="n">bounds</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Types: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">types</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;, Bounds: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">bounds</span><span class="p">))</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">RandomForestWithInstances</span><span class="p">(</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="p">,</span> <span class="n">types</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">rng</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">MAXINT</span><span class="p">))</span>
 
     <span class="n">params</span> <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">()</span>
     <span class="n">num_params</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
@@ -277,7 +288,7 @@
         <span class="n">threshold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">scenario</span><span class="o">.</span><span class="n">cutoff</span> <span class="o">*</span>
                              <span class="n">scenario</span><span class="o">.</span><span class="n">par_factor</span><span class="p">)</span>
 
-        <span class="n">imputor</span> <span class="o">=</span> <span class="n">RFRImputator</span><span class="p">(</span><span class="n">rng</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span>
+        <span class="n">imputor</span> <span class="o">=</span> <span class="n">RFRImputator</span><span class="p">(</span><span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">,</span>
                                <span class="n">cutoff</span><span class="o">=</span><span class="n">cutoff</span><span class="p">,</span>
                                <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
                                <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
@@ -302,6 +313,21 @@
         <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">rh2EPM</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">runhistory</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">types</span></div>
+
+<div class="viewcode-block" id="force_finite_runhistory"><a class="viewcode-back" href="../../../apidoc/cave.utils.convert_for_epm.html#cave.utils.convert_for_epm.force_finite_runhistory">[docs]</a><span class="k">def</span> <span class="nf">force_finite_runhistory</span><span class="p">(</span><span class="n">runhistory</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">sanitize_config</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+        <span class="n">cs_no_forbidden</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">configuration_space</span>
+        <span class="n">cs_no_forbidden</span><span class="o">.</span><span class="n">forbidden_clauses</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">configuration_space</span> <span class="o">=</span> <span class="n">cs_no_forbidden</span>
+        <span class="k">return</span> <span class="n">impute_inactive_values</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+
+    <span class="n">new_config_ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">sanitize_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span> <span class="p">:</span> <span class="nb">id</span> <span class="k">for</span> <span class="n">config</span><span class="p">,</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">runhistory</span><span class="o">.</span><span class="n">config_ids</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">new_ids_config</span> <span class="o">=</span> <span class="p">{</span><span class="nb">id</span> <span class="p">:</span> <span class="n">sanitize_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span><span class="p">,</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">runhistory</span><span class="o">.</span><span class="n">ids_config</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">runhistory</span><span class="o">.</span><span class="n">ids_config</span> <span class="o">=</span> <span class="n">new_ids_config</span>
+    <span class="n">runhistory</span><span class="o">.</span><span class="n">config_ids</span> <span class="o">=</span> <span class="n">new_config_ids</span>
+    <span class="k">return</span> <span class="n">runhistory</span></div>
 </pre></div>
 
            </div>

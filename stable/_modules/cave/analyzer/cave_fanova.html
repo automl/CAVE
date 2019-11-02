@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.cave_fanova &mdash; CAVE 1.1.7 documentation</title>
+  <title>cave.analyzer.cave_fanova &mdash; CAVE 1.2.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.7
+                1.2.0
               </div>
             
           
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
@@ -143,6 +144,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -150,9 +152,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -226,22 +228,26 @@
            <div itemprop="articleBody">
             
   <h1>Source code for cave.analyzer.cave_fanova</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
-<span class="kn">import</span> <span class="nn">operator</span>
-<span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">from</span> <span class="nn">pandas</span> <span class="k">import</span> <span class="n">DataFrame</span>
 
 <span class="kn">from</span> <span class="nn">cave.analyzer.cave_parameter_importance</span> <span class="k">import</span> <span class="n">CaveParameterImportance</span>
-<span class="kn">from</span> <span class="nn">cave.html.html_helpers</span> <span class="k">import</span> <span class="n">figure_to_html</span>
+
 
 <div class="viewcode-block" id="CaveFanova"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova">[docs]</a><span class="k">class</span> <span class="nc">CaveFanova</span><span class="p">(</span><span class="n">CaveParameterImportance</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    fANOVA (functional analysis of variance) computes the fraction of the variance in the cost space explained by</span>
+<span class="sd">    changing a parameter by marginalizing over all other parameters, for each parameter (or for pairs of</span>
+<span class="sd">    parameters). Parameters with high importance scores will have a large impact on the performance.  To this end, a</span>
+<span class="sd">    random forest is trained as an empirical performance model on the available empirical data from the available</span>
+<span class="sd">    runhistories.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">pimp</span><span class="p">,</span>
-                 <span class="n">incumbent</span><span class="p">,</span>
-                 <span class="n">output_dir</span><span class="p">,</span>
+                 <span class="n">runscontainer</span><span class="p">,</span>
                  <span class="n">marginal_threshold</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Wrapper for parameter_importance to save the importance-object/</span>
 <span class="sd">        extract the results. We want to show the top X most important</span>
@@ -249,38 +255,30 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        pimp: Importance</span>
-<span class="sd">            parameter importance object</span>
-<span class="sd">        incumbent: Configuration</span>
-<span class="sd">            incumbent configuration</span>
+<span class="sd">        runscontainer: RunsContainer</span>
+<span class="sd">            contains all important information about the configurator runs</span>
 <span class="sd">        marginal_threshold: float</span>
 <span class="sd">            parameter/s must be at least this important to be mentioned</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pimp</span><span class="p">,</span> <span class="n">incumbent</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">runscontainer</span><span class="p">)</span>
 
-        <span class="c1"># To be set</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fanova_table</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">single_plots</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pairwise_plots</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">marginal_threshold</span> <span class="o">=</span> <span class="n">marginal_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameter_importance</span><span class="p">(</span><span class="s2">&quot;fanova&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CaveFanova.get_name"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;fANOVA&#39;</span></div>
+
+<div class="viewcode-block" id="CaveFanova.postprocess"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova.postprocess">[docs]</a>    <span class="k">def</span> <span class="nf">postprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pimp</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
 
         <span class="k">def</span> <span class="nf">parse_pairwise</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;parse pimp&#39;s way of having pairwise parameters as key as str and return list of individuals&quot;&quot;&quot;</span>
             <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="n">tmp</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1"> &#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">tmp</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;[]&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
             <span class="k">return</span> <span class="n">res</span>
 
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">parameter_importance</span><span class="p">(</span><span class="s2">&quot;fanova&quot;</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Encountered error &#39;</span><span class="si">%s</span><span class="s2">&#39; in fANOVA, this can e.g. happen with too few data-points.&quot;</span> <span class="o">%</span> <span class="n">e</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="n">err</span>
-            <span class="k">return</span>
-        <span class="n">parameter_imp</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="o">*</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">evaluated_parameter_importance</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">parameter_imp</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="o">*</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">evaluated_parameter_importance</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="n">parameter_imp_std</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="c1"># TODO Following is only available for install from master-branch (pimp and fanova)</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span><span class="p">,</span> <span class="s1">&#39;evaluated_parameter_importance_uncertainty&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span><span class="p">,</span> <span class="s1">&#39;evaluated_parameter_importance_uncertainty&#39;</span><span class="p">):</span>
             <span class="n">parameter_imp_std</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="o">*</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">evaluated_parameter_importance_uncertainty</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">parameter_imp</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -288,21 +286,22 @@
                               <span class="nb">str</span><span class="p">(</span><span class="n">parameter_imp_std</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">if</span> <span class="n">parameter_imp_std</span> <span class="k">else</span> <span class="s1">&#39;N/A&#39;</span><span class="p">)</span>
 
         <span class="c1"># Split single and pairwise (pairwise are string: &quot;[&#39;p1&#39;,&#39;p2&#39;]&quot;)</span>
-        <span class="n">single_imp</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span> <span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">parameter_imp</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span> <span class="o">&gt;</span> <span class="n">marginal_threshold</span><span class="p">}</span>
-        <span class="n">pairwise_imp</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span> <span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">parameter_imp</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span> <span class="o">&gt;</span> <span class="n">marginal_threshold</span><span class="p">}</span>
+        <span class="n">fanova_single_imp</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span> <span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">parameter_imp</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">marginal_threshold</span><span class="p">}</span>
+        <span class="n">pairwise_imp</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span> <span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">parameter_imp</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">marginal_threshold</span><span class="p">}</span>
 
         <span class="c1"># Set internal parameter importance for further analysis (such as parallel coordinates)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">param_imp</span><span class="p">[</span><span class="s1">&#39;fanova&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">single_imp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fanova_single_importance</span> <span class="o">=</span> <span class="n">fanova_single_imp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fanova_pairwise_importance</span> <span class="o">=</span> <span class="n">fanova_single_imp</span>
 
         <span class="c1"># Dicts to lists of tuples, sorted descending after importance</span>
-        <span class="n">single_imp</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">single_imp</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">fanova_single_imp</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">fanova_single_imp</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
         <span class="n">pairwise_imp</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">pairwise_imp</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 
         <span class="c1"># Create table</span>
         <span class="n">table</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">single_imp</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fanova_single_imp</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">table</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="mi">20</span><span class="o">*</span><span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="s2">&quot; Single importance: &quot;</span><span class="o">+</span><span class="mi">20</span><span class="o">*</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="mi">20</span><span class="o">*</span><span class="s2">&quot;-&quot;</span><span class="p">)])</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">single_imp</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">fanova_single_imp</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">parameter_imp_std</span><span class="p">:</span>
                     <span class="n">value</span> <span class="o">+=</span> <span class="s2">&quot; +/- &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">parameter_imp_std</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="mi">4</span><span class="p">))</span>
@@ -318,47 +317,31 @@
 
         <span class="n">keys</span><span class="p">,</span> <span class="n">fanova_table</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">table</span><span class="p">],</span> <span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">table</span><span class="p">]</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">fanova_table</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">keys</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fanova_table</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_html</span><span class="p">(</span><span class="n">escape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;Importance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;table&#39;</span> <span class="p">:</span> <span class="n">df</span><span class="o">.</span><span class="n">to_html</span><span class="p">(</span><span class="n">escape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)}</span>
 
         <span class="c1"># Get plot-paths</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">single_plots</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span> <span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;fanova&quot;</span><span class="p">,</span> <span class="n">p</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">single_imp</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;Marginals&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;figure&#39;</span> <span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;fanova&quot;</span><span class="p">,</span> <span class="n">p</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)}</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">fanova_single_imp</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
         <span class="c1"># Right now no way to access paths of the plots -&gt; file issue</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pairwise_plots</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot; &amp; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parse_pairwise</span><span class="p">(</span><span class="n">p</span><span class="p">))</span> <span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;fanova&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parse_pairwise</span><span class="p">(</span><span class="n">p</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pairwise_imp</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pairwise_plots</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span> <span class="p">:</span> <span class="n">path</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pairwise_plots</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)}</span>
-
-<div class="viewcode-block" id="CaveFanova.get_table"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova.get_table">[docs]</a>    <span class="k">def</span> <span class="nf">get_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fanova_table</span></div>
-
-<div class="viewcode-block" id="CaveFanova.get_plots"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova.get_plots">[docs]</a>    <span class="k">def</span> <span class="nf">get_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">single_plots</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pairwise_plots</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
-
-<div class="viewcode-block" id="CaveFanova.get_html"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova.get_html">[docs]</a>    <span class="k">def</span> <span class="nf">get_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">div</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;else&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">+</span> <span class="s2">&quot; Check &#39;debug/debug.log&#39; for more information.&quot;</span>
-            <span class="n">div</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span>
-        <span class="k">elif</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;tooltip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tooltip</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Importance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;table&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fanova_table</span><span class="p">}</span>
-            <span class="c1"># Insert plots (the received plots is a dict, mapping param -&gt; path)</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Marginals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">plot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_plots</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Marginals&quot;</span><span class="p">][</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;figure&quot;</span><span class="p">:</span> <span class="n">plot</span><span class="p">}</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pairwise_plots</span><span class="p">:</span>
-                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Pairwise Marginals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
-                <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">plot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pairwise_plots</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Pairwise Marginals&quot;</span><span class="p">][</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;figure&quot;</span><span class="p">:</span> <span class="n">plot</span><span class="p">}</span>
-
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">div</span></div>
+        <span class="n">pairwise_plots</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot; &amp; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parse_pairwise</span><span class="p">(</span><span class="n">p</span><span class="p">))</span> <span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;fanova&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parse_pairwise</span><span class="p">(</span><span class="n">p</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pairwise_imp</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;Pairwise Marginals&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;figure&#39;</span> <span class="p">:</span> <span class="n">path</span><span class="p">}</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">pairwise_plots</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)}</span>
+        <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="CaveFanova.get_jupyter"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova.get_jupyter">[docs]</a>    <span class="k">def</span> <span class="nf">get_jupyter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">IPython.core.display</span> <span class="k">import</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">display</span>
-        <span class="c1"># Show table</span>
-        <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_table</span><span class="p">()))</span>
-        <span class="c1"># Show plots</span>
-        <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">figure_to_html</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">single_plots</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pairwise_plots</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="n">max_in_a_row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">true_break_between_rows</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
-            <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">))</span></div></div>
+        <span class="kn">from</span> <span class="nn">IPython.core.display</span> <span class="k">import</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="n">display</span>
+        <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="s1">&#39;else&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;else&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+                <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Show table</span>
+                <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="s2">&quot;Importance&quot;</span><span class="p">][</span><span class="s2">&quot;table&quot;</span><span class="p">]))</span>
+                <span class="c1"># Show plots</span>
+                <span class="n">display</span><span class="p">(</span><span class="o">*</span><span class="nb">list</span><span class="p">([</span><span class="n">Image</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;figure&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="s1">&#39;Marginals&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()]))</span>
+                <span class="n">display</span><span class="p">(</span><span class="o">*</span><span class="nb">list</span><span class="p">([</span><span class="n">Image</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;figure&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="s1">&#39;Pairwise Marginals&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()]))</span></div></div>
+                <span class="c1"># While working for a prettier solution, this might be an option:</span>
+                <span class="c1">#display(HTML(figure_to_html([d[&quot;figure&quot;] for d in self.result[b][&#39;Marginals&#39;].values()] +</span>
+                <span class="c1">#                            [d[&quot;figure&quot;] for d in self.result[b][&#39;Pairwise Marginals&#39;].values()],</span>
+                <span class="c1">#                            max_in_a_row=3, true_break_between_rows=True)))</span>
 
 </pre></div>
 

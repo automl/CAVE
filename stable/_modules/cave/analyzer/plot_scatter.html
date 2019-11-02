@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.plot_scatter &mdash; CAVE 1.1.7 documentation</title>
+  <title>cave.analyzer.plot_scatter &mdash; CAVE 1.2.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.7
+                1.2.0
               </div>
             
           
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
@@ -143,6 +144,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -150,9 +152,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -227,53 +229,78 @@
             
   <h1>Source code for cave.analyzer.plot_scatter</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
 <span class="kn">from</span> <span class="nn">ConfigSpace.configuration_space</span> <span class="k">import</span> <span class="n">Configuration</span>
 <span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span>
 
 <span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="k">import</span> <span class="n">BaseAnalyzer</span>
 <span class="kn">from</span> <span class="nn">cave.plot.scatter</span> <span class="k">import</span> <span class="n">plot_scatter_plot</span>
-<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">get_cost_dict_for_config</span>
-<span class="kn">from</span> <span class="nn">cave.html.html_helpers</span> <span class="k">import</span> <span class="n">figure_to_html</span>
+<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">get_cost_dict_for_config</span><span class="p">,</span> <span class="n">NotApplicable</span>
+<span class="kn">from</span> <span class="nn">cave.utils.hpbandster_helpers</span> <span class="k">import</span> <span class="n">format_budgets</span>
+
 
 <div class="viewcode-block" id="PlotScatter"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.plot_scatter.html#cave.analyzer.plot_scatter.PlotScatter">[docs]</a><span class="k">class</span> <span class="nc">PlotScatter</span><span class="p">(</span><span class="n">BaseAnalyzer</span><span class="p">):</span>
-
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scatter plots show the costs of the default and optimized parameter configuration on each instance. Since this</span>
+<span class="sd">    looses detailed information about the individual cost on each instance by looking at aggregated cost values in</span>
+<span class="sd">    tables, scatter plots provide a more detailed picture. They provide insights whether overall performance</span>
+<span class="sd">    improvements can be explained only by some outliers or whether they are due to improvements on the entire</span>
+<span class="sd">    instance set. On the left side the training-data is scattered, on the right side the test-data is scattered.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">default</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span>
-                 <span class="n">incumbent</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span>
-                 <span class="n">rh</span><span class="p">:</span> <span class="n">RunHistory</span><span class="p">,</span>
-                 <span class="n">train</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-                 <span class="n">test</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">],</span>
-                 <span class="n">run_obj</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                 <span class="n">cutoff</span><span class="p">,</span>
-                 <span class="n">output_dir</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+                 <span class="n">runscontainer</span><span class="p">,</span>
+                 <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a scatterplot of the two configurations on the given set of instances.</span>
 <span class="sd">        Saves plot to file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">runscontainer</span><span class="p">)</span>
 
+        <span class="n">formatted_budgets</span> <span class="o">=</span> <span class="n">format_budgets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_budgets</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="n">keep_budgets</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keep_folders</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">formatted_budgets</span><span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">budget</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_scatter</span><span class="p">(</span>
+                    <span class="n">default</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">default</span><span class="p">,</span>
+                    <span class="n">incumbent</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">incumbent</span><span class="p">,</span>
+                    <span class="n">rh</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">epm_runhistory</span><span class="p">,</span>
+                    <span class="n">train</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">train_insts</span><span class="p">,</span>
+                    <span class="n">test</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">test_insts</span><span class="p">,</span>
+                    <span class="n">run_obj</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">run_obj</span><span class="p">,</span>
+                    <span class="n">cutoff</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">cutoff</span><span class="p">,</span>
+                    <span class="n">output_dir</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="PlotScatter.get_name"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.plot_scatter.html#cave.analyzer.plot_scatter.PlotScatter.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Scatterplot&quot;</span></div>
+
+    <span class="k">def</span> <span class="nf">_plot_scatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                      <span class="n">default</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span>
+                      <span class="n">incumbent</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span>
+                      <span class="n">rh</span><span class="p">:</span> <span class="n">RunHistory</span><span class="p">,</span>
+                      <span class="n">train</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                      <span class="n">test</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">],</span>
+                      <span class="n">run_obj</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                      <span class="n">cutoff</span><span class="p">,</span>
+                      <span class="n">output_dir</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        default, incumbent: Configuration</span>
 <span class="sd">            configurations to be compared</span>
 <span class="sd">        rh: RunHistory</span>
 <span class="sd">            runhistory to use for cost-estimations</span>
+<span class="sd">        train[, test]: list(str)</span>
+<span class="sd">            instance-names</span>
+<span class="sd">        run_obj: str</span>
+<span class="sd">            run-objective (time or quality)</span>
+<span class="sd">        cutoff: float</span>
+<span class="sd">            maximum runtime of ta</span>
 <span class="sd">        output_dir: str</span>
 <span class="sd">            output directory</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        output_fns: List[str]</span>
-<span class="sd">            list with paths to generated plots</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-
         <span class="n">out_fn_base</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;scatter_&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;... plotting scatter&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Plot scatter to </span><span class="si">%s</span><span class="s2">[train|test].png&quot;</span><span class="p">,</span> <span class="n">out_fn_base</span><span class="p">)</span>
 
         <span class="n">metric</span> <span class="o">=</span> <span class="n">run_obj</span>
         <span class="n">timeout</span> <span class="o">=</span> <span class="n">cutoff</span>
@@ -283,6 +310,8 @@
         <span class="n">inc_costs</span> <span class="o">=</span> <span class="n">get_cost_dict_for_config</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">incumbent</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
 
         <span class="n">out_fns</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">test</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotApplicable</span><span class="p">(</span><span class="s2">&quot;No instances, so no scatter-plot.&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">insts</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">train</span><span class="p">,</span> <span class="s1">&#39;train&#39;</span><span class="p">),</span> <span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">)]:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">insts</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No </span><span class="si">%s</span><span class="s2"> instances, skipping scatter&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
@@ -293,23 +322,8 @@
             <span class="n">out_fn</span> <span class="o">=</span> <span class="n">out_fn_base</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span>
             <span class="n">out_fns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plot_scatter_plot</span><span class="p">((</span><span class="n">default</span><span class="p">,),</span> <span class="p">(</span><span class="n">incumbent</span><span class="p">,),</span> <span class="n">labels</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
                            <span class="n">min_val</span><span class="o">=</span><span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">out_fn</span><span class="o">=</span><span class="n">out_fn</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_fns</span> <span class="o">=</span> <span class="n">out_fns</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">out_fns</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
-
-<div class="viewcode-block" id="PlotScatter.get_html"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.plot_scatter.html#cave.analyzer.plot_scatter.PlotScatter.get_html">[docs]</a>    <span class="k">def</span> <span class="nf">get_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_fns</span><span class="p">:</span>
-            <span class="k">return</span>
-
-        <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_fns</span><span class="p">:</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;figure&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_fns</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;tooltip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tooltip</span>
-        <span class="k">return</span> <span class="n">figure_to_html</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_fns</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="PlotScatter.get_plots"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.plot_scatter.html#cave.analyzer.plot_scatter.PlotScatter.get_plots">[docs]</a>    <span class="k">def</span> <span class="nf">get_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_fns</span></div>
-
-<div class="viewcode-block" id="PlotScatter.get_jupyter"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.plot_scatter.html#cave.analyzer.plot_scatter.PlotScatter.get_jupyter">[docs]</a>    <span class="k">def</span> <span class="nf">get_jupyter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">IPython.core.display</span> <span class="k">import</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">display</span>
-        <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_html</span><span class="p">()))</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Plotted scatter to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">out_fn</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;figure&#39;</span> <span class="p">:</span> <span class="n">out_fns</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">out_fns</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span><span class="p">}</span></div>
 </pre></div>
 
            </div>

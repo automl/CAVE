@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Budgets &mdash; CAVE 1.1.7 documentation</title>
+  <title>Budgets &mdash; CAVE 1.2.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="F.A.Q." href="../faq.html" />
+    <link rel="next" title="Internal Data Processing" href="internal_data_processing.html" />
     <link rel="prev" title="Input Format" href="fileformats.html" /> 
 </head>
 
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.7
+                1.2.0
               </div>
             
           
@@ -95,6 +95,7 @@
 <li class="toctree-l2"><a class="reference internal" href="jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fileformats.html">Input Format</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">F.A.Q.</a></li>
@@ -145,6 +146,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -152,9 +154,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../apidoc/cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -233,13 +235,13 @@
             
   <div class="section" id="budgets">
 <h1>Budgets<a class="headerlink" href="#budgets" title="Permalink to this headline">¶</a></h1>
-<p>Some configurators such as <a class="reference external" href="https://github.com/automl/HpBandSter">BOHB/hpbandster</a> try to optimize using budgets.
-Budgets are limited resources that speed up the evaluation of a configuration, like an estimate. E.g. evaluating neural
-networks with a reduced number of epochs can be seen as a budget configurator.
-CAVE can process and analyze these results. It is possible to access each method for each budget individually. Also,
-there are methods to compare across budgets.
-CAVE will automatically use budgets, when the <code class="docutils literal notranslate"><span class="pre">--file_format</span></code> is <em>BOHB</em>. If you want to use budgets with CSV-input,
-you need to specify <em>use_budgets</em> and provide an individual CSV-folder per budget.</p>
+<p>Some configurators such as <a class="reference external" href="https://github.com/automl/HpBandSter">BOHB/hpbandster</a> try to optimize using
+budgets (aka fidelities). Budgets are limited resources that speed up the evaluation of a configuration, like an estimate.
+E.g. evaluating neural networks with a reduced number of epochs. CAVE
+can process and analyze these results. It is possible to access each method for each budget individually.
+Also, there are methods to compare across budgets.  CAVE will automatically use budgets, when the
+<code class="docutils literal notranslate"><span class="pre">--file_format</span></code> is <em>BOHB</em> (or detected as <em>BOHB</em>). If you want to use budgets with CSV-input, you need to specify <em>use_budgets</em> and
+provide an individual CSV-folder per budget.</p>
 </div>
 
 
@@ -250,7 +252,7 @@ you need to specify <em>use_budgets</em> and provide an individual CSV-folder pe
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../faq.html" class="btn btn-neutral float-right" title="F.A.Q." accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="internal_data_processing.html" class="btn btn-neutral float-right" title="Internal Data Processing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="fileformats.html" class="btn btn-neutral float-left" title="Input Format" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.reader.smac3_reader &mdash; CAVE 1.1.7 documentation</title>
+  <title>cave.reader.smac3_reader &mdash; CAVE 1.2.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.7
+                1.2.0
               </div>
             
           
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
@@ -143,6 +144,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -150,9 +152,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -230,17 +232,17 @@
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 
-<span class="kn">from</span> <span class="nn">ConfigSpace.read_and_write</span> <span class="k">import</span> <span class="n">json</span> <span class="k">as</span> <span class="n">pcs_json</span>
 <span class="kn">from</span> <span class="nn">ConfigSpace.configuration_space</span> <span class="k">import</span> <span class="n">ConfigurationSpace</span><span class="p">,</span> <span class="n">Configuration</span>
 <span class="kn">from</span> <span class="nn">ConfigSpace.hyperparameters</span> <span class="k">import</span> <span class="n">FloatHyperparameter</span><span class="p">,</span> <span class="n">IntegerHyperparameter</span><span class="p">,</span> <span class="n">Constant</span><span class="p">,</span> <span class="n">CategoricalHyperparameter</span>
-
+<span class="kn">from</span> <span class="nn">ConfigSpace.read_and_write</span> <span class="k">import</span> <span class="n">json</span> <span class="k">as</span> <span class="n">pcs_json</span>
 <span class="kn">from</span> <span class="nn">smac.optimizer.objective</span> <span class="k">import</span> <span class="n">average_cost</span>
-<span class="kn">from</span> <span class="nn">smac.utils.io.input_reader</span> <span class="k">import</span> <span class="n">InputReader</span>
-<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunKey</span><span class="p">,</span> <span class="n">RunValue</span><span class="p">,</span> <span class="n">RunHistory</span><span class="p">,</span> <span class="n">DataOrigin</span>
-<span class="kn">from</span> <span class="nn">smac.utils.io.traj_logging</span> <span class="k">import</span> <span class="n">TrajLogger</span>
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span>
 <span class="kn">from</span> <span class="nn">smac.scenario.scenario</span> <span class="k">import</span> <span class="n">Scenario</span>
+<span class="kn">from</span> <span class="nn">smac.utils.io.input_reader</span> <span class="k">import</span> <span class="n">InputReader</span>
+<span class="kn">from</span> <span class="nn">smac.utils.io.traj_logging</span> <span class="k">import</span> <span class="n">TrajLogger</span>
 
 <span class="kn">from</span> <span class="nn">cave.reader.base_reader</span> <span class="k">import</span> <span class="n">BaseReader</span><span class="p">,</span> <span class="n">changedir</span>
+
 
 <div class="viewcode-block" id="SMAC3Reader"><a class="viewcode-back" href="../../../apidoc/cave.reader.smac3_reader.html#cave.reader.smac3_reader.SMAC3Reader">[docs]</a><span class="k">class</span> <span class="nc">SMAC3Reader</span><span class="p">(</span><span class="n">BaseReader</span><span class="p">):</span>
 
@@ -249,6 +251,8 @@
         <span class="n">in_reader</span> <span class="o">=</span> <span class="n">InputReader</span><span class="p">()</span>
         <span class="c1"># Create Scenario (disable output_dir to avoid cluttering)</span>
         <span class="n">scen_fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;scenario.txt&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">scen_fn</span><span class="p">):</span>
+            <span class="n">scen_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_glob_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;scenario.txt&#39;</span><span class="p">)</span>
         <span class="n">scen_dict</span> <span class="o">=</span> <span class="n">in_reader</span><span class="o">.</span><span class="n">read_scenario_file</span><span class="p">(</span><span class="n">scen_fn</span><span class="p">)</span>
         <span class="n">scen_dict</span><span class="p">[</span><span class="s1">&#39;output_dir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
@@ -277,7 +281,8 @@
 <span class="sd">            runhistory</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rh_fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;runhistory.json&#39;</span><span class="p">)</span>
-        <span class="n">validated_rh_fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;validated_runhistory.json&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">rh_fn</span><span class="p">):</span>
+            <span class="n">rh_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_glob_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;runhistory.json&#39;</span><span class="p">)</span>
         <span class="n">rh</span> <span class="o">=</span> <span class="n">RunHistory</span><span class="p">(</span><span class="n">average_cost</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">rh</span><span class="o">.</span><span class="n">load_json</span><span class="p">(</span><span class="n">rh_fn</span><span class="p">,</span> <span class="n">cs</span><span class="p">)</span>
@@ -338,9 +343,20 @@
 
 
         <span class="n">traj_fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;traj_aclib2.json&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">traj_fn</span><span class="p">):</span>
+            <span class="n">traj_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_glob_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;traj_aclib2.json&#39;</span><span class="p">)</span>
         <span class="n">traj</span> <span class="o">=</span> <span class="n">TrajLogger</span><span class="o">.</span><span class="n">read_traj_aclib_format</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">traj_fn</span><span class="p">,</span> <span class="n">cs</span><span class="o">=</span><span class="n">cs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">traj</span></div></div>
+        <span class="k">return</span> <span class="n">traj</span></div>
 
+<div class="viewcode-block" id="SMAC3Reader.check_for_files"><a class="viewcode-back" href="../../../apidoc/cave.reader.smac3_reader.html#cave.reader.smac3_reader.SMAC3Reader.check_for_files">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">check_for_files</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;scenario.txt&quot;</span><span class="p">,</span> <span class="s1">&#39;runhistory.json&#39;</span><span class="p">,</span> <span class="s2">&quot;traj_aclib2.json&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">get_glob_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">f</span><span class="p">))):</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div></div>
 </pre></div>
 
            </div>

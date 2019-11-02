@@ -2,10 +2,10 @@ cave.analyzer package
 =====================
 
 .. automodule:: cave.analyzer
-    :members:
-    :undoc-members:
-    :show-inheritance:
-    :inherited-members:
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :inherited-members:
 
 
 .. toctree::
@@ -33,4 +33,3 @@ cave.analyzer package
    cave.analyzer.pimp_comparison_table
    cave.analyzer.plot_ecdf
    cave.analyzer.plot_scatter
-

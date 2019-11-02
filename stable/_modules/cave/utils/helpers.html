@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.utils.helpers &mdash; CAVE 1.1.7 documentation</title>
+  <title>cave.utils.helpers &mdash; CAVE 1.2.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.7
+                1.2.0
               </div>
             
           
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
@@ -143,6 +144,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -150,9 +152,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -226,16 +228,21 @@
            <div itemprop="articleBody">
             
   <h1>Source code for cave.utils.helpers</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">typing</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">import</span> <span class="nn">configparser</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">typing</span>
 
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">ConfigSpace.configuration_space</span> <span class="k">import</span> <span class="n">Configuration</span>
-<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span><span class="p">,</span> <span class="n">RunKey</span>
 <span class="kn">from</span> <span class="nn">smac.optimizer.objective</span> <span class="k">import</span> <span class="n">average_cost</span>
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span><span class="p">,</span> <span class="n">RunKey</span>
 
-<span class="c1"># TODO Possibly inconsistent: median over timeouts is timeout, but mean over</span>
-<span class="c1"># costs is not. Possible?</span>
+<span class="kn">from</span> <span class="nn">cave.reader.csv_reader</span> <span class="k">import</span> <span class="n">CSVReader</span>
+<span class="kn">from</span> <span class="nn">cave.reader.smac2_reader</span> <span class="k">import</span> <span class="n">SMAC2Reader</span>
+<span class="kn">from</span> <span class="nn">cave.reader.smac3_reader</span> <span class="k">import</span> <span class="n">SMAC3Reader</span>
+<span class="kn">from</span> <span class="nn">cave.utils.exceptions</span> <span class="k">import</span> <span class="n">NotApplicable</span>
 
 
 <div class="viewcode-block" id="get_timeout"><a class="viewcode-back" href="../../../apidoc/cave.utils.helpers.html#cave.utils.helpers.get_timeout">[docs]</a><span class="k">def</span> <span class="nf">get_timeout</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">):</span>
@@ -256,6 +263,8 @@
 <span class="sd">    timeouts: Dict(str: bool)</span>
 <span class="sd">        mapping instances to [True, False], where True indicates a timeout</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO Possibly inconsistent: median over timeouts is timeout, but mean over</span>
+    <span class="c1"># costs is not. Possible?</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">cutoff</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{}</span>
     <span class="c1"># Check if config is in runhistory</span>
@@ -369,9 +378,36 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;number of elements in combined rh: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">combi_rh</span><span class="o">.</span><span class="n">data</span><span class="p">)))</span>
     <span class="k">return</span> <span class="n">combi_rh</span></div>
 
-<div class="viewcode-block" id="NotApplicableError"><a class="viewcode-back" href="../../../apidoc/cave.utils.helpers.html#cave.utils.helpers.NotApplicableError">[docs]</a><span class="k">class</span> <span class="nc">NotApplicableError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Exception indicating that this analysis-method cannot be performed.&quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
+<div class="viewcode-block" id="combine_trajectories"><a class="viewcode-back" href="../../../apidoc/cave.utils.helpers.html#cave.utils.helpers.combine_trajectories">[docs]</a><span class="k">def</span> <span class="nf">combine_trajectories</span><span class="p">(</span><span class="n">trajs</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Combine trajectories. Trajectories are expected as an iterable of sorted lists, which are increasing in time.</span>
+<span class="sd">    A trajectory entry is expected as:</span>
+<span class="sd">    TrajEntry = collections.namedtuple(</span>
+<span class="sd">                  &#39;TrajEntry&#39;, [&#39;train_perf&#39;, &#39;incumbent_id&#39;, &#39;incumbent&#39;,</span>
+<span class="sd">                                &#39;ta_runs&#39;, &#39;ta_time_used&#39;, &#39;wallclock_time&#39;])</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    trajs: List[List[TrajEntry]]</span>
+<span class="sd">        trajectories to be combined</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    combined_traj: List[TrajEntry]</span>
+<span class="sd">        combined trajectory</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># flatten list</span>
+    <span class="n">flattened_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">trajs</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">b</span><span class="p">]</span>
+    <span class="c1"># Sort by wallclock-time</span>
+    <span class="n">flattened_list</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">traj_entry</span><span class="p">:</span> <span class="n">traj_entry</span><span class="p">[</span><span class="s1">&#39;wallclock_time&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">logger</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> trajectories combined to one with </span><span class="si">{}</span><span class="s2"> elements&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">trajs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">flattened_list</span><span class="p">)))</span>
+        <span class="c1">#logger.debug(flattened_list)</span>
+    <span class="c1"># Now add one by one in order of time if better performance than before</span>
+    <span class="n">combined_traj</span> <span class="o">=</span> <span class="p">[</span><span class="n">flattened_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">flattened_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;cost&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">combined_traj</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;cost&#39;</span><span class="p">]:</span>
+            <span class="n">combined_traj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">combined_traj</span></div>
 
 <div class="viewcode-block" id="MissingInstancesError"><a class="viewcode-back" href="../../../apidoc/cave.utils.helpers.html#cave.utils.helpers.MissingInstancesError">[docs]</a><span class="k">class</span> <span class="nc">MissingInstancesError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Exception indicating that instances are missing.&quot;&quot;&quot;</span>
@@ -400,6 +436,52 @@
         <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;cave.utils.helpers&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Cannot interpret origin: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">origin</span><span class="p">)</span>
         <span class="n">origin</span> <span class="o">=</span> <span class="s2">&quot;Unknown&quot;</span>
     <span class="k">return</span> <span class="n">origin</span></div>
+
+<div class="viewcode-block" id="check_for_features"><a class="viewcode-back" href="../../../apidoc/cave.utils.helpers.html#cave.utils.helpers.check_for_features">[docs]</a><span class="k">def</span> <span class="nf">check_for_features</span><span class="p">(</span><span class="n">scenario</span><span class="p">):</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">feature_dict</span>
+    <span class="c1"># filter instance features</span>
+    <span class="n">train</span> <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">train_insts</span>
+    <span class="n">test</span> <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">test_insts</span>
+    <span class="n">train_feats</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">features</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">train</span><span class="p">}</span>
+    <span class="n">test_feats</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">features</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">test</span><span class="p">}</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">train_feats</span> <span class="ow">or</span> <span class="n">test_feats</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">NotApplicable</span><span class="p">(</span><span class="s2">&quot;Could not detect any instances.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="load_default_options"><a class="viewcode-back" href="../../../apidoc/cave.utils.helpers.html#cave.utils.helpers.load_default_options">[docs]</a><span class="k">def</span> <span class="nf">load_default_options</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># Load the configuration file</span>
+    <span class="n">own_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()))[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">default_options</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">default_options</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">own_folder</span><span class="p">,</span> <span class="s1">&#39;options/default_analysis_options.ini&#39;</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">options</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">default_options</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">default_options</span><span class="o">.</span><span class="n">read_dict</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">file_format</span> <span class="o">==</span> <span class="s2">&quot;BOHB&quot;</span><span class="p">:</span>
+        <span class="n">default_options</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">own_folder</span><span class="p">,</span> <span class="s1">&#39;options/default_bohb_analysis_options.ini&#39;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">default_options</span></div>
+
+<div class="viewcode-block" id="detect_fileformat"><a class="viewcode-back" href="../../../apidoc/cave.utils.helpers.html#cave.utils.helpers.detect_fileformat">[docs]</a><span class="k">def</span> <span class="nf">detect_fileformat</span><span class="p">(</span><span class="n">folders</span><span class="p">):</span>
+    <span class="c1"># Check if it&#39;s BOHB</span>
+    <span class="n">bohb_files</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;configs.json&quot;</span><span class="p">,</span> <span class="s2">&quot;results.json&quot;</span><span class="p">,</span> <span class="s2">&quot;configspace.json&quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">folders</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">sub</span><span class="p">))</span> <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">bohb_files</span><span class="p">]):</span>
+            <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;BOHB&quot;</span>
+    <span class="c1"># Check if it&#39;s SMAC</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">SMAC3Reader</span><span class="o">.</span><span class="n">check_for_files</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">folders</span><span class="p">]):</span>
+        <span class="k">return</span> <span class="s2">&quot;SMAC3&quot;</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">SMAC2Reader</span><span class="o">.</span><span class="n">check_for_files</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">folders</span><span class="p">]):</span>
+        <span class="k">return</span> <span class="s2">&quot;SMAC2&quot;</span>
+    <span class="c1"># Check if it&#39;s CSV</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">CSVReader</span><span class="o">.</span><span class="n">check_for_files</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">folders</span><span class="p">]):</span>
+        <span class="k">return</span> <span class="s2">&quot;CSV&quot;</span>
+
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Autodetection of file-format failed. Please try to specify (using --file_format on cmd-line)&quot;</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

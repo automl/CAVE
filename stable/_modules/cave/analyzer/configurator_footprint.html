@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.configurator_footprint &mdash; CAVE 1.1.7 documentation</title>
+  <title>cave.analyzer.configurator_footprint &mdash; CAVE 1.2.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.7
+                1.2.0
               </div>
             
           
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
@@ -143,6 +144,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -150,9 +152,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -227,31 +229,33 @@
             
   <h1>Source code for cave.analyzer.configurator_footprint</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
-<span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">bokeh.embed</span> <span class="k">import</span> <span class="n">components</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_notebook</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">show</span>
 
 <span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="k">import</span> <span class="n">BaseAnalyzer</span>
-<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">scenario_sanity_check</span><span class="p">,</span> <span class="n">combine_runhistories</span>
 <span class="kn">from</span> <span class="nn">cave.plot.configurator_footprint</span> <span class="k">import</span> <span class="n">ConfiguratorFootprintPlotter</span>
 
-<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">show</span>
-<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_notebook</span>
 
 <div class="viewcode-block" id="ConfiguratorFootprint"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.configurator_footprint.html#cave.analyzer.configurator_footprint.ConfiguratorFootprint">[docs]</a><span class="k">class</span> <span class="nc">ConfiguratorFootprint</span><span class="p">(</span><span class="n">BaseAnalyzer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Analysis of the iteratively sampled configurations during the optimization procedure.  Multi-dimensional scaling</span>
+<span class="sd">    (MDS) is used to reduce dimensionality of the search space and plot the distribution of evaluated</span>
+<span class="sd">    configurations. The larger the dot, the more often the configuration was evaluated on instances from the set.</span>
+<span class="sd">    Configurations that were incumbents at least once during optimization are marked as red squares.  Configurations</span>
+<span class="sd">    acquired through local search are marked with a &#39;x&#39;.  The downward triangle denotes the final incumbent, whereas</span>
+<span class="sd">    the orange upward triangle denotes the default configuration.  The heatmap and the colorbar correspond to the</span>
+<span class="sd">    predicted performance in that part of the search space.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">scenario</span><span class="p">,</span>
-                 <span class="n">runs</span><span class="p">,</span>
-                 <span class="n">runhistory</span><span class="p">,</span>
-                 <span class="n">final_incumbent</span><span class="p">,</span>
-                 <span class="n">output_dir</span><span class="p">,</span>
-                 <span class="n">max_confs</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-                 <span class="n">use_timeslider</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">num_quantiles</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                 <span class="n">timeslider_log</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">runscontainer</span><span class="p">,</span>
+                 <span class="n">max_configurations_to_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">time_slider</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">number_quantiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">timeslider_log</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Plot the visualization of configurations, highlighting the</span>
 <span class="sd">        incumbents. Using original rh, so the explored configspace can be</span>
@@ -259,20 +263,14 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        scenario: Scenario</span>
-<span class="sd">            deepcopy of scenario-object</span>
-<span class="sd">        runs: List[ConfiguratorRun]</span>
-<span class="sd">            holding information about original runhistories, trajectories, incumbents, etc.</span>
-<span class="sd">        runhistory: RunHistory</span>
-<span class="sd">            with maximum number of real (not estimated) runs to train best-possible epm</span>
-<span class="sd">        final_incumbent: Configuration</span>
-<span class="sd">            final incumbent (best of all (highest budget) runs)</span>
-<span class="sd">        max_confs: int</span>
+<span class="sd">        runscontainer: RunsContainer</span>
+<span class="sd">            contains all important information about the configurator runs</span>
+<span class="sd">        max_configurations_to_plot: int</span>
 <span class="sd">            maximum number of data-points to plot</span>
-<span class="sd">        use_timeslider: bool</span>
+<span class="sd">        time_slider: bool</span>
 <span class="sd">            whether or not to have a time_slider-widget on cfp-plot</span>
 <span class="sd">            INCREASES FILE-SIZE DRAMATICALLY</span>
-<span class="sd">        num_quantiles: int</span>
+<span class="sd">        number_quantiles: int</span>
 <span class="sd">            if use_timeslider is not off, defines the number of quantiles for the</span>
 <span class="sd">            slider/ number of static pictures</span>
 <span class="sd">        timeslider_log: bool</span>
@@ -288,39 +286,48 @@
 <span class="sd">            list with paths to the different quantiled timesteps of the</span>
 <span class="sd">            configurator run (for static evaluation)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">runscontainer</span><span class="p">,</span>
+                         <span class="n">max_configurations_to_plot</span><span class="o">=</span><span class="n">max_configurations_to_plot</span><span class="p">,</span>
+                         <span class="n">time_slider</span><span class="o">=</span><span class="n">time_slider</span><span class="p">,</span>
+                         <span class="n">number_quantiles</span><span class="o">=</span><span class="n">number_quantiles</span><span class="p">,</span>
+                         <span class="n">timeslider_log</span><span class="o">=</span><span class="n">timeslider_log</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;... visualizing explored configspace (this may take &quot;</span>
                          <span class="s2">&quot;a long time, if there is a lot of data - deactive with --no_configurator_footprint)&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">output_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">scenario</span>
+        <span class="c1"># Run-specific / budget specific infos</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_budgets</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">runs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="n">keep_folders</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">keep_budgets</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">runs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="n">keep_folders</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keep_budgets</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Analyzing runs: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">runs</span> <span class="o">=</span> <span class="n">runs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">runhistory</span> <span class="o">=</span> <span class="n">runhistory</span> <span class="k">if</span> <span class="n">runhistory</span> <span class="k">else</span> <span class="n">combine_runhistories</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">combined_runhistory</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">final_incumbent</span> <span class="o">=</span> <span class="n">final_incumbent</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_confs</span> <span class="o">=</span> <span class="n">max_confs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">use_timeslider</span> <span class="o">=</span> <span class="n">use_timeslider</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">num_quantiles</span> <span class="o">=</span> <span class="n">num_quantiles</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timeslider_log</span> <span class="o">=</span> <span class="n">timeslider_log</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_confs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;max_configurations_to_plot&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_timeslider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;time_slider&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_quantiles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;number_quantiles&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeslider_log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;timeslider_log&#39;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">scenario</span><span class="o">.</span><span class="n">feature_array</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">scenario</span><span class="o">.</span><span class="n">feature_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[]])</span>
+        <span class="n">incumbents</span> <span class="o">=</span> <span class="p">{</span><span class="n">r</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;incumbent&#39;</span><span class="p">]</span> <span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;cost&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_incumbent</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">incumbents</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">incumbents</span><span class="o">.</span><span class="n">get</span><span class="p">)</span>
 
-        <span class="c1"># Sort runhistories and incs wrt cost</span>
-        <span class="n">incumbents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;incumbent&#39;</span><span class="p">],</span> <span class="n">runs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">traj</span><span class="p">))</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">incumbents</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">runs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">traj</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;incumbent&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">feature_array</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">feature_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[]])</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cfp</span> <span class="o">=</span> <span class="n">ConfiguratorFootprintPlotter</span><span class="p">(</span>
                        <span class="n">scenario</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span>
                        <span class="n">rhs</span><span class="o">=</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">original_runhistory</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">],</span>
-                       <span class="n">incs</span><span class="o">=</span><span class="p">[[</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;incumbent&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">traj</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">],</span>
+                       <span class="n">incs</span><span class="o">=</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">incumbents</span><span class="o">.</span><span class="n">keys</span><span class="p">())],</span>
                        <span class="n">final_incumbent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">final_incumbent</span><span class="p">,</span>
-                       <span class="n">rh_labels</span><span class="o">=</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">folder</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">],</span>
+                       <span class="n">rh_labels</span><span class="o">=</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">path_to_folder</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">],</span>
                        <span class="n">max_plot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_confs</span><span class="p">,</span>
                        <span class="n">use_timeslider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_timeslider</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_quantiles</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span>
                        <span class="n">num_quantiles</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_quantiles</span><span class="p">,</span>
                        <span class="n">timeslider_log</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeslider_log</span><span class="p">,</span>
                        <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
 
+<div class="viewcode-block" id="ConfiguratorFootprint.get_name"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.configurator_footprint.html#cave.analyzer.configurator_footprint.ConfiguratorFootprint.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Configurator Footprint&quot;</span></div>
 
 <div class="viewcode-block" id="ConfiguratorFootprint.plot"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.configurator_footprint.html#cave.analyzer.configurator_footprint.ConfiguratorFootprint.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -333,7 +340,6 @@
 
         <span class="n">bokeh_plot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfp_paths</span> <span class="o">=</span> <span class="n">res</span>
         <span class="k">return</span> <span class="n">bokeh_plot</span></div>
-        <span class="c1">#self.script, self.div = components(self.bokeh_plot)</span>
 
 <div class="viewcode-block" id="ConfiguratorFootprint.get_jupyter"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.configurator_footprint.html#cave.analyzer.configurator_footprint.ConfiguratorFootprint.get_jupyter">[docs]</a>    <span class="k">def</span> <span class="nf">get_jupyter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">bokeh_plot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
@@ -344,15 +350,19 @@
         <span class="n">bokeh_components</span> <span class="o">=</span> <span class="n">components</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_quantiles</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_timeslider</span><span class="p">:</span>  <span class="c1"># No need for &quot;Static&quot; with one plot / time slider activated</span>
-                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;bokeh&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">bokeh_components</span><span class="p">)</span>
-                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;tooltip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tooltip</span>
+                <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;bokeh&quot;</span> <span class="p">:</span> <span class="n">bokeh_components</span><span class="p">,</span>
+                    <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
+                <span class="p">}</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;tooltip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tooltip</span>
-                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Interactive&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;bokeh&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">bokeh_components</span><span class="p">)}</span>
+                <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
+                    <span class="s2">&quot;Interactive&quot;</span> <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;bokeh&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">bokeh_components</span><span class="p">)},</span>
+                <span class="p">}</span>
                 <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="kc">True</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfp_paths</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">p</span><span class="p">)]):</span>  <span class="c1"># If the plots were actually generated</span>
-                    <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Static&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;figure&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfp_paths</span><span class="p">}</span>
+                    <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;Static&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;figure&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfp_paths</span><span class="p">}</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Static&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;Static&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
                             <span class="s2">&quot;else&quot;</span><span class="p">:</span> <span class="s2">&quot;This plot is missing. Maybe it was not generated? &quot;</span>
                                     <span class="s2">&quot;Check if you installed selenium and phantomjs &quot;</span>
                                     <span class="s2">&quot;correctly to activate bokeh-exports. &quot;</span>

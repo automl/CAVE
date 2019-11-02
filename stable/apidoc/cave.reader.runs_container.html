@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.utils.hpbandster2smac module &mdash; CAVE 1.1.7 documentation</title>
+  <title>cave.reader.runs_container module &mdash; CAVE 1.2.0 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="cave.utils.html_helpers module" href="cave.utils.html_helpers.html" />
-    <link rel="prev" title="cave.utils.helpers module" href="cave.utils.helpers.html" /> 
+    <link rel="next" title="cave.reader.smac2_reader module" href="cave.reader.smac2_reader.html" />
+    <link rel="prev" title="cave.reader.csv_reader module" href="cave.reader.csv_reader.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.7
+                1.2.0
               </div>
             
           
@@ -95,6 +95,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">F.A.Q.</a></li>
@@ -140,21 +141,22 @@
 <li class="toctree-l3"><a class="reference internal" href="cave.html.html_helpers.html">cave.html.html_helpers module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l2 current"><a class="reference internal" href="cave.reader.html">cave.reader package</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current"><a class="reference internal" href="cave.utils.html">cave.utils package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -212,15 +214,15 @@
         
           <li><a href="../api.html">API Documentation</a> &raquo;</li>
         
-          <li><a href="cave.utils.html">cave.utils package</a> &raquo;</li>
+          <li><a href="cave.reader.html">cave.reader package</a> &raquo;</li>
         
-      <li>cave.utils.hpbandster2smac module</li>
+      <li>cave.reader.runs_container module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/apidoc/cave.utils.hpbandster2smac.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/apidoc/cave.reader.runs_container.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -233,87 +235,140 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-cave.utils.hpbandster2smac">
-<span id="cave-utils-hpbandster2smac-module"></span><h1>cave.utils.hpbandster2smac module<a class="headerlink" href="#module-cave.utils.hpbandster2smac" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-cave.reader.runs_container">
+<span id="cave-reader-runs-container-module"></span><h1>cave.reader.runs_container module<a class="headerlink" href="#module-cave.reader.runs_container" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC">
-<em class="property">class </em><code class="sig-prename descclassname">cave.utils.hpbandster2smac.</code><code class="sig-name descname">HpBandSter2SMAC</code><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC" title="Permalink to this definition">¶</a></dt>
+<dt id="cave.reader.runs_container.RunsContainer">
+<em class="property">class </em><code class="sig-prename descclassname">cave.reader.runs_container.</code><code class="sig-name descname">RunsContainer</code><span class="sig-paren">(</span><em class="sig-param">folders</em>, <em class="sig-param">ta_exec_dirs=None</em>, <em class="sig-param">output_dir=None</em>, <em class="sig-param">file_format=None</em>, <em class="sig-param">validation_format=None</em>, <em class="sig-param">analyzing_options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/runs_container.html#RunsContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.runs_container.RunsContainer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.convert">
-<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param">folders</em>, <em class="sig-param">output_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.convert" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert hpbandster-results into smac-format, aggregating parallel runs along the budgets, so it is treated as
-one run with the same budgets. Throws ValueError when budgets of individual runs dont match.</p>
+<p>Reads in optimizer runs. Converts data if necessary.
+There will be <cite>(n_budgets +1) * (m_parallel_execution + 1)</cite> ConfiguratorRuns in CAVE, each representing the data
+of a specific budget-parallel-execution combination or an aggregated version..</p>
+<p>Aggregated entries can be accessed via a None-key.</p>
+<p>pr: parallel run, b: budget, agg: aggregated</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 16%" />
+<col style="width: 13%" />
+<col style="width: 16%" />
+<col style="width: 29%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head" colspan="5"><div class="line-block">
+<div class="line">pr_1 | … | pr_m | agg (None)</div>
+</div>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td colspan="5" rowspan="2"><p>b_1       |      |     |      |</p></td>
+</tr>
+<tr class="row-odd"></tr>
+<tr class="row-even"><td rowspan="2"><p>…</p></td>
+<td rowspan="2"></td>
+<td rowspan="2"></td>
+<td rowspan="2"></td>
+<td rowspan="2"></td>
+</tr>
+<tr class="row-odd"></tr>
+<tr class="row-even"><td rowspan="2"><p>b_2</p></td>
+<td rowspan="2"></td>
+<td rowspan="2"></td>
+<td rowspan="2"></td>
+<td rowspan="2"></td>
+</tr>
+<tr class="row-odd"></tr>
+<tr class="row-even"><td rowspan="2"><p>agg (None)</p></td>
+<td rowspan="2"></td>
+<td rowspan="2"></td>
+<td rowspan="2"></td>
+<td rowspan="2"></td>
+</tr>
+<tr class="row-odd"></tr>
+</tbody>
+</table>
+<p>The data is organized in folder2budgets as {pr : {b : path}} and in pRun2budget as {pr : {b : ConfiguratorRun}}.</p>
+<p>In the internal data-management there are three types of runhistories: <em>original</em>, <em>validated</em> and <em>epm</em>.</p>
+<ul class="simple">
+<li><p><em>original_rh</em> contain only runs that have been gathered during the optimization-process.</p></li>
+<li><p><em>validated_rh</em> may contain original runs, but also data that was not gathered iteratively during the
+optimization, but systematically through external validation of interesting configurations.
+Important: NO ESTIMATED RUNS IN <cite>validated</cite> RUNHISTORIES!</p></li>
+<li><p><em>epm_rh</em> contain runs that are gathered through empirical performance models.</p></li>
+</ul>
+<p>Runhistories are organized as follows:</p>
+<ul class="simple">
+<li><p>each ConfiguratorRun has an <em>original_runhistory</em>- and a <em>combined_runhistory</em>-attribute</p></li>
+<li><p>if available, each ConfiguratorRun’s <em>validated_runhistory</em> contains
+a runhistory with validation-data gathered after the optimization</p></li>
+<li><p><em>combined_runhistory</em> always contains as many real runs as possible</p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>folders</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of runs to consider</p></li>
-<li><p><strong>output_dir</strong> (<em>str</em>) – path to CAVE’s output-directory</p></li>
+<li><p><strong>folders</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of folders to read in</p></li>
+<li><p><strong>ta_exec_dirs</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – optional, list of execution directories for target-algorithms (to find filepaths, etc.). If you’re not sure,
+just set to current working directory (which it is by default).</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – directory for output (temporary directory if not set)</p></li>
+<li><p><strong>file_format</strong> (<em>str</em>) – from [SMAC2, SMAC3, BOHB, CSV] defines what file-format the optimizer result is in.</p></li>
+<li><p><strong>validation_format</strong> (<em>str</em>) – from [SMAC2, SMAC3, BOHB, CSV] defines what file-format validation data is in.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>result</strong> (<em>hpbandster.core.result</em>) – BOHB-result in original format</p></li>
-<li><p><strong>paths</strong> (<em>List[str]</em>) – paths to converted data</p></li>
-<li><p><strong>budgets</strong> (<em>List[int]</em>) – budgets, corresponding to paths</p></li>
-</ul>
-</p>
+</dl>
+<dl class="method">
+<dt id="cave.reader.runs_container.RunsContainer.get_aggregated">
+<code class="sig-name descname">get_aggregated</code><span class="sig-paren">(</span><em class="sig-param">keep_budgets=True</em>, <em class="sig-param">keep_folders=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/runs_container.html#RunsContainer.get_aggregated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.runs_container.RunsContainer.get_aggregated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collapse data-structure along a given “axis”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>aggregated_runs</strong> – run(s) with aggregated data</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun" title="cave.reader.configurator_run.ConfiguratorRun">ConfiguratorRun</a>]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
-<dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.get_incumbent_trajectory_for_budget">
-<code class="sig-name descname">get_incumbent_trajectory_for_budget</code><span class="sig-paren">(</span><em class="sig-param">result</em>, <em class="sig-param">budget</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.get_incumbent_trajectory_for_budget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.get_incumbent_trajectory_for_budget" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the best configurations over time for a single budget</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>budget</strong> (<em>string</em>) – budget to be considered</p></li>
-<li><p><strong>result</strong> (<em>Result</em>) – result object with runs</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>dictionary with all the config IDs, the times the runs
-finished, their respective budgets, and corresponding losses</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
+<dt id="cave.reader.runs_container.RunsContainer.get_all_runs">
+<code class="sig-name descname">get_all_runs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/runs_container.html#RunsContainer.get_all_runs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.runs_container.RunsContainer.get_all_runs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
-<dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.get_trajectory">
-<code class="sig-name descname">get_trajectory</code><span class="sig-paren">(</span><em class="sig-param">folder2result</em>, <em class="sig-param">output_path</em>, <em class="sig-param">scenario</em>, <em class="sig-param">rh</em>, <em class="sig-param">budget=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.get_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.get_trajectory" title="Permalink to this definition">¶</a></dt>
-<dd><p>If budget is specified, get trajectory for only that budget. Else use hpbandster’s averaging.
-If multiple results are specified, sort by times_finished and only add to combined trajectory if loss is better</p>
-</dd></dl>
+<dt id="cave.reader.runs_container.RunsContainer.get_bohb_results">
+<code class="sig-name descname">get_bohb_results</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/runs_container.html#RunsContainer.get_bohb_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.runs_container.RunsContainer.get_bohb_results" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
-<dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.hpbandster2smac">
-<code class="sig-name descname">hpbandster2smac</code><span class="sig-paren">(</span><em class="sig-param">folder2result</em>, <em class="sig-param">cs: ConfigSpace.configuration_space.ConfigurationSpace</em>, <em class="sig-param">backup_cs</em>, <em class="sig-param">output_dir: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.hpbandster2smac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.hpbandster2smac" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reading hpbandster-result-object and creating RunHistory and trajectory…
-treats each budget as an individual ‘smac’-run, creates an
-output-directory with subdirectories for each budget.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>folder2result</strong> (<em>Dict</em><em>(</em><em>str : hpbandster.core.result.Result</em><em>)</em>) – folder mapping to bohb’s result-objects</p></li>
-<li><p><strong>cs</strong> (<em>ConfigurationSpace</em>) – the configuration space</p></li>
-<li><p><strong>backup_cs</strong> (<em>List</em><em>[</em><em>ConfigurationSpace</em><em>]</em>) – if loading a configuration fails, try configspaces from this list until succeed</p></li>
-<li><p><strong>output_dir</strong> (<em>str</em>) – the output-dir to save the smac-runs to</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
+<dt id="cave.reader.runs_container.RunsContainer.get_budgets">
+<code class="sig-name descname">get_budgets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/runs_container.html#RunsContainer.get_budgets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.runs_container.RunsContainer.get_budgets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
-<dt id="cave.utils.hpbandster2smac.HpBandSter2SMAC.load_configspace">
-<code class="sig-name descname">load_configspace</code><span class="sig-paren">(</span><em class="sig-param">folder</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/hpbandster2smac.html#HpBandSter2SMAC.load_configspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.hpbandster2smac.HpBandSter2SMAC.load_configspace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Will try to load the configspace. If it’s a pcs-file, backup_cs will be a list containing all possible
-combinations of interpretation for Categoricals. If this issue will be fixed, we can drop this procedure.</p>
-</dd></dl>
+<dt id="cave.reader.runs_container.RunsContainer.get_folders">
+<code class="sig-name descname">get_folders</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/runs_container.html#RunsContainer.get_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.runs_container.RunsContainer.get_folders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cave.reader.runs_container.RunsContainer.get_highest_budget">
+<code class="sig-name descname">get_highest_budget</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/runs_container.html#RunsContainer.get_highest_budget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.runs_container.RunsContainer.get_highest_budget" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cave.reader.runs_container.RunsContainer.get_rng">
+<code class="sig-name descname">get_rng</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/runs_container.html#RunsContainer.get_rng"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.runs_container.RunsContainer.get_rng" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cave.reader.runs_container.RunsContainer.get_runs_for_budget">
+<code class="sig-name descname">get_runs_for_budget</code><span class="sig-paren">(</span><em class="sig-param">target_b</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/runs_container.html#RunsContainer.get_runs_for_budget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.runs_container.RunsContainer.get_runs_for_budget" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cave.reader.runs_container.RunsContainer.get_runs_for_folder">
+<code class="sig-name descname">get_runs_for_folder</code><span class="sig-paren">(</span><em class="sig-param">f</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/runs_container.html#RunsContainer.get_runs_for_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.runs_container.RunsContainer.get_runs_for_folder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -327,10 +382,10 @@ combinations of interpretation for Categoricals. If this issue will be fixed, we
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="cave.utils.html_helpers.html" class="btn btn-neutral float-right" title="cave.utils.html_helpers module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="cave.reader.smac2_reader.html" class="btn btn-neutral float-right" title="cave.reader.smac2_reader module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="cave.utils.helpers.html" class="btn btn-neutral float-left" title="cave.utils.helpers module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="cave.reader.csv_reader.html" class="btn btn-neutral float-left" title="cave.reader.csv_reader module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

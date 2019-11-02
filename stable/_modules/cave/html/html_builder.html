@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.html.html_builder &mdash; CAVE 1.1.7 documentation</title>
+  <title>cave.html.html_builder &mdash; CAVE 1.2.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.7
+                1.2.0
               </div>
             
           
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
@@ -143,6 +144,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
 </ul>
@@ -150,9 +152,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster2smac.html">cave.utils.hpbandster2smac module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.html_helpers.html">cave.utils.html_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
@@ -226,19 +228,19 @@
            <div itemprop="articleBody">
             
   <h1>Source code for cave.html.html_builder</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span></span><span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">traceback</span> <span class="k">import</span> <span class="n">print_exc</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">traceback</span> <span class="k">import</span> <span class="n">print_exc</span>
 
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">random</span>
 
-<span class="kn">from</span> <span class="nn">cave.utils.tooltips</span> <span class="k">import</span> <span class="n">get_tooltip</span>
-<span class="kn">from</span> <span class="nn">cave.html.html_helpers</span> <span class="k">import</span> <span class="n">figure_to_html</span>
 <span class="kn">from</span> <span class="nn">cave.__version__</span> <span class="k">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">version</span>
+<span class="kn">from</span> <span class="nn">cave.html.html_helpers</span> <span class="k">import</span> <span class="n">figure_to_html</span>
+<span class="kn">from</span> <span class="nn">cave.utils.tooltips</span> <span class="k">import</span> <span class="n">get_tooltip</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Marius Lindauer&quot;</span>
 <span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2016, ML4AAD&quot;</span>
@@ -289,22 +291,23 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span> <span class="o">=</span> <span class="n">output_dn</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unique_id_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">budget</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">relative_content_js</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;js&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">relative_content_images</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;images&#39;</span><span class="p">)</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_content_js</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_content_images</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">budget</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="c1"># todo make relative dirs again</span>
-
-        <span class="c1"># Copy subfolders</span>
-        <span class="n">subfolders</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;css&quot;</span><span class="p">,</span> <span class="s2">&quot;images&quot;</span><span class="p">,</span> <span class="s2">&quot;js&quot;</span><span class="p">,</span> <span class="s2">&quot;font&quot;</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">sf</span> <span class="ow">in</span> <span class="n">subfolders</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="s2">&quot;html&quot;</span><span class="p">,</span> <span class="n">sf</span><span class="p">),</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">own_folder</span><span class="p">,</span> <span class="s2">&quot;web_files&quot;</span><span class="p">,</span> <span class="n">sf</span><span class="p">),</span>
-                                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="s2">&quot;html&quot;</span><span class="p">,</span> <span class="n">sf</span><span class="p">))</span>
-            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-                <span class="n">print_exc</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">output_dn</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_content_js</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_content_images</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># todo make relative dirs again</span>
+            <span class="c1"># Copy subfolders</span>
+            <span class="n">subfolders</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;css&quot;</span><span class="p">,</span> <span class="s2">&quot;images&quot;</span><span class="p">,</span> <span class="s2">&quot;js&quot;</span><span class="p">,</span> <span class="s2">&quot;font&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">sf</span> <span class="ow">in</span> <span class="n">subfolders</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="s2">&quot;html&quot;</span><span class="p">,</span> <span class="n">sf</span><span class="p">),</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">own_folder</span><span class="p">,</span> <span class="s2">&quot;web_files&quot;</span><span class="p">,</span> <span class="n">sf</span><span class="p">),</span>
+                                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="s2">&quot;html&quot;</span><span class="p">,</span> <span class="n">sf</span><span class="p">))</span>
+                <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                    <span class="n">print_exc</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">header_part_1</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">&lt;!DOCTYPE html&gt;</span>
@@ -375,7 +378,7 @@
 <span class="s1">&lt;/html&gt;</span>
 <span class="s1">&#39;&#39;&#39;</span>
 
-<div class="viewcode-block" id="HTMLBuilder.generate_html"><a class="viewcode-back" href="../../../apidoc/cave.html.html_builder.html#cave.html.html_builder.HTMLBuilder.generate_html">[docs]</a>    <span class="k">def</span> <span class="nf">generate_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">):</span>
+<div class="viewcode-block" id="HTMLBuilder.generate_webpage"><a class="viewcode-back" href="../../../apidoc/cave.html.html_builder.html#cave.html.html_builder.HTMLBuilder.generate_webpage">[docs]</a>    <span class="k">def</span> <span class="nf">generate_webpage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Arguments</span>
 <span class="sd">        ---------</span>
@@ -384,31 +387,40 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">html_head</span><span class="p">,</span> <span class="n">html_body</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
         <span class="n">html_head</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header_part_1</span>
-        <span class="n">html_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
         <span class="c1"># Get components (script, div) for each entry in report</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>  <span class="c1"># ignore empty entry</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No content for </span><span class="si">%s</span><span class="s2">, skipping in html-generation&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
-                <span class="k">continue</span>
-            <span class="n">script</span><span class="p">,</span> <span class="n">div</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_layer</span><span class="p">(</span><span class="n">layer_name</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">data_dict</span><span class="o">=</span><span class="n">v</span><span class="p">)</span>
-            <span class="n">html_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;script&#39;</span><span class="p">:</span> <span class="n">script</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">:</span> <span class="n">div</span><span class="p">}</span>
+        <span class="n">scripts</span><span class="p">,</span> <span class="n">divs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_html</span><span class="p">(</span><span class="n">data_dict</span><span class="p">)</span>
+
         <span class="c1"># Scripts go into header, divs go into body</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">html_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;script&#39;</span><span class="p">]:</span>
-                <span class="n">html_head</span> <span class="o">+=</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;script&#39;</span><span class="p">]</span>  <span class="c1"># e.g. bokeh-scripts used for hover</span>
-            <span class="n">html_body</span> <span class="o">+=</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;div&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">scripts</span><span class="p">:</span>
+            <span class="n">html_head</span> <span class="o">+=</span> <span class="n">script</span>  <span class="c1"># e.g. bokeh-scripts used for hover</span>
+        <span class="k">for</span> <span class="n">div</span> <span class="ow">in</span> <span class="n">divs</span><span class="p">:</span>
+            <span class="n">html_body</span> <span class="o">+=</span> <span class="n">div</span>
         <span class="n">html_head</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header_part_2</span>  <span class="c1"># Close header after adding all scripts</span>
         <span class="n">html</span> <span class="o">=</span> <span class="n">html_head</span> <span class="o">+</span> <span class="n">html_body</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">footer</span>
 
+        <span class="c1"># Write webpage to file</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="s2">&quot;report.html&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
 
+        <span class="c1"># If available, add custom logo</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logo_custom</span><span class="p">:</span>
             <span class="n">original_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logo_fn</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logo_fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="s2">&quot;html&quot;</span><span class="p">,</span> <span class="s1">&#39;images&#39;</span><span class="p">,</span> <span class="s1">&#39;custom_logo.png&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Attempting to copy </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">original_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logo_fn</span><span class="p">)</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">original_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logo_fn</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logo_custom</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="HTMLBuilder.generate_html"><a class="viewcode-back" href="../../../apidoc/cave.html.html_builder.html#cave.html.html_builder.HTMLBuilder.generate_html">[docs]</a>    <span class="k">def</span> <span class="nf">generate_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">):</span>
+        <span class="n">scripts</span><span class="p">,</span> <span class="n">divs</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>  <span class="c1"># ignore empty entry</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No content for </span><span class="si">%s</span><span class="s2">, skipping in html-generation&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">script</span><span class="p">,</span> <span class="n">div</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_layer</span><span class="p">(</span><span class="n">layer_name</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">data_dict</span><span class="o">=</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">script</span><span class="p">:</span>
+                <span class="n">scripts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">script</span><span class="p">)</span>
+            <span class="n">divs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">div</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">scripts</span><span class="p">,</span> <span class="n">divs</span></div>
 
 <div class="viewcode-block" id="HTMLBuilder.add_layer"><a class="viewcode-back" href="../../../apidoc/cave.html.html_builder.html#cave.html.html_builder.HTMLBuilder.add_layer">[docs]</a>    <span class="k">def</span> <span class="nf">add_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer_name</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">is_tab</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -430,12 +442,17 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">script</span><span class="p">,</span> <span class="n">div</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
 
+        <span class="k">if</span> <span class="n">layer_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">layer_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
         <span class="c1"># Add tooltip, if possible</span>
-        <span class="n">tooltip</span> <span class="o">=</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tooltip&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">tooltip</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">tooltip</span> <span class="o">=</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tooltip&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tooltip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">tooltip</span> <span class="o">=</span> <span class="s2">&quot;&lt;div class=</span><span class="se">\&quot;</span><span class="s2">help-tip</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;p&gt;</span><span class="si">{}</span><span class="s2">&lt;/p&gt;&lt;/div&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tooltip</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">get_tooltip</span><span class="p">(</span><span class="n">layer_name</span><span class="p">):</span>  <span class="c1"># if no tooltip is parsed, try to look it up</span>
             <span class="n">tooltip</span> <span class="o">=</span> <span class="s2">&quot;&lt;div class=</span><span class="se">\&quot;</span><span class="s2">help-tip</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;p&gt;</span><span class="si">{}</span><span class="s2">&lt;/p&gt;&lt;/div&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">get_tooltip</span><span class="p">(</span><span class="n">layer_name</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tooltip</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
         <span class="c1"># Start accordion-panel</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_tab</span><span class="p">:</span>
@@ -495,13 +512,20 @@
                 <span class="n">path_script</span> <span class="o">=</span> <span class="n">path_script</span><span class="o">.</span><span class="n">translate</span><span class="p">({</span><span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">):</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="s1">&#39; </span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">})</span>
 
                 <span class="c1"># Write script to file</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="n">path_script</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fn</span><span class="p">:</span>
-                    <span class="n">js_code</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&lt;.*?&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>  <span class="c1"># Remove script-tags</span>
-                    <span class="n">fn</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">js_code</span><span class="p">)</span>
-                <span class="n">script</span> <span class="o">+=</span> <span class="s2">&quot;&lt;script src=</span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">path_script</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;/script&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dn</span><span class="p">,</span> <span class="n">path_script</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fn</span><span class="p">:</span>
+                        <span class="n">js_code</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&lt;.*?&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>  <span class="c1"># Remove script-tags</span>
+                        <span class="n">fn</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">js_code</span><span class="p">)</span>
+                    <span class="n">script</span> <span class="o">+=</span> <span class="s2">&quot;&lt;script src=</span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">path_script</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;/script&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">script</span> <span class="o">+=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;div align=</span><span class="se">\&quot;</span><span class="s2">center</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&lt;/div&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">div</span> <span class="o">+=</span> <span class="n">v</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">div</span> <span class="o">+=</span> <span class="n">v</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Failed on interpreting: </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2"> (Error: </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span>
+                                        <span class="nb">str</span><span class="p">(</span><span class="n">layer_name</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">err</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">use_tabs</span><span class="p">:</span>  <span class="c1"># close tab with selecting first element by default</span>
             <span class="n">div</span> <span class="o">+=</span> <span class="s2">&quot;&lt;script&gt; </span><span class="se">\n</span><span class="s2">&quot;</span>

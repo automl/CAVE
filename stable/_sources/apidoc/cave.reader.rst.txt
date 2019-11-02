@@ -2,10 +2,10 @@ cave.reader package
 ===================
 
 .. automodule:: cave.reader
-    :members:
-    :undoc-members:
-    :show-inheritance:
-    :inherited-members:
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :inherited-members:
 
 
 .. toctree::
@@ -14,6 +14,6 @@ cave.reader package
    cave.reader.configurator_run
    cave.reader.csv2rh
    cave.reader.csv_reader
+   cave.reader.runs_container
    cave.reader.smac2_reader
    cave.reader.smac3_reader
-
