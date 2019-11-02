@@ -1,40 +1,32 @@
-import os
 from collections import OrderedDict
-import logging
-import itertools
 
 import numpy as np
-
-from bokeh.io import output_notebook
-from bokeh.plotting import show, figure, ColumnDataSource
 from bokeh.embed import components
-from bokeh.models import HoverTool, ColorBar, Range1d, LinearColorMapper, BasicTicker, CustomJS, Slider
-from bokeh.models.sources import CDSView
-from bokeh.models.filters import GroupFilter
+from bokeh.io import output_notebook
 from bokeh.layouts import column, row, widgetbox
-from bokeh.models.widgets import CheckboxButtonGroup, CheckboxGroup, Button, Select
+from bokeh.models import HoverTool, Range1d, LinearColorMapper, CustomJS
+from bokeh.models.filters import GroupFilter
+from bokeh.models.sources import CDSView
+from bokeh.models.widgets import Select
 from bokeh.palettes import Spectral11
+from bokeh.plotting import show, figure, ColumnDataSource
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
-from cave.utils.timing import timing
 from cave.utils.bokeh_routines import get_checkbox
 
+
 class BohbLearningCurves(BaseAnalyzer):
+    """
+    Visualizing the learning curves of all individual HyperBand-iterations. Model-based picks are marked with a
+    cross. The config-id tuple denotes (iteration, stage, id_within_stage), where the iteration is the hyperband
+    iteration and the stage is the index of the budget in which the configuration was first sampled (should be 0).
+    The third index is just a sequential enumeration. This id can be interpreted as a nested index-identifier.
+    """
 
-    def __init__(self, hp_names, result_object=None, result_path=None):
-        """
-        Visualize hpbandster learning curves in an interactive bokeh-plot.
-
-        Parameters
-        ----------
-        hp_names: List[str]
-            list with hyperparameters-names
-        result_object: Result
-            hpbandster-result object. must be specified if result_path is not
-        result_path: str
-            path to hpbandster result-folder. must contain configs.json and results.json. must be specified if result_object is not
-        """
-        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
+    def __init__(self,
+                 runscontainer,
+                 ):
+        super().__init__(runscontainer)
         try:
             from hpbandster.core.result import logged_results_to_HBS_result
             from hpbandster.core.result import extract_HBS_learning_curves
@@ -42,16 +34,14 @@ class BohbLearningCurves(BaseAnalyzer):
             self.logger.exception(err)
             raise ImportError("You need to install hpbandster (e.g. 'pip install hpbandster') to analyze bohb-results.")
 
-        if (result_path and result_object) or not (result_path or result_object):
-            raise ValueError("Specify either result_path or result_object. (currently \"%s\" and \"%s\")" % (result_path, result_object))
-        elif result_path:
-            result_object = logged_results_to_HBS_result(result_path)
+        self.hp_names = runscontainer.scenario.cs.get_hyperparameter_names()
+        self.result_objects = self.runscontainer.folder2result
+        self.result_object = list(self.result_objects.values())[0]
+        # TODO extend to support parallel runs
+        self.lcs = self.result_object.get_learning_curves(lc_extractor=extract_HBS_learning_curves)
 
-        incumbent_trajectory = result_object.get_incumbent_trajectory()
-
-        self.hp_names = hp_names
-        self.result_object = result_object
-        self.lcs = result_object.get_learning_curves(lc_extractor=extract_HBS_learning_curves)
+    def get_name(self):
+        return "BOHB Learning Curves"
 
     def plot(self, reset_times=False):
         return self._plot(self.result_object, self.lcs, self.hp_names, reset_times=reset_times)
@@ -268,6 +258,6 @@ class BohbLearningCurves(BaseAnalyzer):
     def get_html(self, d=None, tooltip=None):
         script, div = components(self.plot())
         if d is not None:
-            d["BOHB Learning Curves"] = {"bokeh" : (script, div), "tooltip" : tooltip}
+            d["BOHB Learning Curves"] = {"bokeh" : (script, div), "tooltip" : self.__doc__}
         return script, div
 

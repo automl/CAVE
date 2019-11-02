@@ -1,56 +1,54 @@
 import os
-import logging
-from collections import OrderedDict
 
 from pandas import DataFrame
-import numpy as np
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
-from cave.html.html_helpers import figure_to_html
+from cave.utils.helpers import check_for_features
+from cave.utils.hpbandster_helpers import format_budgets
+
 
 class FeatureImportance(BaseAnalyzer):
-    def __init__(self, pimp, output_dir):
-        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
+    def __init__(self,
+                 runscontainer,
+                 ):
+        super().__init__(runscontainer)
+        check_for_features(runscontainer.scenario)
 
-        self.output_dir = output_dir
-        self.pimp = pimp
+        formatted_budgets = format_budgets(self.runscontainer.get_budgets())
+        for run in self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False):
+            feat_imp, plots = self.feature_importance(
+                pimp=run.pimp,
+                output_dir=run.output_dir,
+            )
+            self.result[formatted_budgets[run.budget]] = plots
+           # Add to run so other analysis-methods can use the information
+            run.share_information['feature_importance'] = feat_imp
 
-        self.feature_importance()
+    def get_name(self):
+        return "Feature Importance"
 
-    def feature_importance(self):
+    def feature_importance(self, pimp, output_dir):
         self.logger.info("... plotting feature importance")
 
-        old_values = (self.pimp.forwardsel_feat_imp, self.pimp._parameters_to_evaluate, self.pimp.forwardsel_cv)
-        self.pimp.forwardsel_feat_imp = True
-        self.pimp._parameters_to_evaluate = -1
-        self.pimp.forwardsel_cv = False
+        old_values = (pimp.forwardsel_feat_imp, pimp._parameters_to_evaluate, pimp.forwardsel_cv)
+        pimp.forwardsel_feat_imp = True
+        pimp._parameters_to_evaluate = -1
+        pimp.forwardsel_cv = False
 
-        dir_ = os.path.join(self.output_dir, 'feature_plots/importance')
+        dir_ = os.path.join(output_dir, 'feature_plots/importance')
         os.makedirs(dir_, exist_ok=True)
-        res = self.pimp.evaluate_scenario(['forward-selection'], dir_)
-        self.feat_importance = res[0]['forward-selection']['imp']
+        res = pimp.evaluate_scenario(['forward-selection'], dir_)
+        feat_importance = res[0]['forward-selection']['imp']
 
-        self.plots = [os.path.join(dir_, 'forward-selection-barplot.png'),
-                      os.path.join(dir_, 'forward-selection-chng.png')]
+        plots = [os.path.join(dir_, 'forward-selection-barplot.png'),
+                 os.path.join(dir_, 'forward-selection-chng.png')]
         # Restore values
-        self.pimp.forwardsel_feat_imp, self.pimp._parameters_to_evaluate, self.pimp.forwardsel_cv = old_values
+        pimp.forwardsel_feat_imp, pimp._parameters_to_evaluate, pimp.forwardsel_cv = old_values
 
-    def get_plots(self):
-        return self.plots
+        table = DataFrame(data=list(feat_importance.values()), index=list(feat_importance.keys()), columns=["Error"])
+        table = table.to_html()
 
-    def get_table(self):
-        table = DataFrame(data=list(self.feat_importance.values()), index=list(self.feat_importance.keys()), columns=["Error"])
-        return table
-
-    def get_html(self, d=None, tooltip=None):
-        if d is not None:
-            d["tooltip"] = tooltip
-            d["Table"] = {"table": self.get_table().to_html()}
-            for p in self.plots:
-                name = os.path.splitext(os.path.basename(p))[0]
-                d[name] = {"figure": p}
-        return self.get_table().to_html() + figure_to_html(self.get_plots())
-
-    def get_jupyter(self):
-        from IPython.core.display import HTML, display
-        display(HTML(self.get_html()))
+        result = {'Table': {'table': table}}
+        for p in plots:
+            result[os.path.splitext(os.path.basename(p))[0]] = {'figure' : p}
+        return (feat_importance, result)

@@ -1,21 +1,17 @@
-import os
-import warnings
 import logging
-import csv
+import warnings
 from typing import Union
 
-import pandas as pd
 import numpy as np
-
-from smac.runhistory.runhistory import RunHistory, DataOrigin
-from smac.optimizer.objective import average_cost, _cost
-from smac.utils.io.input_reader import InputReader
-from smac.tae.execute_ta_run import StatusType
-
-from ConfigSpace.util import deactivate_inactive_hyperparameters, fix_types
-from ConfigSpace import Configuration, ConfigurationSpace
-from ConfigSpace.hyperparameters import UniformFloatHyperparameter, CategoricalHyperparameter
+import pandas as pd
+from ConfigSpace import ConfigurationSpace
+from ConfigSpace.hyperparameters import UniformFloatHyperparameter
 from ConfigSpace.read_and_write import pcs
+from ConfigSpace.util import deactivate_inactive_hyperparameters, fix_types
+from smac.optimizer.objective import average_cost
+from smac.runhistory.runhistory import RunHistory, DataOrigin
+from smac.tae.execute_ta_run import StatusType
+from smac.utils.io.input_reader import InputReader
 
 from cave.utils.io import load_csv_to_pandaframe
 
@@ -237,10 +233,15 @@ class CSV2RH(object):
             data = data.apply(add_config, axis=1)
             id_to_config = {conf : name for name, conf in config_to_id.items()}
 
+        data["config_id"] = pd.to_numeric(data["config_id"])
+
+
         # Check whether all config-ids are present
         if len(set(data['config_id']) - set(id_to_config.keys())) > 0:
-            raise ValueError("config id %s cannot be identified (is your "
-                             "configurations.csv complete?")
+            raise ValueError("config id {} cannot be identified (is your "
+                             "configurations.csv complete? Or maybe this is a type-issue...".format(
+                set(data['config_id']) - set(id_to_config.keys())
+            ))
 
         return data, id_to_config
 

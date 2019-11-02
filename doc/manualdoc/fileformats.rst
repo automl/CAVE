@@ -45,9 +45,9 @@ in a directory `output_dir` using
 
 .. code-block:: python
 
-    from ConfigSpace.read_and_write import pcs_new
+    from ConfigSpace.read_and_write import json
     with open(output_dir, 'w') as fh:
-        fh.write(pcs_new(config_space))
+        fh.write(json(config_space))
 
 *CSV*
 ~~~~~

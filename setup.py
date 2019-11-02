@@ -22,13 +22,17 @@ WEB_FILES_LOCATION = os.path.join(os.path.dirname(__file__), 'cave/html/web_file
 setuptools.setup(
     name="cave",
     version=version,
-    packages=['cave', 'cave.analyzer', 'cave.feature_analysis', 'cave.reader', 'cave.html', 'cave.plot', 'cave.utils'],
+    packages=['cave', 'cave.analyzer', 'cave.feature_analysis', 'cave.reader', 'cave.reader.conversion', 'cave.html', 'cave.plot', 'cave.utils'],
     package_data={
         'cave/analyzer': [
             'cave/analyzer/mpl_style'
         ],
         'cave/plot': [
             'cave/plot/mpl_style'
+        ],
+        'cave/utils' : [
+            'cave/utils/options/default_analysis_options.ini'
+            'cave/utils/options/default_bohb_analysis_options.ini'
         ],
         'cave/html': [
             'cave/html/web_files/css/accordion.css',

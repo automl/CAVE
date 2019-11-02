@@ -1,3 +1,4 @@
 include requirements.txt
 recursive-include cave/html/web_files *.css *.js *.png *.json *.svg *.eot *.ttf *.woff*
 include cave/plot/mpl_style
+include cave/utils/options/*.ini

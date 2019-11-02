@@ -2,16 +2,13 @@
 
 import numpy as np
 from ConfigSpace.util import impute_inactive_values
-
-from smac.scenario.scenario import Scenario
-from smac.tae.execute_ta_run import StatusType
-
-from smac.runhistory.runhistory import RunHistory
-from smac.runhistory.runhistory2epm import RunHistory2EPM4LogCost, RunHistory2EPM4Cost
-from smac.epm.util_funcs import get_types
-
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.epm.rfr_imputator import RFRImputator
+from smac.epm.util_funcs import get_types
+from smac.runhistory.runhistory import RunHistory
+from smac.runhistory.runhistory2epm import RunHistory2EPM4LogCost, RunHistory2EPM4Cost
+from smac.scenario.scenario import Scenario
+from smac.tae.execute_ta_run import StatusType
 from smac.utils.constants import MAXINT
 
 

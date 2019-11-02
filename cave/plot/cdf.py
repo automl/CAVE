@@ -1,5 +1,5 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def plot_cdf(x_list, y_list, label_list, timeout, out_fn):

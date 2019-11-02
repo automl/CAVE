@@ -2,10 +2,12 @@
 Here are helper functions needed to provide a certain behaviour of HpBandSter, such as special trajectories.
 """
 
-import numpy as np
 from collections import OrderedDict
 
-def format_budgets(budgets):
+import numpy as np
+
+
+def format_budgets(budgets, allow_whitespace=False):
     """
     Format budget-strings so that they are as short as possible while still distinguishable
 
@@ -13,12 +15,17 @@ def format_budgets(budgets):
     ----------
     budgets: List[str]
         list with budgets
+    allow_whitespace: bool
+        if set to True, will return "budget 10.5" else "budget_10.5
 
     Returns
     -------
     formatted_budgets: List[str]
         list with formatted budgets
     """
+    if len(budgets) == 0:
+        return {None : None}
+
     def format_budget(b, round_to):
         return 'budget_{}'.format(int(b)) if float(b).is_integer() else 'budget_{:.{}f}'.format(b, round_to)
 
@@ -28,9 +35,12 @@ def format_budgets(budgets):
         round_to += 1
         formatted_budgets = {b : format_budget(b, round_to) for b in budgets}
 
+    if allow_whitespace:
+        formatted_budgets = {b : str(f).replace("_", " ") for b, f in formatted_budgets.items()}
+
     return formatted_budgets
 
-def get_incumbent_trajectory(result, budgets, mode='racing'):
+def get_incumbent_trajectory(result, budgets=None, mode='racing'):
     """
     Parameters
     ----------
@@ -47,10 +57,13 @@ def get_incumbent_trajectory(result, budgets, mode='racing'):
         dictionary with all the config IDs, the times the runs finished, their respective budgets, and corresponding
         losses
     """
-    if budgets == 'all':
+    if budgets is None:
         budgets = list(result.HB_config['budgets'])
     if not isinstance(budgets, list):
         raise ValueError("%s not a valid argument for 'budgets'" % str(budgets))
+    if any([budget not in result.HB_config['budgets'] for budget in budgets]):
+        raise ValueError("Budget '{}' (type: {}) does not exist. Choose from {}".format(str(budget), str(type(budget)),
+            "[" + ", ".join([str(b) + " (type: " + str(type(b)) + ")" for b in result.HB_config['budgets']]) + "]"))
 
     if mode == 'racing':
         # Philipp's method
@@ -82,8 +95,6 @@ def get_incumbent_trajectory(result, budgets, mode='racing'):
                                                         non_decreasing_budget=True)
         else:
             raise ValueError("'%s' not a supported method for get_incumbent_trajectory" % mode)
-
-
 
 def _compute_trajectory_racing(all_runs, budgets):
     """
@@ -169,7 +180,6 @@ def _compute_trajectory_racing(all_runs, budgets):
         # Update the finished time to the time of setting as incumbent
         incumbents[current_incumbent_budget].time_stamps['finished'] = run.time_stamps['finished']
         yield incumbents[current_incumbent_budget]
-
 
 def _get_incumbent_trajectory_hpbandster(result, budgets, bigger_is_better=True, non_decreasing_budget=True):
     """

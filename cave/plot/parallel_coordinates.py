@@ -1,10 +1,11 @@
-import os
 import logging
+import os
 import random
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+
 plt.style.use(os.path.join(os.path.dirname(__file__), 'mpl_style'))  # noqa
 from matplotlib import ticker
 import matplotlib.colors as colors

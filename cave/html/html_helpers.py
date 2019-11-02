@@ -16,7 +16,7 @@ def figure_to_html(figure, prefix=None, max_in_a_row=None, true_break_between_ro
 
     Returns
     -------
-    htmli: Union[str, List[str]]
+    html: Union[str, List[str]]
         html-code or list with independent html-codes
     """
     if not prefix:

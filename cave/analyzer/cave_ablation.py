@@ -1,40 +1,30 @@
 import os
 from collections import OrderedDict
-import operator
-import logging
-
-from pandas import DataFrame
 
 from cave.analyzer.cave_parameter_importance import CaveParameterImportance
-from cave.html.html_helpers import figure_to_html
+
 
 class CaveAblation(CaveParameterImportance):
+    """ Ablation Analysis is a method to determine parameter importance by comparing two parameter configurations,
+    typically the default and the optimized configuration.  It uses a greedy forward search to determine the order
+    of flipping the parameter settings from default configuration to incumbent such that in each step the cost is
+    maximally decreased."""
 
     def __init__(self,
-                 pimp,
-                 incumbent,
-                 output_dir,
+                 runscontainer,
                  marginal_threshold=0.05):
-        """Wrapper for parameter_importance to save the importance-object
-        """
+        super().__init__(runscontainer)
 
-        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
-        super().__init__(pimp, incumbent, output_dir)
+        self.marginal_threshold = marginal_threshold
 
         self.parameter_importance("ablation")
 
-        self.plots = [os.path.join(output_dir, fn) for fn in ["ablationpercentage.png", "ablationperformance.png"]]
+    def get_name(self):
+        return "Ablation"
 
-    def get_plots(self):
-        return self.plots
-
-    def get_html(self, d=None, tooltip=None):
-        if d is not None:
-            d["figure"] = self.plots
-            d["tooltip"] = tooltip
-        return figure_to_html(self.plots)
-
-    def get_jupyter(self):
-        from IPython.core.display import HTML, display
-        display(HTML(figure_to_html(self.plots)))
+    def postprocess(self, pimp, output_dir):
+        result = OrderedDict([
+            ('figure', [os.path.join(output_dir, fn) for fn in ["ablationpercentage.png", "ablationperformance.png"]])
+        ])
+        return result
 

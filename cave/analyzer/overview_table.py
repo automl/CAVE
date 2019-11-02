@@ -1,50 +1,52 @@
 import os
-import logging
 from collections import OrderedDict
 
-from pandas import DataFrame
 import numpy as np
-
-from ConfigSpace.hyperparameters import NumericalHyperparameter, CategoricalHyperparameter, OrdinalHyperparameter, Constant
+from ConfigSpace.hyperparameters import NumericalHyperparameter, CategoricalHyperparameter, OrdinalHyperparameter, \
+    Constant
+from pandas import DataFrame
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
-from cave.html.html_helpers import figure_to_html
 from cave.utils.helpers import get_config_origin
-from cave.utils.bokeh_routines import array_to_bokeh_table
+
 
 class OverviewTable(BaseAnalyzer):
+    """
+    Meta data, i.e. number of instances and parameters as well as configuration budget. Statistics apply to the
+    best run, if multiple configurator runs are compared.
+    """
+    def __init__(self, runscontainer):
+        super().__init__(runscontainer)
+        self.output_dir = runscontainer.output_dir
 
-    def __init__(self, runs, bohb_parallel, output_dir):
-        """ Create overview-table.
+        html_table_general, html_table_specific, html_table_cs = self.run()
+        self.result["General"] = {"table": html_table_general,
+                                  "tooltip": "General information about the optimization scenario."}
+        self.result["Run-Specific"] = {"table": html_table_specific,
+                                       "tooltip": "Information to specific runs (if there are multiple runs). Interesting "
+                                                  "for parallel optimizations or usage of budgets/fidelities."}
+        self.result["Configuration Space"] = {"table": html_table_cs,
+                                              "tooltip": "The parameter configuration space. (See github.com/automl/ConfigSpace)"}
 
-        Parameters
-        ----------
-        runs: List[ConfiguratorRun]
-            list with all runs
-        bohb_parallel: False or int
-            number of parallel bohb-runs if present
-        output_dir: str
-            output-directory for CAVE
-        """
-        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
-        self.output_dir = output_dir
-        self.runs = runs
-        self.bohb_parallel = bohb_parallel
-
-        self.html_table_general, self.html_table_specific, self.html_table_cs = self.run()
+    def get_name(self):
+        return "Meta Data"
 
     def run(self):
         """ Generate tables. """
-        scenario = self.runs[0].scenario
+        scenario = self.runscontainer.scenario
 
         # General infos
-        general_dict = self._general_dict(scenario, self.bohb_parallel)
+        general_dict = self._general_dict(scenario)
         html_table_general = DataFrame(data=OrderedDict([('General', general_dict)]))
         html_table_general = html_table_general.reindex(list(general_dict.keys()))
         html_table_general = html_table_general.to_html(escape=False, header=False, justify='left')
 
         # Run-specific / budget specific infos
-        runspec_dict = self._runspec_dict(self.runs)
+        if len(self.runscontainer.get_budgets()) > 1:
+            runs = self.runscontainer.get_aggregated(keep_folders=False, keep_budgets=True)
+        else:
+            runs = self.runscontainer.get_aggregated(keep_folders=True, keep_budgets=False)
+        runspec_dict = self._runspec_dict(runs)
         order_spec = list(list(runspec_dict.values())[0].keys())  # Get keys of any sub-dict for order
         html_table_specific = DataFrame(runspec_dict)
         html_table_specific = html_table_specific.reindex(order_spec)
@@ -57,15 +59,13 @@ class OverviewTable(BaseAnalyzer):
 
         return html_table_general, html_table_specific, html_table_cs
 
-    def _general_dict(self, scenario, bohb_parallel=False):
+    def _general_dict(self, scenario):
         """ Generate the meta-information that holds for all runs (scenario info etc)
 
         Parameters
         ----------
         scenario: smac.Scenario
             scenario file to get information from
-        bohb_parallel: Union[False, int]
-            if set, defines number of parallel runs
         """
         # general stores information that holds for all runs, runspec holds information on a run-basis
         general = OrderedDict()
@@ -75,9 +75,8 @@ class OverviewTable(BaseAnalyzer):
         #if num_conf_runs != 1:
         #    overview['Number of configurator runs'] = num_conf_runs
 
-        self.logger.debug("bohb_parallel in overview: %s", bohb_parallel)
-        if bohb_parallel:
-            general['# aggregated parallel BOHB runs'] = bohb_parallel
+        if len(self.runscontainer.get_budgets()) > 1:
+            general['# aggregated parallel BOHB runs'] = len(self.runscontainer.get_folders())
 
         # Scenario related
         general['# parameters'] = len(scenario.cs.get_hyperparameters())
@@ -108,12 +107,11 @@ class OverviewTable(BaseAnalyzer):
         runspec = OrderedDict()
 
         for run in runs:
-            name = os.path.basename(run.folder).replace('_', ' ')  # TODO this should be changed with multiple BOHB-folder suppor (no basename should be necessary)
+            name = os.path.basename(run.path_to_folder).replace('_', ' ')  # TODO this should be changed with multiple BOHB-folder suppor (no basename should be necessary)
             runspec[name] = self._stats_for_run(run.original_runhistory,
                                                 run.scenario,
                                                 run.incumbent)
         return runspec
-
 
     def _stats_for_run(self, rh, scenario, incumbent):
         result = OrderedDict()
@@ -168,23 +166,4 @@ class OverviewTable(BaseAnalyzer):
             else:
                 d["Range/Choices"].append("?")
             d["Default"].append(hp.default_value)
-
         return d
-
-
-    def get_html(self, d=None, tooltip=None, budget=None):
-        if d is not None:
-            d["General"] = {"table" : self.html_table_general,
-                            "tooltip" : "General information about the optimization scenario."}
-            d["Run-Specific"] = {"table" : self.html_table_specific,
-                                 "tooltip" : "Information to specific runs (if there are multiple runs). Interesting "
-                                             "for parallel optimizations or usage of budgets/fidelities."}
-            d["Configuration Space"] = {"table" : self.html_table_cs,
-                            "tooltip" : "The parameter configuration space. (See github.com/automl/ConfigSpace)"}
-            d["tooltip"] = tooltip
-        return ' '.join([self.html_table_general, self.html_table_specific, self.html_table_cs])
-
-    def get_jupyter(self):
-        from IPython.core.display import HTML, display
-        display(HTML(self.get_html()))
-

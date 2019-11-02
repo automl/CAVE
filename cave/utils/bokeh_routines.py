@@ -1,9 +1,8 @@
 import logging
 
-from bokeh.models import (HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider,
-                          ColumnDataSource)
-from bokeh.models.widgets import (RadioButtonGroup, CheckboxButtonGroup, CheckboxGroup, Button, Select,
-                                  DataTable, TableColumn)
+from bokeh.models import (CustomJS, ColumnDataSource)
+from bokeh.models.widgets import (RadioButtonGroup, CheckboxButtonGroup, CheckboxGroup, Button, DataTable, TableColumn)
+
 
 def get_checkbox(glyph_renderers, labels, max_checkbox_length=None):
     """

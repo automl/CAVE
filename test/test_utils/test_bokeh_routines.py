@@ -1,11 +1,12 @@
-import unittest
 import logging
+import unittest
 
 import numpy as np
-from pandas import DataFrame
 from bokeh.models.widgets import DataTable
+from pandas import DataFrame
 
 from cave.utils.bokeh_routines import array_to_bokeh_table
+
 
 class TestCSV2RH(unittest.TestCase):
 
