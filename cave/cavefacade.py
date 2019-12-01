@@ -306,14 +306,7 @@ class CAVE(object):
 
     @_analyzer_type
     def cave_fanova(self):
-        try:
-            fanova = CaveFanova(self.runscontainer)
-
-        except IndexError as err:
-            self.logger.debug("Error in fANOVA (%s)", err, exc_info=1)
-            raise IndexError("Error in fANOVA - please run with --pimp_no_fanova_pairs (this is due to a known issue "
-                             "with ints and bools in categorical hyperparameters, see issue #192).")
-        return fanova
+        return CaveFanova(self.runscontainer)
 
     @_analyzer_type
     def cave_ablation(self):

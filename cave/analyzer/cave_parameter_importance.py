@@ -1,5 +1,6 @@
 from collections import OrderedDict
 
+from bokeh.embed import components
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.utils.hpbandster_helpers import format_budgets
 
@@ -34,11 +35,12 @@ class CaveParameterImportance(BaseAnalyzer):
                 self.result[formatted_budgets[run.budget]] = {
                     'else' : "For this run there are only {} configs, "
                              "but {} parameters. No reliable parameter importance analysis "
-                             "can be performed."}
+                             "can be performed.".format(n_configs, n_params)}
                 continue
 
             try:
-                run.pimp.evaluate_scenario([modus], run.output_dir)
+                run.pimp.evaluate_scenario([modus], run.output_dir, plot_pyplot=False, plot_bokeh=False)
+
             except RuntimeError as e:
                 err = "Encountered error '{}' for '{}' in '{}', (for fANOVA this can e.g. happen with too few data-points).".format(
                                 e, run.get_identifier(), modus)
@@ -47,7 +49,12 @@ class CaveParameterImportance(BaseAnalyzer):
                 continue
             individual_result = self.postprocess(run.pimp, run.output_dir)
             self.result[formatted_budgets[run.budget]] = individual_result
+            try:
+                self.result[formatted_budgets[run.budget]]['Interactive Plots'] = {
+                    'bokeh' : components(run.pimp.evaluator.plot_bokeh(show_plot=True))
+                }
+            except AttributeError as err:
+                self.logger.debug(err, exc_info=1)
 
             run.share_information['parameter_importance'][modus] = run.pimp.evaluator.evaluated_parameter_importance
             run.share_information['evaluators'][modus] = run.pimp.evaluator
-
