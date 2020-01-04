@@ -230,14 +230,14 @@
   <h1>Source code for cave.analyzer.algorithm_footprint</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 
-<span class="kn">from</span> <span class="nn">bokeh.embed</span> <span class="k">import</span> <span class="n">components</span>
-<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_notebook</span>
-<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">bokeh.embed</span> <span class="kn">import</span> <span class="n">components</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="kn">import</span> <span class="n">output_notebook</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">show</span>
 
-<span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="k">import</span> <span class="n">BaseAnalyzer</span>
-<span class="kn">from</span> <span class="nn">cave.plot.algorithm_footprint</span> <span class="k">import</span> <span class="n">AlgorithmFootprintPlotter</span>
-<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">NotApplicable</span>
-<span class="kn">from</span> <span class="nn">cave.utils.timing</span> <span class="k">import</span> <span class="n">timing</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="kn">import</span> <span class="n">BaseAnalyzer</span>
+<span class="kn">from</span> <span class="nn">cave.plot.algorithm_footprint</span> <span class="kn">import</span> <span class="n">AlgorithmFootprintPlotter</span>
+<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="kn">import</span> <span class="n">NotApplicable</span>
+<span class="kn">from</span> <span class="nn">cave.utils.timing</span> <span class="kn">import</span> <span class="n">timing</span>
 
 
 <div class="viewcode-block" id="AlgorithmFootprint"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.algorithm_footprint.html#cave.analyzer.algorithm_footprint.AlgorithmFootprint">[docs]</a><span class="k">class</span> <span class="nc">AlgorithmFootprint</span><span class="p">(</span><span class="n">BaseAnalyzer</span><span class="p">):</span>
@@ -250,7 +250,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@timing</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">runscontainer</span><span class="p">,</span>
                  <span class="n">density</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
                  <span class="n">purity</span><span class="o">=</span><span class="mf">0.95</span><span class="p">):</span>
@@ -347,7 +347,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
 
     </p>
   </div>

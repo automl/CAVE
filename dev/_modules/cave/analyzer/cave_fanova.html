@@ -230,11 +230,11 @@
   <h1>Source code for cave.analyzer.cave_fanova</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">operator</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
-<span class="kn">from</span> <span class="nn">pandas</span> <span class="k">import</span> <span class="n">DataFrame</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
 
-<span class="kn">from</span> <span class="nn">cave.analyzer.cave_parameter_importance</span> <span class="k">import</span> <span class="n">CaveParameterImportance</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.cave_parameter_importance</span> <span class="kn">import</span> <span class="n">CaveParameterImportance</span>
 
 
 <div class="viewcode-block" id="CaveFanova"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova">[docs]</a><span class="k">class</span> <span class="nc">CaveFanova</span><span class="p">(</span><span class="n">CaveParameterImportance</span><span class="p">):</span>
@@ -246,7 +246,7 @@
 <span class="sd">    runhistories.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">runscontainer</span><span class="p">,</span>
                  <span class="n">marginal_threshold</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Wrapper for parameter_importance to save the importance-object/</span>
@@ -327,7 +327,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="CaveFanova.get_jupyter"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova.get_jupyter">[docs]</a>    <span class="k">def</span> <span class="nf">get_jupyter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">IPython.core.display</span> <span class="k">import</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="n">display</span>
+        <span class="kn">from</span> <span class="nn">IPython.core.display</span> <span class="kn">import</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="n">display</span>
         <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="s1">&#39;else&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;else&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="k">else</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">error</span><span class="p">:</span>
@@ -355,7 +355,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
 
     </p>
   </div>

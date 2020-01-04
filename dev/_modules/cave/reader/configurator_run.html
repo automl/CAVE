@@ -232,21 +232,21 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="k">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pimp.importance.importance</span> <span class="k">import</span> <span class="n">Importance</span>
-<span class="kn">from</span> <span class="nn">smac.optimizer.objective</span> <span class="k">import</span> <span class="n">average_cost</span>
-<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span><span class="p">,</span> <span class="n">DataOrigin</span>
-<span class="kn">from</span> <span class="nn">smac.utils.io.input_reader</span> <span class="k">import</span> <span class="n">InputReader</span>
-<span class="kn">from</span> <span class="nn">smac.utils.validate</span> <span class="k">import</span> <span class="n">Validator</span>
+<span class="kn">from</span> <span class="nn">pimp.importance.importance</span> <span class="kn">import</span> <span class="n">Importance</span>
+<span class="kn">from</span> <span class="nn">smac.optimizer.objective</span> <span class="kn">import</span> <span class="n">average_cost</span>
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="kn">import</span> <span class="n">RunHistory</span><span class="p">,</span> <span class="n">DataOrigin</span>
+<span class="kn">from</span> <span class="nn">smac.utils.io.input_reader</span> <span class="kn">import</span> <span class="n">InputReader</span>
+<span class="kn">from</span> <span class="nn">smac.utils.validate</span> <span class="kn">import</span> <span class="n">Validator</span>
 
-<span class="kn">from</span> <span class="nn">cave.reader.csv_reader</span> <span class="k">import</span> <span class="n">CSVReader</span>
-<span class="kn">from</span> <span class="nn">cave.reader.smac2_reader</span> <span class="k">import</span> <span class="n">SMAC2Reader</span>
-<span class="kn">from</span> <span class="nn">cave.reader.smac3_reader</span> <span class="k">import</span> <span class="n">SMAC3Reader</span>
-<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">scenario_sanity_check</span>
-<span class="kn">from</span> <span class="nn">cave.utils.timing</span> <span class="k">import</span> <span class="n">timing</span>
+<span class="kn">from</span> <span class="nn">cave.reader.csv_reader</span> <span class="kn">import</span> <span class="n">CSVReader</span>
+<span class="kn">from</span> <span class="nn">cave.reader.smac2_reader</span> <span class="kn">import</span> <span class="n">SMAC2Reader</span>
+<span class="kn">from</span> <span class="nn">cave.reader.smac3_reader</span> <span class="kn">import</span> <span class="n">SMAC3Reader</span>
+<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="kn">import</span> <span class="n">scenario_sanity_check</span>
+<span class="kn">from</span> <span class="nn">cave.utils.timing</span> <span class="kn">import</span> <span class="n">timing</span>
 
 
 <div class="viewcode-block" id="ConfiguratorRun"><a class="viewcode-back" href="../../../apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun">[docs]</a><span class="k">class</span> <span class="nc">ConfiguratorRun</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -258,7 +258,7 @@
 <span class="sd">    To create a ConfiguratorRun from a folder, use Configurator.from_folder()</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">scenario</span><span class="p">,</span>
                  <span class="n">original_runhistory</span><span class="p">,</span>
                  <span class="n">validated_runhistory</span><span class="p">,</span>
@@ -582,7 +582,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
 
     </p>
   </div>

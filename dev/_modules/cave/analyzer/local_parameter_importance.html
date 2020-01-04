@@ -230,10 +230,10 @@
   <h1>Source code for cave.analyzer.local_parameter_importance</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">operator</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
-<span class="kn">from</span> <span class="nn">cave.analyzer.cave_parameter_importance</span> <span class="k">import</span> <span class="n">CaveParameterImportance</span>
-<span class="kn">from</span> <span class="nn">cave.html.html_helpers</span> <span class="k">import</span> <span class="n">figure_to_html</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.cave_parameter_importance</span> <span class="kn">import</span> <span class="n">CaveParameterImportance</span>
+<span class="kn">from</span> <span class="nn">cave.html.html_helpers</span> <span class="kn">import</span> <span class="n">figure_to_html</span>
 
 
 <div class="viewcode-block" id="LocalParameterImportance"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.local_parameter_importance.html#cave.analyzer.local_parameter_importance.LocalParameterImportance">[docs]</a><span class="k">class</span> <span class="nc">LocalParameterImportance</span><span class="p">(</span><span class="n">CaveParameterImportance</span><span class="p">):</span>
@@ -242,7 +242,7 @@
 <span class="sd">    parameter are predicted and then the fraction of all variances is computed. This analysis is inspired by the</span>
 <span class="sd">    human behaviour to look for improvements in the neighborhood of individual parameters of a configuration.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">runscontainer</span><span class="p">,</span>
                  <span class="n">marginal_threshold</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
 
@@ -264,7 +264,7 @@
         <span class="p">])</span></div>
 
 <div class="viewcode-block" id="LocalParameterImportance.get_jupyter"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.local_parameter_importance.html#cave.analyzer.local_parameter_importance.LocalParameterImportance.get_jupyter">[docs]</a>    <span class="k">def</span> <span class="nf">get_jupyter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">IPython.core.display</span> <span class="k">import</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">display</span>
+        <span class="kn">from</span> <span class="nn">IPython.core.display</span> <span class="kn">import</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">display</span>
         <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">figure_to_html</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_plots</span><span class="p">(),</span> <span class="n">max_in_a_row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">true_break_between_rows</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span></div></div>
 </pre></div>
 
@@ -278,7 +278,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
 
     </p>
   </div>

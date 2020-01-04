@@ -230,20 +230,20 @@
   <h1>Source code for cave.reader.runs_container</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">numpy.random.mtrand</span> <span class="k">import</span> <span class="n">RandomState</span>
-<span class="kn">from</span> <span class="nn">smac.optimizer.objective</span> <span class="k">import</span> <span class="n">average_cost</span>
-<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span><span class="p">,</span> <span class="n">DataOrigin</span>
+<span class="kn">from</span> <span class="nn">numpy.random.mtrand</span> <span class="kn">import</span> <span class="n">RandomState</span>
+<span class="kn">from</span> <span class="nn">smac.optimizer.objective</span> <span class="kn">import</span> <span class="n">average_cost</span>
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="kn">import</span> <span class="n">RunHistory</span><span class="p">,</span> <span class="n">DataOrigin</span>
 
-<span class="kn">from</span> <span class="nn">cave.reader.configurator_run</span> <span class="k">import</span> <span class="n">ConfiguratorRun</span>
-<span class="kn">from</span> <span class="nn">cave.reader.conversion.hpbandster2smac</span> <span class="k">import</span> <span class="n">HpBandSter2SMAC</span>
-<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">combine_trajectories</span><span class="p">,</span> <span class="n">load_default_options</span><span class="p">,</span> <span class="n">detect_fileformat</span>
+<span class="kn">from</span> <span class="nn">cave.reader.configurator_run</span> <span class="kn">import</span> <span class="n">ConfiguratorRun</span>
+<span class="kn">from</span> <span class="nn">cave.reader.conversion.hpbandster2smac</span> <span class="kn">import</span> <span class="n">HpBandSter2SMAC</span>
+<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="kn">import</span> <span class="n">combine_trajectories</span><span class="p">,</span> <span class="n">load_default_options</span><span class="p">,</span> <span class="n">detect_fileformat</span>
 
 
 <div class="viewcode-block" id="RunsContainer"><a class="viewcode-back" href="../../../apidoc/cave.reader.runs_container.html#cave.reader.runs_container.RunsContainer">[docs]</a><span class="k">class</span> <span class="nc">RunsContainer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">folders</span><span class="p">,</span>
                  <span class="n">ta_exec_dirs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -389,7 +389,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_runs</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;None of the specified folders could be loaded.&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Return highest budget for given folder. &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_budgets</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pRun2budget</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">get_highest_budget</span><span class="p">()]</span>
@@ -512,7 +512,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
 
     </p>
   </div>

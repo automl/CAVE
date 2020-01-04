@@ -232,28 +232,28 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;mpl_style&#39;</span><span class="p">))</span>  <span class="c1"># noqa</span>
-<span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">spatial</span>
-<span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="k">import</span> <span class="n">PCA</span>
-<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">StandardScaler</span>
-<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="k">import</span> <span class="n">KMeans</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">silhouette_score</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">spatial</span>
+<span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
+<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">silhouette_score</span>
 
-<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">ColumnDataSource</span>
-<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="n">CustomJS</span><span class="p">,</span> <span class="n">CDSView</span><span class="p">,</span> <span class="n">GroupFilter</span>
-<span class="kn">from</span> <span class="nn">bokeh.models.widgets</span> <span class="k">import</span> <span class="n">RadioButtonGroup</span>
-<span class="kn">from</span> <span class="nn">bokeh.models.ranges</span> <span class="k">import</span> <span class="n">DataRange1d</span>
-<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="k">import</span> <span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">widgetbox</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">ColumnDataSource</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="kn">import</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="n">CustomJS</span><span class="p">,</span> <span class="n">CDSView</span><span class="p">,</span> <span class="n">GroupFilter</span>
+<span class="kn">from</span> <span class="nn">bokeh.models.widgets</span> <span class="kn">import</span> <span class="n">RadioButtonGroup</span>
+<span class="kn">from</span> <span class="nn">bokeh.models.ranges</span> <span class="kn">import</span> <span class="n">DataRange1d</span>
+<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="kn">import</span> <span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">widgetbox</span>
 
-<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span>
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="kn">import</span> <span class="n">RunHistory</span>
 
-<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">get_cost_dict_for_config</span>
-<span class="kn">from</span> <span class="nn">cave.utils.io</span> <span class="k">import</span> <span class="n">export_bokeh</span>
+<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="kn">import</span> <span class="n">get_cost_dict_for_config</span>
+<span class="kn">from</span> <span class="nn">cave.utils.io</span> <span class="kn">import</span> <span class="n">export_bokeh</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Joshua Marben&quot;</span>
 <span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2017, ML4AAD&quot;</span>
@@ -275,7 +275,7 @@
 <span class="sd">    The terms &#39;algorithm&#39; and &#39;config/configuration&#39; will be used synonymous</span>
 <span class="sd">    throughout the class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">rh</span><span class="p">:</span> <span class="n">RunHistory</span><span class="p">,</span>
                  <span class="n">train_inst_feat</span><span class="p">,</span>
                  <span class="n">test_inst_feat</span><span class="p">,</span>
@@ -787,7 +787,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
 
     </p>
   </div>

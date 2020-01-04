@@ -229,15 +229,15 @@
             
   <h1>Source code for cave.analyzer.overview_table</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">ConfigSpace.hyperparameters</span> <span class="k">import</span> <span class="n">NumericalHyperparameter</span><span class="p">,</span> <span class="n">CategoricalHyperparameter</span><span class="p">,</span> <span class="n">OrdinalHyperparameter</span><span class="p">,</span> \
+<span class="kn">from</span> <span class="nn">ConfigSpace.hyperparameters</span> <span class="kn">import</span> <span class="n">NumericalHyperparameter</span><span class="p">,</span> <span class="n">CategoricalHyperparameter</span><span class="p">,</span> <span class="n">OrdinalHyperparameter</span><span class="p">,</span> \
     <span class="n">Constant</span>
-<span class="kn">from</span> <span class="nn">pandas</span> <span class="k">import</span> <span class="n">DataFrame</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
 
-<span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="k">import</span> <span class="n">BaseAnalyzer</span>
-<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">get_config_origin</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="kn">import</span> <span class="n">BaseAnalyzer</span>
+<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="kn">import</span> <span class="n">get_config_origin</span>
 
 
 <div class="viewcode-block" id="OverviewTable"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable">[docs]</a><span class="k">class</span> <span class="nc">OverviewTable</span><span class="p">(</span><span class="n">BaseAnalyzer</span><span class="p">):</span>
@@ -245,7 +245,7 @@
 <span class="sd">    Meta data, i.e. number of instances and parameters as well as configuration budget. Statistics apply to the</span>
 <span class="sd">    best run, if multiple configurator runs are compared.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runscontainer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runscontainer</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">runscontainer</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">runscontainer</span><span class="o">.</span><span class="n">output_dir</span>
 
@@ -409,7 +409,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
 
     </p>
   </div>

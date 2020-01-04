@@ -230,20 +230,20 @@
   <h1>Source code for cave.reader.csv2rh</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">ConfigSpace</span> <span class="k">import</span> <span class="n">ConfigurationSpace</span>
-<span class="kn">from</span> <span class="nn">ConfigSpace.hyperparameters</span> <span class="k">import</span> <span class="n">UniformFloatHyperparameter</span>
-<span class="kn">from</span> <span class="nn">ConfigSpace.read_and_write</span> <span class="k">import</span> <span class="n">pcs</span>
-<span class="kn">from</span> <span class="nn">ConfigSpace.util</span> <span class="k">import</span> <span class="n">deactivate_inactive_hyperparameters</span><span class="p">,</span> <span class="n">fix_types</span>
-<span class="kn">from</span> <span class="nn">smac.optimizer.objective</span> <span class="k">import</span> <span class="n">average_cost</span>
-<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span><span class="p">,</span> <span class="n">DataOrigin</span>
-<span class="kn">from</span> <span class="nn">smac.tae.execute_ta_run</span> <span class="k">import</span> <span class="n">StatusType</span>
-<span class="kn">from</span> <span class="nn">smac.utils.io.input_reader</span> <span class="k">import</span> <span class="n">InputReader</span>
+<span class="kn">from</span> <span class="nn">ConfigSpace</span> <span class="kn">import</span> <span class="n">ConfigurationSpace</span>
+<span class="kn">from</span> <span class="nn">ConfigSpace.hyperparameters</span> <span class="kn">import</span> <span class="n">UniformFloatHyperparameter</span>
+<span class="kn">from</span> <span class="nn">ConfigSpace.read_and_write</span> <span class="kn">import</span> <span class="n">pcs</span>
+<span class="kn">from</span> <span class="nn">ConfigSpace.util</span> <span class="kn">import</span> <span class="n">deactivate_inactive_hyperparameters</span><span class="p">,</span> <span class="n">fix_types</span>
+<span class="kn">from</span> <span class="nn">smac.optimizer.objective</span> <span class="kn">import</span> <span class="n">average_cost</span>
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="kn">import</span> <span class="n">RunHistory</span><span class="p">,</span> <span class="n">DataOrigin</span>
+<span class="kn">from</span> <span class="nn">smac.tae.execute_ta_run</span> <span class="kn">import</span> <span class="n">StatusType</span>
+<span class="kn">from</span> <span class="nn">smac.utils.io.input_reader</span> <span class="kn">import</span> <span class="n">InputReader</span>
 
-<span class="kn">from</span> <span class="nn">cave.utils.io</span> <span class="k">import</span> <span class="n">load_csv_to_pandaframe</span>
+<span class="kn">from</span> <span class="nn">cave.utils.io</span> <span class="kn">import</span> <span class="n">load_csv_to_pandaframe</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Joshua Marben&quot;</span>
 <span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2018, ML4AAD&quot;</span>
@@ -252,7 +252,7 @@
 <span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;joshua.marben@neptun.uni-freiburg.de&quot;</span>
 
 <div class="viewcode-block" id="CSV2RH"><a class="viewcode-back" href="../../../apidoc/cave.reader.csv2rh.html#cave.reader.csv2rh.CSV2RH">[docs]</a><span class="k">class</span> <span class="nc">CSV2RH</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="CSV2RH.read_csv_to_rh"><a class="viewcode-back" href="../../../apidoc/cave.reader.csv2rh.html#cave.reader.csv2rh.CSV2RH.read_csv_to_rh">[docs]</a>    <span class="k">def</span> <span class="nf">read_csv_to_rh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span>
@@ -542,7 +542,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
 
     </p>
   </div>

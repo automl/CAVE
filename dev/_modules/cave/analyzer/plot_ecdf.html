@@ -229,16 +229,16 @@
             
   <h1>Source code for cave.analyzer.plot_ecdf</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">ConfigSpace.configuration_space</span> <span class="k">import</span> <span class="n">Configuration</span>
-<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span>
+<span class="kn">from</span> <span class="nn">ConfigSpace.configuration_space</span> <span class="kn">import</span> <span class="n">Configuration</span>
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="kn">import</span> <span class="n">RunHistory</span>
 
-<span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="k">import</span> <span class="n">BaseAnalyzer</span>
-<span class="kn">from</span> <span class="nn">cave.plot.cdf</span> <span class="k">import</span> <span class="n">plot_cdf</span>
-<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">get_cost_dict_for_config</span><span class="p">,</span> <span class="n">NotApplicable</span>
-<span class="kn">from</span> <span class="nn">cave.utils.hpbandster_helpers</span> <span class="k">import</span> <span class="n">format_budgets</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="kn">import</span> <span class="n">BaseAnalyzer</span>
+<span class="kn">from</span> <span class="nn">cave.plot.cdf</span> <span class="kn">import</span> <span class="n">plot_cdf</span>
+<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="kn">import</span> <span class="n">get_cost_dict_for_config</span><span class="p">,</span> <span class="n">NotApplicable</span>
+<span class="kn">from</span> <span class="nn">cave.utils.hpbandster_helpers</span> <span class="kn">import</span> <span class="n">format_budgets</span>
 
 
 <div class="viewcode-block" id="PlotECDF"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.plot_ecdf.html#cave.analyzer.plot_ecdf.PlotECDF">[docs]</a><span class="k">class</span> <span class="nc">PlotECDF</span><span class="p">(</span><span class="n">BaseAnalyzer</span><span class="p">):</span>
@@ -248,7 +248,7 @@
 <span class="sd">    runtime scenarios this shows the probability of solving all instances from the set in a given timeframe. On the</span>
 <span class="sd">    left side the training-data is scattered, on the right side the test-data is scattered.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">runscontainer</span><span class="p">,</span>
                  <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -338,7 +338,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
 
     </p>
   </div>
