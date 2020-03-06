@@ -1,6 +1,7 @@
 import logging
 import tempfile
 from typing import List
+from collections import OrderedDict
 
 from numpy.random.mtrand import RandomState
 from smac.optimizer.objective import average_cost
@@ -9,7 +10,7 @@ from smac.runhistory.runhistory import RunHistory, DataOrigin
 from cave.reader.configurator_run import ConfiguratorRun
 from cave.reader.conversion.hpbandster2smac import HpBandSter2SMAC
 from cave.utils.helpers import combine_trajectories, load_default_options, detect_fileformat
-
+from cave.utils.apt_helpers.refitting_routine import apt_refit
 
 class RunsContainer(object):
 
@@ -20,6 +21,7 @@ class RunsContainer(object):
                  file_format=None,
                  validation_format=None,
                  analyzing_options=None,
+                 autonet=None,
                  ):
         """
         Reads in optimizer runs. Converts data if necessary.
@@ -73,6 +75,8 @@ class RunsContainer(object):
             from [SMAC2, SMAC3, BOHB, CSV] defines what file-format the optimizer result is in.
         validation_format: str
             from [SMAC2, SMAC3, BOHB, CSV] defines what file-format validation data is in.
+        autonet: AutoNet
+            optional autonet-instance to refit and evaluate
         """
         ##########################################################################################
         #  Initialize and find suitable parameters                                               #
@@ -108,7 +112,7 @@ class RunsContainer(object):
         ##########################################################################################
         # Both budgets and folders have "None" in the key-list for the aggregation over all available budgets/folders
         self.budgets = [None]
-        if self.file_format == 'BOHB':
+        if self.file_format == 'BOHB' or self.file_format == 'APT':
             self.logger.debug("Converting %d BOHB folders to SMAC-format", len(folders))
             hpbandster2smac = HpBandSter2SMAC()
             # Convert m BOHB-folders to m + n SMAC-folders
@@ -156,8 +160,18 @@ class RunsContainer(object):
 
         self.scenario = self.runs_list[0].scenario
 
+        self.autonet = autonet
+        self.tensorboard_results = OrderedDict()  # maps configurations to tensorboard-event-fils
+
         if not self.get_all_runs():
             raise ValueError("None of the specified folders could be loaded.")
+
+    def get_tensorboard_result(self, configuration):
+        """ Generate (if necessary) an autonet-tensorboard-log of a refitting """
+        if configuration in self.tensorboard_results:
+            return self.tensorboard_results[configuration]
+        else:
+            apt_refit(self.autonet, configuration, self.output_dir)
 
     def __getitem__(self, key):
         """ Return highest budget for given folder. """
@@ -188,7 +202,6 @@ class RunsContainer(object):
         budgets = sorted([b for b in budgets if b is not None])
         self.logger.debug("Budgets: " + str(budgets))
         return budgets
-
 
     def get_runs_for_budget(self, target_b):
         runs = [[cr for b, cr in self.pRun2budget[f].items() if b == target_b] for f in self.pRun2budget.keys() if f is

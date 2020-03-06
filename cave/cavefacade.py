@@ -12,6 +12,7 @@ import numpy as np
 
 from cave.__version__ import __version__ as v
 from cave.analyzer.algorithm_footprint import AlgorithmFootprint
+from cave.analyzer.apt.apt_overview import APTOverview
 from cave.analyzer.bohb_incumbents_per_budget import BohbIncumbentsPerBudget
 from cave.analyzer.bohb_learning_curves import BohbLearningCurves
 from cave.analyzer.box_violin import BoxViolin
@@ -83,6 +84,7 @@ class CAVE(object):
                  file_format: str='auto',
                  validation_format='NONE',
                  validation_method: str='epm',
+                 autonet=None,
                  seed: int=42,
                  show_jupyter: bool=True,
                  verbose_level: str='OFF',
@@ -108,6 +110,8 @@ class CAVE(object):
             what format the validation rundata is in, options are [SMAC3, SMAC2, CSV and None]
         validation_method: string
             from [validation, epm], how to estimate missing runs
+        autonet: AutoNet
+            An APT-instance to refit incumbents and visualize how neural nets evolved over time
         seed: int
             random seed for analysis (e.g. the random forests)
         show_jupyter: bool
@@ -141,6 +145,9 @@ class CAVE(object):
         self.validation_format = validation_format
         self.validation_method = validation_method
 
+        # If AutoPyTorch-instance is passed:
+        self.autonet = autonet
+
         # Configuration of analyzers (works as a default for report generation)
         analyzing_options = load_default_options(analyzing_options, file_format)
 
@@ -150,6 +157,7 @@ class CAVE(object):
                                            file_format=self.file_format,  # TODO remove?
                                            validation_format=self.validation_format,  # TODO remove?
                                            analyzing_options=analyzing_options,
+                                           autonet=self.autonet,
                                            )
 
         # create builder for html-website, decide for suitable logo
@@ -383,6 +391,9 @@ class CAVE(object):
     def budget_correlation(self):
         return BudgetCorrelation(self.runscontainer)
 
+    @_analyzer_type
+    def apt_overview(self):
+        return APTOverview(self.runscontainer)
 
 ###########################################################################
 # HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS #
