@@ -1,7 +1,6 @@
 from typing import Union, Dict, List
 
 from ConfigSpace.configuration_space import ConfigurationSpace, Configuration
-from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunHistory
 from smac.scenario.scenario import Scenario
 from smac.utils.validate import Validator
@@ -164,7 +163,7 @@ class ParallelCoordinates(BaseAnalyzer):
                 all_configs.append(incumbent)
 
         # Get costs for those configurations
-        epm_rh = RunHistory(average_cost)
+        epm_rh = RunHistory()
         epm_rh.update(validated_rh)
         if scenario.feature_dict:  # if instances are available
             epm_rh.update(timing(validator.validate_epm)(all_configs, 'train+test', 1, runhistory=validated_rh))

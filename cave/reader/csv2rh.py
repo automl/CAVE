@@ -8,7 +8,6 @@ from ConfigSpace import ConfigurationSpace
 from ConfigSpace.hyperparameters import UniformFloatHyperparameter
 from ConfigSpace.read_and_write import pcs
 from ConfigSpace.util import deactivate_inactive_hyperparameters, fix_types
-from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunHistory, DataOrigin
 from smac.tae.execute_ta_run import StatusType
 from smac.utils.io.input_reader import InputReader
@@ -62,11 +61,11 @@ class CSV2RH(object):
         """
         self.logger = logging.getLogger('cave.utils.csv2rh')
         self.input_reader = InputReader()
-        self.train_inst = input_reader.read_instance_file(train_inst) if type(train_inst) == str else train_inst
-        self.test_inst =  input_reader.read_instance_file(test_inst) if type(test_inst) == str else test_inst
+        self.train_inst = self.input_reader.read_instance_file(train_inst) if type(train_inst) == str else train_inst
+        self.test_inst =  self.input_reader.read_instance_file(test_inst) if type(test_inst) == str else test_inst
         feature_names = []  # names of instance-features
         if type(instance_features) == str:
-            feature_names, instance_features = input_reader.read_instance_features_file(instance_features)
+            feature_names, instance_features = self.input_reader.read_instance_features_file(instance_features)
 
         # Read in data
         if isinstance(data, str):
@@ -109,7 +108,7 @@ class CSV2RH(object):
                           'time' in data.columns, 'status' in data.columns)
 
         # Create RunHistory
-        rh = RunHistory(average_cost)
+        rh = RunHistory()
         def add_to_rh(row):
             new_status = self._interpret_status(row['status']) if 'status' in row else StatusType.SUCCESS
             rh.add(config=id_to_config[row['config_id']],

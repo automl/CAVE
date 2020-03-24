@@ -31,7 +31,6 @@ if cmd_folder not in sys.path:  # noqa
 from smac.scenario.scenario import Scenario
 from smac.runhistory.runhistory import RunHistory
 from smac.utils.constants import MAXINT
-from smac.optimizer.objective import average_cost
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from ConfigSpace.util import impute_inactive_values
 from ConfigSpace import CategoricalHyperparameter
@@ -373,7 +372,7 @@ class ConfiguratorFootprintPlotter(object):
         self.logger.info("Reducing number of configs from %d to %d, dropping from the fewest evaluations",
                          len(configs), len(keep))
 
-        new_rh = RunHistory(average_cost)
+        new_rh = RunHistory()
         for k, v in list(rh.data.items()):
             c = rh.ids_config[k.config_id]
             if c in keep:
@@ -509,7 +508,7 @@ class ConfiguratorFootprintPlotter(object):
             raise RuntimeError("Sanity check on range-creation in configurator footprint went wrong. "
                                "Please report this Error on \"https://github.com/automl/CAVE/issues\" and provide the debug.txt-file.")
 
-        tmp_rh = RunHistory(average_cost)
+        tmp_rh = RunHistory()
         for i, j in zip(ranges[:-1], ranges[1:]):
             for idx in range(i, j):
                 k, v = as_list[idx]
