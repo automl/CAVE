@@ -106,7 +106,8 @@ class OverviewTable(BaseAnalyzer):
     def _runspec_dict(self, runs):
         runspec = OrderedDict()
 
-        for run in runs:
+        for idx, run in enumerate(runs):
+            self.logger.debug("Path to folder for run no. {}: {}".format(idx, run.path_to_folder))
             name = os.path.basename(run.path_to_folder).replace('_', ' ')  # TODO this should be changed with multiple BOHB-folder suppor (no basename should be necessary)
             runspec[name] = self._stats_for_run(run.original_runhistory,
                                                 run.scenario,
