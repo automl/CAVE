@@ -13,6 +13,7 @@ import numpy as np
 from cave.__version__ import __version__ as v
 from cave.analyzer.algorithm_footprint import AlgorithmFootprint
 from cave.analyzer.apt.apt_overview import APTOverview
+from cave.analyzer.apt.apt_tensorboard import APTTensorboard
 from cave.analyzer.bohb_incumbents_per_budget import BohbIncumbentsPerBudget
 from cave.analyzer.bohb_learning_curves import BohbLearningCurves
 from cave.analyzer.box_violin import BoxViolin
@@ -394,6 +395,10 @@ class CAVE(object):
     @_analyzer_type
     def apt_overview(self):
         return APTOverview(self.runscontainer)
+
+    @_analyzer_type
+    def apt_tensorboard(self):
+        return APTTensorboard(self.runscontainer)
 
 ###########################################################################
 # HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS #
