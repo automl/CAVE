@@ -84,7 +84,7 @@ class CAVE(object):
                  file_format: str='auto',
                  validation_format='NONE',
                  validation_method: str='epm',
-                 autonet=None,
+                 autopytorch=None,
                  seed: int=42,
                  show_jupyter: bool=True,
                  verbose_level: str='OFF',
@@ -110,7 +110,7 @@ class CAVE(object):
             what format the validation rundata is in, options are [SMAC3, SMAC2, CSV and None]
         validation_method: string
             from [validation, epm], how to estimate missing runs
-        autonet: AutoNet
+        autopytorch: AutoPyTorch
             An APT-instance to refit incumbents and visualize how neural nets evolved over time
         seed: int
             random seed for analysis (e.g. the random forests)
@@ -146,7 +146,7 @@ class CAVE(object):
         self.validation_method = validation_method
 
         # If AutoPyTorch-instance is passed:
-        self.autonet = autonet
+        self.autopytorch = autopytorch
 
         # Configuration of analyzers (works as a default for report generation)
         analyzing_options = load_default_options(analyzing_options, file_format)
@@ -157,7 +157,7 @@ class CAVE(object):
                                            file_format=self.file_format,  # TODO remove?
                                            validation_format=self.validation_format,  # TODO remove?
                                            analyzing_options=analyzing_options,
-                                           autonet=self.autonet,
+                                           autopytorch=self.autopytorch,
                                            )
 
         # create builder for html-website, decide for suitable logo

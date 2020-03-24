@@ -7,7 +7,7 @@ class BaseAPT(BaseAnalyzer):
                  runscontainer,
                  ):
         """
-        Visualize network-related metrics using autonet.
+        Visualize network-related metrics using autopytorch.
         Uses lazy refitting of apt-net (a configuration will only be refitted and logged with tensorboard when it is
         demanded, saving memory and computation time until analysis is requested.
         """
