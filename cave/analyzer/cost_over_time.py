@@ -15,8 +15,7 @@ from bokeh.plotting import figure, ColumnDataSource, show
 from smac.configspace import convert_configurations_to_array
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.epm.util_funcs import get_types
-from smac.optimizer.objective import _cost
-from smac.runhistory.runhistory import RunHistory
+from smac.runhistory.runhistory import RunHistory, RunKey
 from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
 from smac.utils.constants import MAXINT
 from smac.utils.validate import Validator
