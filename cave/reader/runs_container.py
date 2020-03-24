@@ -142,10 +142,10 @@ class RunsContainer(object):
                     cr = ConfiguratorRun.from_folder(path,
                                                      ta_exec_dir,
                                                      self.analyzing_options,
-                                                     self.file_format,
-                                                     self.validation_format,
-                                                     b,
-                                                     self.output_dir)
+                                                     file_format=self.file_format,
+                                                     validation_format=self.validation_format,
+                                                     budget=b,
+                                                     output_dir = self.output_dir)
                 except Exception as err:
                     self.logger.warning("Folder %s could with ta_exec_dir %s not be loaded, failed with error message: %s",
                                         f, ta_exec_dir, err)
