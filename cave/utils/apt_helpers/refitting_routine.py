@@ -1,27 +1,32 @@
 import os
+from ConfigSpace import Configuration
 
-def apt_refit(autonet, config, output_dir):
-    """ Refit an autonet-configuration, turning on all the logging """
-    base_dir = os.path.join(output_dir, "apt_tensorboard")
+def apt_refit(autopytorch, config, output_dir):
+    """ Refit an autopytorch-configuration, turning on all the logging """
+    base_dir = os.path.join(output_dir, "apt_tensorboard", str(hash(str(config)) % (10 ** 10)))
 
-    # Is this block necessary? Tensorflow avoids duplicaton by using Unix-timestamps in filename
-    uuid = None
-    if not os.path.exists(base_dir):
-        os.makedirs(base_dir)
-        uuid = 1
-    else:
-        uuid = len(os.listdir(base_dir))
-        #logger.debug("{} exists, uuid for tensorevent-file")
+    if not isinstance(config, dict):
+        if not isinstance(config, Configuration):
+            raise ValueError("Configuration needs to be type ConfigSpace.Configuration or dict, but is of type {}".format(type(config)))
+        config = config.get_dictionary()
 
-    autonet_config = autonet["autonet"].get_current_autonet_config()
-    autonet_config["result_logger_dir"] = base_dir
+    import tensorboard_logger as tl
+    tl.unconfigure()
 
+    autopytorch_config = autopytorch["autopytorch"].get_current_autonet_config()
+    autopytorch_config["result_logger_dir"] = base_dir
+    autopytorch_config["use_tensorboard_logger"] = True
 
-    result = autonet["autonet"].refit(X_train=autonet["X_train"],
-                                      Y_train=autonet["Y_train"],
-                                      X_valid=None,
-                                      Y_valid=None,
-                                      hyperparameter_config=config,
-                                      autonet_config=autonet["autonet"].get_current_autonet_config())
+    print(autopytorch_config)
+    autopytorch["autopytorch"].update_autonet_config(autonet_config=autopytorch_config)
+    autopytorch_config = autopytorch["autopytorch"].get_current_autonet_config()
+
+    result = autopytorch["autopytorch"].refit(X_train=autopytorch["X_train"],
+                                              Y_train=autopytorch["Y_train"],
+                                              X_valid=None,
+                                              Y_valid=None,
+                                              hyperparameter_config=config,
+                                              autonet_config=autopytorch_config,
+                                              )
 
     return result
