@@ -26,6 +26,7 @@ def apt_refit(autopytorch, config, output_dir):
                                               Y_valid=None,
                                               hyperparameter_config=config,
                                               autonet_config=autopytorch_config,
+                                              budget=autopytorch_config["max_budget"]
                                               )
 
     return result
