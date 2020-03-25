@@ -25,7 +25,7 @@ class TestRunContainer(unittest.TestCase):
         ta_exec_dir = ["examples/smac3"]
         rc = RunsContainer(folders, ta_exec_dirs=ta_exec_dir, file_format="SMAC3")
 
-        self.assertEqual(len(rc["examples/smac3/example_output/run_1"].original_runhistory.data), 461)
+        self.assertEqual(len(rc["examples/smac3/example_output/run_1"].original_runhistory.data), 147)
         self.assertEqual(len(rc["examples/smac3/example_output/run_1"].original_runhistory.get_all_configs()), 71)
         self.assertEqual(len(rc["examples/smac3/example_output/run_2"].original_runhistory.data), 394)
         self.assertEqual(len(rc["examples/smac3/example_output/run_2"].original_runhistory.get_all_configs()), 83)
