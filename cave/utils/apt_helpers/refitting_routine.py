@@ -17,7 +17,6 @@ def apt_refit(autopytorch, config, output_dir):
     autopytorch_config["result_logger_dir"] = base_dir
     autopytorch_config["use_tensorboard_logger"] = True
 
-    print(autopytorch_config)
     autopytorch["autopytorch"].update_autonet_config(autonet_config=autopytorch_config)
     autopytorch_config = autopytorch["autopytorch"].get_current_autonet_config()
 

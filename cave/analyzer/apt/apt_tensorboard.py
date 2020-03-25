@@ -39,5 +39,5 @@ class APTTensorboard(BaseAPT):
         tb = program.TensorBoard()
         tb.configure(argv=[None, '--logdir', apt_basedir])
         url = tb.launch()
-        print(url)
-        self.result[None] = " <iframe src=" + url + "></iframe> "
+
+        self.result["else"] = " <iframe src=" + url + " width=\"950\" height=\"700\"></iframe> "

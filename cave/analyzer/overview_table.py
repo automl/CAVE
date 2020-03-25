@@ -108,7 +108,10 @@ class OverviewTable(BaseAnalyzer):
 
         for idx, run in enumerate(runs):
             self.logger.debug("Path to folder for run no. {}: {}".format(idx, str(run.path_to_folder)))
-            name = os.path.basename(run.path_to_folder).replace('_', ' ')  # TODO this should be changed with multiple BOHB-folder suppor (no basename should be necessary)
+            if run.path_to_folder is None:
+                name = str(run.budget)
+            else:
+                name = os.path.basename(run.path_to_folder).replace('_', ' ')  # TODO this should be changed with multiple BOHB-folder suppor (no basename should be necessary)
             runspec[name] = self._stats_for_run(run.original_runhistory,
                                                 run.scenario,
                                                 run.incumbent)
