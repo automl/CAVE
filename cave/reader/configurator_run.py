@@ -299,7 +299,7 @@ class ConfiguratorRun(object):
         """
         return_value = True
         for c_name, c in [("default", self.default), ("inc", self.incumbent)]:
-            runs = rh.get_runs_for_config(c)
+            runs = rh.get_runs_for_config(c, only_max_observed_budget=False)
             evaluated = set([inst for inst, seed in runs])
             for i_name, i in [("train", self.train_inst),
                               ("test", self.test_inst)]:

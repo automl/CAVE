@@ -138,7 +138,14 @@ def combine_runhistories(rhs, logger=None):
         for rh in list(rh_to_runs.keys()):
             try:
                 k, v = rh_to_runs[rh][idx]
-                combi_rh.add(rh.ids_config[k.config_id], v.cost, v.time, v.status, k.instance_id, k.seed, v.additional_info)
+                combi_rh.add(config=rh.ids_config[k.config_id],
+                             cost=v.cost,
+                             time=v.time,
+                             status=v.status,
+                             instance_id=k.instance_id,
+                             #TODO budget option
+                             seed=k.seed,
+                             additional_info=v.additional_info)
             except IndexError:
                 rh_to_runs.pop(rh)
         idx += 1

@@ -364,7 +364,7 @@ class ConfiguratorFootprintPlotter(object):
         if max_configs <= 0 or max_configs > len(configs):  # keep all
             return rh
 
-        runs = [(c, len(rh.get_runs_for_config(c))) for c in configs]
+        runs = [(c, len(rh.get_runs_for_config(c, only_max_observed_budget=False))) for c in configs]
         if not keep:
             keep = []
         runs = sorted(runs, key=lambda x: x[1])[-self.max_plot:]
@@ -518,7 +518,7 @@ class ConfiguratorFootprintPlotter(object):
                            additional_info=v.additional_info)
             if timestamps:
                 labels.append("{0:.2f}".format(timestamps[j - 1]))
-            r_p_q_p_c.append([len(tmp_rh.get_runs_for_config(c)) for c in conf_list])
+            r_p_q_p_c.append([len(tmp_rh.get_runs_for_config(c, only_max_observed_budget=False)) for c in conf_list])
         self.logger.debug("Labels: " + str(labels))
         return labels, r_p_q_p_c
 

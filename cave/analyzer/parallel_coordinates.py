@@ -156,7 +156,7 @@ class ParallelCoordinates(BaseAnalyzer):
         if len(all_configs) > max_configs:
             self.logger.debug("Limiting number of configs to train epm from %d to %d (based on max runs %d) and choosing "
                               "the ones with the most runs (for parallel coordinates)", len(all_configs), max_configs, max_runs_epm)
-            all_configs = sorted(all_configs, key=lambda c: len(original_rh.get_runs_for_config(c)))[:max_configs]
+            all_configs = sorted(all_configs, key=lambda c: len(original_rh.get_runs_for_config(c, only_max_observed_budget=False)))[:max_configs]
             if not default in all_configs:
                 all_configs = [default] + all_configs
             if not incumbent in all_configs:
