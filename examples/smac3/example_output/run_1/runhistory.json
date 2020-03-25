@@ -3,45 +3,49 @@
     [
       [
         1,
-        "instances/qcplin2006.10641.cnf",
+        "instances/gzip_vc1044.cnf",
         1857819720,
         0.0
       ],
       [
-        0.031805,
-        0.031805,
+        0.031459,
+        0.031459,
         {
           "__enum__": "StatusType.SUCCESS"
         },
-        {}
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
       ]
     ],
     [
       [
         2,
-        "instances/qcplin2006.10641.cnf",
+        "instances/gzip_vc1044.cnf",
         1857819720,
         0.0
       ],
       [
-        0.022462,
-        0.022462,
+        0.027299,
+        0.027299,
         {
           "__enum__": "StatusType.SUCCESS"
         },
-        {}
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
       ]
     ],
     [
       [
         2,
-        "instances/qcplin2006.1031.cnf",
+        "instances/gzip_vc1013.cnf",
         356915800,
         0.0
       ],
       [
-        5.0,
-        5.0,
+        0.002757,
+        0.002757,
         {
           "__enum__": "StatusType.SUCCESS"
         },
@@ -53,175 +57,193 @@
     [
       [
         3,
-        "instances/qcplin2006.10641.cnf",
-        1857819720,
-        0.0
-      ],
-      [
-        0.02925,
-        0.02925,
-        {
-          "__enum__": "StatusType.SUCCESS"
-        },
-        {}
-      ]
-    ],
-    [
-      [
-        2,
-        "instances/qcplin2006.10218.cnf",
-        1831667365,
-        0.0
-      ],
-      [
-        0.009694,
-        0.009694,
-        {
-          "__enum__": "StatusType.SUCCESS"
-        },
-        {}
-      ]
-    ],
-    [
-      [
-        4,
-        "instances/qcplin2006.10218.cnf",
-        1831667365,
-        0.0
-      ],
-      [
-        0.013143,
-        0.013143,
-        {
-          "__enum__": "StatusType.SUCCESS"
-        },
-        {}
-      ]
-    ],
-    [
-      [
-        2,
-        "instances/qcplin2006.10556.cnf",
-        1135619580,
-        0.0
-      ],
-      [
-        0.008934,
-        0.008934,
-        {
-          "__enum__": "StatusType.SUCCESS"
-        },
-        {}
-      ]
-    ],
-    [
-      [
-        5,
-        "instances/qcplin2006.10641.cnf",
-        1857819720,
-        0.0
-      ],
-      [
-        0.022257,
-        0.022257,
-        {
-          "__enum__": "StatusType.SUCCESS"
-        },
-        {}
-      ]
-    ],
-    [
-      [
-        5,
-        "instances/qcplin2006.10218.cnf",
-        1831667365,
-        0.0
-      ],
-      [
-        0.011138,
-        0.011138,
-        {
-          "__enum__": "StatusType.SUCCESS"
-        },
-        {}
-      ]
-    ],
-    [
-      [
-        5,
-        "instances/qcplin2006.10556.cnf",
-        1135619580,
-        0.0
-      ],
-      [
-        0.005945,
-        0.005945,
-        {
-          "__enum__": "StatusType.SUCCESS"
-        },
-        {}
-      ]
-    ],
-    [
-      [
-        5,
-        "instances/qcplin2006.1031.cnf",
+        "instances/gzip_vc1013.cnf",
         356915800,
         0.0
       ],
       [
-        50,
-        5.0,
+        0.002942,
+        0.002942,
         {
-          "__enum__": "StatusType.TIMEOUT"
+          "__enum__": "StatusType.SUCCESS"
         },
         {
-          "additional_info": "Runsolver returned TIMEOUT; disregard the rest of the output - Runsolver returned TIMEOUT; disregard the rest of the output"
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
         }
       ]
     ],
     [
       [
         2,
-        "instances/qcplin2006.10641.cnf",
-        2031918740,
+        "instances/gzip_vc1038.cnf",
+        1831667365,
         0.0
       ],
       [
-        0.023054,
-        0.023054,
+        0.052525,
+        0.052525,
         {
           "__enum__": "StatusType.SUCCESS"
         },
-        {}
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
       ]
     ],
     [
       [
-        6,
-        "instances/qcplin2006.10641.cnf",
-        2031918740,
+        4,
+        "instances/gzip_vc1013.cnf",
+        356915800,
         0.0
       ],
       [
-        0.037018,
-        0.037018,
+        0.004883,
+        0.004883,
         {
           "__enum__": "StatusType.SUCCESS"
         },
-        {}
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
       ]
     ],
     [
       [
         2,
-        "instances/qcplin2006.10218.cnf",
-        1313569361,
+        "instances/gzip_vc1021.cnf",
+        1135619580,
         0.0
       ],
       [
-        0.008713,
-        0.008713,
+        0.010504,
+        0.010504,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        5,
+        "instances/gzip_vc1038.cnf",
+        1831667365,
+        0.0
+      ],
+      [
+        0.034771,
+        0.034771,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        5,
+        "instances/gzip_vc1044.cnf",
+        1857819720,
+        0.0
+      ],
+      [
+        0.03098,
+        0.03098,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        5,
+        "instances/gzip_vc1021.cnf",
+        1135619580,
+        0.0
+      ],
+      [
+        0.007389,
+        0.007389,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        5,
+        "instances/gzip_vc1013.cnf",
+        356915800,
+        0.0
+      ],
+      [
+        0.002253,
+        0.002253,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        5,
+        "instances/gzip_vc1020.cnf",
+        1830759685,
+        0.0
+      ],
+      [
+        0.031315,
+        0.031315,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        6,
+        "instances/gzip_vc1020.cnf",
+        1830759685,
+        0.0
+      ],
+      [
+        0.042738,
+        0.042738,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        5,
+        "instances/gzip_vc1031.cnf",
+        1030944529,
+        0.0
+      ],
+      [
+        0.020536,
+        0.020536,
         {
           "__enum__": "StatusType.SUCCESS"
         },
@@ -231,61 +253,67 @@
     [
       [
         7,
-        "instances/qcplin2006.10641.cnf",
-        1857819720,
+        "instances/gzip_vc1013.cnf",
+        356915800,
         0.0
       ],
       [
-        0.027977,
-        0.027977,
+        0.002603,
+        0.002603,
         {
           "__enum__": "StatusType.SUCCESS"
         },
-        {}
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
       ]
     ],
     [
       [
-        2,
-        "instances/qcplin2006.10556.cnf",
+        5,
+        "instances/gzip_vc1018.cnf",
         948264943,
         0.0
       ],
       [
-        0.005471,
-        0.005471,
+        0.022867,
+        0.022867,
         {
           "__enum__": "StatusType.SUCCESS"
         },
-        {}
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
       ]
     ],
     [
       [
         8,
-        "instances/qcplin2006.10218.cnf",
-        1831667365,
+        "instances/gzip_vc1021.cnf",
+        1135619580,
         0.0
       ],
       [
-        0.011626,
-        0.011626,
+        0.023358,
+        0.023358,
         {
           "__enum__": "StatusType.SUCCESS"
         },
-        {}
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
       ]
     ],
     [
       [
-        2,
-        "instances/qcplin2006.1031.cnf",
-        878906603,
+        5,
+        "instances/gzip_vc1041.cnf",
+        784539766,
         0.0
       ],
       [
-        1.38171,
-        1.38171,
+        0.016187,
+        0.016187,
         {
           "__enum__": "StatusType.SUCCESS"
         },
@@ -297,13 +325,193 @@
     [
       [
         9,
-        "instances/qcplin2006.10218.cnf",
-        1831667365,
+        "instances/gzip_vc1021.cnf",
+        1135619580,
         0.0
       ],
       [
-        0.01776,
-        0.01776,
+        0.013657,
+        0.013657,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        5,
+        "instances/gzip_vc1027.cnf",
+        878906603,
+        0.0
+      ],
+      [
+        0.037023,
+        0.037023,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        10,
+        "instances/gzip_vc1021.cnf",
+        1135619580,
+        0.0
+      ],
+      [
+        0.017363,
+        0.017363,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        5,
+        "instances/gzip_vc1012.cnf",
+        1072618739,
+        0.0
+      ],
+      [
+        0.005945,
+        0.005945,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        11,
+        "instances/gzip_vc1013.cnf",
+        356915800,
+        0.0
+      ],
+      [
+        0.003823,
+        0.003823,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        5,
+        "instances/gzip_vc1012.cnf",
+        585056929,
+        0.0
+      ],
+      [
+        0.004709,
+        0.004709,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        12,
+        "instances/gzip_vc1021.cnf",
+        1135619580,
+        0.0
+      ],
+      [
+        0.019238,
+        0.019238,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        5,
+        "instances/gzip_vc1013.cnf",
+        577116868,
+        0.0
+      ],
+      [
+        0.003154,
+        0.003154,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        13,
+        "instances/gzip_vc1044.cnf",
+        1857819720,
+        0.0
+      ],
+      [
+        0.048945,
+        0.048945,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        5,
+        "instances/gzip_vc1021.cnf",
+        596057847,
+        0.0
+      ],
+      [
+        0.010929,
+        0.010929,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        14,
+        "instances/gzip_vc1031.cnf",
+        1030944529,
+        0.0
+      ],
+      [
+        0.029662,
+        0.029662,
         {
           "__enum__": "StatusType.SUCCESS"
         },
@@ -312,18 +520,2104 @@
     ],
     [
       [
-        2,
-        "instances/qcplin2006.10218.cnf",
-        843976980,
+        5,
+        "instances/gzip_vc1027.cnf",
+        452310611,
         0.0
       ],
       [
-        0.012208,
-        0.012208,
+        0.041939,
+        0.041939,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        15,
+        "instances/gzip_vc1013.cnf",
+        577116868,
+        0.0
+      ],
+      [
+        0.003079,
+        0.003079,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        15,
+        "instances/gzip_vc1012.cnf",
+        585056929,
+        0.0
+      ],
+      [
+        0.005875,
+        0.005875,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        15,
+        "instances/gzip_vc1041.cnf",
+        784539766,
+        0.0
+      ],
+      [
+        0.016688,
+        0.016688,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        5,
+        "instances/gzip_vc1038.cnf",
+        186576620,
+        0.0
+      ],
+      [
+        0.063566,
+        0.063566,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        16,
+        "instances/gzip_vc1012.cnf",
+        1072618739,
+        0.0
+      ],
+      [
+        0.003534,
+        0.003534,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        16,
+        "instances/gzip_vc1038.cnf",
+        1831667365,
+        0.0
+      ],
+      [
+        0.063102,
+        0.063102,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        16,
+        "instances/gzip_vc1018.cnf",
+        948264943,
+        0.0
+      ],
+      [
+        0.035967,
+        0.035967,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        5,
+        "instances/gzip_vc1044.cnf",
+        906733549,
+        0.0
+      ],
+      [
+        0.022309,
+        0.022309,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        17,
+        "instances/gzip_vc1027.cnf",
+        452310611,
+        0.0
+      ],
+      [
+        0.051777,
+        0.051777,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        5,
+        "instances/gzip_vc1031.cnf",
+        1108078257,
+        0.0
+      ],
+      [
+        0.01756,
+        0.01756,
         {
           "__enum__": "StatusType.SUCCESS"
         },
         {}
+      ]
+    ],
+    [
+      [
+        18,
+        "instances/gzip_vc1031.cnf",
+        1030944529,
+        0.0
+      ],
+      [
+        0.028213,
+        0.028213,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {}
+      ]
+    ],
+    [
+      [
+        5,
+        "instances/gzip_vc1020.cnf",
+        124223379,
+        0.0
+      ],
+      [
+        0.022199,
+        0.022199,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1013.cnf",
+        577116868,
+        0.0
+      ],
+      [
+        0.002887,
+        0.002887,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1018.cnf",
+        948264943,
+        0.0
+      ],
+      [
+        0.017793,
+        0.017793,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1044.cnf",
+        906733549,
+        0.0
+      ],
+      [
+        0.021045,
+        0.021045,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1012.cnf",
+        585056929,
+        0.0
+      ],
+      [
+        0.005219,
+        0.005219,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1044.cnf",
+        1857819720,
+        0.0
+      ],
+      [
+        0.026881,
+        0.026881,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1020.cnf",
+        124223379,
+        0.0
+      ],
+      [
+        0.030014,
+        0.030014,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1041.cnf",
+        784539766,
+        0.0
+      ],
+      [
+        0.011263,
+        0.011263,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1027.cnf",
+        452310611,
+        0.0
+      ],
+      [
+        0.023749,
+        0.023749,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1021.cnf",
+        596057847,
+        0.0
+      ],
+      [
+        0.006663,
+        0.006663,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1031.cnf",
+        1108078257,
+        0.0
+      ],
+      [
+        0.019638,
+        0.019638,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {}
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1027.cnf",
+        878906603,
+        0.0
+      ],
+      [
+        0.037865,
+        0.037865,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1020.cnf",
+        1830759685,
+        0.0
+      ],
+      [
+        0.016741,
+        0.016741,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1038.cnf",
+        186576620,
+        0.0
+      ],
+      [
+        0.034994,
+        0.034994,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1012.cnf",
+        1072618739,
+        0.0
+      ],
+      [
+        0.00493,
+        0.00493,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1021.cnf",
+        1135619580,
+        0.0
+      ],
+      [
+        0.007036,
+        0.007036,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1013.cnf",
+        356915800,
+        0.0
+      ],
+      [
+        0.002955,
+        0.002955,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1031.cnf",
+        1030944529,
+        0.0
+      ],
+      [
+        0.03021,
+        0.03021,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {}
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1038.cnf",
+        1831667365,
+        0.0
+      ],
+      [
+        0.032926,
+        0.032926,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1041.cnf",
+        1922834076,
+        0.0
+      ],
+      [
+        0.014431,
+        0.014431,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        20,
+        "instances/gzip_vc1021.cnf",
+        1135619580,
+        0.0
+      ],
+      [
+        0.011132,
+        0.011132,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1018.cnf",
+        1579484576,
+        0.0
+      ],
+      [
+        0.021263,
+        0.021263,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        21,
+        "instances/gzip_vc1027.cnf",
+        452310611,
+        0.0
+      ],
+      [
+        0.060078,
+        0.060078,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1020.cnf",
+        988238530,
+        0.0
+      ],
+      [
+        0.020926,
+        0.020926,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        22,
+        "instances/gzip_vc1031.cnf",
+        1108078257,
+        0.0
+      ],
+      [
+        0.022545,
+        0.022545,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {}
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1027.cnf",
+        1347458865,
+        0.0
+      ],
+      [
+        0.037297,
+        0.037297,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        23,
+        "instances/gzip_vc1018.cnf",
+        948264943,
+        0.0
+      ],
+      [
+        0.039721,
+        0.039721,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1021.cnf",
+        956216405,
+        0.0
+      ],
+      [
+        0.01049,
+        0.01049,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        24,
+        "instances/gzip_vc1027.cnf",
+        878906603,
+        0.0
+      ],
+      [
+        0.039305,
+        0.039305,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1041.cnf",
+        560841509,
+        0.0
+      ],
+      [
+        0.011773,
+        0.011773,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        25,
+        "instances/gzip_vc1020.cnf",
+        1830759685,
+        0.0
+      ],
+      [
+        0.023006,
+        0.023006,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1031.cnf",
+        1050077192,
+        0.0
+      ],
+      [
+        0.016821,
+        0.016821,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {}
+      ]
+    ],
+    [
+      [
+        26,
+        "instances/gzip_vc1041.cnf",
+        560841509,
+        0.0
+      ],
+      [
+        0.049644,
+        0.049644,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1044.cnf",
+        1803822231,
+        0.0
+      ],
+      [
+        0.031625,
+        0.031625,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        27,
+        "instances/gzip_vc1027.cnf",
+        878906603,
+        0.0
+      ],
+      [
+        0.183762,
+        0.183762,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1013.cnf",
+        899541393,
+        0.0
+      ],
+      [
+        0.002942,
+        0.002942,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        28,
+        "instances/gzip_vc1041.cnf",
+        560841509,
+        0.0
+      ],
+      [
+        0.028307,
+        0.028307,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1012.cnf",
+        2089749677,
+        0.0
+      ],
+      [
+        0.00814,
+        0.00814,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        29,
+        "instances/gzip_vc1013.cnf",
+        577116868,
+        0.0
+      ],
+      [
+        0.003188,
+        0.003188,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1038.cnf",
+        858175869,
+        0.0
+      ],
+      [
+        0.054727,
+        0.054727,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        30,
+        "instances/gzip_vc1018.cnf",
+        948264943,
+        0.0
+      ],
+      [
+        0.036294,
+        0.036294,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1018.cnf",
+        567045043,
+        0.0
+      ],
+      [
+        0.023616,
+        0.023616,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        31,
+        "instances/gzip_vc1018.cnf",
+        948264943,
+        0.0
+      ],
+      [
+        0.037646,
+        0.037646,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1027.cnf",
+        1492264350,
+        0.0
+      ],
+      [
+        0.042628,
+        0.042628,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        32,
+        "instances/gzip_vc1012.cnf",
+        2089749677,
+        0.0
+      ],
+      [
+        0.00687,
+        0.00687,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        32,
+        "instances/gzip_vc1027.cnf",
+        452310611,
+        0.0
+      ],
+      [
+        0.064745,
+        0.064745,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1044.cnf",
+        1733870885,
+        0.0
+      ],
+      [
+        0.037509,
+        0.037509,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        32,
+        "instances/gzip_vc1012.cnf",
+        1072618739,
+        0.0
+      ],
+      [
+        0.007435,
+        0.007435,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1038.cnf",
+        1148498717,
+        0.0
+      ],
+      [
+        0.03693,
+        0.03693,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1031.cnf",
+        1882461908,
+        0.0
+      ],
+      [
+        0.026731,
+        0.026731,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {}
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1012.cnf",
+        103495927,
+        0.0
+      ],
+      [
+        0.004449,
+        0.004449,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        32,
+        "instances/gzip_vc1021.cnf",
+        1135619580,
+        0.0
+      ],
+      [
+        0.009167,
+        0.009167,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        32,
+        "instances/gzip_vc1038.cnf",
+        186576620,
+        0.0
+      ],
+      [
+        0.048497,
+        0.048497,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1021.cnf",
+        1596088834,
+        0.0
+      ],
+      [
+        0.008672,
+        0.008672,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1044.cnf",
+        1733870885,
+        0.0
+      ],
+      [
+        0.020955,
+        0.020955,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1031.cnf",
+        1882461908,
+        0.0
+      ],
+      [
+        0.017238,
+        0.017238,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {}
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1013.cnf",
+        577116868,
+        0.0
+      ],
+      [
+        0.001838,
+        0.001838,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1018.cnf",
+        567045043,
+        0.0
+      ],
+      [
+        0.014129,
+        0.014129,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1021.cnf",
+        1596088834,
+        0.0
+      ],
+      [
+        0.011403,
+        0.011403,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1020.cnf",
+        124223379,
+        0.0
+      ],
+      [
+        0.019691,
+        0.019691,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1041.cnf",
+        1922834076,
+        0.0
+      ],
+      [
+        0.011989,
+        0.011989,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1021.cnf",
+        1135619580,
+        0.0
+      ],
+      [
+        0.006552,
+        0.006552,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1031.cnf",
+        1030944529,
+        0.0
+      ],
+      [
+        0.018004,
+        0.018004,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {}
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1020.cnf",
+        988238530,
+        0.0
+      ],
+      [
+        0.01788,
+        0.01788,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1021.cnf",
+        956216405,
+        0.0
+      ],
+      [
+        0.006781,
+        0.006781,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1038.cnf",
+        1831667365,
+        0.0
+      ],
+      [
+        0.055849,
+        0.055849,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1018.cnf",
+        1579484576,
+        0.0
+      ],
+      [
+        0.015884,
+        0.015884,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1027.cnf",
+        878906603,
+        0.0
+      ],
+      [
+        0.049537,
+        0.049537,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1044.cnf",
+        1857819720,
+        0.0
+      ],
+      [
+        0.030901,
+        0.030901,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1027.cnf",
+        452310611,
+        0.0
+      ],
+      [
+        0.036097,
+        0.036097,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1041.cnf",
+        560841509,
+        0.0
+      ],
+      [
+        0.014686,
+        0.014686,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1018.cnf",
+        948264943,
+        0.0
+      ],
+      [
+        0.022026,
+        0.022026,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1031.cnf",
+        1050077192,
+        0.0
+      ],
+      [
+        0.031016,
+        0.031016,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {}
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1012.cnf",
+        1072618739,
+        0.0
+      ],
+      [
+        0.005687,
+        0.005687,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1041.cnf",
+        784539766,
+        0.0
+      ],
+      [
+        0.01579,
+        0.01579,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1013.cnf",
+        899541393,
+        0.0
+      ],
+      [
+        0.003124,
+        0.003124,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1012.cnf",
+        103495927,
+        0.0
+      ],
+      [
+        0.005645,
+        0.005645,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1044.cnf",
+        1803822231,
+        0.0
+      ],
+      [
+        0.032748,
+        0.032748,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1044.cnf",
+        906733549,
+        0.0
+      ],
+      [
+        0.0356,
+        0.0356,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1038.cnf",
+        858175869,
+        0.0
+      ],
+      [
+        0.056446,
+        0.056446,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1012.cnf",
+        585056929,
+        0.0
+      ],
+      [
+        0.004891,
+        0.004891,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1027.cnf",
+        1347458865,
+        0.0
+      ],
+      [
+        0.028154,
+        0.028154,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1038.cnf",
+        186576620,
+        0.0
+      ],
+      [
+        0.049326,
+        0.049326,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1038.cnf",
+        1148498717,
+        0.0
+      ],
+      [
+        0.050833,
+        0.050833,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        33,
+        "instances/gzip_vc1031.cnf",
+        1108078257,
+        0.0
+      ],
+      [
+        0.020939,
+        0.020939,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {}
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1013.cnf",
+        1580826222,
+        0.0
+      ],
+      [
+        0.002,
+        0.002,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        34,
+        "instances/gzip_vc1038.cnf",
+        186576620,
+        0.0
+      ],
+      [
+        0.231652,
+        0.231652,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1020.cnf",
+        593970348,
+        0.0
+      ],
+      [
+        0.022118,
+        0.022118,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        35,
+        "instances/gzip_vc1044.cnf",
+        906733549,
+        0.0
+      ],
+      [
+        0.084569,
+        0.084569,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1018.cnf",
+        820690429,
+        0.0
+      ],
+      [
+        0.017066,
+        0.017066,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        36,
+        "instances/gzip_vc1013.cnf",
+        577116868,
+        0.0
+      ],
+      [
+        0.003028,
+        0.003028,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1041.cnf",
+        19569439,
+        0.0
+      ],
+      [
+        0.014819,
+        0.014819,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        37,
+        "instances/gzip_vc1038.cnf",
+        186576620,
+        0.0
+      ],
+      [
+        0.080672,
+        0.080672,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1021.cnf",
+        1254430281,
+        0.0
+      ],
+      [
+        0.011586,
+        0.011586,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        38,
+        "instances/gzip_vc1041.cnf",
+        19569439,
+        0.0
+      ],
+      [
+        0.017489,
+        0.017489,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1013.cnf",
+        985205212,
+        0.0
+      ],
+      [
+        0.002977,
+        0.002977,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        39,
+        "instances/gzip_vc1044.cnf",
+        1803822231,
+        0.0
+      ],
+      [
+        0.050375,
+        0.050375,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1018.cnf",
+        695186417,
+        0.0
+      ],
+      [
+        0.022951,
+        0.022951,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        40,
+        "instances/gzip_vc1020.cnf",
+        1830759685,
+        0.0
+      ],
+      [
+        0.042286,
+        0.042286,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1020.cnf",
+        1924317321,
+        0.0
+      ],
+      [
+        0.026668,
+        0.026668,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        41,
+        "instances/gzip_vc1027.cnf",
+        1347458865,
+        0.0
+      ],
+      [
+        0.057997,
+        0.057997,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1027.cnf",
+        534348620,
+        0.0
+      ],
+      [
+        0.025364,
+        0.025364,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        42,
+        "instances/gzip_vc1027.cnf",
+        1347458865,
+        0.0
+      ],
+      [
+        0.041408,
+        0.041408,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1038.cnf",
+        899789914,
+        0.0
+      ],
+      [
+        0.034928,
+        0.034928,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        43,
+        "instances/gzip_vc1038.cnf",
+        186576620,
+        0.0
+      ],
+      [
+        0.047274,
+        0.047274,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
+      ]
+    ],
+    [
+      [
+        19,
+        "instances/gzip_vc1012.cnf",
+        48181616,
+        0.0
+      ],
+      [
+        0.004911,
+        0.004911,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "additional_info": "have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT - have not found ./target_algorithms/sat/scripts/SAT; could not verify SAT"
+        }
       ]
     ]
   ],
@@ -333,10 +2627,44 @@
     "3": "Random Search (sorted)",
     "4": "Random Search (sorted)",
     "5": "Random Search",
-    "6": "Random Search",
+    "6": "Random Search (sorted)",
     "7": "Random Search",
-    "8": "Random Search",
-    "9": "Random Search"
+    "8": "Random Search (sorted)",
+    "9": "Random Search",
+    "10": "Random Search (sorted)",
+    "11": "Random Search (sorted)",
+    "12": "Random Search",
+    "13": "Random Search (sorted)",
+    "14": "Random Search (sorted)",
+    "15": "Random Search (sorted)",
+    "16": "Random Search",
+    "17": "Random Search (sorted)",
+    "18": "Random Search (sorted)",
+    "19": "Random Search (sorted)",
+    "20": "Local Search",
+    "21": "Local Search",
+    "22": "Local Search",
+    "23": "Random Search",
+    "24": "Random Search",
+    "25": "Local Search",
+    "26": "Random Search",
+    "27": "Random Search",
+    "28": "Local Search",
+    "29": "Random Search",
+    "30": "Local Search",
+    "31": "Local Search",
+    "32": "Random Search",
+    "33": "Random Search",
+    "34": "Random Search",
+    "35": "Random Search",
+    "36": "Local Search",
+    "37": "Local Search",
+    "38": "Random Search",
+    "39": "Local Search",
+    "40": "Random Search",
+    "41": "Random Search",
+    "42": "Local Search",
+    "43": "Local Search"
   },
   "configs": {
     "1": {
@@ -367,57 +2695,57 @@
       "sp-rand-phase-scaling": 1.0
     },
     "2": {
-      "sp-clause-activity-inc": 1.1012085041741018,
-      "sp-clause-decay": 1.0062724142741661,
+      "sp-clause-activity-inc": 0.8010096602672881,
+      "sp-clause-decay": 1.6283170687578554,
       "sp-clause-del-heur": "0",
-      "sp-first-restart": 2848,
-      "sp-learned-clause-sort-heur": "0",
-      "sp-learned-clauses-inc": 1.4736514084862375,
-      "sp-learned-size-factor": 0.263594542532028,
+      "sp-first-restart": 122,
+      "sp-learned-clause-sort-heur": "1",
+      "sp-learned-clauses-inc": 1.2773943608969935,
+      "sp-learned-size-factor": 1.1780283328215297,
       "sp-orig-clause-sort-heur": "1",
-      "sp-phase-dec-heur": "4",
-      "sp-rand-var-dec-freq": "0.001",
-      "sp-resolution": "2",
-      "sp-restart-inc": 1.1370488117594042,
+      "sp-phase-dec-heur": "0",
+      "sp-rand-var-dec-freq": "0.0001",
+      "sp-resolution": "1",
+      "sp-restart-inc": 1.6635373921745407,
       "sp-update-dec-queue": "1",
       "sp-use-pure-literal-rule": "0",
-      "sp-var-activity-inc": 1.4012042990874054,
-      "sp-var-dec-heur": "5",
-      "sp-variable-decay": 1.7360622989189667,
-      "sp-max-res-lit-inc": 2.4153794750860733,
+      "sp-var-activity-inc": 1.0746129305190708,
+      "sp-var-dec-heur": "19",
+      "sp-variable-decay": 1.8998086415854103,
+      "sp-max-res-lit-inc": 0.3088983914277925,
       "sp-max-res-runs": 1,
-      "sp-rand-phase-dec-freq": "0.005",
-      "sp-rand-var-dec-scaling": 0.72424765626229,
-      "sp-res-cutoff-cls": 2,
-      "sp-res-cutoff-lits": 211,
-      "sp-res-order-heur": "19",
-      "sp-rand-phase-scaling": 0.39273490554071344
+      "sp-rand-phase-dec-freq": "0.0001",
+      "sp-rand-var-dec-scaling": 0.7068491220873272,
+      "sp-res-cutoff-cls": 18,
+      "sp-res-cutoff-lits": 202,
+      "sp-res-order-heur": "11",
+      "sp-rand-phase-scaling": 0.5099633125315828
     },
     "3": {
-      "sp-clause-activity-inc": 0.9070324840828122,
-      "sp-clause-decay": 1.0690226785062564,
-      "sp-clause-del-heur": "1",
-      "sp-first-restart": 548,
-      "sp-learned-clause-sort-heur": "6",
-      "sp-learned-clauses-inc": 1.1937827916532386,
-      "sp-learned-size-factor": 0.6833238798385479,
-      "sp-orig-clause-sort-heur": "14",
-      "sp-phase-dec-heur": "4",
-      "sp-rand-var-dec-freq": "0.0001",
-      "sp-resolution": "2",
-      "sp-restart-inc": 1.2093955046743863,
-      "sp-update-dec-queue": "0",
-      "sp-use-pure-literal-rule": "1",
-      "sp-var-activity-inc": 1.1160488154237251,
-      "sp-var-dec-heur": "5",
-      "sp-variable-decay": 1.7495019833557695,
-      "sp-max-res-lit-inc": 0.40934158222422107,
-      "sp-max-res-runs": 2,
-      "sp-rand-phase-dec-freq": "0",
-      "sp-rand-var-dec-scaling": 0.5435663834323017,
-      "sp-res-cutoff-cls": 4,
-      "sp-res-cutoff-lits": 927,
-      "sp-res-order-heur": "13"
+      "sp-clause-activity-inc": 1.08637894163173,
+      "sp-clause-decay": 1.3622252251379967,
+      "sp-clause-del-heur": "2",
+      "sp-first-restart": 931,
+      "sp-learned-clause-sort-heur": "12",
+      "sp-learned-clauses-inc": 1.1192465442370403,
+      "sp-learned-size-factor": 0.14200487632253592,
+      "sp-orig-clause-sort-heur": "12",
+      "sp-phase-dec-heur": "6",
+      "sp-rand-var-dec-freq": "0",
+      "sp-resolution": "1",
+      "sp-restart-inc": 1.859567958747824,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "0",
+      "sp-var-activity-inc": 0.7592138225381087,
+      "sp-var-dec-heur": "6",
+      "sp-variable-decay": 1.2187758186233357,
+      "sp-max-res-lit-inc": 2.0201828716154724,
+      "sp-max-res-runs": 21,
+      "sp-rand-phase-dec-freq": "0.05",
+      "sp-res-cutoff-cls": 2,
+      "sp-res-cutoff-lits": 376,
+      "sp-res-order-heur": "19",
+      "sp-rand-phase-scaling": 0.30113086597448174
     },
     "4": {
       "sp-clause-activity-inc": 0.8010742197373737,
@@ -467,6 +2795,33 @@
       "sp-rand-var-dec-scaling": 0.9635334693384778
     },
     "6": {
+      "sp-clause-activity-inc": 0.7370085109779286,
+      "sp-clause-decay": 1.811361732849136,
+      "sp-clause-del-heur": "1",
+      "sp-first-restart": 69,
+      "sp-learned-clause-sort-heur": "2",
+      "sp-learned-clauses-inc": 1.1879763700090404,
+      "sp-learned-size-factor": 0.33606832128417746,
+      "sp-orig-clause-sort-heur": "2",
+      "sp-phase-dec-heur": "0",
+      "sp-rand-var-dec-freq": "0.005",
+      "sp-resolution": "1",
+      "sp-restart-inc": 1.6777953915074864,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "0",
+      "sp-var-activity-inc": 0.5671116717303232,
+      "sp-var-dec-heur": "18",
+      "sp-variable-decay": 1.3002233870149589,
+      "sp-max-res-lit-inc": 0.600851745086256,
+      "sp-max-res-runs": 4,
+      "sp-rand-phase-dec-freq": "0.01",
+      "sp-rand-var-dec-scaling": 0.9495545265767553,
+      "sp-res-cutoff-cls": 12,
+      "sp-res-cutoff-lits": 447,
+      "sp-res-order-heur": "14",
+      "sp-rand-phase-scaling": 1.0881923986883708
+    },
+    "7": {
       "sp-clause-activity-inc": 0.58199310015077,
       "sp-clause-decay": 1.0851117058645692,
       "sp-clause-del-heur": "0",
@@ -493,79 +2848,886 @@
       "sp-res-order-heur": "10",
       "sp-rand-phase-scaling": 0.5733279307264232
     },
-    "7": {
-      "sp-clause-activity-inc": 0.7032240280941083,
-      "sp-clause-decay": 1.4908907461076588,
+    "8": {
+      "sp-clause-activity-inc": 1.18077242652309,
+      "sp-clause-decay": 1.6446341166799363,
+      "sp-clause-del-heur": "1",
+      "sp-first-restart": 485,
+      "sp-learned-clause-sort-heur": "3",
+      "sp-learned-clauses-inc": 1.3626423006040622,
+      "sp-learned-size-factor": 0.11726308055078802,
+      "sp-orig-clause-sort-heur": "8",
+      "sp-phase-dec-heur": "0",
+      "sp-rand-var-dec-freq": "0.0001",
+      "sp-resolution": "1",
+      "sp-restart-inc": 1.3116160533295573,
+      "sp-update-dec-queue": "0",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 1.2695158784430207,
+      "sp-var-dec-heur": "11",
+      "sp-variable-decay": 1.2036366123037785,
+      "sp-max-res-lit-inc": 0.4092064958130891,
+      "sp-max-res-runs": 26,
+      "sp-rand-phase-dec-freq": "0.01",
+      "sp-rand-var-dec-scaling": 0.5073222791489005,
+      "sp-res-cutoff-cls": 3,
+      "sp-res-cutoff-lits": 638,
+      "sp-res-order-heur": "3",
+      "sp-rand-phase-scaling": 0.8016509194449062
+    },
+    "9": {
+      "sp-clause-activity-inc": 0.6128037285803205,
+      "sp-clause-decay": 1.566461471814508,
+      "sp-clause-del-heur": "1",
+      "sp-first-restart": 1057,
+      "sp-learned-clause-sort-heur": "9",
+      "sp-learned-clauses-inc": 1.1733677637742288,
+      "sp-learned-size-factor": 0.21185948349614267,
+      "sp-orig-clause-sort-heur": "0",
+      "sp-phase-dec-heur": "4",
+      "sp-rand-var-dec-freq": "0.01",
+      "sp-resolution": "2",
+      "sp-restart-inc": 1.403135182699482,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "0",
+      "sp-var-activity-inc": 1.0360123049819183,
+      "sp-var-dec-heur": "8",
+      "sp-variable-decay": 1.4416076391237966,
+      "sp-max-res-lit-inc": 2.5908069942787177,
+      "sp-max-res-runs": 2,
+      "sp-rand-phase-dec-freq": "0.01",
+      "sp-rand-var-dec-scaling": 0.9016355479835567,
+      "sp-res-cutoff-cls": 2,
+      "sp-res-cutoff-lits": 163,
+      "sp-res-order-heur": "3",
+      "sp-rand-phase-scaling": 0.3379274755764188
+    },
+    "10": {
+      "sp-clause-activity-inc": 1.4061057910741652,
+      "sp-clause-decay": 1.6978965127155001,
+      "sp-clause-del-heur": "1",
+      "sp-first-restart": 132,
+      "sp-learned-clause-sort-heur": "17",
+      "sp-learned-clauses-inc": 1.2859430577564865,
+      "sp-learned-size-factor": 0.4023847767545801,
+      "sp-orig-clause-sort-heur": "3",
+      "sp-phase-dec-heur": "6",
+      "sp-rand-var-dec-freq": "0.05",
+      "sp-resolution": "2",
+      "sp-restart-inc": 1.7131761801369956,
+      "sp-update-dec-queue": "0",
+      "sp-use-pure-literal-rule": "0",
+      "sp-var-activity-inc": 0.5965703561640254,
+      "sp-var-dec-heur": "15",
+      "sp-variable-decay": 1.5907685563728904,
+      "sp-max-res-lit-inc": 0.6036973214893476,
+      "sp-max-res-runs": 1,
+      "sp-rand-phase-dec-freq": "0",
+      "sp-rand-var-dec-scaling": 0.9102566063889197,
+      "sp-res-cutoff-cls": 2,
+      "sp-res-cutoff-lits": 254,
+      "sp-res-order-heur": "16"
+    },
+    "11": {
+      "sp-clause-activity-inc": 0.6865018376641516,
+      "sp-clause-decay": 1.6603539234304017,
+      "sp-clause-del-heur": "2",
+      "sp-first-restart": 38,
+      "sp-learned-clause-sort-heur": "10",
+      "sp-learned-clauses-inc": 1.472114249290472,
+      "sp-learned-size-factor": 1.062559683635545,
+      "sp-orig-clause-sort-heur": "8",
+      "sp-phase-dec-heur": "6",
+      "sp-rand-var-dec-freq": "0.0001",
+      "sp-resolution": "2",
+      "sp-restart-inc": 1.8140216460762755,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "0",
+      "sp-var-activity-inc": 0.6157550235424551,
+      "sp-var-dec-heur": "17",
+      "sp-variable-decay": 1.1244636077980603,
+      "sp-max-res-lit-inc": 0.4973843251568797,
+      "sp-max-res-runs": 10,
+      "sp-rand-phase-dec-freq": "0",
+      "sp-rand-var-dec-scaling": 0.9687628069340788,
+      "sp-res-cutoff-cls": 5,
+      "sp-res-cutoff-lits": 1319,
+      "sp-res-order-heur": "7"
+    },
+    "12": {
+      "sp-clause-activity-inc": 0.7783225530188624,
+      "sp-clause-decay": 1.6267368847338755,
+      "sp-clause-del-heur": "1",
+      "sp-first-restart": 159,
+      "sp-learned-clause-sort-heur": "3",
+      "sp-learned-clauses-inc": 1.1442143863389702,
+      "sp-learned-size-factor": 0.36457420170083255,
+      "sp-orig-clause-sort-heur": "7",
+      "sp-phase-dec-heur": "1",
+      "sp-rand-var-dec-freq": "0.001",
+      "sp-resolution": "2",
+      "sp-restart-inc": 1.453497945328954,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "0",
+      "sp-var-activity-inc": 1.1507737395728173,
+      "sp-var-dec-heur": "8",
+      "sp-variable-decay": 1.1289123762345064,
+      "sp-max-res-lit-inc": 3.7526477764929096,
+      "sp-max-res-runs": 2,
+      "sp-rand-phase-dec-freq": "0.05",
+      "sp-rand-var-dec-scaling": 0.3260717383046673,
+      "sp-res-cutoff-cls": 12,
+      "sp-res-cutoff-lits": 908,
+      "sp-res-order-heur": "19",
+      "sp-rand-phase-scaling": 0.415347495534914
+    },
+    "13": {
+      "sp-clause-activity-inc": 0.9581724242584745,
+      "sp-clause-decay": 1.1018367526618371,
       "sp-clause-del-heur": "0",
-      "sp-first-restart": 1339,
-      "sp-learned-clause-sort-heur": "5",
-      "sp-learned-clauses-inc": 1.1780860929687318,
-      "sp-learned-size-factor": 0.11798001875951276,
+      "sp-first-restart": 41,
+      "sp-learned-clause-sort-heur": "13",
+      "sp-learned-clauses-inc": 1.1312158797654108,
+      "sp-learned-size-factor": 0.1447006947052739,
+      "sp-orig-clause-sort-heur": "17",
+      "sp-phase-dec-heur": "1",
+      "sp-rand-var-dec-freq": "0",
+      "sp-resolution": "0",
+      "sp-restart-inc": 1.3756900667108445,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 0.615122315510426,
+      "sp-var-dec-heur": "2",
+      "sp-variable-decay": 1.467018537600856,
+      "sp-rand-phase-dec-freq": "0.005",
+      "sp-rand-phase-scaling": 0.8523317247778581
+    },
+    "14": {
+      "sp-clause-activity-inc": 0.9962371474669715,
+      "sp-clause-decay": 1.2995166469485226,
+      "sp-clause-del-heur": "1",
+      "sp-first-restart": 57,
+      "sp-learned-clause-sort-heur": "14",
+      "sp-learned-clauses-inc": 1.1602440137257328,
+      "sp-learned-size-factor": 0.6349835645395967,
+      "sp-orig-clause-sort-heur": "13",
+      "sp-phase-dec-heur": "2",
+      "sp-rand-var-dec-freq": "0.01",
+      "sp-resolution": "0",
+      "sp-restart-inc": 1.5271196136913,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 1.0482193592443387,
+      "sp-var-dec-heur": "5",
+      "sp-variable-decay": 1.1150825333116139,
+      "sp-rand-var-dec-scaling": 0.7870575615957485
+    },
+    "15": {
+      "sp-clause-activity-inc": 0.8843922172208061,
+      "sp-clause-decay": 1.238150504484036,
+      "sp-clause-del-heur": "1",
+      "sp-first-restart": 966,
+      "sp-learned-clause-sort-heur": "2",
+      "sp-learned-clauses-inc": 1.2740570049994338,
+      "sp-learned-size-factor": 1.3596242171775748,
+      "sp-orig-clause-sort-heur": "13",
+      "sp-phase-dec-heur": "3",
+      "sp-rand-var-dec-freq": "0.0001",
+      "sp-resolution": "0",
+      "sp-restart-inc": 1.5737915467888923,
+      "sp-update-dec-queue": "0",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 0.5516930192296396,
+      "sp-var-dec-heur": "13",
+      "sp-variable-decay": 1.339005220530729,
+      "sp-rand-phase-dec-freq": "0.005",
+      "sp-rand-var-dec-scaling": 0.8216726928854183,
+      "sp-rand-phase-scaling": 0.7132482397813306
+    },
+    "16": {
+      "sp-clause-activity-inc": 0.9437639492924155,
+      "sp-clause-decay": 1.3554112353083834,
+      "sp-clause-del-heur": "0",
+      "sp-first-restart": 1147,
+      "sp-learned-clause-sort-heur": "19",
+      "sp-learned-clauses-inc": 1.3728931809780587,
+      "sp-learned-size-factor": 0.308053752595081,
+      "sp-orig-clause-sort-heur": "8",
+      "sp-phase-dec-heur": "3",
+      "sp-rand-var-dec-freq": "0",
+      "sp-resolution": "0",
+      "sp-restart-inc": 1.2774756998744856,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "0",
+      "sp-var-activity-inc": 1.0307803583836872,
+      "sp-var-dec-heur": "11",
+      "sp-variable-decay": 1.196230081425004,
+      "sp-clause-inversion": "0",
+      "sp-rand-phase-dec-freq": "0.001",
+      "sp-rand-phase-scaling": 1.07503239570144
+    },
+    "17": {
+      "sp-clause-activity-inc": 0.6895464148897553,
+      "sp-clause-decay": 1.5265869892125934,
+      "sp-clause-del-heur": "2",
+      "sp-first-restart": 3171,
+      "sp-learned-clause-sort-heur": "2",
+      "sp-learned-clauses-inc": 1.481067133776112,
+      "sp-learned-size-factor": 1.0226127428196432,
       "sp-orig-clause-sort-heur": "19",
+      "sp-phase-dec-heur": "3",
+      "sp-rand-var-dec-freq": "0.005",
+      "sp-resolution": "2",
+      "sp-restart-inc": 1.8856605777366104,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 1.4245954283656606,
+      "sp-var-dec-heur": "3",
+      "sp-variable-decay": 1.9469239251958252,
+      "sp-max-res-lit-inc": 0.25737535717515797,
+      "sp-max-res-runs": 1,
+      "sp-rand-phase-dec-freq": "0.005",
+      "sp-rand-var-dec-scaling": 1.0039698633107437,
+      "sp-res-cutoff-cls": 15,
+      "sp-res-cutoff-lits": 182,
+      "sp-res-order-heur": "13",
+      "sp-rand-phase-scaling": 0.6827218834373485
+    },
+    "18": {
+      "sp-clause-activity-inc": 0.9179356890081188,
+      "sp-clause-decay": 1.0210802442678149,
+      "sp-clause-del-heur": "1",
+      "sp-first-restart": 52,
+      "sp-learned-clause-sort-heur": "7",
+      "sp-learned-clauses-inc": 1.4727419070721504,
+      "sp-learned-size-factor": 0.5689843941981467,
+      "sp-orig-clause-sort-heur": "12",
+      "sp-phase-dec-heur": "5",
+      "sp-rand-var-dec-freq": "0.05",
+      "sp-resolution": "1",
+      "sp-restart-inc": 1.11804198095653,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 1.3087786845668128,
+      "sp-var-dec-heur": "4",
+      "sp-variable-decay": 1.4657874124775794,
+      "sp-max-res-lit-inc": 2.126921488527961,
+      "sp-max-res-runs": 18,
+      "sp-rand-phase-dec-freq": "0.0001",
+      "sp-rand-var-dec-scaling": 0.7779509540223734,
+      "sp-res-cutoff-cls": 3,
+      "sp-res-cutoff-lits": 685,
+      "sp-res-order-heur": "9",
+      "sp-rand-phase-scaling": 0.7573645888089042
+    },
+    "19": {
+      "sp-clause-activity-inc": 0.5921974975193663,
+      "sp-clause-decay": 1.5632274657759597,
+      "sp-clause-del-heur": "0",
+      "sp-first-restart": 109,
+      "sp-learned-clause-sort-heur": "9",
+      "sp-learned-clauses-inc": 1.1909140309863875,
+      "sp-learned-size-factor": 1.3175784101428392,
+      "sp-orig-clause-sort-heur": "5",
+      "sp-phase-dec-heur": "5",
+      "sp-rand-var-dec-freq": "0.05",
+      "sp-resolution": "0",
+      "sp-restart-inc": 1.7107627767358236,
+      "sp-update-dec-queue": "0",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 0.6646499538036926,
+      "sp-var-dec-heur": "16",
+      "sp-variable-decay": 1.8936785929913007,
+      "sp-rand-phase-dec-freq": "0.0001",
+      "sp-rand-var-dec-scaling": 0.4601600167171874,
+      "sp-rand-phase-scaling": 0.4348061901340922
+    },
+    "20": {
+      "sp-clause-activity-inc": 0.5921974975193663,
+      "sp-clause-decay": 1.5235384299217316,
+      "sp-clause-del-heur": "0",
+      "sp-first-restart": 105,
+      "sp-learned-clause-sort-heur": "9",
+      "sp-learned-clauses-inc": 1.172420945313996,
+      "sp-learned-size-factor": 1.537315569999542,
+      "sp-orig-clause-sort-heur": "11",
+      "sp-phase-dec-heur": "5",
+      "sp-rand-var-dec-freq": "0.05",
+      "sp-resolution": "0",
+      "sp-restart-inc": 1.7207705350898312,
+      "sp-update-dec-queue": "0",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 0.6646499538036926,
+      "sp-var-dec-heur": "16",
+      "sp-variable-decay": 1.9411258040227317,
+      "sp-rand-phase-dec-freq": "0.0001",
+      "sp-rand-var-dec-scaling": 0.4601600167171874,
+      "sp-rand-phase-scaling": 0.4936616773434249
+    },
+    "21": {
+      "sp-clause-activity-inc": 0.6287929117164273,
+      "sp-clause-decay": 1.1734003261709365,
+      "sp-clause-del-heur": "1",
+      "sp-first-restart": 143,
+      "sp-learned-clause-sort-heur": "15",
+      "sp-learned-clauses-inc": 1.3099203878610701,
+      "sp-learned-size-factor": 1.3038308988775078,
+      "sp-orig-clause-sort-heur": "4",
+      "sp-phase-dec-heur": "6",
+      "sp-rand-var-dec-freq": "0.0001",
+      "sp-resolution": "2",
+      "sp-restart-inc": 1.8031085677485417,
+      "sp-update-dec-queue": "0",
+      "sp-use-pure-literal-rule": "0",
+      "sp-var-activity-inc": 1.142672619356298,
+      "sp-var-dec-heur": "16",
+      "sp-variable-decay": 1.2151444296527494,
+      "sp-max-res-lit-inc": 0.3714526451020253,
+      "sp-max-res-runs": 8,
+      "sp-rand-phase-dec-freq": "0.005",
+      "sp-rand-var-dec-scaling": 0.5274470274326387,
+      "sp-res-cutoff-cls": 12,
+      "sp-res-cutoff-lits": 165,
+      "sp-res-order-heur": "10",
+      "sp-rand-phase-scaling": 1.022330037923292
+    },
+    "22": {
+      "sp-clause-activity-inc": 0.8010096602672881,
+      "sp-clause-decay": 1.6283170687578554,
+      "sp-clause-del-heur": "0",
+      "sp-first-restart": 49,
+      "sp-learned-clause-sort-heur": "12",
+      "sp-learned-clauses-inc": 1.2773943608969935,
+      "sp-learned-size-factor": 1.4137177389888287,
+      "sp-orig-clause-sort-heur": "9",
+      "sp-phase-dec-heur": "5",
+      "sp-rand-var-dec-freq": "0.01",
+      "sp-resolution": "1",
+      "sp-restart-inc": 1.6635373921745407,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "0",
+      "sp-var-activity-inc": 1.2050933543559212,
+      "sp-var-dec-heur": "18",
+      "sp-variable-decay": 1.953921604551546,
+      "sp-max-res-lit-inc": 0.33087928501300895,
+      "sp-max-res-runs": 1,
+      "sp-rand-phase-dec-freq": "0.05",
+      "sp-rand-var-dec-scaling": 0.6246228845552112,
+      "sp-res-cutoff-cls": 20,
+      "sp-res-cutoff-lits": 202,
+      "sp-res-order-heur": "11",
+      "sp-rand-phase-scaling": 1.0
+    },
+    "23": {
+      "sp-clause-activity-inc": 0.6143338645132786,
+      "sp-clause-decay": 1.761819649144342,
+      "sp-clause-del-heur": "0",
+      "sp-first-restart": 938,
+      "sp-learned-clause-sort-heur": "16",
+      "sp-learned-clauses-inc": 1.2920476637671654,
+      "sp-learned-size-factor": 0.4014590767958083,
+      "sp-orig-clause-sort-heur": "4",
+      "sp-phase-dec-heur": "2",
+      "sp-rand-var-dec-freq": "0",
+      "sp-resolution": "1",
+      "sp-restart-inc": 1.2820153655343847,
+      "sp-update-dec-queue": "0",
+      "sp-use-pure-literal-rule": "0",
+      "sp-var-activity-inc": 1.0977658902838172,
+      "sp-var-dec-heur": "9",
+      "sp-variable-decay": 1.0048726404584287,
+      "sp-max-res-lit-inc": 3.4961515632462365,
+      "sp-max-res-runs": 7,
+      "sp-res-cutoff-cls": 8,
+      "sp-res-cutoff-lits": 980,
+      "sp-res-order-heur": "19"
+    },
+    "24": {
+      "sp-clause-activity-inc": 0.5551770103762677,
+      "sp-clause-decay": 1.5220514994106493,
+      "sp-clause-del-heur": "2",
+      "sp-first-restart": 32,
+      "sp-learned-clause-sort-heur": "1",
+      "sp-learned-clauses-inc": 1.261554083607958,
+      "sp-learned-size-factor": 0.9309448038475778,
+      "sp-orig-clause-sort-heur": "2",
+      "sp-phase-dec-heur": "3",
+      "sp-rand-var-dec-freq": "0",
+      "sp-resolution": "1",
+      "sp-restart-inc": 1.1476410366778842,
+      "sp-update-dec-queue": "0",
+      "sp-use-pure-literal-rule": "0",
+      "sp-var-activity-inc": 0.6662656269067886,
+      "sp-var-dec-heur": "19",
+      "sp-variable-decay": 1.457350727106053,
+      "sp-max-res-lit-inc": 2.272886144974925,
+      "sp-max-res-runs": 1,
+      "sp-rand-phase-dec-freq": "0.01",
+      "sp-res-cutoff-cls": 3,
+      "sp-res-cutoff-lits": 112,
+      "sp-res-order-heur": "18",
+      "sp-rand-phase-scaling": 0.539462102591078
+    },
+    "25": {
+      "sp-clause-activity-inc": 1.39147149724369,
+      "sp-clause-decay": 1.9194542046230916,
+      "sp-clause-del-heur": "2",
+      "sp-first-restart": 118,
+      "sp-learned-clause-sort-heur": "13",
+      "sp-learned-clauses-inc": 1.1252589453873911,
+      "sp-learned-size-factor": 1.580581978166706,
+      "sp-orig-clause-sort-heur": "5",
+      "sp-phase-dec-heur": "2",
+      "sp-rand-var-dec-freq": "0.05",
+      "sp-resolution": "1",
+      "sp-restart-inc": 1.2748692401309996,
+      "sp-update-dec-queue": "0",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 0.9549689728958441,
+      "sp-var-dec-heur": "10",
+      "sp-variable-decay": 1.3086869781904769,
+      "sp-max-res-lit-inc": 0.277335209977432,
+      "sp-max-res-runs": 9,
+      "sp-rand-var-dec-scaling": 0.7627044626011614,
+      "sp-res-cutoff-cls": 16,
+      "sp-res-cutoff-lits": 115,
+      "sp-res-order-heur": "15"
+    },
+    "26": {
+      "sp-clause-activity-inc": 1.080541220567878,
+      "sp-clause-decay": 1.3691711669674356,
+      "sp-clause-del-heur": "0",
+      "sp-first-restart": 46,
+      "sp-learned-clause-sort-heur": "13",
+      "sp-learned-clauses-inc": 1.3457998416735406,
+      "sp-learned-size-factor": 0.200025545922372,
+      "sp-orig-clause-sort-heur": "16",
+      "sp-phase-dec-heur": "0",
+      "sp-rand-var-dec-freq": "0.005",
+      "sp-resolution": "2",
+      "sp-restart-inc": 1.2846033029099146,
+      "sp-update-dec-queue": "0",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 0.7121045795358436,
+      "sp-var-dec-heur": "9",
+      "sp-variable-decay": 1.7175071792956038,
+      "sp-max-res-lit-inc": 1.2731201338403915,
+      "sp-max-res-runs": 8,
+      "sp-rand-phase-dec-freq": "0.005",
+      "sp-rand-var-dec-scaling": 0.7335322671849147,
+      "sp-res-cutoff-cls": 15,
+      "sp-res-cutoff-lits": 616,
+      "sp-res-order-heur": "5",
+      "sp-rand-phase-scaling": 0.3908731274979771
+    },
+    "27": {
+      "sp-clause-activity-inc": 0.630011099332237,
+      "sp-clause-decay": 1.7738056134869378,
+      "sp-clause-del-heur": "0",
+      "sp-first-restart": 1276,
+      "sp-learned-clause-sort-heur": "13",
+      "sp-learned-clauses-inc": 1.3264072553021689,
+      "sp-learned-size-factor": 0.8392219639939937,
+      "sp-orig-clause-sort-heur": "0",
+      "sp-phase-dec-heur": "6",
+      "sp-rand-var-dec-freq": "0.0001",
+      "sp-resolution": "0",
+      "sp-restart-inc": 1.1871831690420347,
+      "sp-update-dec-queue": "0",
+      "sp-use-pure-literal-rule": "0",
+      "sp-var-activity-inc": 0.8747521909741811,
+      "sp-var-dec-heur": "11",
+      "sp-variable-decay": 1.729617637492306,
+      "sp-rand-phase-dec-freq": "0.001",
+      "sp-rand-var-dec-scaling": 0.472498748473437,
+      "sp-rand-phase-scaling": 0.577891600403806
+    },
+    "28": {
+      "sp-clause-activity-inc": 0.5921974975193663,
+      "sp-clause-decay": 1.5235384299217316,
+      "sp-clause-del-heur": "2",
+      "sp-first-restart": 105,
+      "sp-learned-clause-sort-heur": "17",
+      "sp-learned-clauses-inc": 1.172420945313996,
+      "sp-learned-size-factor": 1.537315569999542,
+      "sp-orig-clause-sort-heur": "9",
+      "sp-phase-dec-heur": "6",
+      "sp-rand-var-dec-freq": "0.05",
+      "sp-resolution": "1",
+      "sp-restart-inc": 1.7207705350898312,
+      "sp-update-dec-queue": "0",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 0.6348673737205635,
+      "sp-var-dec-heur": "3",
+      "sp-variable-decay": 1.9599224558845911,
+      "sp-max-res-lit-inc": 1.0,
+      "sp-max-res-runs": 4,
+      "sp-rand-phase-dec-freq": "0.0001",
+      "sp-rand-var-dec-scaling": 0.4601600167171874,
+      "sp-res-cutoff-cls": 9,
+      "sp-res-cutoff-lits": 400,
+      "sp-res-order-heur": "19",
+      "sp-rand-phase-scaling": 0.4936616773434249
+    },
+    "29": {
+      "sp-clause-activity-inc": 1.139725659201646,
+      "sp-clause-decay": 1.1085985408057746,
+      "sp-clause-del-heur": "1",
+      "sp-first-restart": 51,
+      "sp-learned-clause-sort-heur": "13",
+      "sp-learned-clauses-inc": 1.409150629451534,
+      "sp-learned-size-factor": 1.2951274859870772,
+      "sp-orig-clause-sort-heur": "0",
+      "sp-phase-dec-heur": "2",
+      "sp-rand-var-dec-freq": "0",
+      "sp-resolution": "2",
+      "sp-restart-inc": 1.7346768156137178,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 0.5012263403937599,
+      "sp-var-dec-heur": "1",
+      "sp-variable-decay": 1.9214672253219163,
+      "sp-max-res-lit-inc": 1.5715858386549078,
+      "sp-max-res-runs": 9,
+      "sp-res-cutoff-cls": 8,
+      "sp-res-cutoff-lits": 1131,
+      "sp-res-order-heur": "18"
+    },
+    "30": {
+      "sp-clause-activity-inc": 0.5921974975193663,
+      "sp-clause-decay": 1.5235384299217316,
+      "sp-clause-del-heur": "0",
+      "sp-first-restart": 105,
+      "sp-learned-clause-sort-heur": "9",
+      "sp-learned-clauses-inc": 1.172420945313996,
+      "sp-learned-size-factor": 1.2112815437979616,
+      "sp-orig-clause-sort-heur": "18",
+      "sp-phase-dec-heur": "6",
+      "sp-rand-var-dec-freq": "0.05",
+      "sp-resolution": "1",
+      "sp-restart-inc": 1.7207705350898312,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 0.6170776717777104,
+      "sp-var-dec-heur": "0",
+      "sp-variable-decay": 1.9213269177605938,
+      "sp-max-res-lit-inc": 1.0,
+      "sp-max-res-runs": 7,
+      "sp-rand-phase-dec-freq": "0.0001",
+      "sp-rand-var-dec-scaling": 0.4601600167171874,
+      "sp-res-cutoff-cls": 8,
+      "sp-res-cutoff-lits": 400,
+      "sp-res-order-heur": "19",
+      "sp-rand-phase-scaling": 0.4361426203719201
+    },
+    "31": {
+      "sp-clause-activity-inc": 1.296332908394843,
+      "sp-clause-decay": 1.3961771916323027,
+      "sp-clause-del-heur": "1",
+      "sp-first-restart": 194,
+      "sp-learned-clause-sort-heur": "9",
+      "sp-learned-clauses-inc": 1.4505067092919248,
+      "sp-learned-size-factor": 1.2915306196449945,
+      "sp-orig-clause-sort-heur": "18",
+      "sp-phase-dec-heur": "6",
+      "sp-rand-var-dec-freq": "0",
+      "sp-resolution": "0",
+      "sp-restart-inc": 1.731780081612197,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 1.238141538437676,
+      "sp-var-dec-heur": "4",
+      "sp-variable-decay": 1.8654611437864301,
+      "sp-rand-phase-dec-freq": "0.001",
+      "sp-rand-phase-scaling": 0.4498768723299872
+    },
+    "32": {
+      "sp-clause-activity-inc": 0.5245659797135952,
+      "sp-clause-decay": 1.995355985696073,
+      "sp-clause-del-heur": "0",
+      "sp-first-restart": 713,
+      "sp-learned-clause-sort-heur": "18",
+      "sp-learned-clauses-inc": 1.12563370864392,
+      "sp-learned-size-factor": 0.8213198201329015,
+      "sp-orig-clause-sort-heur": "2",
       "sp-phase-dec-heur": "6",
       "sp-rand-var-dec-freq": "0.005",
       "sp-resolution": "2",
-      "sp-restart-inc": 1.5383817780348763,
-      "sp-update-dec-queue": "0",
-      "sp-use-pure-literal-rule": "1",
-      "sp-var-activity-inc": 0.509084033658315,
-      "sp-var-dec-heur": "2",
-      "sp-variable-decay": 1.8097870580513553,
-      "sp-max-res-lit-inc": 0.2825210789928368,
-      "sp-max-res-runs": 20,
-      "sp-rand-phase-dec-freq": "0.01",
-      "sp-rand-var-dec-scaling": 0.8587285639714028,
-      "sp-res-cutoff-cls": 9,
-      "sp-res-cutoff-lits": 208,
-      "sp-res-order-heur": "7",
-      "sp-rand-phase-scaling": 1.0249251362354284
+      "sp-restart-inc": 1.8938334705718491,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "0",
+      "sp-var-activity-inc": 1.3914512473044738,
+      "sp-var-dec-heur": "6",
+      "sp-variable-decay": 1.1719336975414008,
+      "sp-max-res-lit-inc": 0.7518538215030613,
+      "sp-max-res-runs": 15,
+      "sp-rand-phase-dec-freq": "0",
+      "sp-rand-var-dec-scaling": 0.39615099603332504,
+      "sp-res-cutoff-cls": 12,
+      "sp-res-cutoff-lits": 140,
+      "sp-res-order-heur": "2"
     },
-    "8": {
-      "sp-clause-activity-inc": 1.2159981381436915,
-      "sp-clause-decay": 1.287764010098903,
+    "33": {
+      "sp-clause-activity-inc": 0.5302144266423778,
+      "sp-clause-decay": 1.0702273723798592,
       "sp-clause-del-heur": "2",
-      "sp-first-restart": 188,
-      "sp-learned-clause-sort-heur": "17",
-      "sp-learned-clauses-inc": 1.4520821393632815,
-      "sp-learned-size-factor": 0.11404770203716527,
-      "sp-orig-clause-sort-heur": "3",
-      "sp-phase-dec-heur": "3",
-      "sp-rand-var-dec-freq": "0.05",
+      "sp-first-restart": 512,
+      "sp-learned-clause-sort-heur": "11",
+      "sp-learned-clauses-inc": 1.125751257178446,
+      "sp-learned-size-factor": 0.25206919781122483,
+      "sp-orig-clause-sort-heur": "7",
+      "sp-phase-dec-heur": "6",
+      "sp-rand-var-dec-freq": "0.0001",
       "sp-resolution": "0",
-      "sp-restart-inc": 1.27089789238186,
+      "sp-restart-inc": 1.107554891977381,
       "sp-update-dec-queue": "0",
       "sp-use-pure-literal-rule": "0",
-      "sp-var-activity-inc": 0.8396499084107569,
-      "sp-var-dec-heur": "11",
-      "sp-variable-decay": 1.4980616419796937,
-      "sp-rand-phase-dec-freq": "0",
-      "sp-rand-var-dec-scaling": 0.9328566282110917
+      "sp-var-activity-inc": 1.3695321659471964,
+      "sp-var-dec-heur": "0",
+      "sp-variable-decay": 1.6096932275907723,
+      "sp-rand-phase-dec-freq": "0.0001",
+      "sp-rand-var-dec-scaling": 0.8745928006815373,
+      "sp-rand-phase-scaling": 0.9849387165548622
     },
-    "9": {
-      "sp-clause-activity-inc": 1.334926631689409,
-      "sp-clause-decay": 1.5878614359771148,
+    "34": {
+      "sp-clause-activity-inc": 1.362541951856005,
+      "sp-clause-decay": 1.2086360578243078,
+      "sp-clause-del-heur": "0",
+      "sp-first-restart": 28,
+      "sp-learned-clause-sort-heur": "17",
+      "sp-learned-clauses-inc": 1.2645531486279469,
+      "sp-learned-size-factor": 0.6004998272548572,
+      "sp-orig-clause-sort-heur": "15",
+      "sp-phase-dec-heur": "6",
+      "sp-rand-var-dec-freq": "0.001",
+      "sp-resolution": "0",
+      "sp-restart-inc": 1.429200338426913,
+      "sp-update-dec-queue": "0",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 0.6137246074513018,
+      "sp-var-dec-heur": "11",
+      "sp-variable-decay": 1.2549543086389336,
+      "sp-rand-phase-dec-freq": "0.001",
+      "sp-rand-var-dec-scaling": 0.8265461251159021,
+      "sp-rand-phase-scaling": 0.7996394990089112
+    },
+    "35": {
+      "sp-clause-activity-inc": 0.9949983744043127,
+      "sp-clause-decay": 1.3339070554150503,
       "sp-clause-del-heur": "2",
-      "sp-first-restart": 48,
-      "sp-learned-clause-sort-heur": "12",
-      "sp-learned-clauses-inc": 1.4662868858986804,
-      "sp-learned-size-factor": 0.214630538296262,
-      "sp-orig-clause-sort-heur": "11",
+      "sp-first-restart": 158,
+      "sp-learned-clause-sort-heur": "5",
+      "sp-learned-clauses-inc": 1.3398465687113366,
+      "sp-learned-size-factor": 0.5697495811405029,
+      "sp-orig-clause-sort-heur": "7",
+      "sp-phase-dec-heur": "0",
+      "sp-rand-var-dec-freq": "0.001",
+      "sp-resolution": "2",
+      "sp-restart-inc": 1.3290712214786649,
+      "sp-update-dec-queue": "0",
+      "sp-use-pure-literal-rule": "0",
+      "sp-var-activity-inc": 0.5379139772812465,
+      "sp-var-dec-heur": "9",
+      "sp-variable-decay": 1.0888640822448872,
+      "sp-max-res-lit-inc": 1.213572019431803,
+      "sp-max-res-runs": 1,
+      "sp-rand-phase-dec-freq": "0.0001",
+      "sp-rand-var-dec-scaling": 0.6152158958229184,
+      "sp-res-cutoff-cls": 4,
+      "sp-res-cutoff-lits": 325,
+      "sp-res-order-heur": "5",
+      "sp-rand-phase-scaling": 1.0816395043905447
+    },
+    "36": {
+      "sp-clause-activity-inc": 1.3877743464143184,
+      "sp-clause-decay": 1.3229732456572925,
+      "sp-clause-del-heur": "0",
+      "sp-first-restart": 1347,
+      "sp-learned-clause-sort-heur": "1",
+      "sp-learned-clauses-inc": 1.4764200702772248,
+      "sp-learned-size-factor": 0.12845416058023237,
+      "sp-orig-clause-sort-heur": "9",
+      "sp-phase-dec-heur": "3",
+      "sp-rand-var-dec-freq": "0.01",
+      "sp-resolution": "0",
+      "sp-restart-inc": 1.276428668890856,
+      "sp-update-dec-queue": "0",
+      "sp-use-pure-literal-rule": "0",
+      "sp-var-activity-inc": 0.8923857672671688,
+      "sp-var-dec-heur": "0",
+      "sp-variable-decay": 1.2365714637477825,
+      "sp-rand-phase-dec-freq": "0.01",
+      "sp-rand-var-dec-scaling": 1.0145569733734545,
+      "sp-rand-phase-scaling": 0.5265788725756702
+    },
+    "37": {
+      "sp-clause-activity-inc": 0.7267850027623504,
+      "sp-clause-decay": 1.6379751777210354,
+      "sp-clause-del-heur": "1",
+      "sp-first-restart": 649,
+      "sp-learned-clause-sort-heur": "1",
+      "sp-learned-clauses-inc": 1.229532213732474,
+      "sp-learned-size-factor": 0.10605615097301337,
+      "sp-orig-clause-sort-heur": "9",
+      "sp-phase-dec-heur": "6",
+      "sp-rand-var-dec-freq": "0.01",
+      "sp-resolution": "0",
+      "sp-restart-inc": 1.7061064751584278,
+      "sp-update-dec-queue": "0",
+      "sp-use-pure-literal-rule": "0",
+      "sp-var-activity-inc": 1.0028927404481571,
+      "sp-var-dec-heur": "0",
+      "sp-variable-decay": 1.9239837403797546,
+      "sp-rand-phase-dec-freq": "0.01",
+      "sp-rand-var-dec-scaling": 0.7748260296161342,
+      "sp-rand-phase-scaling": 0.8952457364748647
+    },
+    "38": {
+      "sp-clause-activity-inc": 1.3722587679919909,
+      "sp-clause-decay": 1.0030493236200102,
+      "sp-clause-del-heur": "0",
+      "sp-first-restart": 2312,
+      "sp-learned-clause-sort-heur": "3",
+      "sp-learned-clauses-inc": 1.1797136883109665,
+      "sp-learned-size-factor": 0.47590542155099663,
+      "sp-orig-clause-sort-heur": "19",
+      "sp-phase-dec-heur": "5",
+      "sp-rand-var-dec-freq": "0.0001",
+      "sp-resolution": "0",
+      "sp-restart-inc": 1.7754759194627252,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "0",
+      "sp-var-activity-inc": 1.0009350040292349,
+      "sp-var-dec-heur": "17",
+      "sp-variable-decay": 1.235418140321713,
+      "sp-rand-phase-dec-freq": "0.05",
+      "sp-rand-var-dec-scaling": 0.36983145180268384,
+      "sp-rand-phase-scaling": 0.8645909091084363
+    },
+    "39": {
+      "sp-clause-activity-inc": 0.783198632557104,
+      "sp-clause-decay": 1.015740352478547,
+      "sp-clause-del-heur": "0",
+      "sp-first-restart": 936,
+      "sp-learned-clause-sort-heur": "19",
+      "sp-learned-clauses-inc": 1.4441713472086248,
+      "sp-learned-size-factor": 1.5181502965762508,
+      "sp-orig-clause-sort-heur": "5",
+      "sp-phase-dec-heur": "6",
+      "sp-rand-var-dec-freq": "0.05",
+      "sp-resolution": "0",
+      "sp-restart-inc": 1.784236299638331,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 0.5977989154158905,
+      "sp-var-dec-heur": "3",
+      "sp-variable-decay": 1.4672476912158516,
+      "sp-clause-inversion": "1",
+      "sp-rand-phase-dec-freq": "0.0001",
+      "sp-rand-var-dec-scaling": 0.4645014451998825,
+      "sp-rand-phase-scaling": 0.49693456049596696
+    },
+    "40": {
+      "sp-clause-activity-inc": 0.8954321514348255,
+      "sp-clause-decay": 1.9190124125102836,
+      "sp-clause-del-heur": "2",
+      "sp-first-restart": 102,
+      "sp-learned-clause-sort-heur": "10",
+      "sp-learned-clauses-inc": 1.1441872483250506,
+      "sp-learned-size-factor": 0.10851777017103473,
+      "sp-orig-clause-sort-heur": "1",
       "sp-phase-dec-heur": "1",
       "sp-rand-var-dec-freq": "0.01",
       "sp-resolution": "1",
-      "sp-restart-inc": 1.4954766330825824,
+      "sp-restart-inc": 1.107591092326285,
       "sp-update-dec-queue": "0",
       "sp-use-pure-literal-rule": "1",
-      "sp-var-activity-inc": 0.7697826661297065,
-      "sp-var-dec-heur": "2",
-      "sp-variable-decay": 1.3840264980651895,
-      "sp-max-res-lit-inc": 2.703403715097031,
-      "sp-max-res-runs": 3,
+      "sp-var-activity-inc": 1.049319381359901,
+      "sp-var-dec-heur": "1",
+      "sp-variable-decay": 1.4184354906724197,
+      "sp-max-res-lit-inc": 1.5629113699378994,
+      "sp-max-res-runs": 2,
+      "sp-rand-phase-dec-freq": "0.01",
+      "sp-rand-var-dec-scaling": 1.0868822935720939,
+      "sp-res-cutoff-cls": 3,
+      "sp-res-cutoff-lits": 898,
+      "sp-res-order-heur": "14",
+      "sp-rand-phase-scaling": 0.5770630015920923
+    },
+    "41": {
+      "sp-clause-activity-inc": 0.8185634824677507,
+      "sp-clause-decay": 1.842357984570167,
+      "sp-clause-del-heur": "2",
+      "sp-first-restart": 197,
+      "sp-learned-clause-sort-heur": "17",
+      "sp-learned-clauses-inc": 1.4564085032562426,
+      "sp-learned-size-factor": 0.5169646071713188,
+      "sp-orig-clause-sort-heur": "14",
+      "sp-phase-dec-heur": "0",
+      "sp-rand-var-dec-freq": "0.0001",
+      "sp-resolution": "1",
+      "sp-restart-inc": 1.4941966970803928,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 1.2492351331107003,
+      "sp-var-dec-heur": "10",
+      "sp-variable-decay": 1.1532303044042644,
+      "sp-max-res-lit-inc": 0.8462858665188564,
+      "sp-max-res-runs": 1,
       "sp-rand-phase-dec-freq": "0",
-      "sp-rand-var-dec-scaling": 0.5996286906463736,
-      "sp-res-cutoff-cls": 14,
-      "sp-res-cutoff-lits": 801,
-      "sp-res-order-heur": "16"
+      "sp-rand-var-dec-scaling": 0.82782367070446,
+      "sp-res-cutoff-cls": 15,
+      "sp-res-cutoff-lits": 364,
+      "sp-res-order-heur": "9"
+    },
+    "42": {
+      "sp-clause-activity-inc": 0.5112731550865578,
+      "sp-clause-decay": 1.5235384299217316,
+      "sp-clause-del-heur": "1",
+      "sp-first-restart": 320,
+      "sp-learned-clause-sort-heur": "9",
+      "sp-learned-clauses-inc": 1.1956256952352453,
+      "sp-learned-size-factor": 1.5088255993852973,
+      "sp-orig-clause-sort-heur": "5",
+      "sp-phase-dec-heur": "6",
+      "sp-rand-var-dec-freq": "0.05",
+      "sp-resolution": "1",
+      "sp-restart-inc": 1.5923949658577559,
+      "sp-update-dec-queue": "0",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 0.6348673737205635,
+      "sp-var-dec-heur": "16",
+      "sp-variable-decay": 1.9280169871306059,
+      "sp-max-res-lit-inc": 1.0,
+      "sp-max-res-runs": 4,
+      "sp-rand-phase-dec-freq": "0.05",
+      "sp-rand-var-dec-scaling": 0.4601600167171874,
+      "sp-res-cutoff-cls": 11,
+      "sp-res-cutoff-lits": 401,
+      "sp-res-order-heur": "19",
+      "sp-rand-phase-scaling": 0.4936616773434249
+    },
+    "43": {
+      "sp-clause-activity-inc": 0.5076577019201708,
+      "sp-clause-decay": 1.486372575758287,
+      "sp-clause-del-heur": "2",
+      "sp-first-restart": 464,
+      "sp-learned-clause-sort-heur": "9",
+      "sp-learned-clauses-inc": 1.2075305105559415,
+      "sp-learned-size-factor": 1.4898282453572664,
+      "sp-orig-clause-sort-heur": "5",
+      "sp-phase-dec-heur": "0",
+      "sp-rand-var-dec-freq": "0.0001",
+      "sp-resolution": "0",
+      "sp-restart-inc": 1.286923950436809,
+      "sp-update-dec-queue": "1",
+      "sp-use-pure-literal-rule": "1",
+      "sp-var-activity-inc": 1.030107855196435,
+      "sp-var-dec-heur": "16",
+      "sp-variable-decay": 1.9088761164004364,
+      "sp-rand-phase-dec-freq": "0.05",
+      "sp-rand-var-dec-scaling": 0.30581195084666984,
+      "sp-rand-phase-scaling": 0.6878229816745598
     }
   }
 }
