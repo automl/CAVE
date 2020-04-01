@@ -9,7 +9,7 @@ bokeh==1.1.0
 smac>=0.12.0
 configspace>=0.4.9
 fanova>=2.0.11
-pyimp>=1.0.8
+pyimp>=1.1.0
 hpbandster
 selenium
 nose

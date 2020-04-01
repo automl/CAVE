@@ -1,4 +1,3 @@
-
 import unittest
 
 from cave.reader.configurator_run import ConfiguratorRun
