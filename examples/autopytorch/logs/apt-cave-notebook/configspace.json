@@ -1,0 +1,581 @@
+{
+  "hyperparameters": [
+    {
+      "name": "CreateDataLoader:batch_size",
+      "type": "uniform_int",
+      "log": true,
+      "lower": 32,
+      "upper": 500,
+      "default": 126
+    },
+    {
+      "name": "Imputation:strategy",
+      "type": "categorical",
+      "choices": [
+        "median",
+        "most_frequent",
+        "mean"
+      ],
+      "default": "median"
+    },
+    {
+      "name": "InitializationSelector:initialization_method",
+      "type": "categorical",
+      "choices": [
+        "sparse",
+        "default"
+      ],
+      "default": "sparse"
+    },
+    {
+      "name": "InitializationSelector:initializer:initialize_bias",
+      "type": "categorical",
+      "choices": [
+        "Yes",
+        "No",
+        "Zero"
+      ],
+      "default": "Yes"
+    },
+    {
+      "name": "LearningrateSchedulerSelector:lr_scheduler",
+      "type": "categorical",
+      "choices": [
+        "cosine_annealing",
+        "plateau"
+      ],
+      "default": "cosine_annealing"
+    },
+    {
+      "name": "LossModuleSelector:loss_module",
+      "type": "categorical",
+      "choices": [
+        "cross_entropy_weighted",
+        "cross_entropy"
+      ],
+      "default": "cross_entropy_weighted"
+    },
+    {
+      "name": "NetworkSelector:network",
+      "type": "categorical",
+      "choices": [
+        "shapedresnet"
+      ],
+      "default": "shapedresnet"
+    },
+    {
+      "name": "NormalizationStrategySelector:normalization_strategy",
+      "type": "categorical",
+      "choices": [
+        "minmax",
+        "maxabs",
+        "standardize",
+        "none"
+      ],
+      "default": "minmax"
+    },
+    {
+      "name": "OptimizerSelector:optimizer",
+      "type": "categorical",
+      "choices": [
+        "adamw",
+        "adam",
+        "sgd",
+        "rmsprop"
+      ],
+      "default": "adamw"
+    },
+    {
+      "name": "PreprocessorSelector:preprocessor",
+      "type": "categorical",
+      "choices": [
+        "power_transformer",
+        "truncated_svd",
+        "none"
+      ],
+      "default": "power_transformer"
+    },
+    {
+      "name": "ResamplingStrategySelector:over_sampling_method",
+      "type": "categorical",
+      "choices": [
+        "smote"
+      ],
+      "default": "smote"
+    },
+    {
+      "name": "ResamplingStrategySelector:target_size_strategy",
+      "type": "categorical",
+      "choices": [
+        "median",
+        "upsample",
+        "none"
+      ],
+      "default": "median"
+    },
+    {
+      "name": "ResamplingStrategySelector:under_sampling_method",
+      "type": "categorical",
+      "choices": [
+        "random",
+        "none"
+      ],
+      "default": "random"
+    },
+    {
+      "name": "TrainNode:batch_loss_computation_technique",
+      "type": "categorical",
+      "choices": [
+        "mixup",
+        "standard"
+      ],
+      "default": "mixup"
+    },
+    {
+      "name": "InitializationSelector:sparse:sparsity",
+      "type": "constant",
+      "value": 0.9
+    },
+    {
+      "name": "LearningrateSchedulerSelector:cosine_annealing:T_max",
+      "type": "uniform_int",
+      "log": false,
+      "lower": 10,
+      "upper": 500,
+      "default": 255
+    },
+    {
+      "name": "LearningrateSchedulerSelector:cosine_annealing:eta_min",
+      "type": "constant",
+      "value": 1e-08
+    },
+    {
+      "name": "LearningrateSchedulerSelector:plateau:factor",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 0.05,
+      "upper": 0.5,
+      "default": 0.275
+    },
+    {
+      "name": "LearningrateSchedulerSelector:plateau:patience",
+      "type": "uniform_int",
+      "log": false,
+      "lower": 3,
+      "upper": 10,
+      "default": 6
+    },
+    {
+      "name": "NetworkSelector:shapedresnet:activation",
+      "type": "categorical",
+      "choices": [
+        "sigmoid",
+        "tanh",
+        "relu"
+      ],
+      "default": "sigmoid"
+    },
+    {
+      "name": "NetworkSelector:shapedresnet:blocks_per_group",
+      "type": "uniform_int",
+      "log": false,
+      "lower": 1,
+      "upper": 4,
+      "default": 2
+    },
+    {
+      "name": "NetworkSelector:shapedresnet:max_units",
+      "type": "uniform_int",
+      "log": true,
+      "lower": 10,
+      "upper": 1024,
+      "default": 101
+    },
+    {
+      "name": "NetworkSelector:shapedresnet:num_groups",
+      "type": "uniform_int",
+      "log": false,
+      "lower": 1,
+      "upper": 9,
+      "default": 5
+    },
+    {
+      "name": "NetworkSelector:shapedresnet:resnet_shape",
+      "type": "categorical",
+      "choices": [
+        "funnel",
+        "long_funnel",
+        "diamond",
+        "hexagon",
+        "brick",
+        "triangle",
+        "stairs"
+      ],
+      "default": "funnel"
+    },
+    {
+      "name": "NetworkSelector:shapedresnet:use_dropout",
+      "type": "categorical",
+      "choices": [
+        true,
+        false
+      ],
+      "default": true
+    },
+    {
+      "name": "NetworkSelector:shapedresnet:use_shake_drop",
+      "type": "categorical",
+      "choices": [
+        true,
+        false
+      ],
+      "default": true
+    },
+    {
+      "name": "NetworkSelector:shapedresnet:use_shake_shake",
+      "type": "categorical",
+      "choices": [
+        true,
+        false
+      ],
+      "default": true
+    },
+    {
+      "name": "OptimizerSelector:adam:learning_rate",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 0.0001,
+      "upper": 0.1,
+      "default": 0.0031622777
+    },
+    {
+      "name": "OptimizerSelector:adam:weight_decay",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 1e-05,
+      "upper": 0.1,
+      "default": 0.050005
+    },
+    {
+      "name": "OptimizerSelector:adamw:learning_rate",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 0.0001,
+      "upper": 0.1,
+      "default": 0.0031622777
+    },
+    {
+      "name": "OptimizerSelector:adamw:weight_decay",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 1e-05,
+      "upper": 0.1,
+      "default": 0.050005
+    },
+    {
+      "name": "OptimizerSelector:rmsprop:alpha",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 0.1,
+      "upper": 0.99,
+      "default": 0.545
+    },
+    {
+      "name": "OptimizerSelector:rmsprop:learning_rate",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 0.0001,
+      "upper": 0.1,
+      "default": 0.0031622777
+    },
+    {
+      "name": "OptimizerSelector:rmsprop:momentum",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 0.1,
+      "upper": 0.99,
+      "default": 0.545
+    },
+    {
+      "name": "OptimizerSelector:rmsprop:weight_decay",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 1e-05,
+      "upper": 0.1,
+      "default": 0.050005
+    },
+    {
+      "name": "OptimizerSelector:sgd:learning_rate",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 0.0001,
+      "upper": 0.1,
+      "default": 0.0031622777
+    },
+    {
+      "name": "OptimizerSelector:sgd:momentum",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 0.1,
+      "upper": 0.99,
+      "default": 0.545
+    },
+    {
+      "name": "OptimizerSelector:sgd:weight_decay",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 1e-05,
+      "upper": 0.1,
+      "default": 0.050005
+    },
+    {
+      "name": "PreprocessorSelector:power_transformer:method",
+      "type": "categorical",
+      "choices": [
+        "yeo-johnson",
+        "box-cox"
+      ],
+      "default": "yeo-johnson"
+    },
+    {
+      "name": "PreprocessorSelector:power_transformer:standardize",
+      "type": "categorical",
+      "choices": [
+        true,
+        false
+      ],
+      "default": true
+    },
+    {
+      "name": "PreprocessorSelector:truncated_svd:target_dim",
+      "type": "uniform_int",
+      "log": false,
+      "lower": 10,
+      "upper": 256,
+      "default": 133
+    },
+    {
+      "name": "ResamplingStrategySelector:smote:k_neighbors",
+      "type": "uniform_int",
+      "log": false,
+      "lower": 3,
+      "upper": 7,
+      "default": 5
+    },
+    {
+      "name": "TrainNode:mixup:alpha",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 0.0,
+      "upper": 1.0,
+      "default": 0.5
+    },
+    {
+      "name": "NetworkSelector:shapedresnet:max_dropout",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 0.0,
+      "upper": 0.8,
+      "default": 0.4
+    },
+    {
+      "name": "NetworkSelector:shapedresnet:max_shake_drop_probability",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 0.0,
+      "upper": 1.0,
+      "default": 0.5
+    }
+  ],
+  "conditions": [
+    {
+      "child": "InitializationSelector:sparse:sparsity",
+      "parent": "InitializationSelector:initialization_method",
+      "type": "EQ",
+      "value": "sparse"
+    },
+    {
+      "child": "LearningrateSchedulerSelector:cosine_annealing:T_max",
+      "parent": "LearningrateSchedulerSelector:lr_scheduler",
+      "type": "EQ",
+      "value": "cosine_annealing"
+    },
+    {
+      "child": "LearningrateSchedulerSelector:cosine_annealing:eta_min",
+      "parent": "LearningrateSchedulerSelector:lr_scheduler",
+      "type": "EQ",
+      "value": "cosine_annealing"
+    },
+    {
+      "child": "LearningrateSchedulerSelector:plateau:factor",
+      "parent": "LearningrateSchedulerSelector:lr_scheduler",
+      "type": "EQ",
+      "value": "plateau"
+    },
+    {
+      "child": "LearningrateSchedulerSelector:plateau:patience",
+      "parent": "LearningrateSchedulerSelector:lr_scheduler",
+      "type": "EQ",
+      "value": "plateau"
+    },
+    {
+      "child": "NetworkSelector:shapedresnet:activation",
+      "parent": "NetworkSelector:network",
+      "type": "EQ",
+      "value": "shapedresnet"
+    },
+    {
+      "child": "NetworkSelector:shapedresnet:blocks_per_group",
+      "parent": "NetworkSelector:network",
+      "type": "EQ",
+      "value": "shapedresnet"
+    },
+    {
+      "child": "NetworkSelector:shapedresnet:max_units",
+      "parent": "NetworkSelector:network",
+      "type": "EQ",
+      "value": "shapedresnet"
+    },
+    {
+      "child": "NetworkSelector:shapedresnet:num_groups",
+      "parent": "NetworkSelector:network",
+      "type": "EQ",
+      "value": "shapedresnet"
+    },
+    {
+      "child": "NetworkSelector:shapedresnet:resnet_shape",
+      "parent": "NetworkSelector:network",
+      "type": "EQ",
+      "value": "shapedresnet"
+    },
+    {
+      "child": "NetworkSelector:shapedresnet:use_dropout",
+      "parent": "NetworkSelector:network",
+      "type": "EQ",
+      "value": "shapedresnet"
+    },
+    {
+      "child": "NetworkSelector:shapedresnet:use_shake_drop",
+      "parent": "NetworkSelector:network",
+      "type": "EQ",
+      "value": "shapedresnet"
+    },
+    {
+      "child": "NetworkSelector:shapedresnet:use_shake_shake",
+      "parent": "NetworkSelector:network",
+      "type": "EQ",
+      "value": "shapedresnet"
+    },
+    {
+      "child": "OptimizerSelector:adam:learning_rate",
+      "parent": "OptimizerSelector:optimizer",
+      "type": "EQ",
+      "value": "adam"
+    },
+    {
+      "child": "OptimizerSelector:adam:weight_decay",
+      "parent": "OptimizerSelector:optimizer",
+      "type": "EQ",
+      "value": "adam"
+    },
+    {
+      "child": "OptimizerSelector:adamw:learning_rate",
+      "parent": "OptimizerSelector:optimizer",
+      "type": "EQ",
+      "value": "adamw"
+    },
+    {
+      "child": "OptimizerSelector:adamw:weight_decay",
+      "parent": "OptimizerSelector:optimizer",
+      "type": "EQ",
+      "value": "adamw"
+    },
+    {
+      "child": "OptimizerSelector:rmsprop:alpha",
+      "parent": "OptimizerSelector:optimizer",
+      "type": "EQ",
+      "value": "rmsprop"
+    },
+    {
+      "child": "OptimizerSelector:rmsprop:learning_rate",
+      "parent": "OptimizerSelector:optimizer",
+      "type": "EQ",
+      "value": "rmsprop"
+    },
+    {
+      "child": "OptimizerSelector:rmsprop:momentum",
+      "parent": "OptimizerSelector:optimizer",
+      "type": "EQ",
+      "value": "rmsprop"
+    },
+    {
+      "child": "OptimizerSelector:rmsprop:weight_decay",
+      "parent": "OptimizerSelector:optimizer",
+      "type": "EQ",
+      "value": "rmsprop"
+    },
+    {
+      "child": "OptimizerSelector:sgd:learning_rate",
+      "parent": "OptimizerSelector:optimizer",
+      "type": "EQ",
+      "value": "sgd"
+    },
+    {
+      "child": "OptimizerSelector:sgd:momentum",
+      "parent": "OptimizerSelector:optimizer",
+      "type": "EQ",
+      "value": "sgd"
+    },
+    {
+      "child": "OptimizerSelector:sgd:weight_decay",
+      "parent": "OptimizerSelector:optimizer",
+      "type": "EQ",
+      "value": "sgd"
+    },
+    {
+      "child": "PreprocessorSelector:power_transformer:method",
+      "parent": "PreprocessorSelector:preprocessor",
+      "type": "EQ",
+      "value": "power_transformer"
+    },
+    {
+      "child": "PreprocessorSelector:power_transformer:standardize",
+      "parent": "PreprocessorSelector:preprocessor",
+      "type": "EQ",
+      "value": "power_transformer"
+    },
+    {
+      "child": "PreprocessorSelector:truncated_svd:target_dim",
+      "parent": "PreprocessorSelector:preprocessor",
+      "type": "EQ",
+      "value": "truncated_svd"
+    },
+    {
+      "child": "ResamplingStrategySelector:smote:k_neighbors",
+      "parent": "ResamplingStrategySelector:over_sampling_method",
+      "type": "EQ",
+      "value": "smote"
+    },
+    {
+      "child": "TrainNode:mixup:alpha",
+      "parent": "TrainNode:batch_loss_computation_technique",
+      "type": "EQ",
+      "value": "mixup"
+    },
+    {
+      "child": "NetworkSelector:shapedresnet:max_dropout",
+      "parent": "NetworkSelector:shapedresnet:use_dropout",
+      "type": "EQ",
+      "value": true
+    },
+    {
+      "child": "NetworkSelector:shapedresnet:max_shake_drop_probability",
+      "parent": "NetworkSelector:shapedresnet:use_shake_drop",
+      "type": "EQ",
+      "value": true
+    }
+  ],
+  "forbiddens": [],
+  "python_module_version": "0.4.11",
+  "json_format_version": 0.1
+}

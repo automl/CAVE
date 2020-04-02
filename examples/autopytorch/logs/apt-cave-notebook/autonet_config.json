@@ -1,0 +1,102 @@
+{
+  "embeddings": [
+    "none"
+  ],
+  "lr_scheduler": [
+    "cosine_annealing",
+    "plateau"
+  ],
+  "networks": [
+    "shapedresnet"
+  ],
+  "over_sampling_methods": [
+    "smote"
+  ],
+  "preprocessors": [
+    "none",
+    "truncated_svd",
+    "power_transformer"
+  ],
+  "target_size_strategies": [
+    "none",
+    "upsample",
+    "median"
+  ],
+  "result_logger_dir": "logs/apt-cave-notebook/",
+  "additional_logs": [
+    "test_result",
+    "test_cross_entropy",
+    "test_balanced_accuracy"
+  ],
+  "validation_split": 0.3,
+  "max_runtime": 500,
+  "min_budget": 10,
+  "max_budget": 100,
+  "log_level": "warning",
+  "hyperparameter_search_space_updates": null,
+  "categorical_features": null,
+  "dataset_name": null,
+  "run_id": "0",
+  "task_id": -1,
+  "algorithm": "bohb",
+  "budget_type": "time",
+  "eta": 3,
+  "min_workers": 1,
+  "working_dir": ".",
+  "network_interface_name": "enp0s25",
+  "memory_limit_mb": 1000000,
+  "use_tensorboard_logger": false,
+  "run_worker_on_master_node": true,
+  "use_pynisher": true,
+  "refit_validation_split": 0.0,
+  "cross_validator": "none",
+  "cross_validator_args": {},
+  "min_budget_for_cv": 0,
+  "shuffle": true,
+  "imputation_strategies": [
+    "mean",
+    "median",
+    "most_frequent"
+  ],
+  "normalization_strategies": [
+    "none",
+    "minmax",
+    "standardize",
+    "maxabs"
+  ],
+  "under_sampling_methods": [
+    "none",
+    "random"
+  ],
+  "final_activation": "softmax",
+  "initialization_methods": [
+    "default",
+    "sparse"
+  ],
+  "initializer": "simple_initializer",
+  "optimizer": [
+    "adam",
+    "adamw",
+    "sgd",
+    "rmsprop"
+  ],
+  "optimize_metric": "accuracy",
+  "additional_metrics": [],
+  "loss_modules": [
+    "cross_entropy",
+    "cross_entropy_weighted"
+  ],
+  "batch_loss_computation_techniques": [
+    "standard",
+    "mixup"
+  ],
+  "cuda": true,
+  "torch_num_threads": 1,
+  "full_eval_each_epoch": false,
+  "best_over_epochs": false,
+  "log_every_n_datapoints": null,
+  "early_stopping_patience": Infinity,
+  "early_stopping_reset_parameters": false,
+  "random_seed": 1392339066,
+  "num_iterations": Infinity
+}

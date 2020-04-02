@@ -1,0 +1,465 @@
+{
+  "data": [
+    [
+      [
+        1,
+        null,
+        0
+      ],
+      [
+        -67.51851851851852,
+        2.553201913833618,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "info": {
+            "loss": 0.6382146261987232,
+            "model_parameters": 66083.0,
+            "train_accuracy": 62.38095238095238,
+            "lr_scheduler_converged": 0.0,
+            "val_accuracy": 68.51851851851852,
+            "test_result": 70.0,
+            "test_cross_entropy": 0.6849448680877686,
+            "test_balanced_accuracy": 0.5
+          },
+          "timestamps": {
+            "submitted": 1.0021471977233887,
+            "started": 1.0022690296173096,
+            "finished": 3.5554709434509277
+          }
+        }
+      ]
+    ],
+    [
+      [
+        2,
+        null,
+        0
+      ],
+      [
+        -67.51851851851852,
+        2.401685953140259,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "info": {
+            "loss": 0.7489258944988251,
+            "model_parameters": 338290.0,
+            "train_accuracy": 55.28169014084507,
+            "lr_scheduler_converged": 0.0,
+            "val_accuracy": 68.51851851851852,
+            "test_result": 70.0,
+            "test_cross_entropy": 0.632409930229187,
+            "test_balanced_accuracy": 0.5
+          },
+          "timestamps": {
+            "submitted": 3.5597920417785645,
+            "started": 3.5598599910736084,
+            "finished": 5.961545944213867
+          }
+        }
+      ]
+    ],
+    [
+      [
+        3,
+        null,
+        0
+      ],
+      [
+        -67.51851851851852,
+        2.8244903087615967,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "info": {
+            "loss": 0.6045683920383453,
+            "model_parameters": 153677.0,
+            "train_accuracy": 70.6703910614525,
+            "lr_scheduler_converged": 0.0,
+            "val_accuracy": 68.51851851851852,
+            "test_result": 70.0,
+            "test_cross_entropy": 0.6407601237297058,
+            "test_balanced_accuracy": 0.5
+          },
+          "timestamps": {
+            "submitted": 5.965748310089111,
+            "started": 5.965823411941528,
+            "finished": 8.790313720703125
+          }
+        }
+      ]
+    ],
+    [
+      [
+        4,
+        null,
+        0
+      ],
+      [
+        -34.18518518518518,
+        2.532393455505371,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "info": {
+            "loss": 0.8013484512504778,
+            "model_parameters": 68403.0,
+            "train_accuracy": 42.76315789473684,
+            "lr_scheduler_converged": 0.0,
+            "lr": 0.044668136806886485,
+            "val_accuracy": 35.18518518518518,
+            "test_result": 37.0,
+            "test_cross_entropy": 0.7043814659118652,
+            "test_balanced_accuracy": 0.5428571428571428
+          },
+          "timestamps": {
+            "submitted": 8.797139883041382,
+            "started": 8.797245025634766,
+            "finished": 11.329638481140137
+          }
+        }
+      ]
+    ],
+    [
+      [
+        5,
+        null,
+        0
+      ],
+      [
+        -67.51851851851852,
+        2.4258599281311035,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "info": {
+            "loss": 0.7149064356559202,
+            "model_parameters": 226175.0,
+            "train_accuracy": 58.55263157894737,
+            "lr_scheduler_converged": 0.0,
+            "lr": 0.014610251706496692,
+            "val_accuracy": 68.51851851851852,
+            "test_result": 70.0,
+            "test_cross_entropy": 0.6602439880371094,
+            "test_balanced_accuracy": 0.5
+          },
+          "timestamps": {
+            "submitted": 11.333396673202515,
+            "started": 11.333473443984985,
+            "finished": 13.759333372116089
+          }
+        }
+      ]
+    ],
+    [
+      [
+        6,
+        null,
+        0
+      ],
+      [
+        -64.55555555555556,
+        2.4799115657806396,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "info": {
+            "loss": 0.7544856799973382,
+            "model_parameters": 1421902.0,
+            "train_accuracy": 50.79365079365079,
+            "lr_scheduler_converged": 0.0,
+            "lr": 0.020824418852113478,
+            "val_accuracy": 65.55555555555556,
+            "test_result": 56.00000000000001,
+            "test_cross_entropy": 0.6930568814277649,
+            "test_balanced_accuracy": 0.6833333333333333
+          },
+          "timestamps": {
+            "submitted": 13.764082908630371,
+            "started": 13.76416277885437,
+            "finished": 16.24407434463501
+          }
+        }
+      ]
+    ],
+    [
+      [
+        7,
+        null,
+        0
+      ],
+      [
+        -67.51851851851852,
+        2.3678934574127197,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "info": {
+            "loss": 0.6953901946544647,
+            "model_parameters": 11528.0,
+            "train_accuracy": 52.58215962441315,
+            "lr_scheduler_converged": 0.0,
+            "lr": 0.00624644147675913,
+            "val_accuracy": 68.51851851851852,
+            "test_result": 30.0,
+            "test_cross_entropy": 0.6919387578964233,
+            "test_balanced_accuracy": 0.5
+          },
+          "timestamps": {
+            "submitted": 16.248071908950806,
+            "started": 16.24815535545349,
+            "finished": 18.61604881286621
+          }
+        }
+      ]
+    ]
+  ],
+  "config_origins": {
+    "1": "Random",
+    "2": "Random",
+    "3": "Random",
+    "4": "Random",
+    "5": "Random",
+    "6": "Random",
+    "7": "Random"
+  },
+  "configs": {
+    "1": {
+      "CreateDataLoader:batch_size": 366,
+      "Imputation:strategy": "most_frequent",
+      "InitializationSelector:initialization_method": "sparse",
+      "InitializationSelector:initializer:initialize_bias": "No",
+      "LearningrateSchedulerSelector:lr_scheduler": "plateau",
+      "LossModuleSelector:loss_module": "cross_entropy",
+      "NetworkSelector:network": "shapedresnet",
+      "NormalizationStrategySelector:normalization_strategy": "maxabs",
+      "OptimizerSelector:optimizer": "adam",
+      "PreprocessorSelector:preprocessor": "none",
+      "ResamplingStrategySelector:over_sampling_method": "smote",
+      "ResamplingStrategySelector:target_size_strategy": "median",
+      "ResamplingStrategySelector:under_sampling_method": "random",
+      "TrainNode:batch_loss_computation_technique": "mixup",
+      "InitializationSelector:sparse:sparsity": 0.9,
+      "LearningrateSchedulerSelector:plateau:factor": 0.4418731426823624,
+      "LearningrateSchedulerSelector:plateau:patience": 7,
+      "NetworkSelector:shapedresnet:activation": "relu",
+      "NetworkSelector:shapedresnet:blocks_per_group": 4,
+      "NetworkSelector:shapedresnet:max_units": 29,
+      "NetworkSelector:shapedresnet:num_groups": 5,
+      "NetworkSelector:shapedresnet:resnet_shape": "hexagon",
+      "NetworkSelector:shapedresnet:use_dropout": true,
+      "NetworkSelector:shapedresnet:use_shake_drop": false,
+      "NetworkSelector:shapedresnet:use_shake_shake": true,
+      "OptimizerSelector:adam:learning_rate": 0.0028542223138853786,
+      "OptimizerSelector:adam:weight_decay": 0.07631615087411033,
+      "ResamplingStrategySelector:smote:k_neighbors": 7,
+      "TrainNode:mixup:alpha": 0.6922367261275184,
+      "NetworkSelector:shapedresnet:max_dropout": 0.05301832250288108
+    },
+    "2": {
+      "CreateDataLoader:batch_size": 71,
+      "Imputation:strategy": "mean",
+      "InitializationSelector:initialization_method": "sparse",
+      "InitializationSelector:initializer:initialize_bias": "Zero",
+      "LearningrateSchedulerSelector:lr_scheduler": "plateau",
+      "LossModuleSelector:loss_module": "cross_entropy_weighted",
+      "NetworkSelector:network": "shapedresnet",
+      "NormalizationStrategySelector:normalization_strategy": "minmax",
+      "OptimizerSelector:optimizer": "rmsprop",
+      "PreprocessorSelector:preprocessor": "truncated_svd",
+      "ResamplingStrategySelector:over_sampling_method": "smote",
+      "ResamplingStrategySelector:target_size_strategy": "median",
+      "ResamplingStrategySelector:under_sampling_method": "random",
+      "TrainNode:batch_loss_computation_technique": "standard",
+      "InitializationSelector:sparse:sparsity": 0.9,
+      "LearningrateSchedulerSelector:plateau:factor": 0.12286836020209406,
+      "LearningrateSchedulerSelector:plateau:patience": 3,
+      "NetworkSelector:shapedresnet:activation": "sigmoid",
+      "NetworkSelector:shapedresnet:blocks_per_group": 1,
+      "NetworkSelector:shapedresnet:max_units": 155,
+      "NetworkSelector:shapedresnet:num_groups": 4,
+      "NetworkSelector:shapedresnet:resnet_shape": "hexagon",
+      "NetworkSelector:shapedresnet:use_dropout": true,
+      "NetworkSelector:shapedresnet:use_shake_drop": false,
+      "NetworkSelector:shapedresnet:use_shake_shake": true,
+      "OptimizerSelector:rmsprop:alpha": 0.3821774657135728,
+      "OptimizerSelector:rmsprop:learning_rate": 0.01528827813751313,
+      "OptimizerSelector:rmsprop:momentum": 0.7389546834065459,
+      "OptimizerSelector:rmsprop:weight_decay": 0.037791360085613734,
+      "PreprocessorSelector:truncated_svd:target_dim": 128,
+      "ResamplingStrategySelector:smote:k_neighbors": 7,
+      "NetworkSelector:shapedresnet:max_dropout": 0.24706926142013474
+    },
+    "3": {
+      "CreateDataLoader:batch_size": 179,
+      "Imputation:strategy": "most_frequent",
+      "InitializationSelector:initialization_method": "default",
+      "InitializationSelector:initializer:initialize_bias": "No",
+      "LearningrateSchedulerSelector:lr_scheduler": "plateau",
+      "LossModuleSelector:loss_module": "cross_entropy",
+      "NetworkSelector:network": "shapedresnet",
+      "NormalizationStrategySelector:normalization_strategy": "none",
+      "OptimizerSelector:optimizer": "adam",
+      "PreprocessorSelector:preprocessor": "power_transformer",
+      "ResamplingStrategySelector:over_sampling_method": "smote",
+      "ResamplingStrategySelector:target_size_strategy": "none",
+      "ResamplingStrategySelector:under_sampling_method": "none",
+      "TrainNode:batch_loss_computation_technique": "standard",
+      "LearningrateSchedulerSelector:plateau:factor": 0.2805420349534242,
+      "LearningrateSchedulerSelector:plateau:patience": 6,
+      "NetworkSelector:shapedresnet:activation": "relu",
+      "NetworkSelector:shapedresnet:blocks_per_group": 2,
+      "NetworkSelector:shapedresnet:max_units": 72,
+      "NetworkSelector:shapedresnet:num_groups": 9,
+      "NetworkSelector:shapedresnet:resnet_shape": "funnel",
+      "NetworkSelector:shapedresnet:use_dropout": true,
+      "NetworkSelector:shapedresnet:use_shake_drop": false,
+      "NetworkSelector:shapedresnet:use_shake_shake": true,
+      "OptimizerSelector:adam:learning_rate": 0.07546177522327858,
+      "OptimizerSelector:adam:weight_decay": 0.09509062951489188,
+      "PreprocessorSelector:power_transformer:method": "box-cox",
+      "PreprocessorSelector:power_transformer:standardize": true,
+      "ResamplingStrategySelector:smote:k_neighbors": 3,
+      "NetworkSelector:shapedresnet:max_dropout": 0.5213170149654522
+    },
+    "4": {
+      "CreateDataLoader:batch_size": 369,
+      "Imputation:strategy": "median",
+      "InitializationSelector:initialization_method": "sparse",
+      "InitializationSelector:initializer:initialize_bias": "Yes",
+      "LearningrateSchedulerSelector:lr_scheduler": "cosine_annealing",
+      "LossModuleSelector:loss_module": "cross_entropy_weighted",
+      "NetworkSelector:network": "shapedresnet",
+      "NormalizationStrategySelector:normalization_strategy": "standardize",
+      "OptimizerSelector:optimizer": "adam",
+      "PreprocessorSelector:preprocessor": "power_transformer",
+      "ResamplingStrategySelector:over_sampling_method": "smote",
+      "ResamplingStrategySelector:target_size_strategy": "median",
+      "ResamplingStrategySelector:under_sampling_method": "none",
+      "TrainNode:batch_loss_computation_technique": "mixup",
+      "InitializationSelector:sparse:sparsity": 0.9,
+      "LearningrateSchedulerSelector:cosine_annealing:T_max": 114,
+      "LearningrateSchedulerSelector:cosine_annealing:eta_min": 1e-08,
+      "NetworkSelector:shapedresnet:activation": "sigmoid",
+      "NetworkSelector:shapedresnet:blocks_per_group": 2,
+      "NetworkSelector:shapedresnet:max_units": 73,
+      "NetworkSelector:shapedresnet:num_groups": 3,
+      "NetworkSelector:shapedresnet:resnet_shape": "hexagon",
+      "NetworkSelector:shapedresnet:use_dropout": true,
+      "NetworkSelector:shapedresnet:use_shake_drop": true,
+      "NetworkSelector:shapedresnet:use_shake_shake": false,
+      "OptimizerSelector:adam:learning_rate": 0.04467661850408548,
+      "OptimizerSelector:adam:weight_decay": 0.036203234956352234,
+      "PreprocessorSelector:power_transformer:method": "box-cox",
+      "PreprocessorSelector:power_transformer:standardize": true,
+      "ResamplingStrategySelector:smote:k_neighbors": 7,
+      "TrainNode:mixup:alpha": 0.3777474202198867,
+      "NetworkSelector:shapedresnet:max_dropout": 0.48625854378141364,
+      "NetworkSelector:shapedresnet:max_shake_drop_probability": 0.693931786340211
+    },
+    "5": {
+      "CreateDataLoader:batch_size": 375,
+      "Imputation:strategy": "most_frequent",
+      "InitializationSelector:initialization_method": "sparse",
+      "InitializationSelector:initializer:initialize_bias": "No",
+      "LearningrateSchedulerSelector:lr_scheduler": "cosine_annealing",
+      "LossModuleSelector:loss_module": "cross_entropy_weighted",
+      "NetworkSelector:network": "shapedresnet",
+      "NormalizationStrategySelector:normalization_strategy": "minmax",
+      "OptimizerSelector:optimizer": "sgd",
+      "PreprocessorSelector:preprocessor": "none",
+      "ResamplingStrategySelector:over_sampling_method": "smote",
+      "ResamplingStrategySelector:target_size_strategy": "median",
+      "ResamplingStrategySelector:under_sampling_method": "none",
+      "TrainNode:batch_loss_computation_technique": "mixup",
+      "InitializationSelector:sparse:sparsity": 0.9,
+      "LearningrateSchedulerSelector:cosine_annealing:T_max": 149,
+      "LearningrateSchedulerSelector:cosine_annealing:eta_min": 1e-08,
+      "NetworkSelector:shapedresnet:activation": "tanh",
+      "NetworkSelector:shapedresnet:blocks_per_group": 3,
+      "NetworkSelector:shapedresnet:max_units": 73,
+      "NetworkSelector:shapedresnet:num_groups": 8,
+      "NetworkSelector:shapedresnet:resnet_shape": "funnel",
+      "NetworkSelector:shapedresnet:use_dropout": false,
+      "NetworkSelector:shapedresnet:use_shake_drop": false,
+      "NetworkSelector:shapedresnet:use_shake_shake": true,
+      "OptimizerSelector:sgd:learning_rate": 0.014611875597205459,
+      "OptimizerSelector:sgd:momentum": 0.8989593698458046,
+      "OptimizerSelector:sgd:weight_decay": 0.00865081500269632,
+      "ResamplingStrategySelector:smote:k_neighbors": 5,
+      "TrainNode:mixup:alpha": 0.3230717468999209
+    },
+    "6": {
+      "CreateDataLoader:batch_size": 56,
+      "Imputation:strategy": "mean",
+      "InitializationSelector:initialization_method": "default",
+      "InitializationSelector:initializer:initialize_bias": "Zero",
+      "LearningrateSchedulerSelector:lr_scheduler": "cosine_annealing",
+      "LossModuleSelector:loss_module": "cross_entropy_weighted",
+      "NetworkSelector:network": "shapedresnet",
+      "NormalizationStrategySelector:normalization_strategy": "standardize",
+      "OptimizerSelector:optimizer": "adam",
+      "PreprocessorSelector:preprocessor": "none",
+      "ResamplingStrategySelector:over_sampling_method": "smote",
+      "ResamplingStrategySelector:target_size_strategy": "upsample",
+      "ResamplingStrategySelector:under_sampling_method": "none",
+      "TrainNode:batch_loss_computation_technique": "standard",
+      "LearningrateSchedulerSelector:cosine_annealing:T_max": 276,
+      "LearningrateSchedulerSelector:cosine_annealing:eta_min": 1e-08,
+      "NetworkSelector:shapedresnet:activation": "tanh",
+      "NetworkSelector:shapedresnet:blocks_per_group": 3,
+      "NetworkSelector:shapedresnet:max_units": 240,
+      "NetworkSelector:shapedresnet:num_groups": 8,
+      "NetworkSelector:shapedresnet:resnet_shape": "diamond",
+      "NetworkSelector:shapedresnet:use_dropout": true,
+      "NetworkSelector:shapedresnet:use_shake_drop": true,
+      "NetworkSelector:shapedresnet:use_shake_shake": false,
+      "OptimizerSelector:adam:learning_rate": 0.020824418852113478,
+      "OptimizerSelector:adam:weight_decay": 0.09326926747923009,
+      "ResamplingStrategySelector:smote:k_neighbors": 3,
+      "NetworkSelector:shapedresnet:max_dropout": 0.28863447026359,
+      "NetworkSelector:shapedresnet:max_shake_drop_probability": 0.8255388908823916
+    },
+    "7": {
+      "CreateDataLoader:batch_size": 213,
+      "Imputation:strategy": "mean",
+      "InitializationSelector:initialization_method": "default",
+      "InitializationSelector:initializer:initialize_bias": "Zero",
+      "LearningrateSchedulerSelector:lr_scheduler": "cosine_annealing",
+      "LossModuleSelector:loss_module": "cross_entropy_weighted",
+      "NetworkSelector:network": "shapedresnet",
+      "NormalizationStrategySelector:normalization_strategy": "maxabs",
+      "OptimizerSelector:optimizer": "sgd",
+      "PreprocessorSelector:preprocessor": "truncated_svd",
+      "ResamplingStrategySelector:over_sampling_method": "smote",
+      "ResamplingStrategySelector:target_size_strategy": "none",
+      "ResamplingStrategySelector:under_sampling_method": "none",
+      "TrainNode:batch_loss_computation_technique": "mixup",
+      "LearningrateSchedulerSelector:cosine_annealing:T_max": 56,
+      "LearningrateSchedulerSelector:cosine_annealing:eta_min": 1e-08,
+      "NetworkSelector:shapedresnet:activation": "sigmoid",
+      "NetworkSelector:shapedresnet:blocks_per_group": 1,
+      "NetworkSelector:shapedresnet:max_units": 15,
+      "NetworkSelector:shapedresnet:num_groups": 8,
+      "NetworkSelector:shapedresnet:resnet_shape": "long_funnel",
+      "NetworkSelector:shapedresnet:use_dropout": true,
+      "NetworkSelector:shapedresnet:use_shake_drop": false,
+      "NetworkSelector:shapedresnet:use_shake_shake": true,
+      "OptimizerSelector:sgd:learning_rate": 0.007011258300661008,
+      "OptimizerSelector:sgd:momentum": 0.8617438008285516,
+      "OptimizerSelector:sgd:weight_decay": 0.004163788700154451,
+      "PreprocessorSelector:truncated_svd:target_dim": 53,
+      "ResamplingStrategySelector:smote:k_neighbors": 4,
+      "TrainNode:mixup:alpha": 0.47928732488758086,
+      "NetworkSelector:shapedresnet:max_dropout": 0.412556933001415
+    }
+  }
+}

@@ -1,0 +1,198 @@
+{
+  "data": [
+    [
+      [
+        1,
+        null,
+        0
+      ],
+      [
+        -69.37037037037037,
+        91.34389328956604,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "info": {
+            "loss": 0.4586937725543976,
+            "model_parameters": 66083.0,
+            "train_accuracy": 60.10928961748634,
+            "lr_scheduler_converged": 0.0,
+            "val_accuracy": 70.37037037037037,
+            "test_result": 74.0,
+            "test_cross_entropy": 0.5755516290664673,
+            "test_balanced_accuracy": 0.7142857142857143
+          },
+          "timestamps": {
+            "submitted": 92.93560147285461,
+            "started": 92.93568086624146,
+            "finished": 184.2795741558075
+          }
+        }
+      ]
+    ],
+    [
+      [
+        2,
+        null,
+        0
+      ],
+      [
+        -75.29629629629629,
+        92.05888319015503,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "info": {
+            "loss": 0.5236649768693107,
+            "model_parameters": 8477774.0,
+            "train_accuracy": 75.66137566137566,
+            "lr_scheduler_converged": 0.0,
+            "val_accuracy": 76.29629629629629,
+            "test_result": 76.0,
+            "test_cross_entropy": 0.6104679107666016,
+            "test_balanced_accuracy": 0.75
+          },
+          "timestamps": {
+            "submitted": 258.9018223285675,
+            "started": 258.9019000530243,
+            "finished": 350.9607832431793
+          }
+        }
+      ]
+    ],
+    [
+      [
+        3,
+        null,
+        0
+      ],
+      [
+        -71.5925925925926,
+        91.66849946975708,
+        {
+          "__enum__": "StatusType.SUCCESS"
+        },
+        {
+          "info": {
+            "loss": 0.06243544250490173,
+            "model_parameters": 4846339.0,
+            "train_accuracy": 99.04761904761905,
+            "lr_scheduler_converged": 0.0,
+            "val_accuracy": 72.5925925925926,
+            "test_result": 75.0,
+            "test_cross_entropy": 0.5462005138397217,
+            "test_balanced_accuracy": 0.6214285714285714
+          },
+          "timestamps": {
+            "submitted": 350.9655237197876,
+            "started": 350.9655885696411,
+            "finished": 442.6340880393982
+          }
+        }
+      ]
+    ]
+  ],
+  "config_origins": {
+    "1": "Random",
+    "2": "Random",
+    "3": "Random"
+  },
+  "configs": {
+    "1": {
+      "CreateDataLoader:batch_size": 366,
+      "Imputation:strategy": "most_frequent",
+      "InitializationSelector:initialization_method": "sparse",
+      "InitializationSelector:initializer:initialize_bias": "No",
+      "LearningrateSchedulerSelector:lr_scheduler": "plateau",
+      "LossModuleSelector:loss_module": "cross_entropy",
+      "NetworkSelector:network": "shapedresnet",
+      "NormalizationStrategySelector:normalization_strategy": "maxabs",
+      "OptimizerSelector:optimizer": "adam",
+      "PreprocessorSelector:preprocessor": "none",
+      "ResamplingStrategySelector:over_sampling_method": "smote",
+      "ResamplingStrategySelector:target_size_strategy": "median",
+      "ResamplingStrategySelector:under_sampling_method": "random",
+      "TrainNode:batch_loss_computation_technique": "mixup",
+      "InitializationSelector:sparse:sparsity": 0.9,
+      "LearningrateSchedulerSelector:plateau:factor": 0.4418731426823624,
+      "LearningrateSchedulerSelector:plateau:patience": 7,
+      "NetworkSelector:shapedresnet:activation": "relu",
+      "NetworkSelector:shapedresnet:blocks_per_group": 4,
+      "NetworkSelector:shapedresnet:max_units": 29,
+      "NetworkSelector:shapedresnet:num_groups": 5,
+      "NetworkSelector:shapedresnet:resnet_shape": "hexagon",
+      "NetworkSelector:shapedresnet:use_dropout": true,
+      "NetworkSelector:shapedresnet:use_shake_drop": false,
+      "NetworkSelector:shapedresnet:use_shake_shake": true,
+      "OptimizerSelector:adam:learning_rate": 0.0028542223138853786,
+      "OptimizerSelector:adam:weight_decay": 0.07631615087411033,
+      "ResamplingStrategySelector:smote:k_neighbors": 7,
+      "TrainNode:mixup:alpha": 0.6922367261275184,
+      "NetworkSelector:shapedresnet:max_dropout": 0.05301832250288108
+    },
+    "2": {
+      "CreateDataLoader:batch_size": 108,
+      "Imputation:strategy": "most_frequent",
+      "InitializationSelector:initialization_method": "default",
+      "InitializationSelector:initializer:initialize_bias": "Zero",
+      "LearningrateSchedulerSelector:lr_scheduler": "plateau",
+      "LossModuleSelector:loss_module": "cross_entropy_weighted",
+      "NetworkSelector:network": "shapedresnet",
+      "NormalizationStrategySelector:normalization_strategy": "minmax",
+      "OptimizerSelector:optimizer": "adam",
+      "PreprocessorSelector:preprocessor": "none",
+      "ResamplingStrategySelector:over_sampling_method": "smote",
+      "ResamplingStrategySelector:target_size_strategy": "upsample",
+      "ResamplingStrategySelector:under_sampling_method": "random",
+      "TrainNode:batch_loss_computation_technique": "standard",
+      "LearningrateSchedulerSelector:plateau:factor": 0.2521084312429323,
+      "LearningrateSchedulerSelector:plateau:patience": 4,
+      "NetworkSelector:shapedresnet:activation": "sigmoid",
+      "NetworkSelector:shapedresnet:blocks_per_group": 4,
+      "NetworkSelector:shapedresnet:max_units": 532,
+      "NetworkSelector:shapedresnet:num_groups": 5,
+      "NetworkSelector:shapedresnet:resnet_shape": "long_funnel",
+      "NetworkSelector:shapedresnet:use_dropout": true,
+      "NetworkSelector:shapedresnet:use_shake_drop": true,
+      "NetworkSelector:shapedresnet:use_shake_shake": false,
+      "OptimizerSelector:adam:learning_rate": 0.0002020599905047294,
+      "OptimizerSelector:adam:weight_decay": 0.07063103375163088,
+      "ResamplingStrategySelector:smote:k_neighbors": 3,
+      "NetworkSelector:shapedresnet:max_dropout": 0.48477667375566597,
+      "NetworkSelector:shapedresnet:max_shake_drop_probability": 0.7530578808616141
+    },
+    "3": {
+      "CreateDataLoader:batch_size": 269,
+      "Imputation:strategy": "median",
+      "InitializationSelector:initialization_method": "default",
+      "InitializationSelector:initializer:initialize_bias": "Zero",
+      "LearningrateSchedulerSelector:lr_scheduler": "plateau",
+      "LossModuleSelector:loss_module": "cross_entropy",
+      "NetworkSelector:network": "shapedresnet",
+      "NormalizationStrategySelector:normalization_strategy": "maxabs",
+      "OptimizerSelector:optimizer": "sgd",
+      "PreprocessorSelector:preprocessor": "none",
+      "ResamplingStrategySelector:over_sampling_method": "smote",
+      "ResamplingStrategySelector:target_size_strategy": "none",
+      "ResamplingStrategySelector:under_sampling_method": "random",
+      "TrainNode:batch_loss_computation_technique": "standard",
+      "LearningrateSchedulerSelector:plateau:factor": 0.36384804725474534,
+      "LearningrateSchedulerSelector:plateau:patience": 10,
+      "NetworkSelector:shapedresnet:activation": "relu",
+      "NetworkSelector:shapedresnet:blocks_per_group": 1,
+      "NetworkSelector:shapedresnet:max_units": 473,
+      "NetworkSelector:shapedresnet:num_groups": 7,
+      "NetworkSelector:shapedresnet:resnet_shape": "hexagon",
+      "NetworkSelector:shapedresnet:use_dropout": true,
+      "NetworkSelector:shapedresnet:use_shake_drop": false,
+      "NetworkSelector:shapedresnet:use_shake_shake": true,
+      "OptimizerSelector:sgd:learning_rate": 0.007683148246035225,
+      "OptimizerSelector:sgd:momentum": 0.9210722510018988,
+      "OptimizerSelector:sgd:weight_decay": 0.05084982338401807,
+      "ResamplingStrategySelector:smote:k_neighbors": 5,
+      "NetworkSelector:shapedresnet:max_dropout": 0.7440239992456568
+    }
+  }
+}
