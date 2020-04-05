@@ -3,7 +3,6 @@ import tempfile
 from typing import List
 
 from numpy.random.mtrand import RandomState
-from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunHistory, DataOrigin
 
 from cave.reader.configurator_run import ConfiguratorRun
@@ -138,10 +137,10 @@ class RunsContainer(object):
                     cr = ConfiguratorRun.from_folder(path,
                                                      ta_exec_dir,
                                                      self.analyzing_options,
-                                                     self.file_format,
-                                                     self.validation_format,
-                                                     b,
-                                                     self.output_dir)
+                                                     file_format=self.file_format,
+                                                     validation_format=self.validation_format,
+                                                     budget=b,
+                                                     output_dir = self.output_dir)
                 except Exception as err:
                     self.logger.warning("Folder %s could with ta_exec_dir %s not be loaded, failed with error message: %s",
                                         f, ta_exec_dir, err)
@@ -240,7 +239,7 @@ class RunsContainer(object):
     def _aggregate(self, runs):
         """
         """
-        orig_rh, vali_rh = RunHistory(average_cost), RunHistory(average_cost)
+        orig_rh, vali_rh = RunHistory(), RunHistory()
         for run in runs:
             orig_rh.update(run.original_runhistory, origin=DataOrigin.INTERNAL)
             vali_rh.update(run.original_runhistory, origin=DataOrigin.INTERNAL)

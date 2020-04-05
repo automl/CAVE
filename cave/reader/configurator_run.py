@@ -7,7 +7,6 @@ from contextlib import contextmanager
 
 import numpy as np
 from pimp.importance.importance import Importance
-from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunHistory, DataOrigin
 from smac.utils.io.input_reader import InputReader
 from smac.utils.validate import Validator
@@ -89,13 +88,13 @@ class ConfiguratorRun(object):
         self.feature_names = self._get_feature_names()
 
         # Create combined runhistory to collect all "real" runs
-        self.combined_runhistory = RunHistory(average_cost)
+        self.combined_runhistory = RunHistory()
         self.combined_runhistory.update(self.original_runhistory, origin=DataOrigin.INTERNAL)
         if self.validated_runhistory is not None:
             self.combined_runhistory.update(self.validated_runhistory, origin=DataOrigin.EXTERNAL_SAME_INSTANCES)
 
         # Create runhistory with estimated runs (create Importance-object of pimp and use epm-model for validation)
-        self.epm_runhistory = RunHistory(average_cost)
+        self.epm_runhistory = RunHistory()
         self.epm_runhistory.update(self.combined_runhistory)
 
         # Initialize importance and validator
@@ -181,10 +180,10 @@ class ConfiguratorRun(object):
                    validated_runhistory,
                    trajectory,
                    options,
-                   folder,
-                   ta_exec_dir,
-                   file_format,
-                   validation_format,
+                   path_to_folder=folder,
+                   ta_exec_dir=ta_exec_dir,
+                   file_format=file_format,
+                   validation_format=validation_format,
                    budget=budget,
                    output_dir=output_dir,
                    )
@@ -300,7 +299,7 @@ class ConfiguratorRun(object):
         """
         return_value = True
         for c_name, c in [("default", self.default), ("inc", self.incumbent)]:
-            runs = rh.get_runs_for_config(c)
+            runs = rh.get_runs_for_config(c, only_max_observed_budget=False)
             evaluated = set([inst for inst, seed in runs])
             for i_name, i in [("train", self.train_inst),
                               ("test", self.test_inst)]:

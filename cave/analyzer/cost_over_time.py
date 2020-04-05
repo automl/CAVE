@@ -15,8 +15,7 @@ from bokeh.plotting import figure, ColumnDataSource, show
 from smac.configspace import convert_configurations_to_array
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.epm.util_funcs import get_types
-from smac.optimizer.objective import _cost
-from smac.runhistory.runhistory import RunHistory
+from smac.runhistory.runhistory import RunHistory, RunKey
 from smac.runhistory.runhistory2epm import RunHistory2EPM4Cost
 from smac.utils.constants import MAXINT
 from smac.utils.validate import Validator
@@ -145,7 +144,7 @@ class CostOverTime(BaseAnalyzer):
                 #self.logger.debug(entry)
                 time.append(entry["wallclock_time"])
                 configs.append(entry["incumbent"])
-                costs = _cost(configs[-1], rh, rh.get_runs_for_config(configs[-1]))
+                costs = [rh.data[RunKey(rh.config_ids[configs[-1]], i, r)].cost for i, r in rh.get_runs_for_config(configs[-1], only_max_observed_budget=True)]
                 # self.logger.debug(len(costs), time[-1]
                 if not costs:
                     time.pop()

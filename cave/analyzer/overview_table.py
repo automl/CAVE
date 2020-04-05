@@ -106,7 +106,8 @@ class OverviewTable(BaseAnalyzer):
     def _runspec_dict(self, runs):
         runspec = OrderedDict()
 
-        for run in runs:
+        for idx, run in enumerate(runs):
+            self.logger.debug("Path to folder for run no. {}: {}".format(idx, str(run.path_to_folder)))
             name = os.path.basename(run.path_to_folder).replace('_', ' ')  # TODO this should be changed with multiple BOHB-folder suppor (no basename should be necessary)
             runspec[name] = self._stats_for_run(run.original_runhistory,
                                                 run.scenario,
@@ -126,12 +127,12 @@ class OverviewTable(BaseAnalyzer):
                                                                                                  np.std(all_ta_runtimes))
 
         # Number of evaluations
-        ta_evals = [len(rh.get_runs_for_config(c)) for c in all_configs]
+        ta_evals = [len(rh.get_runs_for_config(c, only_max_observed_budget=True)) for c in all_configs]
         result['# evaluated configurations'] = len(all_configs)
         if not scenario.deterministic:
             result['# evaluations in total'] = np.sum(ta_evals)
-            result['# evaluations for default/incumbent'] = "{}/{}".format(len(rh.get_runs_for_config(default)),
-                                                                           len(rh.get_runs_for_config(incumbent)))
+            result['# evaluations for default/incumbent'] = "{}/{}".format(len(rh.get_runs_for_config(default, only_max_observed_budget=True)),
+                                                                           len(rh.get_runs_for_config(incumbent, only_max_observed_budget=True)))
             result['# runs per configuration (min, mean and max)'] = "{}/{:.2f}/{}".format(
                             np.min(ta_evals), np.mean(ta_evals), np.max(ta_evals))
         # Info about configurations

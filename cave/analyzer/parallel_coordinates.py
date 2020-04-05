@@ -1,7 +1,6 @@
 from typing import Union, Dict, List
 
 from ConfigSpace.configuration_space import ConfigurationSpace, Configuration
-from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunHistory
 from smac.scenario.scenario import Scenario
 from smac.utils.validate import Validator
@@ -157,14 +156,14 @@ class ParallelCoordinates(BaseAnalyzer):
         if len(all_configs) > max_configs:
             self.logger.debug("Limiting number of configs to train epm from %d to %d (based on max runs %d) and choosing "
                               "the ones with the most runs (for parallel coordinates)", len(all_configs), max_configs, max_runs_epm)
-            all_configs = sorted(all_configs, key=lambda c: len(original_rh.get_runs_for_config(c)))[:max_configs]
+            all_configs = sorted(all_configs, key=lambda c: len(original_rh.get_runs_for_config(c, only_max_observed_budget=False)))[:max_configs]
             if not default in all_configs:
                 all_configs = [default] + all_configs
             if not incumbent in all_configs:
                 all_configs.append(incumbent)
 
         # Get costs for those configurations
-        epm_rh = RunHistory(average_cost)
+        epm_rh = RunHistory()
         epm_rh.update(validated_rh)
         if scenario.feature_dict:  # if instances are available
             epm_rh.update(timing(validator.validate_epm)(all_configs, 'train+test', 1, runhistory=validated_rh))
