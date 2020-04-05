@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.cost_over_time &mdash; CAVE 1.2.1.dev documentation</title>
+  <title>cave.analyzer.cost_over_time &mdash; CAVE 1.3.0.dev documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.2.1.dev
+                1.3.0.dev
               </div>
             
           
@@ -245,8 +245,7 @@
 <span class="kn">from</span> <span class="nn">smac.configspace</span> <span class="kn">import</span> <span class="n">convert_configurations_to_array</span>
 <span class="kn">from</span> <span class="nn">smac.epm.rf_with_instances</span> <span class="kn">import</span> <span class="n">RandomForestWithInstances</span>
 <span class="kn">from</span> <span class="nn">smac.epm.util_funcs</span> <span class="kn">import</span> <span class="n">get_types</span>
-<span class="kn">from</span> <span class="nn">smac.optimizer.objective</span> <span class="kn">import</span> <span class="n">_cost</span>
-<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="kn">import</span> <span class="n">RunHistory</span>
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="kn">import</span> <span class="n">RunHistory</span><span class="p">,</span> <span class="n">RunKey</span>
 <span class="kn">from</span> <span class="nn">smac.runhistory.runhistory2epm</span> <span class="kn">import</span> <span class="n">RunHistory2EPM4Cost</span>
 <span class="kn">from</span> <span class="nn">smac.utils.constants</span> <span class="kn">import</span> <span class="n">MAXINT</span>
 <span class="kn">from</span> <span class="nn">smac.utils.validate</span> <span class="kn">import</span> <span class="n">Validator</span>
@@ -375,7 +374,7 @@
                 <span class="c1">#self.logger.debug(entry)</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;wallclock_time&quot;</span><span class="p">])</span>
                 <span class="n">configs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;incumbent&quot;</span><span class="p">])</span>
-                <span class="n">costs</span> <span class="o">=</span> <span class="n">_cost</span><span class="p">(</span><span class="n">configs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">rh</span><span class="p">,</span> <span class="n">rh</span><span class="o">.</span><span class="n">get_runs_for_config</span><span class="p">(</span><span class="n">configs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+                <span class="n">costs</span> <span class="o">=</span> <span class="p">[</span><span class="n">rh</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">RunKey</span><span class="p">(</span><span class="n">rh</span><span class="o">.</span><span class="n">config_ids</span><span class="p">[</span><span class="n">configs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span><span class="p">)]</span><span class="o">.</span><span class="n">cost</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rh</span><span class="o">.</span><span class="n">get_runs_for_config</span><span class="p">(</span><span class="n">configs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">only_max_observed_budget</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
                 <span class="c1"># self.logger.debug(len(costs), time[-1]</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">costs</span><span class="p">:</span>
                     <span class="n">time</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>

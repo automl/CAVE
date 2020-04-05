@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.reader.configurator_run &mdash; CAVE 1.2.1.dev documentation</title>
+  <title>cave.reader.configurator_run &mdash; CAVE 1.3.0.dev documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.2.1.dev
+                1.3.0.dev
               </div>
             
           
@@ -237,7 +237,6 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">pimp.importance.importance</span> <span class="kn">import</span> <span class="n">Importance</span>
-<span class="kn">from</span> <span class="nn">smac.optimizer.objective</span> <span class="kn">import</span> <span class="n">average_cost</span>
 <span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="kn">import</span> <span class="n">RunHistory</span><span class="p">,</span> <span class="n">DataOrigin</span>
 <span class="kn">from</span> <span class="nn">smac.utils.io.input_reader</span> <span class="kn">import</span> <span class="n">InputReader</span>
 <span class="kn">from</span> <span class="nn">smac.utils.validate</span> <span class="kn">import</span> <span class="n">Validator</span>
@@ -319,13 +318,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">feature_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_feature_names</span><span class="p">()</span>
 
         <span class="c1"># Create combined runhistory to collect all &quot;real&quot; runs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">combined_runhistory</span> <span class="o">=</span> <span class="n">RunHistory</span><span class="p">(</span><span class="n">average_cost</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combined_runhistory</span> <span class="o">=</span> <span class="n">RunHistory</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">combined_runhistory</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_runhistory</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">DataOrigin</span><span class="o">.</span><span class="n">INTERNAL</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">validated_runhistory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">combined_runhistory</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">validated_runhistory</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">DataOrigin</span><span class="o">.</span><span class="n">EXTERNAL_SAME_INSTANCES</span><span class="p">)</span>
 
         <span class="c1"># Create runhistory with estimated runs (create Importance-object of pimp and use epm-model for validation)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">epm_runhistory</span> <span class="o">=</span> <span class="n">RunHistory</span><span class="p">(</span><span class="n">average_cost</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epm_runhistory</span> <span class="o">=</span> <span class="n">RunHistory</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">epm_runhistory</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combined_runhistory</span><span class="p">)</span>
 
         <span class="c1"># Initialize importance and validator</span>
@@ -411,10 +410,10 @@
                    <span class="n">validated_runhistory</span><span class="p">,</span>
                    <span class="n">trajectory</span><span class="p">,</span>
                    <span class="n">options</span><span class="p">,</span>
-                   <span class="n">folder</span><span class="p">,</span>
-                   <span class="n">ta_exec_dir</span><span class="p">,</span>
-                   <span class="n">file_format</span><span class="p">,</span>
-                   <span class="n">validation_format</span><span class="p">,</span>
+                   <span class="n">path_to_folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span>
+                   <span class="n">ta_exec_dir</span><span class="o">=</span><span class="n">ta_exec_dir</span><span class="p">,</span>
+                   <span class="n">file_format</span><span class="o">=</span><span class="n">file_format</span><span class="p">,</span>
+                   <span class="n">validation_format</span><span class="o">=</span><span class="n">validation_format</span><span class="p">,</span>
                    <span class="n">budget</span><span class="o">=</span><span class="n">budget</span><span class="p">,</span>
                    <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span>
                    <span class="p">)</span></div>
@@ -530,7 +529,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">return_value</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">for</span> <span class="n">c_name</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;inc&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">incumbent</span><span class="p">)]:</span>
-            <span class="n">runs</span> <span class="o">=</span> <span class="n">rh</span><span class="o">.</span><span class="n">get_runs_for_config</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="n">runs</span> <span class="o">=</span> <span class="n">rh</span><span class="o">.</span><span class="n">get_runs_for_config</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">only_max_observed_budget</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="n">evaluated</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">inst</span> <span class="k">for</span> <span class="n">inst</span><span class="p">,</span> <span class="n">seed</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">])</span>
             <span class="k">for</span> <span class="n">i_name</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_inst</span><span class="p">),</span>
                               <span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_inst</span><span class="p">)]:</span>
