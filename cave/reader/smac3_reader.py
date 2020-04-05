@@ -5,7 +5,6 @@ import typing
 from ConfigSpace.configuration_space import ConfigurationSpace, Configuration
 from ConfigSpace.hyperparameters import FloatHyperparameter, IntegerHyperparameter, Constant, CategoricalHyperparameter
 from ConfigSpace.read_and_write import json as pcs_json
-from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunHistory
 from smac.scenario.scenario import Scenario
 from smac.utils.io.input_reader import InputReader
@@ -53,7 +52,7 @@ class SMAC3Reader(BaseReader):
         rh_fn = os.path.join(self.folder, 'runhistory.json')
         if not os.path.isfile(rh_fn):
             rh_fn = self.get_glob_file(self.folder, 'runhistory.json')
-        rh = RunHistory(average_cost)
+        rh = RunHistory()
         try:
             rh.load_json(rh_fn, cs)
         except FileNotFoundError:

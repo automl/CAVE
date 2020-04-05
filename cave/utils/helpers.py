@@ -6,7 +6,6 @@ import typing
 
 import numpy as np
 from ConfigSpace.configuration_space import Configuration
-from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunHistory, RunKey
 
 from cave.reader.csv_reader import CSVReader
@@ -41,10 +40,10 @@ def get_timeout(rh, conf, cutoff):
     conf_id = rh.config_ids[conf]
 
     timeouts = {}
-    runs = rh.get_runs_for_config(conf)
+    runs = rh.get_runs_for_config(conf, only_max_observed_budget=True)
     for run in runs:
         # Averaging over seeds, run = (inst, seed)
-        inst, seed = run
+        inst, seed, _git  = run
         status = rh.data[RunKey(conf_id, inst, seed)].time < cutoff
         if inst in timeouts:
             timeouts[inst].append(status)
@@ -82,10 +81,10 @@ def get_cost_dict_for_config(rh: RunHistory,
     conf_id = rh.config_ids[conf]
 
     # Map instances to seeds in dict
-    runs = rh.get_runs_for_config(conf)
+    runs = rh.get_runs_for_config(conf, only_max_observed_budget=True)
     instance_to_seeds = dict()
     for run in runs:
-        inst, seed = run
+        inst, seed, _ = run
         if inst in instance_to_seeds:
             instance_to_seeds[inst].append(seed)
         else:
@@ -130,7 +129,7 @@ def scenario_sanity_check(s, logger):
 
 def combine_runhistories(rhs, logger=None):
     """Combine list of given runhistories. interleaving to best approximate execution order"""
-    combi_rh = RunHistory(average_cost)
+    combi_rh = RunHistory()
     rh_to_runs = {rh : list(rh.data.items()) for rh in rhs}
     if logger:
         logger.debug("number of elements: " + str({k : len(v) for k, v in rh_to_runs}))
@@ -139,7 +138,14 @@ def combine_runhistories(rhs, logger=None):
         for rh in list(rh_to_runs.keys()):
             try:
                 k, v = rh_to_runs[rh][idx]
-                combi_rh.add(rh.ids_config[k.config_id], v.cost, v.time, v.status, k.instance_id, k.seed, v.additional_info)
+                combi_rh.add(config=rh.ids_config[k.config_id],
+                             cost=v.cost,
+                             time=v.time,
+                             status=v.status,
+                             instance_id=k.instance_id,
+                             #TODO budget option
+                             seed=k.seed,
+                             additional_info=v.additional_info)
             except IndexError:
                 rh_to_runs.pop(rh)
         idx += 1

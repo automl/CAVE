@@ -1,0 +1,404 @@
+{
+  "hyperparameters": [
+    {
+      "name": "sp-clause-activity-inc",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 0.5,
+      "upper": 1.5,
+      "default": 1.0
+    },
+    {
+      "name": "sp-clause-decay",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 1.0,
+      "upper": 2.0,
+      "default": 1.4
+    },
+    {
+      "name": "sp-clause-del-heur",
+      "type": "categorical",
+      "choices": [
+        "0",
+        "1",
+        "2"
+      ],
+      "default": "2"
+    },
+    {
+      "name": "sp-first-restart",
+      "type": "uniform_int",
+      "log": true,
+      "lower": 25,
+      "upper": 3200,
+      "default": 100
+    },
+    {
+      "name": "sp-learned-clause-sort-heur",
+      "type": "categorical",
+      "choices": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19"
+      ],
+      "default": "0"
+    },
+    {
+      "name": "sp-learned-clauses-inc",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 1.1,
+      "upper": 1.5,
+      "default": 1.3
+    },
+    {
+      "name": "sp-learned-size-factor",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 0.1,
+      "upper": 1.6,
+      "default": 0.4
+    },
+    {
+      "name": "sp-orig-clause-sort-heur",
+      "type": "categorical",
+      "choices": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19"
+      ],
+      "default": "0"
+    },
+    {
+      "name": "sp-phase-dec-heur",
+      "type": "categorical",
+      "choices": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "default": "5"
+    },
+    {
+      "name": "sp-rand-var-dec-freq",
+      "type": "categorical",
+      "choices": [
+        "0",
+        "0.0001",
+        "0.001",
+        "0.005",
+        "0.01",
+        "0.05"
+      ],
+      "default": "0.001"
+    },
+    {
+      "name": "sp-resolution",
+      "type": "categorical",
+      "choices": [
+        "0",
+        "1",
+        "2"
+      ],
+      "default": "1"
+    },
+    {
+      "name": "sp-restart-inc",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 1.1,
+      "upper": 1.9,
+      "default": 1.5
+    },
+    {
+      "name": "sp-update-dec-queue",
+      "type": "categorical",
+      "choices": [
+        "0",
+        "1"
+      ],
+      "default": "1"
+    },
+    {
+      "name": "sp-use-pure-literal-rule",
+      "type": "categorical",
+      "choices": [
+        "0",
+        "1"
+      ],
+      "default": "1"
+    },
+    {
+      "name": "sp-var-activity-inc",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 0.5,
+      "upper": 1.5,
+      "default": 1.0
+    },
+    {
+      "name": "sp-var-dec-heur",
+      "type": "categorical",
+      "choices": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19"
+      ],
+      "default": "0"
+    },
+    {
+      "name": "sp-variable-decay",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 1.0,
+      "upper": 2.0,
+      "default": 1.4
+    },
+    {
+      "name": "sp-clause-inversion",
+      "type": "categorical",
+      "choices": [
+        "0",
+        "1"
+      ],
+      "default": "1"
+    },
+    {
+      "name": "sp-max-res-lit-inc",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 0.25,
+      "upper": 4.0,
+      "default": 1.0
+    },
+    {
+      "name": "sp-max-res-runs",
+      "type": "uniform_int",
+      "log": true,
+      "lower": 1,
+      "upper": 32,
+      "default": 4
+    },
+    {
+      "name": "sp-rand-phase-dec-freq",
+      "type": "categorical",
+      "choices": [
+        "0",
+        "0.0001",
+        "0.001",
+        "0.005",
+        "0.01",
+        "0.05"
+      ],
+      "default": "0.001"
+    },
+    {
+      "name": "sp-rand-var-dec-scaling",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 0.3,
+      "upper": 1.1,
+      "default": 1.0
+    },
+    {
+      "name": "sp-res-cutoff-cls",
+      "type": "uniform_int",
+      "log": true,
+      "lower": 2,
+      "upper": 20,
+      "default": 8
+    },
+    {
+      "name": "sp-res-cutoff-lits",
+      "type": "uniform_int",
+      "log": true,
+      "lower": 100,
+      "upper": 1600,
+      "default": 400
+    },
+    {
+      "name": "sp-res-order-heur",
+      "type": "categorical",
+      "choices": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19"
+      ],
+      "default": "0"
+    },
+    {
+      "name": "sp-rand-phase-scaling",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 0.3,
+      "upper": 1.1,
+      "default": 1.0
+    }
+  ],
+  "conditions": [
+    {
+      "child": "sp-clause-inversion",
+      "parent": "sp-learned-clause-sort-heur",
+      "type": "EQ",
+      "value": "19"
+    },
+    {
+      "child": "sp-rand-phase-dec-freq",
+      "parent": "sp-phase-dec-heur",
+      "type": "IN",
+      "values": [
+        "0",
+        "1",
+        "3",
+        "4",
+        "5",
+        "6"
+      ]
+    },
+    {
+      "child": "sp-rand-var-dec-scaling",
+      "parent": "sp-rand-var-dec-freq",
+      "type": "IN",
+      "values": [
+        "0.0001",
+        "0.001",
+        "0.005",
+        "0.01",
+        "0.05"
+      ]
+    },
+    {
+      "child": "sp-max-res-lit-inc",
+      "parent": "sp-resolution",
+      "type": "IN",
+      "values": [
+        "1",
+        "2"
+      ]
+    },
+    {
+      "child": "sp-max-res-runs",
+      "parent": "sp-resolution",
+      "type": "IN",
+      "values": [
+        "1",
+        "2"
+      ]
+    },
+    {
+      "child": "sp-res-cutoff-cls",
+      "parent": "sp-resolution",
+      "type": "IN",
+      "values": [
+        "1",
+        "2"
+      ]
+    },
+    {
+      "child": "sp-res-cutoff-lits",
+      "parent": "sp-resolution",
+      "type": "IN",
+      "values": [
+        "1",
+        "2"
+      ]
+    },
+    {
+      "child": "sp-res-order-heur",
+      "parent": "sp-resolution",
+      "type": "IN",
+      "values": [
+        "1",
+        "2"
+      ]
+    },
+    {
+      "child": "sp-rand-phase-scaling",
+      "parent": "sp-rand-phase-dec-freq",
+      "type": "IN",
+      "values": [
+        "0.0001",
+        "0.001",
+        "0.005",
+        "0.01",
+        "0.05"
+      ]
+    }
+  ],
+  "forbiddens": [],
+  "python_module_version": "0.4.11",
+  "json_format_version": 0.1
+}

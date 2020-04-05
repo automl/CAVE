@@ -58,6 +58,7 @@ setuptools.setup(
             'cave/html/web_files/images/ml4aad.png',
             'cave/html/web_files/images/next.png',
             'cave/html/web_files/images/prev.png',
+            'cave/html/web_files/images/CAVE_logo.png',
             'cave/html/web_files/images/SMAC_logo.png',
             'cave/html/web_files/images/BOHB_logo.png',
             'cave/html/web_files/images/automl-logo.png',
