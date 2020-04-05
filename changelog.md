@@ -1,3 +1,14 @@
+# 1.3.0
+
+## Major changes
+
+* Support SMAC 0.12.0
+* Drop support for SMAC < 0.12.0 (use CAVE 1.2.x instead)
+
+## Minor changes
+
+* PyImp min version now 1.0.8
+
 # 1.2.0
 
 ## Bug fixes
