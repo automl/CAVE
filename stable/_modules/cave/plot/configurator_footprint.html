@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.plot.configurator_footprint &mdash; CAVE 1.2.0 documentation</title>
+  <title>cave.plot.configurator_footprint &mdash; CAVE 1.3.0.dev documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.2.0
+                1.3.0.dev
               </div>
             
           
@@ -243,39 +243,38 @@
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="k">import</span> <span class="n">column</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">widgetbox</span>
-<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="n">ColorBar</span><span class="p">,</span> <span class="n">LinearColorMapper</span><span class="p">,</span> <span class="n">BasicTicker</span><span class="p">,</span> <span class="n">CustomJS</span><span class="p">,</span> <span class="n">Slider</span>
-<span class="kn">from</span> <span class="nn">bokeh.models.filters</span> <span class="k">import</span> <span class="n">GroupFilter</span><span class="p">,</span> <span class="n">BooleanFilter</span>
-<span class="kn">from</span> <span class="nn">bokeh.models.sources</span> <span class="k">import</span> <span class="n">CDSView</span>
-<span class="kn">from</span> <span class="nn">bokeh.models.widgets</span> <span class="k">import</span> <span class="n">CheckboxButtonGroup</span><span class="p">,</span> <span class="n">RadioButtonGroup</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">Div</span>
-<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">ColumnDataSource</span>
-<span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="k">import</span> <span class="n">PCA</span>
-<span class="kn">from</span> <span class="nn">sklearn.manifold.mds</span> <span class="k">import</span> <span class="n">MDS</span>
-<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">StandardScaler</span>
+<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="kn">import</span> <span class="n">column</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">widgetbox</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="kn">import</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="n">ColorBar</span><span class="p">,</span> <span class="n">LinearColorMapper</span><span class="p">,</span> <span class="n">BasicTicker</span><span class="p">,</span> <span class="n">CustomJS</span><span class="p">,</span> <span class="n">Slider</span>
+<span class="kn">from</span> <span class="nn">bokeh.models.filters</span> <span class="kn">import</span> <span class="n">GroupFilter</span><span class="p">,</span> <span class="n">BooleanFilter</span>
+<span class="kn">from</span> <span class="nn">bokeh.models.sources</span> <span class="kn">import</span> <span class="n">CDSView</span>
+<span class="kn">from</span> <span class="nn">bokeh.models.widgets</span> <span class="kn">import</span> <span class="n">CheckboxButtonGroup</span><span class="p">,</span> <span class="n">RadioButtonGroup</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">Div</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">ColumnDataSource</span>
+<span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
+<span class="kn">from</span> <span class="nn">sklearn.manifold.mds</span> <span class="kn">import</span> <span class="n">MDS</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
 
 <span class="n">cmd_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()))[</span><span class="mi">0</span><span class="p">]))</span>  <span class="c1"># noqa</span>
 <span class="n">cmd_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmd_folder</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span><span class="p">))</span>  <span class="c1"># noqa</span>
 <span class="k">if</span> <span class="n">cmd_folder</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>  <span class="c1"># noqa</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmd_folder</span><span class="p">)</span>  <span class="c1"># noqa</span>
 
-<span class="kn">from</span> <span class="nn">smac.scenario.scenario</span> <span class="k">import</span> <span class="n">Scenario</span>
-<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span>
-<span class="kn">from</span> <span class="nn">smac.utils.constants</span> <span class="k">import</span> <span class="n">MAXINT</span>
-<span class="kn">from</span> <span class="nn">smac.optimizer.objective</span> <span class="k">import</span> <span class="n">average_cost</span>
-<span class="kn">from</span> <span class="nn">smac.epm.rf_with_instances</span> <span class="k">import</span> <span class="n">RandomForestWithInstances</span>
-<span class="kn">from</span> <span class="nn">ConfigSpace.util</span> <span class="k">import</span> <span class="n">impute_inactive_values</span>
-<span class="kn">from</span> <span class="nn">ConfigSpace</span> <span class="k">import</span> <span class="n">CategoricalHyperparameter</span>
-<span class="kn">from</span> <span class="nn">ConfigSpace.configuration_space</span> <span class="k">import</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">ConfigurationSpace</span>
+<span class="kn">from</span> <span class="nn">smac.scenario.scenario</span> <span class="kn">import</span> <span class="n">Scenario</span>
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="kn">import</span> <span class="n">RunHistory</span>
+<span class="kn">from</span> <span class="nn">smac.utils.constants</span> <span class="kn">import</span> <span class="n">MAXINT</span>
+<span class="kn">from</span> <span class="nn">smac.epm.rf_with_instances</span> <span class="kn">import</span> <span class="n">RandomForestWithInstances</span>
+<span class="kn">from</span> <span class="nn">ConfigSpace.util</span> <span class="kn">import</span> <span class="n">impute_inactive_values</span>
+<span class="kn">from</span> <span class="nn">ConfigSpace</span> <span class="kn">import</span> <span class="n">CategoricalHyperparameter</span>
+<span class="kn">from</span> <span class="nn">ConfigSpace.configuration_space</span> <span class="kn">import</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">ConfigurationSpace</span>
 
-<span class="kn">from</span> <span class="nn">cave.utils.convert_for_epm</span> <span class="k">import</span> <span class="n">convert_data_for_epm</span>
-<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">escape_parameter_name</span><span class="p">,</span> <span class="n">get_config_origin</span><span class="p">,</span> <span class="n">combine_runhistories</span>
-<span class="kn">from</span> <span class="nn">cave.utils.timing</span> <span class="k">import</span> <span class="n">timing</span>
-<span class="kn">from</span> <span class="nn">cave.utils.io</span> <span class="k">import</span> <span class="n">export_bokeh</span>
+<span class="kn">from</span> <span class="nn">cave.utils.convert_for_epm</span> <span class="kn">import</span> <span class="n">convert_data_for_epm</span>
+<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="kn">import</span> <span class="n">escape_parameter_name</span><span class="p">,</span> <span class="n">get_config_origin</span><span class="p">,</span> <span class="n">combine_runhistories</span>
+<span class="kn">from</span> <span class="nn">cave.utils.timing</span> <span class="kn">import</span> <span class="n">timing</span>
+<span class="kn">from</span> <span class="nn">cave.utils.io</span> <span class="kn">import</span> <span class="n">export_bokeh</span>
 
 
 <div class="viewcode-block" id="ConfiguratorFootprintPlotter"><a class="viewcode-back" href="../../../apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter">[docs]</a><span class="k">class</span> <span class="nc">ConfiguratorFootprintPlotter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
                  <span class="n">rhs</span><span class="p">:</span> <span class="n">RunHistory</span><span class="p">,</span>
                  <span class="n">incs</span><span class="p">:</span> <span class="nb">list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -595,7 +594,7 @@
         <span class="k">if</span> <span class="n">max_configs</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">max_configs</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">configs</span><span class="p">):</span>  <span class="c1"># keep all</span>
             <span class="k">return</span> <span class="n">rh</span>
 
-        <span class="n">runs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">c</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rh</span><span class="o">.</span><span class="n">get_runs_for_config</span><span class="p">(</span><span class="n">c</span><span class="p">)))</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">]</span>
+        <span class="n">runs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">c</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rh</span><span class="o">.</span><span class="n">get_runs_for_config</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">only_max_observed_budget</span><span class="o">=</span><span class="kc">False</span><span class="p">)))</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">keep</span><span class="p">:</span>
             <span class="n">keep</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">runs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">runs</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">max_plot</span><span class="p">:]</span>
@@ -603,7 +602,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reducing number of configs from </span><span class="si">%d</span><span class="s2"> to </span><span class="si">%d</span><span class="s2">, dropping from the fewest evaluations&quot;</span><span class="p">,</span>
                          <span class="nb">len</span><span class="p">(</span><span class="n">configs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">keep</span><span class="p">))</span>
 
-        <span class="n">new_rh</span> <span class="o">=</span> <span class="n">RunHistory</span><span class="p">(</span><span class="n">average_cost</span><span class="p">)</span>
+        <span class="n">new_rh</span> <span class="o">=</span> <span class="n">RunHistory</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">rh</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
             <span class="n">c</span> <span class="o">=</span> <span class="n">rh</span><span class="o">.</span><span class="n">ids_config</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">config_id</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">:</span>
@@ -739,7 +738,7 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Sanity check on range-creation in configurator footprint went wrong. &quot;</span>
                                <span class="s2">&quot;Please report this Error on </span><span class="se">\&quot;</span><span class="s2">https://github.com/automl/CAVE/issues</span><span class="se">\&quot;</span><span class="s2"> and provide the debug.txt-file.&quot;</span><span class="p">)</span>
 
-        <span class="n">tmp_rh</span> <span class="o">=</span> <span class="n">RunHistory</span><span class="p">(</span><span class="n">average_cost</span><span class="p">)</span>
+        <span class="n">tmp_rh</span> <span class="o">=</span> <span class="n">RunHistory</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ranges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
             <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
                 <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">as_list</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
@@ -749,7 +748,7 @@
                            <span class="n">additional_info</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">additional_info</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">timestamps</span><span class="p">:</span>
                 <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timestamps</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]))</span>
-            <span class="n">r_p_q_p_c</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp_rh</span><span class="o">.</span><span class="n">get_runs_for_config</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">conf_list</span><span class="p">])</span>
+            <span class="n">r_p_q_p_c</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp_rh</span><span class="o">.</span><span class="n">get_runs_for_config</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">only_max_observed_budget</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">conf_list</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Labels: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">labels</span><span class="p">,</span> <span class="n">r_p_q_p_c</span>
 
@@ -1298,7 +1297,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
 
     </p>
   </div>

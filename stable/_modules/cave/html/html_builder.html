@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.html.html_builder &mdash; CAVE 1.2.0 documentation</title>
+  <title>cave.html.html_builder &mdash; CAVE 1.3.0.dev documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.2.0
+                1.3.0.dev
               </div>
             
           
@@ -233,14 +233,14 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">traceback</span> <span class="k">import</span> <span class="n">print_exc</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">traceback</span> <span class="kn">import</span> <span class="n">print_exc</span>
 
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">random</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">random</span>
 
-<span class="kn">from</span> <span class="nn">cave.__version__</span> <span class="k">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">version</span>
-<span class="kn">from</span> <span class="nn">cave.html.html_helpers</span> <span class="k">import</span> <span class="n">figure_to_html</span>
-<span class="kn">from</span> <span class="nn">cave.utils.tooltips</span> <span class="k">import</span> <span class="n">get_tooltip</span>
+<span class="kn">from</span> <span class="nn">cave.__version__</span> <span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">version</span>
+<span class="kn">from</span> <span class="nn">cave.html.html_helpers</span> <span class="kn">import</span> <span class="n">figure_to_html</span>
+<span class="kn">from</span> <span class="nn">cave.utils.tooltips</span> <span class="kn">import</span> <span class="n">get_tooltip</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Marius Lindauer&quot;</span>
 <span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2016, ML4AAD&quot;</span>
@@ -250,7 +250,7 @@
 
 <div class="viewcode-block" id="HTMLBuilder"><a class="viewcode-back" href="../../../apidoc/cave.html.html_builder.html#cave.html.html_builder.HTMLBuilder">[docs]</a><span class="k">class</span> <span class="nc">HTMLBuilder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">output_dn</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                  <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                  <span class="n">logo_fn</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -348,11 +348,12 @@
 <span class="s1">&lt;header&gt;</span>
 <span class="s1">    &lt;div class=&#39;l-wrapper&#39;&gt;</span>
 <span class="s1">        &lt;img class=&#39;logo logo--configurator&#39; src=&quot;html/images/</span><span class="si">{}</span><span class="s1">&quot; /&gt;</span>
+<span class="s1">        &lt;img class=&#39;logo logo--cave&#39; src=&quot;html/images/CAVE_logo.png&quot; /&gt;</span>
 <span class="s1">        &lt;img class=&#39;logo logo--ml&#39; src=&quot;html/images/automl-logo.png&quot; /&gt;</span>
 <span class="s1">    &lt;/div&gt;</span>
 <span class="s1">&lt;/header&gt;</span>
 <span class="s1">&lt;div class=&#39;l-wrapper&#39;&gt;</span>
-<span class="s1">&lt;h1&gt;CAVE&lt;/h1&gt;</span>
+<span class="s1">&lt;h1&gt;&lt;/h1&gt;</span>
 <span class="s1">&#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logo_fn</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logo_custom</span> <span class="k">else</span> <span class="s1">&#39;custom_logo.png&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">footer</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
@@ -553,7 +554,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
 
     </p>
   </div>

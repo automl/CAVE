@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.utils.convert_for_epm &mdash; CAVE 1.2.0 documentation</title>
+  <title>cave.utils.convert_for_epm &mdash; CAVE 1.3.0.dev documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.2.0
+                1.3.0.dev
               </div>
             
           
@@ -231,15 +231,15 @@
 <span></span><span class="ch">#!/bin/python3</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">ConfigSpace.util</span> <span class="k">import</span> <span class="n">impute_inactive_values</span>
-<span class="kn">from</span> <span class="nn">smac.epm.rf_with_instances</span> <span class="k">import</span> <span class="n">RandomForestWithInstances</span>
-<span class="kn">from</span> <span class="nn">smac.epm.rfr_imputator</span> <span class="k">import</span> <span class="n">RFRImputator</span>
-<span class="kn">from</span> <span class="nn">smac.epm.util_funcs</span> <span class="k">import</span> <span class="n">get_types</span>
-<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span>
-<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory2epm</span> <span class="k">import</span> <span class="n">RunHistory2EPM4LogCost</span><span class="p">,</span> <span class="n">RunHistory2EPM4Cost</span>
-<span class="kn">from</span> <span class="nn">smac.scenario.scenario</span> <span class="k">import</span> <span class="n">Scenario</span>
-<span class="kn">from</span> <span class="nn">smac.tae.execute_ta_run</span> <span class="k">import</span> <span class="n">StatusType</span>
-<span class="kn">from</span> <span class="nn">smac.utils.constants</span> <span class="k">import</span> <span class="n">MAXINT</span>
+<span class="kn">from</span> <span class="nn">ConfigSpace.util</span> <span class="kn">import</span> <span class="n">impute_inactive_values</span>
+<span class="kn">from</span> <span class="nn">smac.epm.rf_with_instances</span> <span class="kn">import</span> <span class="n">RandomForestWithInstances</span>
+<span class="kn">from</span> <span class="nn">smac.epm.rfr_imputator</span> <span class="kn">import</span> <span class="n">RFRImputator</span>
+<span class="kn">from</span> <span class="nn">smac.epm.util_funcs</span> <span class="kn">import</span> <span class="n">get_types</span>
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="kn">import</span> <span class="n">RunHistory</span>
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory2epm</span> <span class="kn">import</span> <span class="n">RunHistory2EPM4LogCost</span><span class="p">,</span> <span class="n">RunHistory2EPM4Cost</span>
+<span class="kn">from</span> <span class="nn">smac.scenario.scenario</span> <span class="kn">import</span> <span class="n">Scenario</span>
+<span class="kn">from</span> <span class="nn">smac.tae.execute_ta_run</span> <span class="kn">import</span> <span class="n">StatusType</span>
+<span class="kn">from</span> <span class="nn">smac.utils.constants</span> <span class="kn">import</span> <span class="n">MAXINT</span>
 
 
 <div class="viewcode-block" id="convert_data_for_epm"><a class="viewcode-back" href="../../../apidoc/cave.utils.convert_for_epm.html#cave.utils.convert_for_epm.convert_data_for_epm">[docs]</a><span class="k">def</span> <span class="nf">convert_data_for_epm</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span> <span class="n">runhistory</span><span class="p">:</span> <span class="n">RunHistory</span><span class="p">,</span> <span class="n">impute_inactive_parameters</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -340,7 +340,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
 
     </p>
   </div>

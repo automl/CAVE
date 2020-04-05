@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.cavefacade &mdash; CAVE 1.2.0 documentation</title>
+  <title>cave.cavefacade &mdash; CAVE 1.3.0.dev documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.2.0
+                1.3.0.dev
               </div>
             
           
@@ -233,40 +233,40 @@
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">typing</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">wraps</span>
-<span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">reload</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">reload</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">cave.__version__</span> <span class="k">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">v</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.algorithm_footprint</span> <span class="k">import</span> <span class="n">AlgorithmFootprint</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.bohb_incumbents_per_budget</span> <span class="k">import</span> <span class="n">BohbIncumbentsPerBudget</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.bohb_learning_curves</span> <span class="k">import</span> <span class="n">BohbLearningCurves</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.box_violin</span> <span class="k">import</span> <span class="n">BoxViolin</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.budget_correlation</span> <span class="k">import</span> <span class="n">BudgetCorrelation</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.cave_ablation</span> <span class="k">import</span> <span class="n">CaveAblation</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.cave_fanova</span> <span class="k">import</span> <span class="n">CaveFanova</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.cave_forward_selection</span> <span class="k">import</span> <span class="n">CaveForwardSelection</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.compare_default_incumbent</span> <span class="k">import</span> <span class="n">CompareDefaultIncumbent</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.configurator_footprint</span> <span class="k">import</span> <span class="n">ConfiguratorFootprint</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.cost_over_time</span> <span class="k">import</span> <span class="n">CostOverTime</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.feature_clustering</span> <span class="k">import</span> <span class="n">FeatureClustering</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.feature_correlation</span> <span class="k">import</span> <span class="n">FeatureCorrelation</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.feature_importance</span> <span class="k">import</span> <span class="n">FeatureImportance</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.local_parameter_importance</span> <span class="k">import</span> <span class="n">LocalParameterImportance</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.overview_table</span> <span class="k">import</span> <span class="n">OverviewTable</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.parallel_coordinates</span> <span class="k">import</span> <span class="n">ParallelCoordinates</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.performance_table</span> <span class="k">import</span> <span class="n">PerformanceTable</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.pimp_comparison_table</span> <span class="k">import</span> <span class="n">PimpComparisonTable</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.plot_ecdf</span> <span class="k">import</span> <span class="n">PlotECDF</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.plot_scatter</span> <span class="k">import</span> <span class="n">PlotScatter</span>
-<span class="kn">from</span> <span class="nn">cave.html.html_builder</span> <span class="k">import</span> <span class="n">HTMLBuilder</span>
-<span class="kn">from</span> <span class="nn">cave.reader.runs_container</span> <span class="k">import</span> <span class="n">RunsContainer</span>
-<span class="kn">from</span> <span class="nn">cave.utils.exceptions</span> <span class="k">import</span> <span class="n">Deactivated</span><span class="p">,</span> <span class="n">NotApplicable</span>
-<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">load_default_options</span>
-<span class="kn">from</span> <span class="nn">cave.utils.timing</span> <span class="k">import</span> <span class="n">timing</span>
+<span class="kn">from</span> <span class="nn">cave.__version__</span> <span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">v</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.algorithm_footprint</span> <span class="kn">import</span> <span class="n">AlgorithmFootprint</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.bohb_incumbents_per_budget</span> <span class="kn">import</span> <span class="n">BohbIncumbentsPerBudget</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.bohb_learning_curves</span> <span class="kn">import</span> <span class="n">BohbLearningCurves</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.box_violin</span> <span class="kn">import</span> <span class="n">BoxViolin</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.budget_correlation</span> <span class="kn">import</span> <span class="n">BudgetCorrelation</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.cave_ablation</span> <span class="kn">import</span> <span class="n">CaveAblation</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.cave_fanova</span> <span class="kn">import</span> <span class="n">CaveFanova</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.cave_forward_selection</span> <span class="kn">import</span> <span class="n">CaveForwardSelection</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.compare_default_incumbent</span> <span class="kn">import</span> <span class="n">CompareDefaultIncumbent</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.configurator_footprint</span> <span class="kn">import</span> <span class="n">ConfiguratorFootprint</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.cost_over_time</span> <span class="kn">import</span> <span class="n">CostOverTime</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.feature_clustering</span> <span class="kn">import</span> <span class="n">FeatureClustering</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.feature_correlation</span> <span class="kn">import</span> <span class="n">FeatureCorrelation</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.feature_importance</span> <span class="kn">import</span> <span class="n">FeatureImportance</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.local_parameter_importance</span> <span class="kn">import</span> <span class="n">LocalParameterImportance</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.overview_table</span> <span class="kn">import</span> <span class="n">OverviewTable</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.parallel_coordinates</span> <span class="kn">import</span> <span class="n">ParallelCoordinates</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.performance_table</span> <span class="kn">import</span> <span class="n">PerformanceTable</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.pimp_comparison_table</span> <span class="kn">import</span> <span class="n">PimpComparisonTable</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.plot_ecdf</span> <span class="kn">import</span> <span class="n">PlotECDF</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.plot_scatter</span> <span class="kn">import</span> <span class="n">PlotScatter</span>
+<span class="kn">from</span> <span class="nn">cave.html.html_builder</span> <span class="kn">import</span> <span class="n">HTMLBuilder</span>
+<span class="kn">from</span> <span class="nn">cave.reader.runs_container</span> <span class="kn">import</span> <span class="n">RunsContainer</span>
+<span class="kn">from</span> <span class="nn">cave.utils.exceptions</span> <span class="kn">import</span> <span class="n">Deactivated</span><span class="p">,</span> <span class="n">NotApplicable</span>
+<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="kn">import</span> <span class="n">load_default_options</span>
+<span class="kn">from</span> <span class="nn">cave.utils.timing</span> <span class="kn">import</span> <span class="n">timing</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Joshua Marben&quot;</span>
 <span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2017, ML4AAD&quot;</span>
@@ -306,7 +306,7 @@
     <span class="k">return</span> <span class="n">wrap</span>
 
 <div class="viewcode-block" id="CAVE"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE">[docs]</a><span class="k">class</span> <span class="nc">CAVE</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">folders</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
                  <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                  <span class="n">ta_exec_dir</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -706,7 +706,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
 
     </p>
   </div>

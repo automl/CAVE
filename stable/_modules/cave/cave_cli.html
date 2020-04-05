@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.cave_cli &mdash; CAVE 1.2.0 documentation</title>
+  <title>cave.cave_cli &mdash; CAVE 1.3.0.dev documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.2.0
+                1.3.0.dev
               </div>
             
           
@@ -233,20 +233,20 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">argparse</span> <span class="k">import</span> <span class="n">ArgumentParser</span><span class="p">,</span> <span class="n">SUPPRESS</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span> <span class="k">as</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">reload</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span><span class="p">,</span> <span class="n">SUPPRESS</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span> <span class="k">as</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">reload</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib</span>
 
-<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="k">import</span> <span class="n">load_default_options</span><span class="p">,</span> <span class="n">detect_fileformat</span>
+<span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="kn">import</span> <span class="n">load_default_options</span><span class="p">,</span> <span class="n">detect_fileformat</span>
 
 <span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;agg&#39;</span><span class="p">)</span>  <span class="c1"># noqa</span>
 
-<span class="kn">from</span> <span class="nn">pimp.utils.io.cmd_reader</span> <span class="k">import</span> <span class="n">SmartArgsDefHelpFormatter</span>
+<span class="kn">from</span> <span class="nn">pimp.utils.io.cmd_reader</span> <span class="kn">import</span> <span class="n">SmartArgsDefHelpFormatter</span>
 
-<span class="kn">from</span> <span class="nn">cave.cavefacade</span> <span class="k">import</span> <span class="n">CAVE</span>
-<span class="kn">from</span> <span class="nn">cave.__version__</span> <span class="k">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">v</span>
+<span class="kn">from</span> <span class="nn">cave.cavefacade</span> <span class="kn">import</span> <span class="n">CAVE</span>
+<span class="kn">from</span> <span class="nn">cave.__version__</span> <span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">v</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Joshua Marben&quot;</span>
 <span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2017, ML4AAD&quot;</span>
@@ -587,7 +587,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
 
     </p>
   </div>

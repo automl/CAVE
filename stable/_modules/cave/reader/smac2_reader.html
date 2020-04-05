@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.reader.smac2_reader &mdash; CAVE 1.2.0 documentation</title>
+  <title>cave.reader.smac2_reader &mdash; CAVE 1.3.0.dev documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.2.0
+                1.3.0.dev
               </div>
             
           
@@ -235,15 +235,15 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">ConfigSpace</span> <span class="k">import</span> <span class="n">Configuration</span>
-<span class="kn">from</span> <span class="nn">ConfigSpace.util</span> <span class="k">import</span> <span class="n">deactivate_inactive_hyperparameters</span><span class="p">,</span> <span class="n">fix_types</span>
-<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="k">import</span> <span class="n">RunHistory</span>
-<span class="kn">from</span> <span class="nn">smac.scenario.scenario</span> <span class="k">import</span> <span class="n">Scenario</span>
-<span class="kn">from</span> <span class="nn">smac.utils.io.input_reader</span> <span class="k">import</span> <span class="n">InputReader</span>
+<span class="kn">from</span> <span class="nn">ConfigSpace</span> <span class="kn">import</span> <span class="n">Configuration</span>
+<span class="kn">from</span> <span class="nn">ConfigSpace.util</span> <span class="kn">import</span> <span class="n">deactivate_inactive_hyperparameters</span><span class="p">,</span> <span class="n">fix_types</span>
+<span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="kn">import</span> <span class="n">RunHistory</span>
+<span class="kn">from</span> <span class="nn">smac.scenario.scenario</span> <span class="kn">import</span> <span class="n">Scenario</span>
+<span class="kn">from</span> <span class="nn">smac.utils.io.input_reader</span> <span class="kn">import</span> <span class="n">InputReader</span>
 
-<span class="kn">from</span> <span class="nn">cave.reader.base_reader</span> <span class="k">import</span> <span class="n">BaseReader</span><span class="p">,</span> <span class="n">changedir</span>
-<span class="kn">from</span> <span class="nn">cave.reader.csv2rh</span> <span class="k">import</span> <span class="n">CSV2RH</span>
-<span class="kn">from</span> <span class="nn">cave.utils.io</span> <span class="k">import</span> <span class="n">load_csv_to_pandaframe</span>
+<span class="kn">from</span> <span class="nn">cave.reader.base_reader</span> <span class="kn">import</span> <span class="n">BaseReader</span><span class="p">,</span> <span class="n">changedir</span>
+<span class="kn">from</span> <span class="nn">cave.reader.csv2rh</span> <span class="kn">import</span> <span class="n">CSV2RH</span>
+<span class="kn">from</span> <span class="nn">cave.utils.io</span> <span class="kn">import</span> <span class="n">load_csv_to_pandaframe</span>
 
 
 <div class="viewcode-block" id="SMAC2Reader"><a class="viewcode-back" href="../../../apidoc/cave.reader.smac2_reader.html#cave.reader.smac2_reader.SMAC2Reader">[docs]</a><span class="k">class</span> <span class="nc">SMAC2Reader</span><span class="p">(</span><span class="n">BaseReader</span><span class="p">):</span>
@@ -467,7 +467,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
 
     </p>
   </div>
