@@ -130,12 +130,12 @@ class OverviewTable(BaseAnalyzer):
                                                                                                  np.std(all_ta_runtimes))
 
         # Number of evaluations
-        ta_evals = [len(rh.get_runs_for_config(c)) for c in all_configs]
+        ta_evals = [len(rh.get_runs_for_config(c, only_max_observed_budget=True)) for c in all_configs]
         result['# evaluated configurations'] = len(all_configs)
         if not scenario.deterministic:
             result['# evaluations in total'] = np.sum(ta_evals)
-            result['# evaluations for default/incumbent'] = "{}/{}".format(len(rh.get_runs_for_config(default)),
-                                                                           len(rh.get_runs_for_config(incumbent)))
+            result['# evaluations for default/incumbent'] = "{}/{}".format(len(rh.get_runs_for_config(default, only_max_observed_budget=True)),
+                                                                           len(rh.get_runs_for_config(incumbent, only_max_observed_budget=True)))
             result['# runs per configuration (min, mean and max)'] = "{}/{:.2f}/{}".format(
                             np.min(ta_evals), np.mean(ta_evals), np.max(ta_evals))
         # Info about configurations

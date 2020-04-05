@@ -118,11 +118,12 @@ class HTMLBuilder(object):
 <header>
     <div class='l-wrapper'>
         <img class='logo logo--configurator' src="html/images/{}" />
+        <img class='logo logo--cave' src="html/images/CAVE_logo.png" />
         <img class='logo logo--ml' src="html/images/automl-logo.png" />
     </div>
 </header>
 <div class='l-wrapper'>
-<h1>CAVE</h1>
+<h1></h1>
 '''.format(self.logo_fn if not self.logo_custom else 'custom_logo.png')
 
         self.footer = '''

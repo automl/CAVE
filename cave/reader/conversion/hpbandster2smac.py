@@ -9,7 +9,6 @@ from ConfigSpace.configuration_space import Configuration, ConfigurationSpace
 from ConfigSpace.hyperparameters import CategoricalHyperparameter
 from ConfigSpace.read_and_write import json as pcs_json
 from ConfigSpace.read_and_write import pcs_new
-from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunHistory
 from smac.scenario.scenario import Scenario
 from smac.stats.stats import Stats
@@ -168,7 +167,7 @@ class HpBandSter2SMAC(object):
             for run in result.get_all_runs():
                 # Choose runhistory to add run to
                 if not run.budget in budget2rh:
-                    budget2rh[run.budget] = RunHistory(average_cost)
+                    budget2rh[run.budget] = RunHistory()
                 rh = budget2rh[run.budget]
 
                 # Load config...

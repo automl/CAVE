@@ -4,7 +4,6 @@ from typing import List
 from collections import OrderedDict
 
 from numpy.random.mtrand import RandomState
-from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunHistory, DataOrigin
 
 from cave.reader.configurator_run import ConfiguratorRun
@@ -253,7 +252,7 @@ class RunsContainer(object):
     def _aggregate(self, runs):
         """
         """
-        orig_rh, vali_rh = RunHistory(average_cost), RunHistory(average_cost)
+        orig_rh, vali_rh = RunHistory(), RunHistory()
         for run in runs:
             orig_rh.update(run.original_runhistory, origin=DataOrigin.INTERNAL)
             vali_rh.update(run.original_runhistory, origin=DataOrigin.INTERNAL)
