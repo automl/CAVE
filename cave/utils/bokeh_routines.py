@@ -54,7 +54,7 @@ def get_checkbox(glyph_renderers, labels, max_checkbox_length=None):
     select_none = Button(label="None", callback=CustomJS(args=dict({'checkbox':checkbox}, **args_checkbox),
                                                        code="var labels = {}; ".format('[]') + code_button_tail))
 
-    if max_checkbox_length is not None and len(glyph_renderers) > max_checkbox_length:
+    if max_checkbox_length is not None:
         # Keep all and none buttons, but create new checkboxes and return a list
         slices = list(range(0, len(glyph_renderers), max_checkbox_length)) + [len(glyph_renderers)]
         checkboxes = [get_checkbox(glyph_renderers[s:e], labels[s:e])[0] for s, e in zip(slices[:-1], slices[1:])]

@@ -202,7 +202,8 @@ class BohbLearningCurves(BaseAnalyzer):
         HB_iterations, HB_handles, HB_labels = list(HB_iterations), list(HB_handles), list(HB_labels)
         self.logger.debug("HB_iterations to labels: %s", str(list(zip(HB_iterations, HB_labels))))
 
-        checkbox, select_all, select_none = get_checkbox(HB_handles, HB_labels, max_checkbox_length=10)
+        # get_checbox returns a list of checkboxes when max_checkbox_length is not None
+        checkboxes, select_all, select_none = get_checkbox(HB_handles, HB_labels, max_checkbox_length=10)
 
         callback_color = CustomJS(args=dict(source_multiline=source_multiline,
                                             source_scatter=source_scatter,
@@ -233,8 +234,8 @@ class BohbLearningCurves(BaseAnalyzer):
                               callback=callback_color)
 
         # Put it all together in a layout (width of checkbox-field sizes with number of elements
-        width_of_checkbox = 650 if len(HB_labels) > 100 else 500 if len(HB_labels) > 70 else 400
-        layout = row(p, column(*[widgetbox(chkbox, max_width=width_of_checkbox, width_policy="min") for chkbox in checkbox],
+        checkbox_width = 650 if len(HB_labels) > 100 else 500 if len(HB_labels) > 70 else 400
+        layout = row(p, column(*[widgetbox(chkbox, max_width=checkbox_width, width_policy="min") for chkbox in checkboxes],
                                row(widgetbox(select_all, width=50),
                                    widgetbox(select_none, width=50)),
                                widgetbox(select_color, width=200)))
