@@ -12,11 +12,16 @@ def get_checkbox(glyph_renderers, labels, max_checkbox_length=None):
         list of glyph-renderers
     labels: List[str]
         list with strings to be put in checkbox
+    max_checkbox_length: None or int
+        maximum number of checkboxes in a single CheckboxButtonGroup, splits up the checkboxes over multiple
+        CheckboxButtonGroups (e.g. to simulate "line-breaks" in the visual layout)
+        NOTE: if this is not None, will return List[CheckboxButtonGroup]
+
 
     Returns
     -------
-    checkbox: CheckboxGroup or List[CheckboxGroup]
-        checkbox object
+    checkbox: CheckboxButtonGroup or List[CheckboxButtonGroup]
+        checkbox object (or list of checkbox-objects)
     select_all: Button
         button related to checkbox
     select_none: Button
@@ -54,7 +59,7 @@ def get_checkbox(glyph_renderers, labels, max_checkbox_length=None):
     select_none = Button(label="None", callback=CustomJS(args=dict({'checkbox':checkbox}, **args_checkbox),
                                                        code="var labels = {}; ".format('[]') + code_button_tail))
 
-    if max_checkbox_length is not None and len(glyph_renderers) > max_checkbox_length:
+    if max_checkbox_length:
         # Keep all and none buttons, but create new checkboxes and return a list
         slices = list(range(0, len(glyph_renderers), max_checkbox_length)) + [len(glyph_renderers)]
         checkboxes = [get_checkbox(glyph_renderers[s:e], labels[s:e])[0] for s, e in zip(slices[:-1], slices[1:])]
