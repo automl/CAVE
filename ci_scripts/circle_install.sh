@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 
 # on circle ci, each command run with it's own execution context so we have to
 # activate the conda testenv on a per command basis. That's why we put calls to
@@ -8,7 +8,7 @@ source activate testenv
 
 # install documentation building dependencies
 pip install --upgrade numpy
-pip install --upgrade matplotlib setuptools nose coverage sphinx pillow sphinx-gallery sphinx_bootstrap_theme cython numpydoc
+pip install --upgrade matplotlib setuptools nose coverage sphinx==2.4.4 pillow sphinx-gallery sphinx_bootstrap_theme cython numpydoc
 # And finally, all other dependencies
 cat requirements.txt | xargs -n 1 -L 1 pip install
 
