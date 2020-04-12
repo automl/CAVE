@@ -1,3 +1,9 @@
+# 1.3.1
+
+## Bug fixes
+
+* Fix #261, `get_checkbox` threw an error due to unpredictable return type
+
 # 1.3.0
 
 ## Major changes
