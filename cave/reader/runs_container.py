@@ -1,4 +1,6 @@
 import logging
+import os
+import shutil
 import tempfile
 from typing import List
 from collections import OrderedDict
@@ -116,7 +118,8 @@ class RunsContainer(object):
             hpbandster2smac = HpBandSter2SMAC()
             # Convert m BOHB-folders to m + n SMAC-folders
             # TODO make compatible with hpbandster
-            self.folder2result, self.folder2budgets = hpbandster2smac.convert(self.folders, self.output_dir)
+            self.folder2result, self.folder2budgets = hpbandster2smac.convert(self.folders,
+                                                                              output_dir=self.output_dir)
             self.budgets.extend(list(self.folder2result.values())[0].HB_config['budgets'])
             #if "DEBUG" in self.verbose_level:
             #    for f in folders:

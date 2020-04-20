@@ -132,7 +132,7 @@ class HpBandSter2SMAC(object):
             self.logger.debug("No origin for config (id %s)!" % str(config_id), exc_info=True)
         return config
 
-    def hpbandster2smac(self, folder2result, cs_options, output_dir: str):
+    def hpbandster2smac(self, folder2result, cs_options, output_dir_base: str):
         """Reading hpbandster-result-object and creating RunHistory and trajectory...  treats each budget as an
         individual 'smac'-run, creates an output-directory with subdirectories for each budget.
 
@@ -143,7 +143,7 @@ class HpBandSter2SMAC(object):
         cs_options: list[ConfigurationSpace]
             the configuration spaces. in the best case it's a single element, but for pcs-format we need to guess
             through a list of possible configspaces
-        output_dir: str
+        output_dir_base: str
             the output-dir to save the smac-runs to
         
         Returns
@@ -155,6 +155,7 @@ class HpBandSter2SMAC(object):
         folder2budgets = OrderedDict()
         self.logger.debug("Loading with %d configspace alternative options...", len(cs_options))
         self.logger.info("Assuming BOHB treats target algorithms as deterministic (and does not re-evaluate)")
+        output_dir = os.path.join(output_dir_base, 'converted_input_data')
         for folder, result in folder2result.items():
             folder2budgets[folder] = OrderedDict()
             self.logger.debug("Budgets for '%s': %s" % (folder, str(result.HB_config['budgets'])))
@@ -207,7 +208,7 @@ class HpBandSter2SMAC(object):
             ##########################
             formatted_budgets = format_budgets(budget2rh.keys())  # Make budget-names readable [0.021311, 0.031211] to [0.02, 0.03]
             for b, rh in budget2rh.items():
-                output_path = os.path.join(output_dir, folder, formatted_budgets[b])
+                output_path = os.path.join(output_dir, formatted_budgets[b])
                 folder2budgets[folder][b] = output_path
 
                 scenario = Scenario({'run_obj' : 'quality',
