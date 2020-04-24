@@ -93,6 +93,7 @@ class RunsContainer(object):
 
         if file_format.upper() == "AUTO":
             file_format = detect_fileformat(folders=self.folders)
+            self.logger.info("Format of input detected automatically: %s", file_format)
         self.file_format = file_format
         self.validation_format = validation_format
         self.use_budgets = self.file_format == "BOHB"
@@ -115,7 +116,7 @@ class RunsContainer(object):
             # TODO make compatible with hpbandster
             self.folder2result, self.folder2budgets = hpbandster2smac.convert(self.folders, self.output_dir)
             self.budgets.extend(list(self.folder2result.values())[0].HB_config['budgets'])
-        if self.file_format == 'CSV':
+        elif self.file_format == 'CSV':
             self.logger.debug("Check whether CSV-data needs to be split up (only if budgets are used)")
             csv2smac = CSV2SMAC()
             result = csv2smac.convert(self.folders, self.ta_exec_dirs,   self.output_dir)  # todo: Everything already in here...
