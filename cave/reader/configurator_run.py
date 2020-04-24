@@ -11,7 +11,6 @@ from smac.runhistory.runhistory import RunHistory, DataOrigin
 from smac.utils.io.input_reader import InputReader
 from smac.utils.validate import Validator
 
-from cave.reader.csv_reader import CSVReader
 from cave.reader.smac2_reader import SMAC2Reader
 from cave.reader.smac3_reader import SMAC3Reader
 from cave.utils.helpers import scenario_sanity_check
@@ -322,7 +321,7 @@ class ConfiguratorRun(object):
         elif name == 'SMAC2':
             return SMAC2Reader(folder, ta_exec_dir)
         elif name == 'CSV':
-            return CSVReader(folder, ta_exec_dir)
+            return SMAC3Reader(folder, ta_exec_dir)
         else:
             raise ValueError("%s not supported as file-format" % name)
 

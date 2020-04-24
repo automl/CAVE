@@ -21,8 +21,6 @@ __maintainer__ = "Joshua Marben"
 __email__ = "joshua.marben@neptun.uni-freiburg.de"
 
 class CSV2RH(object):
-    def __init__(self):
-        pass
 
     def read_csv_to_rh(self, data,
                        cs:Union[None, str, ConfigurationSpace]=None,
@@ -30,11 +28,10 @@ class CSV2RH(object):
                        train_inst:Union[None, str, list]=None,
                        test_inst:Union[None, str, list]=None,
                        instance_features:Union[None, str, dict]=None,
-                       logger=None,
-                       seed=42):
+                       ):
         """ Interpreting a .csv-file as runhistory.
         Valid values for the header of the csv-file/DataFrame are:
-        ['seed', 'cost', 'time', 'status', 'config_id', 'instance_id'] or any
+        ['seed', 'cost', 'time', 'status', 'budget', 'config_id', 'instance_id'] or any
         parameter- or instance-feature-names.
 
         Parameters
@@ -59,7 +56,7 @@ class CSV2RH(object):
         rh: RunHistory
             runhistory with all the runs from the csv-file
         """
-        self.logger = logging.getLogger('cave.utils.csv2rh')
+        self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
         self.input_reader = InputReader()
         self.train_inst = self.input_reader.read_instance_file(train_inst) if type(train_inst) == str else train_inst
         self.test_inst =  self.input_reader.read_instance_file(test_inst) if type(test_inst) == str else test_inst
@@ -73,14 +70,14 @@ class CSV2RH(object):
             data = load_csv_to_pandaframe(data, self.logger, apply_numeric=False)
 
         # Expecting header as described in docstring
-        self.valid_values = ['seed', 'cost', 'time', 'status', 'config_id', 'instance_id']
+        self.valid_values = ['seed', 'cost', 'time', 'status', 'budget', 'config_id', 'instance_id']
 
         if isinstance(cs, str):
             self.logger.debug("Reading PCS from %s", cs)
             with open(cs, 'r') as fh:
                 cs = pcs.read(fh)
         elif not cs:
-            # No config-space provided, create from columns
+            self.logger.debug("No config-space provided, create from columns")
             if self.id_to_config:
                 cs = np.random.choice(list(self.id_to_config.values())).configuration_space
             else:
@@ -88,7 +85,7 @@ class CSV2RH(object):
                 parameters -= set(self.valid_values)
                 parameters -= set(feature_names)
                 parameters = list(parameters)
-            cs = self.create_cs_from_pandaframe(data[parameters])
+                cs = self.create_cs_from_pandaframe(data[parameters])
 
         parameters = cs.get_hyperparameter_names()
         if not feature_names and not 'instance_id' in data.columns:
@@ -103,9 +100,9 @@ class CSV2RH(object):
         data, id_to_config = self.extract_configs(data, cs, id_to_config)
         data, id_to_inst_feats = self.extract_instances(data, feature_names,
                                                         instance_features)
-        self.logger.debug("Found: seed=%s, cost=%s, time=%s, status=%s",
+        self.logger.debug("Found: seed=%s, cost=%s, time=%s, status=%s, budget=%s",
                           'seed' in data.columns, 'cost' in data.columns,
-                          'time' in data.columns, 'status' in data.columns)
+                          'time' in data.columns, 'status' in data.columns, 'budget' in data.columns)
 
         # Create RunHistory
         rh = RunHistory()
@@ -117,6 +114,7 @@ class CSV2RH(object):
                    status=new_status,
                    instance_id=row['instance_id'] if 'instance_id' in row else None,
                    seed=row['seed'] if 'seed' in row else None,
+                   budget=row['budget'] if 'budget' in row else 0,
                    additional_info=None,
                    origin=DataOrigin.INTERNAL)
 
@@ -133,8 +131,7 @@ class CSV2RH(object):
         maxima = data.max()
         cs = ConfigurationSpace(seed=42)
         for p in data.columns:
-            cs.add_hyperparameter(UniformFloatHyperparameter(p,
-                                  lower=minima[p] - 1, upper=maxima[p] + 1))
+            cs.add_hyperparameter(UniformFloatHyperparameter(p, lower=minima[p] - 1, upper=maxima[p] + 1))
 
     def _interpret_status(self, status, types=None):
         """
@@ -222,8 +219,7 @@ class CSV2RH(object):
             ids_in_order = []
             data['config_id'] = -1
             def add_config(row):
-                values = {name : row[name] for name in parameters if
-                            row[name] != ''}
+                values = {name : row[name] for name in parameters if row[name] != ''}
                 config = deactivate_inactive_hyperparameters(fix_types(values, cs), cs)
                 if not config in config_to_id:
                     config_to_id[config] = len(config_to_id)
@@ -233,7 +229,6 @@ class CSV2RH(object):
             id_to_config = {conf : name for name, conf in config_to_id.items()}
 
         data["config_id"] = pd.to_numeric(data["config_id"])
-
 
         # Check whether all config-ids are present
         if len(set(data['config_id']) - set(id_to_config.keys())) > 0:

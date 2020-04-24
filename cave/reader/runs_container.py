@@ -6,6 +6,7 @@ from numpy.random.mtrand import RandomState
 from smac.runhistory.runhistory import RunHistory, DataOrigin
 
 from cave.reader.configurator_run import ConfiguratorRun
+from cave.reader.conversion.csv2smac import CSV2SMAC
 from cave.reader.conversion.hpbandster2smac import HpBandSter2SMAC
 from cave.utils.helpers import combine_trajectories, load_default_options, detect_fileformat
 
@@ -114,11 +115,12 @@ class RunsContainer(object):
             # TODO make compatible with hpbandster
             self.folder2result, self.folder2budgets = hpbandster2smac.convert(self.folders, self.output_dir)
             self.budgets.extend(list(self.folder2result.values())[0].HB_config['budgets'])
-            #if "DEBUG" in self.verbose_level:
-            #    for f in folders:
-            #        debug_f = os.path.join(output_dir, 'debug', os.path.basename(f))
-            #        shutil.rmtree(debug_f, ignore_errors=True)
-            #        shutil.copytree(f, debug_f)
+        if self.file_format == 'CSV':
+            self.logger.debug("Check whether CSV-data needs to be split up (only if budgets are used)")
+            csv2smac = CSV2SMAC()
+            result = csv2smac.convert(self.folders, self.ta_exec_dirs,   self.output_dir)  # todo: Everything already in here...
+            self.folder2budgets = {k : {None : v['new_path']} for k, v in result.items()}
+            self.ta_exec_dirs = ['.']
         else:
             self.folder2budgets = {f : {None : f} for f in self.folders}
 
