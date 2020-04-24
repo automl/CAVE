@@ -70,7 +70,7 @@ class SMAC3Reader(BaseReader):
             runhistory with validation-data, if available
         """
         rh_fn = os.path.join(self.folder, 'validated_runhistory.json')
-        rh = RunHistory(average_cost)
+        rh = RunHistory()
         try:
             rh.load_json(rh_fn, cs)
         except FileNotFoundError:

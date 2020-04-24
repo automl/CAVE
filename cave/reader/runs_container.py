@@ -165,6 +165,9 @@ class RunsContainer(object):
         else:
             return self.pRun2budget[key][None]
 
+    def get_run(self, folder, budget):
+        return self.pRun2budget[folder][budget]
+
     def get_bohb_results(self):
         if self.file_format == "BOHB":
             return list(self.folder2result.values())

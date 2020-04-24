@@ -29,8 +29,7 @@ class BaseReader(object):
 
     def get_scenario(self):
         """Expects `self.folder/scenario.txt` with appropriately formatted
-        scenario-information (
-        `<https://automl.github.io/SMAC3/stable/options.html#scenario>`_)"""
+        scenario-information (`<https://automl.github.io/SMAC3/stable/options.html#scenario>`_)"""
         raise NotImplemented()
 
     def get_runhistory(self):

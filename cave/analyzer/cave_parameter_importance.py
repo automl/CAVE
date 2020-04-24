@@ -20,7 +20,8 @@ class CaveParameterImportance(BaseAnalyzer):
             modus for parameter importance, from
             [forward-selection, ablation, fanova, lpi]
         """
-        runs_by_budget = self.runscontainer.get_aggregated(True, False)
+        runs_by_budget = self.runscontainer.get_aggregated(keep_budgets=True,
+                                                           keep_folders=False)
 
         formatted_budgets = format_budgets(self.runscontainer.get_budgets(), allow_whitespace=True)
 

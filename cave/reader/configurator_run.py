@@ -25,7 +25,6 @@ class ConfiguratorRun(object):
     This class is responsible for providing a scenario, a runhistory and a
     trajectory and handling original/validated data appropriately.
     To create a ConfiguratorRun from a folder, use Configurator.from_folder()
-
     """
     def __init__(self,
                  scenario,
@@ -108,8 +107,8 @@ class ConfiguratorRun(object):
                                   'validator' : None}
 
     def get_identifier(self):
-        path = self.path_to_folder if self.path_to_folder is not None else ""
-        budget = str(self.budget) if self.budget is not None else ""
+        path = self.path_to_folder if self.path_to_folder is not None else "all_folders"
+        budget = str(self.budget) if self.budget is not None else "all_budgets"
         if path and budget:
             res = "_".join([path, budget])
         elif not (path or budget):
