@@ -240,8 +240,8 @@
 <span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="kn">import</span> <span class="n">RunHistory</span><span class="p">,</span> <span class="n">DataOrigin</span>
 <span class="kn">from</span> <span class="nn">smac.utils.io.input_reader</span> <span class="kn">import</span> <span class="n">InputReader</span>
 <span class="kn">from</span> <span class="nn">smac.utils.validate</span> <span class="kn">import</span> <span class="n">Validator</span>
+<span class="kn">from</span> <span class="nn">smac</span> <span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">smac_version</span>
 
-<span class="kn">from</span> <span class="nn">cave.reader.csv_reader</span> <span class="kn">import</span> <span class="n">CSVReader</span>
 <span class="kn">from</span> <span class="nn">cave.reader.smac2_reader</span> <span class="kn">import</span> <span class="n">SMAC2Reader</span>
 <span class="kn">from</span> <span class="nn">cave.reader.smac3_reader</span> <span class="kn">import</span> <span class="n">SMAC3Reader</span>
 <span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="kn">import</span> <span class="n">scenario_sanity_check</span>
@@ -255,7 +255,6 @@
 <span class="sd">    This class is responsible for providing a scenario, a runhistory and a</span>
 <span class="sd">    trajectory and handling original/validated data appropriately.</span>
 <span class="sd">    To create a ConfiguratorRun from a folder, use Configurator.from_folder()</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">scenario</span><span class="p">,</span>
@@ -267,7 +266,7 @@
                  <span class="n">ta_exec_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">file_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">validation_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">budget</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">reduced_to_budgets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -288,8 +287,8 @@
 <span class="sd">            path to the target-algorithm-execution-directory. This is only important for SMAC-optimized data</span>
 <span class="sd">        file_format, validation_format: str</span>
 <span class="sd">            will be autodetected some point soon, until then, specify the file-format (SMAC2, SMAC3, BOHB, etc...)</span>
-<span class="sd">        budget: str int or float</span>
-<span class="sd">            a budget, with which this cr is associated</span>
+<span class="sd">        reduced_to_budgets: List str int or float</span>
+<span class="sd">            budgets, with which this cr is associated</span>
 <span class="sd">        output_dir: str</span>
 <span class="sd">            where to save analysis-data for this cr</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -298,7 +297,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">options</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">path_to_folder</span> <span class="o">=</span> <span class="n">path_to_folder</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">budget</span> <span class="o">=</span> <span class="n">budget</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reduced_to_budgets</span> <span class="o">=</span> <span class="n">reduced_to_budgets</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">original_runhistory</span> <span class="o">=</span> <span class="n">original_runhistory</span>
@@ -329,17 +328,25 @@
 
         <span class="c1"># Initialize importance and validator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_pimp_and_validator</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_default_and_incumbents</span><span class="p">(</span><span class="s2">&quot;epm&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ta_exec_dir</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_validate_default_and_incumbents</span><span class="p">(</span><span class="s2">&quot;epm&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ta_exec_dir</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Validation of default and incumbent failed. SMAC (v: </span><span class="si">%s</span><span class="s1">) does not support validation &#39;</span>
+                                <span class="s1">&#39;of budgets+instances yet, if you use budgets but no instances ignore this warning.&#39;</span><span class="p">,</span>
+                                <span class="n">smac_version</span><span class="p">)</span>
 
         <span class="c1"># Set during execution, to share information between Analyzers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">share_information</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;parameter_importance&#39;</span> <span class="p">:</span> <span class="n">OrderedDict</span><span class="p">(),</span>
                                   <span class="s1">&#39;feature_importance&#39;</span> <span class="p">:</span> <span class="n">OrderedDict</span><span class="p">(),</span>
                                   <span class="s1">&#39;evaluators&#39;</span> <span class="p">:</span> <span class="n">OrderedDict</span><span class="p">(),</span>
-                                  <span class="s1">&#39;validator&#39;</span> <span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+                                  <span class="s1">&#39;validator&#39;</span> <span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                                  <span class="s1">&#39;hpbandster_result&#39;</span> <span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># Only for file-format BOHB</span>
+                                  <span class="p">}</span>
 
 <div class="viewcode-block" id="ConfiguratorRun.get_identifier"><a class="viewcode-back" href="../../../apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun.get_identifier">[docs]</a>    <span class="k">def</span> <span class="nf">get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_to_folder</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_to_folder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="n">budget</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">budget</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">budget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_to_folder</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_to_folder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;all_folders&quot;</span>
+        <span class="n">budget</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reduced_to_budgets</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduced_to_budgets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;all_budgets&quot;</span>
         <span class="k">if</span> <span class="n">path</span> <span class="ow">and</span> <span class="n">budget</span><span class="p">:</span>
             <span class="n">res</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">path</span><span class="p">,</span> <span class="n">budget</span><span class="p">])</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span><span class="n">path</span> <span class="ow">or</span> <span class="n">budget</span><span class="p">):</span>
@@ -348,6 +355,9 @@
             <span class="n">res</span> <span class="o">=</span> <span class="n">path</span> <span class="k">if</span> <span class="n">path</span> <span class="k">else</span> <span class="n">budget</span>
         <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="ConfiguratorRun.get_budgets"><a class="viewcode-back" href="../../../apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun.get_budgets">[docs]</a>    <span class="k">def</span> <span class="nf">get_budgets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">([</span><span class="n">k</span><span class="o">.</span><span class="n">budget</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">original_runhistory</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span></div>
+
 <div class="viewcode-block" id="ConfiguratorRun.from_folder"><a class="viewcode-back" href="../../../apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun.from_folder">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_folder</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
                     <span class="n">folder</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -355,7 +365,6 @@
                     <span class="n">options</span><span class="p">,</span>
                     <span class="n">file_format</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;SMAC3&#39;</span><span class="p">,</span>
                     <span class="n">validation_format</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;NONE&#39;</span><span class="p">,</span>
-                    <span class="n">budget</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                     <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialize scenario, runhistory and incumbent from folder</span>
@@ -375,8 +384,8 @@
 <span class="sd">            from [SMAC2, SMAC3, CSV, NONE], in which format to look for validated data</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;cave.ConfiguratorRun.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">))</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading from </span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s2"> with ta_exec_dir </span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s2"> with file-format &#39;</span><span class="si">%s</span><span class="s2">&#39; and validation-format </span><span class="si">%s</span><span class="s2">. &quot;</span>
-                          <span class="s2">&quot;Budget (if present): </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">ta_exec_dir</span><span class="p">,</span> <span class="n">file_format</span><span class="p">,</span> <span class="n">validation_format</span><span class="p">,</span> <span class="n">budget</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading from </span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s2"> with ta_exec_dir </span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s2"> with file-format &#39;</span><span class="si">%s</span><span class="s2">&#39; and validation-format </span><span class="si">%s</span><span class="s2">. &quot;</span><span class="p">,</span>
+                          <span class="n">folder</span><span class="p">,</span> <span class="n">ta_exec_dir</span><span class="p">,</span> <span class="n">file_format</span><span class="p">,</span> <span class="n">validation_format</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">file_format</span> <span class="o">==</span> <span class="s1">&#39;BOHB&#39;</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;File format is BOHB, assmuming data was converted to SMAC3-format using &quot;</span>
@@ -414,7 +423,6 @@
                    <span class="n">ta_exec_dir</span><span class="o">=</span><span class="n">ta_exec_dir</span><span class="p">,</span>
                    <span class="n">file_format</span><span class="o">=</span><span class="n">file_format</span><span class="p">,</span>
                    <span class="n">validation_format</span><span class="o">=</span><span class="n">validation_format</span><span class="p">,</span>
-                   <span class="n">budget</span><span class="o">=</span><span class="n">budget</span><span class="p">,</span>
                    <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span>
                    <span class="p">)</span></div>
 
@@ -553,7 +561,7 @@
         <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;SMAC2&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">SMAC2Reader</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">ta_exec_dir</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;CSV&#39;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">CSVReader</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">ta_exec_dir</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">SMAC3Reader</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">ta_exec_dir</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> not supported as file-format&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span></div></div>
 

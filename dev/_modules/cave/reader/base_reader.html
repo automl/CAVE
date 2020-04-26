@@ -259,8 +259,7 @@
 
 <div class="viewcode-block" id="BaseReader.get_scenario"><a class="viewcode-back" href="../../../apidoc/cave.reader.base_reader.html#cave.reader.base_reader.BaseReader.get_scenario">[docs]</a>    <span class="k">def</span> <span class="nf">get_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Expects `self.folder/scenario.txt` with appropriately formatted</span>
-<span class="sd">        scenario-information (</span>
-<span class="sd">        `&lt;https://automl.github.io/SMAC3/stable/options.html#scenario&gt;`_)&quot;&quot;&quot;</span>
+<span class="sd">        scenario-information (`&lt;https://automl.github.io/SMAC3/stable/options.html#scenario&gt;`_)&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="bp">NotImplemented</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="BaseReader.get_runhistory"><a class="viewcode-back" href="../../../apidoc/cave.reader.base_reader.html#cave.reader.base_reader.BaseReader.get_runhistory">[docs]</a>    <span class="k">def</span> <span class="nf">get_runhistory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -292,7 +291,8 @@
                 <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;The file </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2"> does not exist in </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">folder</span><span class="p">))</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">globbed</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">raise_on_failure</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">NotUniqueError</span><span class="p">(</span><span class="s2">&quot;The file </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2"> exists </span><span class="si">{}</span><span class="s2"> times in </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2">, but not in the expected place.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">folder</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="n">NotUniqueError</span><span class="p">(</span><span class="s2">&quot;The file </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2"> exists </span><span class="si">{}</span><span class="s2"> times in </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2">, but not in the expected place.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">fn</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">globbed</span><span class="p">),</span> <span class="n">folder</span><span class="p">))</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span></div></div>
 </pre></div>
 

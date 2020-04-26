@@ -241,6 +241,7 @@
 
 
 <div class="viewcode-block" id="BohbIncumbentsPerBudget"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.bohb_incumbents_per_budget.html#cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget">[docs]</a><span class="k">class</span> <span class="nc">BohbIncumbentsPerBudget</span><span class="p">(</span><span class="n">BaseAnalyzer</span><span class="p">):</span>
+    <span class="c1"># todo rename (not BOHB-specific)</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Show the incumbents for each budget (i.e. the best configuration by kernel-estimation using data from that</span>
 <span class="sd">    budget).</span>
@@ -251,7 +252,7 @@
                  <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">runscontainer</span><span class="p">)</span>
 
-        <span class="n">runs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">budget</span><span class="p">)</span>
+        <span class="n">runs</span> <span class="o">=</span> <span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="n">keep_budgets</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keep_folders</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">incumbents</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">incumbent</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">]</span>
         <span class="n">budget_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">format_budgets</span><span class="p">(</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_budgets</span><span class="p">(),</span> <span class="n">allow_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
         <span class="n">epm_rhs</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">epm_runhistory</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">]</span>
