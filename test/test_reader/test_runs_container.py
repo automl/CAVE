@@ -53,4 +53,4 @@ class TestRunContainer(unittest.TestCase):
         ta_exec_dir = ["."]
         rc = RunsContainer(folders, ta_exec_dirs=ta_exec_dir, file_format="BOHB")
 
-        self.assertEqual(len(rc["examples/bohb"].original_runhistory.data), 40)
+        self.assertEqual(len(rc["examples/bohb"].original_runhistory.data), 256)

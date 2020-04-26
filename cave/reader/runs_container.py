@@ -99,9 +99,8 @@ class RunsContainer(object):
         if self.file_format == 'BOHB':
             self.logger.debug("Converting %d BOHB folders to SMAC-format", len(folders))
             hpbandster2smac = HpBandSter2SMAC()
-            self.folder2result, self.folder2budgets = hpbandster2smac.convert(self.folders, self.output_dir)
-            self.budgets.extend(list(self.folder2result.values())[0].HB_config['budgets'])
-            input_data = input_data
+            result = hpbandster2smac.convert(self.folders, self.output_dir)
+            input_data = result
         elif self.file_format == 'CSV':
             self.logger.debug("Check whether CSV-data needs to be split up (only if budgets are used)")
             csv2smac = CSV2SMAC()
@@ -121,16 +120,19 @@ class RunsContainer(object):
                 # Data has been converted and should therefore be available here
                 self.logger.debug('Input data already read in for folder %s', f)
                 cr = ConfiguratorRun(
-                    scenario=input_data[f]['scenario'],
-                    original_runhistory=input_data[f]['runhistory'],
-                    validated_runhistory=input_data[f]['validated_runhistory'] if 'validated_runhistory' in input_data[f] else None,
-                    trajectory=input_data[f]['trajectory'],
+                    scenario=input_data[f].pop('scenario'),
+                    original_runhistory=input_data[f].pop('runhistory'),
+                    validated_runhistory=input_data[f].pop('validated_runhistory', None),
+                    trajectory=input_data[f].pop('trajectory'),
                     options=self.analyzing_options,
-                    path_to_folder=input_data[f]['new_path'],
+                    path_to_folder=input_data[f].pop('new_path'),
                     ta_exec_dir=ta_exec_dir,
                     file_format=file_format,
                     validation_format=validation_format,
                     output_dir=self.output_dir)
+                # Any format-specific information
+                for k, v in input_data[f].items():
+                    cr.share_information[k] = v
             else:
                 # Data is in good readable SMAC3-format
                 cr = ConfiguratorRun.from_folder(f,
@@ -145,19 +147,10 @@ class RunsContainer(object):
 
     def __getitem__(self, key):
         """ Return highest budget for given folder. """
-        if self.use_budgets:
-            return self.pRun2budget[key][self.get_highest_budget()]
-        else:
-            return self.pRun2budget[key][None]
+        return self.data[key]
 
     def get_run(self, folder, budget):
         return self.pRun2budget[folder][budget]
-
-    def get_bohb_results(self):
-        if self.file_format == "BOHB":
-            return list(self.folder2result.values())
-        else:
-            return None
 
     def get_all_runs(self):
         return list(self.data.values())
@@ -184,7 +177,7 @@ class RunsContainer(object):
         return list(self.data.keys())
 
     def get_runs_for_folder(self, f):
-        return list(self.pRun2budget[f].values())
+        return self.data[f]
 
     def get_aggregated(self, keep_budgets=True, keep_folders=False):
         """ Collapse data-structure along a given "axis".

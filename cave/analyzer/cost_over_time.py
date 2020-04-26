@@ -56,7 +56,8 @@ class CostOverTime(BaseAnalyzer):
         self.scenario = self.runscontainer.scenario
         self.output_dir = self.runscontainer.output_dir
         self.rh = self.runscontainer.get_aggregated(False, False)[0].validated_runhistory
-        self.bohb_results = self.runscontainer.get_bohb_results()
+        self.bohb_results = [cr.share_information.get('hpbandster_result', None)
+                             for cr in self.runscontainer.get_all_runs()]
         # Run-specific / budget specific infos
         if len(self.runscontainer.get_budgets()) > 1:
             self.runs = self.runscontainer.get_aggregated(keep_folders=False, keep_budgets=True)

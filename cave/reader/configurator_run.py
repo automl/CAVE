@@ -110,7 +110,9 @@ class ConfiguratorRun(object):
         self.share_information = {'parameter_importance' : OrderedDict(),
                                   'feature_importance' : OrderedDict(),
                                   'evaluators' : OrderedDict(),
-                                  'validator' : None}
+                                  'validator' : None,
+                                  'hpbandster_result' : None,  # Only for file-format BOHB
+                                  }
 
     def get_identifier(self):
         path = self.path_to_folder if self.path_to_folder is not None else "all_folders"

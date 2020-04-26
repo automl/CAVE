@@ -25,8 +25,8 @@ class CSV2SMAC(BaseConverter):
 
         # Using temporary files for the intermediate smac-result-like format if no output_dir specified
         if not output_dir:
-            self.logger.debug("New outputdir")
             output_dir = tempfile.mkdtemp()
+            self.logger.debug("Temporary directory for intermediate SMAC3-results: %s", output_dir)
         if ta_exec_dirs is None or len(ta_exec_dirs) == 0:
             ta_exec_dirs = ['.']
         if len(ta_exec_dirs) != len(folders):
@@ -205,22 +205,6 @@ class CSV2SMAC(BaseConverter):
         if (not run_1_existed) and os.path.exists('run_1'):
             shutil.rmtree('run_1')
         return scen
-
-    def get_folder_basenames(self, folders):
-        """Shorten folder-strings as much as possible (always keeping the basename).
-        ["foo/bar/run_1", "foo/bar/run_2/"] will be ["run_1", "run_2]
-        ["foo/run_1/bar/", "foo/run_2/bar"] will be ["run_1/bar", "run_2/bar"]
-        """
-        throw, keep = folders[:], ['' for _ in range(len(set(folders)))]
-        max_parts = max([len(f.split('/')) for f in folders])
-        for _ in range(max_parts):
-            for idx in range(len(folders)):
-                throw[idx], new = os.path.split(throw[idx].rstrip('/'))
-                keep[idx] = os.path.join(new, keep[idx]).rstrip('/')
-            if len(set(keep)) == len(set(folders)):
-                break
-
-        return keep
 
     @classmethod
     def check_for_files(cls, path):
