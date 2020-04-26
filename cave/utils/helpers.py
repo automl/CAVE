@@ -8,7 +8,7 @@ import numpy as np
 from ConfigSpace.configuration_space import Configuration
 from smac.runhistory.runhistory import RunHistory, RunKey
 
-from cave.reader.csv_reader import CSVReader
+from cave.reader.conversion.csv2smac import CSV2SMAC
 from cave.reader.smac2_reader import SMAC2Reader
 from cave.reader.smac3_reader import SMAC3Reader
 from cave.utils.exceptions import NotApplicable
@@ -77,28 +77,7 @@ def get_cost_dict_for_config(rh: RunHistory,
     cost: dict(instance->cost)
         cost per instance (aggregated or as list per seed)
     """
-    # Check if config is in runhistory
-    conf_id = rh.config_ids[conf]
-
-    # Map instances to seeds in dict
-    runs = rh.get_runs_for_config(conf, only_max_observed_budget=True)
-    instance_to_seeds = dict()
-    for run in runs:
-        inst, seed, _ = run
-        if inst in instance_to_seeds:
-            instance_to_seeds[inst].append(seed)
-        else:
-            instance_to_seeds[inst] = [seed]
-
-    # Get loss per instance
-    instance_costs = {i: [rh.data[RunKey(conf_id, i, s)].cost for s in
-                          instance_to_seeds[i]] for i in instance_to_seeds}
-
-    # Aggregate:
-    instance_costs = {i: np.mean(instance_costs[i]) for i in instance_costs}
-
-    # TODO: uncomment next line and delete all above after next SMAC dev->master
-    # instance_costs = rh.get_instance_costs_for_config(conf)
+    instance_costs = rh.get_instance_costs_for_config(conf)
 
     if par != 1:
         if cutoff:
@@ -254,7 +233,7 @@ def detect_fileformat(folders):
     if all([SMAC2Reader.check_for_files(f) for f in folders]):
         return "SMAC2"
     # Check if it's CSV
-    if all([CSVReader.check_for_files(f) for f in folders]):
+    if all([CSV2SMAC.check_for_files(f) for f in folders]):
         return "CSV"
 
     raise RuntimeError("Autodetection of file-format failed. Please try to specify (using --file_format on cmd-line)")

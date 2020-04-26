@@ -215,10 +215,11 @@ class CAVE(object):
         #    Budget  Analysis    #    Budget  Analysis    #
         ###################################################
         title = "Budget Analysis"
-        if self.runscontainer.use_budgets:
+        if self.runscontainer.get_budgets() is not None:
             self.bohb_incumbents_per_budget(d=self._get_dict(self.website, title))
             self.budget_correlation(d=self._get_dict(self.website, title))
-            self.bohb_learning_curves(d=self._get_dict(self.website, title))
+            if self.runscontainer.file_format == "BOHB":
+                self.bohb_learning_curves(d=self._get_dict(self.website, title))
 
         ###################################################
         #         Parameter- and Feature-Analysis         #

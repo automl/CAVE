@@ -32,8 +32,9 @@ class BudgetCorrelation(BaseAnalyzer):
         """
         super().__init__(runscontainer)
 
-        self.runs = sorted(self.runscontainer.get_aggregated(True, False), key=lambda x: x.budget)
-        self.budget_names = format_budgets(self.runscontainer.get_budgets(), allow_whitespace=True)
+        self.runs = self.runscontainer.get_aggregated(True, False)
+        self.budget_names = list(format_budgets(self.runscontainer.get_budgets(), allow_whitespace=True).values())
+        self.logger.debug("Budget names: %s", str(self.budget_names))
 
         # To be set
         self.dataframe = None
@@ -55,8 +56,7 @@ class BudgetCorrelation(BaseAnalyzer):
                 else:
                     table[-1].append("{:.2f} ({} samples)".format(rho, len(costs[0])))
 
-        sorted_budget_names = [self.budget_names[r.budget] for r in self.runs]
-        return DataFrame(data=table, columns=sorted_budget_names, index=sorted_budget_names)
+        return DataFrame(data=table, columns=self.budget_names, index=self.budget_names)
 
     def plot(self):
         """Create table and plot that reacts to selection of cells by updating the plotted data to visualize
@@ -86,9 +86,9 @@ class BudgetCorrelation(BaseAnalyzer):
 
         # Create CDS for scatter-plot
         all_configs = set([a for b in [run.original_runhistory.get_all_configs() for run in runs] for a in b])
-        data = {self.budget_names[run.budget] : [run.original_runhistory.get_cost(c) if c in  # TODO
+        data = {self.budget_names[idx] : [run.original_runhistory.get_cost(c) if c in  # TODO
                                                  run.original_runhistory.get_all_configs() else
-                                                 None for c in all_configs] for run in runs}
+                                                 None for c in all_configs] for idx, run in enumerate(runs)}
         data['x'] = []
         data['y'] = []
         # Default scatter should be lowest vs highest:
