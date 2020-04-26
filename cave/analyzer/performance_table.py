@@ -38,10 +38,11 @@ class PerformanceTable(BaseAnalyzer):
         self.rng = self.runscontainer.get_rng()
         self.scenario = self.runscontainer.scenario
 
-        formatted_budgets = format_budgets(self.runscontainer.get_budgets())
-        for run in self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False):
+        budgets = self.runscontainer.get_budgets()
+        formatted_budgets = format_budgets(budgets)
+        for budget, run in zip(budgets, self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False)):
             instances = [i for i in run.scenario.train_insts + run.scenario.test_insts if i]
-            self.result[formatted_budgets[run.budget]] = {
+            self.result[formatted_budgets[budget]] = {
                 'table' : self.get_performance_table(
                                 instances,
                                 run.validated_runhistory,
@@ -93,9 +94,17 @@ class PerformanceTable(BaseAnalyzer):
             ora_timeout = self.timeouts_to_tuple({})
             p_value_timeouts = "N/A"
         # p-values (paired permutation)
-        p_value_par10 = self._permutation_test(epm_rh, default, incumbent, 10000, 10)
+        try:
+            p_value_par10 = self._permutation_test(epm_rh, default, incumbent, 10000, 10)
+        except ValueError as err:
+            self.logger.debug(err, exc_info=1)
+            p_value_par10 = np.nan
         p_value_par10 = "%.5f" % p_value_par10 if np.isfinite(p_value_par10) else 'N/A'
-        p_value_par1 = self._permutation_test(epm_rh, default, incumbent, 10000, 1)
+        try:
+            p_value_par1 = self._permutation_test(epm_rh, default, incumbent, 10000, 1)
+        except ValueError as err:
+            self.logger.debug(err, exc_info=1)
+            p_value_par1 = np.nan
         p_value_par1 = "%.5f" % p_value_par1 if np.isfinite(p_value_par1) else 'N/A'
 
         dec_place = 3

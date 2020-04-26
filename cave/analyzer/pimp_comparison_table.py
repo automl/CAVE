@@ -33,9 +33,9 @@ class PimpComparisonTable(BaseAnalyzer):
         return "Importance Table"
 
     def run(self):
-        formatted_budgets = format_budgets(self.runscontainer.get_budgets(), allow_whitespace=True)
-        for run in self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False):
-            self.result[formatted_budgets[run.budget]] = self.plot(
+        formatted_budgets = list(format_budgets(self.runscontainer.get_budgets(), allow_whitespace=True).values())
+        for budget, run in zip(formatted_budgets, self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False)):
+            self.result[budget] = self.plot(
                 pimp=run.pimp,
                 evaluators=list(run.share_information['evaluators'].values()),
                 cs=self.runscontainer.scenario.cs,

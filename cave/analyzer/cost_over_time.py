@@ -144,7 +144,9 @@ class CostOverTime(BaseAnalyzer):
                 #self.logger.debug(entry)
                 time.append(entry["wallclock_time"])
                 configs.append(entry["incumbent"])
-                costs = [rh.data[RunKey(rh.config_ids[configs[-1]], i, r)].cost for i, r in rh.get_runs_for_config(configs[-1], only_max_observed_budget=True)]
+                self.logger.debug(rh.get_runs_for_config(configs[-1], only_max_observed_budget=True))
+                costs = [rh.data[RunKey(rh.config_ids[configs[-1]], i, s, b)].cost
+                         for i, s, b in rh.get_runs_for_config(configs[-1], only_max_observed_budget=True)]
                 # self.logger.debug(len(costs), time[-1]
                 if not costs:
                     time.pop()

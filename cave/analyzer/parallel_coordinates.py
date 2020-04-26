@@ -67,8 +67,9 @@ class ParallelCoordinates(BaseAnalyzer):
         self.pc_sort_by = self.options['pc_sort_by']
 
         formatted_budgets = format_budgets(self.runscontainer.get_budgets())
-        for run in self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False):
-            self.result[formatted_budgets[run.budget]] = self._plot_parallel_coordinates(
+        for budget, run in zip(self.runscontainer.get_budgets(),
+                               self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False)):
+            self.result[formatted_budgets[budget]] = self._plot_parallel_coordinates(
                 original_rh=run.original_runhistory,
                 validated_rh=run.validated_runhistory,
                 validator=run.validator,

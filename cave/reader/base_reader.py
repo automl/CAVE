@@ -61,5 +61,6 @@ class BaseReader(object):
                 raise FileNotFoundError("The file \"{}\" does not exist in \"{}\".".format(fn, folder))
         elif len(globbed) > 1:
             if raise_on_failure:
-                raise NotUniqueError("The file \"{}\" exists {} times in \"{}\", but not in the expected place.".format(fn, folder))
+                raise NotUniqueError("The file \"{}\" exists {} times in \"{}\", but not in the expected place.".format(
+                    fn, len(globbed), folder))
         return ""

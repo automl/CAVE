@@ -20,7 +20,7 @@ def format_budgets(budgets, allow_whitespace=False):
 
     Returns
     -------
-    formatted_budgets: List[str]
+    formatted_budgets: Dict[float] -> str
         list with formatted budgets
     """
     if len(budgets) == 0:
@@ -30,13 +30,13 @@ def format_budgets(budgets, allow_whitespace=False):
         return 'budget_{}'.format(int(b)) if float(b).is_integer() else 'budget_{:.{}f}'.format(b, round_to)
 
     round_to = 1
-    formatted_budgets = {b : format_budget(b, round_to) for b in budgets}
+    formatted_budgets = OrderedDict([(b, format_budget(b, round_to)) for b in budgets])
     while len(set(formatted_budgets.values())) != len(formatted_budgets.values()):
         round_to += 1
-        formatted_budgets = {b : format_budget(b, round_to) for b in budgets}
+        formatted_budgets = OrderedDict([(b, format_budget(b, round_to)) for b in budgets])
 
     if allow_whitespace:
-        formatted_budgets = {b : str(f).replace("_", " ") for b, f in formatted_budgets.items()}
+        formatted_budgets = OrderedDict([(b, str(f).replace("_", " ")) for b, f in formatted_budgets.items()])
 
     return formatted_budgets
 

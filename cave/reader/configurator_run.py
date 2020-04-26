@@ -10,6 +10,7 @@ from pimp.importance.importance import Importance
 from smac.runhistory.runhistory import RunHistory, DataOrigin
 from smac.utils.io.input_reader import InputReader
 from smac.utils.validate import Validator
+from smac import __version__ as smac_version
 
 from cave.reader.smac2_reader import SMAC2Reader
 from cave.reader.smac3_reader import SMAC3Reader
@@ -35,7 +36,7 @@ class ConfiguratorRun(object):
                  ta_exec_dir=None,
                  file_format=None,
                  validation_format=None,
-                 budget=None,
+                 reduced_to_budgets=None,
                  output_dir=None,
                  ):
         """
@@ -56,8 +57,8 @@ class ConfiguratorRun(object):
             path to the target-algorithm-execution-directory. This is only important for SMAC-optimized data
         file_format, validation_format: str
             will be autodetected some point soon, until then, specify the file-format (SMAC2, SMAC3, BOHB, etc...)
-        budget: str int or float
-            a budget, with which this cr is associated
+        reduced_to_budgets: List str int or float
+            budgets, with which this cr is associated
         output_dir: str
             where to save analysis-data for this cr
         """
@@ -66,7 +67,7 @@ class ConfiguratorRun(object):
         self.options = options
 
         self.path_to_folder = path_to_folder
-        self.budget = budget
+        self.reduced_to_budgets = reduced_to_budgets
 
         self.scenario = scenario
         self.original_runhistory = original_runhistory
@@ -97,7 +98,13 @@ class ConfiguratorRun(object):
 
         # Initialize importance and validator
         self._init_pimp_and_validator()
-        self._validate_default_and_incumbents("epm", self.ta_exec_dir)
+        try:
+            self._validate_default_and_incumbents("epm", self.ta_exec_dir)
+        except KeyError as err:
+            self.logger.debug(err, exc_info=1)
+            self.logger.warning('Validation of default and incumbent failed. SMAC (v: %s) does not support validation '
+                                'of budgets+instances yet, if you use budgets but no instances ignore this warning.',
+                                smac_version)
 
         # Set during execution, to share information between Analyzers
         self.share_information = {'parameter_importance' : OrderedDict(),
@@ -107,7 +114,7 @@ class ConfiguratorRun(object):
 
     def get_identifier(self):
         path = self.path_to_folder if self.path_to_folder is not None else "all_folders"
-        budget = str(self.budget) if self.budget is not None else "all_budgets"
+        budget = str(self.reduced_to_budgets) if self.reduced_to_budgets is not None else "all_budgets"
         if path and budget:
             res = "_".join([path, budget])
         elif not (path or budget):
@@ -116,6 +123,9 @@ class ConfiguratorRun(object):
             res = path if path else budget
         return res.replace('/', '_')
 
+    def get_budgets(self):
+        return set([k.budget for k in self.original_runhistory.data.keys()])
+
     @classmethod
     def from_folder(cls,
                     folder: str,
@@ -123,7 +133,6 @@ class ConfiguratorRun(object):
                     options,
                     file_format: str='SMAC3',
                     validation_format: str='NONE',
-                    budget=None,
                     output_dir=None,
                     ):
         """Initialize scenario, runhistory and incumbent from folder
@@ -143,8 +152,8 @@ class ConfiguratorRun(object):
             from [SMAC2, SMAC3, CSV, NONE], in which format to look for validated data
         """
         logger = logging.getLogger("cave.ConfiguratorRun.{}".format(folder))
-        logger.debug("Loading from \'%s\' with ta_exec_dir \'%s\' with file-format '%s' and validation-format %s. "
-                          "Budget (if present): %s", folder, ta_exec_dir, file_format, validation_format, budget)
+        logger.debug("Loading from \'%s\' with ta_exec_dir \'%s\' with file-format '%s' and validation-format %s. ",
+                          folder, ta_exec_dir, file_format, validation_format)
 
         if file_format == 'BOHB':
             logger.debug("File format is BOHB, assmuming data was converted to SMAC3-format using "
@@ -182,7 +191,6 @@ class ConfiguratorRun(object):
                    ta_exec_dir=ta_exec_dir,
                    file_format=file_format,
                    validation_format=validation_format,
-                   budget=budget,
                    output_dir=output_dir,
                    )
 
