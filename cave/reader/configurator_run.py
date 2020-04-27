@@ -118,15 +118,17 @@ class ConfiguratorRun(object):
                                   }
 
     def get_identifier(self):
-        path = self.path_to_folder if self.path_to_folder is not None else "all_folders"
-        budget = str(self.reduced_to_budgets) if self.reduced_to_budgets is not None else "all_budgets"
-        if path and budget:
-            res = "_".join([path, budget])
-        elif not (path or budget):
-            res = 'aggregated'
-        else:
-            res = path if path else budget
-        return res.replace('/', '_')
+        return self.identify(self.path_to_folder, self.reduced_to_budgets)
+
+    @classmethod
+    def identify(cls, path, budget):
+        path = path if path is not None else "all_folders"
+        budget = str(budget) if budget is not None else "all_budgets"
+        res = "_".join([path, budget]).replace('/', '_')
+        if len(res) > len(str(hash(res))):
+            res = str(hash(res))
+        return res
+
 
     def get_budgets(self):
         return set([k.budget for k in self.original_runhistory.data.keys()])
