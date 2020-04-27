@@ -1,12 +1,18 @@
+from collections import OrderedDict
 from typing import Union, Dict, List
+import pandas as pd
+import numpy as np
 
 from ConfigSpace.configuration_space import ConfigurationSpace, Configuration
+from bokeh.layouts import column
+from bokeh.models import Div
 from smac.runhistory.runhistory import RunHistory
 from smac.scenario.scenario import Scenario
 from smac.utils.validate import Validator
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.plot.parallel_coordinates import ParallelCoordinatesPlotter
+from cave.plot.parallel_plot.parallel_plot import parallel_plot
 from cave.utils.hpbandster_helpers import format_budgets
 from cave.utils.timing import timing
 
@@ -168,7 +174,20 @@ class ParallelCoordinates(BaseAnalyzer):
         epm_rh.update(validated_rh)
         if scenario.feature_dict:  # if instances are available
             epm_rh.update(timing(validator.validate_epm)(all_configs, 'train+test', 1, runhistory=validated_rh))
-        config_to_cost = {c : epm_rh.get_cost(c) for c in all_configs}
+        config_to_cost = OrderedDict({c : epm_rh.get_cost(c) for c in all_configs})
+
+        # TODO get most run configs for filtering
+
+        from bokeh.palettes import Viridis256
+        from bokeh.io import show
+        data = OrderedDict()
+        data['colorVal'] = list(config_to_cost.values())
+        for hp in cs.get_hyperparameter_names():
+            data[hp] = [c[hp] if hp in c.get_dictionary() and not isinstance(c[hp], str) else np.random.randint(4) for c in config_to_cost.keys()]
+        df = pd.DataFrame(data=data)
+        p = parallel_plot(df=df, color=df[df.columns[0]], palette=Viridis256)
+        div = Div(text="Select up and down column grid lines to define filters. Double click a filter to reset it.")
+        show(column(div, p))
 
         pcp = ParallelCoordinatesPlotter(config_to_cost, output_dir, cs, runtime)
 
