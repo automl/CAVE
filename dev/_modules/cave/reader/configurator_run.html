@@ -332,9 +332,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_validate_default_and_incumbents</span><span class="p">(</span><span class="s2">&quot;epm&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ta_exec_dir</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Validation of default and incumbent failed. SMAC (v: </span><span class="si">%s</span><span class="s1">) does not support validation &#39;</span>
-                                <span class="s1">&#39;of budgets+instances yet, if you use budgets but no instances ignore this warning.&#39;</span><span class="p">,</span>
-                                <span class="n">smac_version</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Validation of default and incumbent failed. SMAC (v: </span><span class="si">%s</span><span class="s1">) does not support validation &#39;</span>\
+                  <span class="s1">&#39;of budgets+instances yet, if you use budgets but no instances ignore this warning.&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">smac_version</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_names</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="c1"># Set during execution, to share information between Analyzers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">share_information</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;parameter_importance&#39;</span> <span class="p">:</span> <span class="n">OrderedDict</span><span class="p">(),</span>

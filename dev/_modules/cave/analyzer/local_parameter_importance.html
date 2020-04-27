@@ -232,7 +232,10 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="kn">import</span> <span class="n">output_notebook</span><span class="p">,</span> <span class="n">show</span>
+
 <span class="kn">from</span> <span class="nn">cave.analyzer.cave_parameter_importance</span> <span class="kn">import</span> <span class="n">CaveParameterImportance</span>
+<span class="kn">from</span> <span class="nn">cave.html.html_builder</span> <span class="kn">import</span> <span class="n">HTMLBuilder</span>
 <span class="kn">from</span> <span class="nn">cave.html.html_helpers</span> <span class="kn">import</span> <span class="n">figure_to_html</span>
 
 
@@ -265,7 +268,10 @@
 
 <div class="viewcode-block" id="LocalParameterImportance.get_jupyter"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.local_parameter_importance.html#cave.analyzer.local_parameter_importance.LocalParameterImportance.get_jupyter">[docs]</a>    <span class="k">def</span> <span class="nf">get_jupyter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">IPython.core.display</span> <span class="kn">import</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">display</span>
-        <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">figure_to_html</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_plots</span><span class="p">(),</span> <span class="n">max_in_a_row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">true_break_between_rows</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span></div></div>
+        <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">figure_to_html</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_plots</span><span class="p">(),</span> <span class="n">max_in_a_row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">true_break_between_rows</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">analyzing_options</span><span class="p">[</span><span class="s1">&#39;Parameter Importance&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;whisker_quantiles_plot&#39;</span><span class="p">):</span>
+            <span class="n">output_notebook</span><span class="p">()</span>
+            <span class="n">show</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_whiskers</span><span class="p">())</span></div></div>
 </pre></div>
 
            </div>
