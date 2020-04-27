@@ -100,5 +100,7 @@ class CaveParameterImportance(BaseAnalyzer):
 
     def get_html(self, d=None, tooltip=None):
         if self.runscontainer.analyzing_options['Parameter Importance'].getboolean('whisker_quantiles_plot'):
-            self.result['Whisker Plot'] = {'bokeh' : components(self.plot_whiskers())}
+            self.result['Whisker Plot'] = {'bokeh' : components(self.plot_whiskers()),
+                                           'tooltip' : "Each dot is a parallel run (or folder) of the input data "
+                                                       "and the whiskers are quartiles."}
         return super().get_html(d, tooltip)

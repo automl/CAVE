@@ -58,4 +58,6 @@ def whisker_quantiles(data):
                                 lower='lower_' + str(budget),
                                 upper='upper_' + str(budget),
                                 line_color=color))
+    plot.yaxis.axis_label = "Importance"
+
     return plot
