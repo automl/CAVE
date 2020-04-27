@@ -29,8 +29,9 @@ class PlotECDF(BaseAnalyzer):
         super().__init__(runscontainer)
 
         formatted_budgets = format_budgets(self.runscontainer.get_budgets())
-        for run in self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False):
-            self.result[formatted_budgets[run.budget]] = self._plot_ecdf(
+        for budget, run in zip(self.runscontainer.get_budgets(),
+                               self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False)):
+            self.result[formatted_budgets[budget]] = self._plot_ecdf(
                 run.default,
                 run.incumbent,
                 run.epm_runhistory,
