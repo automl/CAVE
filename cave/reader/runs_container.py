@@ -119,6 +119,7 @@ class RunsContainer(object):
             if all([x in input_data[f] for x in ['new_path', 'config_space', 'runhistory', 'scenario', 'trajectory']]):
                 # Data has been converted and should therefore be available here
                 self.logger.debug('Input data already read in for folder %s', f)
+                self.logger.debug(list(input_data[f]['runhistory'].data.items())[:10])
                 cr = ConfiguratorRun(
                     scenario=input_data[f].pop('scenario'),
                     original_runhistory=input_data[f].pop('runhistory'),

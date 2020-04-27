@@ -2,7 +2,10 @@ import operator
 import os
 from collections import OrderedDict
 
+from bokeh.io import output_notebook, show
+
 from cave.analyzer.cave_parameter_importance import CaveParameterImportance
+from cave.html.html_builder import HTMLBuilder
 from cave.html.html_helpers import figure_to_html
 
 
@@ -36,3 +39,6 @@ class LocalParameterImportance(CaveParameterImportance):
     def get_jupyter(self):
         from IPython.core.display import HTML, display
         display(HTML(figure_to_html(self.get_plots(), max_in_a_row=3, true_break_between_rows=True)))
+        if self.runscontainer.analyzing_options['Parameter Importance'].getboolean('whisker_quantiles_plot'):
+            output_notebook()
+            show(self.plot_whiskers())
