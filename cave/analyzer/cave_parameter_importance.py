@@ -3,13 +3,10 @@ from collections import OrderedDict
 
 import numpy as np
 from bokeh.embed import components
-from bokeh.models import ColumnDataSource, Whisker
-from bokeh.models import FactorRange, Range1d
-from bokeh.palettes import d3
-from bokeh.plotting import figure
-from bokeh.transform import dodge
+
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
+from cave.plot.whisker_quantiles import whisker_quantiles
 from cave.utils.hpbandster_helpers import format_budgets
 
 
@@ -64,6 +61,13 @@ class CaveParameterImportance(BaseAnalyzer):
             run.share_information['evaluators'][modus] = run.pimp.evaluator
 
         if self.runscontainer.analyzing_options['Parameter Importance'].getboolean('whisker_quantiles_plot'):
+            if len(self.runscontainer.get_budgets()) <= 1 and len(self.runscontainer.get_folders()) <= 1:
+                self.logger.info("The Whisker-Quantiles Plot for Parameter Importance makes only sense with multiple"
+                                 "budgets and/or folders, but not with only one budget and one folder.")
+                self.runscontainer.analyzing_options.set('Parameter Importance', 'whisker_quantiles_plot', 'False')
+                self.importance_per_budget = None
+                return
+
             hyperparameters = self.runscontainer.scenario.cs.get_hyperparameter_names()
             # Generate data - for each parallel folder and each budget, perform an importance-analysis
             importance_per_budget = OrderedDict()  # dict[budget][folder] -> (dict[param_name]->float)
@@ -89,53 +93,10 @@ class CaveParameterImportance(BaseAnalyzer):
                         importance_per_budget[budget][hp][folder] = importance.pop(hp, np.nan)
             self.importance_per_budget = importance_per_budget
 
-
     def plot_whiskers(self):
-        importance_per_budget = self.importance_per_budget
-        # Bokeh plot
-        colors = itertools.cycle(d3['Category10'][len(importance_per_budget)])
-        hyperparameters = self.runscontainer.scenario.cs.get_hyperparameter_names()
+        if not self.importance_per_budget is None:
+            return whisker_quantiles(self.importance_per_budget)
 
-        whiskers_data = {}
-        for b in importance_per_budget.keys():
-            whiskers_data.update({'base_' + str(b): [], 'lower_' + str(b): [], 'upper_' + str(b): []})
-        self.logger.debug("Importance per budget: %s", str(importance_per_budget))
-        # Generate whiskers data
-        for (b, imp_dict) in importance_per_budget.items():
-            for p, imp in imp_dict.items():
-                mean = np.nanmean(np.array(list(imp.values())))
-                std = np.nanstd(np.array(list(imp.values())))
-                if not np.isnan(mean) and not np.isnan(std):
-                    whiskers_data['lower_' + str(b)].append(mean - std)
-                    whiskers_data['upper_' + str(b)].append(mean + std)
-                    whiskers_data['base_' + str(b)].append(p)
-        whiskers_datasource = ColumnDataSource(whiskers_data)
-
-        self.logger.debug("Hyperparameters: %s", str(hyperparameters))
-        plot = figure(x_range=FactorRange(factors=hyperparameters, bounds='auto'), y_range=Range1d(0, 1, bounds='auto'),
-                      plot_width=600, plot_height=300,
-                      title="folders per budget with quartile ranges")
-
-        dodgies = np.linspace(-0.25, 0.25, len(importance_per_budget))
-        # Plot
-        for (b, imp_dict), d, color in zip(importance_per_budget.items(), dodgies, colors):
-            for p, imp in imp_dict.items():
-                self.logger.debug('imp: %s', str(imp))
-                for i in imp.values():
-                    if np.isnan(i):
-                        continue
-                    self.logger.debug("%s, %s, %s, %s", b, d, p, i)
-                    plot.circle(x=[(p, d)], y=[i], color=color, fill_alpha=0.4, legend="Budget %s" % str(b))
-
-            if not 'base_' + str(b) in whiskers_data:
-                continue
-            plot.add_layout(Whisker(source=whiskers_datasource,
-                                    base=dodge('base_' + str(b), d, plot.x_range),
-                                    lower='lower_' + str(b),
-                                    upper='upper_' + str(b),
-                                    line_color=color))
-        #self.result['Whisker Plot'] = {'bokeh' : plot}
-        return plot
 
     def get_html(self, d=None, tooltip=None):
         if self.runscontainer.analyzing_options['Parameter Importance'].getboolean('whisker_quantiles_plot'):
