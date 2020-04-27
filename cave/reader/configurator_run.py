@@ -102,9 +102,12 @@ class ConfiguratorRun(object):
             self._validate_default_and_incumbents("epm", self.ta_exec_dir)
         except KeyError as err:
             self.logger.debug(err, exc_info=1)
-            self.logger.warning('Validation of default and incumbent failed. SMAC (v: %s) does not support validation '
-                                'of budgets+instances yet, if you use budgets but no instances ignore this warning.',
-                                smac_version)
+            msg = 'Validation of default and incumbent failed. SMAC (v: %s) does not support validation '\
+                  'of budgets+instances yet, if you use budgets but no instances ignore this warning.' % str(smac_version)
+            if self.feature_names:
+                self.logger.warning(msg)
+            else:
+                self.logger.debug(msg)
 
         # Set during execution, to share information between Analyzers
         self.share_information = {'parameter_importance' : OrderedDict(),

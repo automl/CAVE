@@ -7,14 +7,12 @@ from ConfigSpace.configuration_space import ConfigurationSpace
 from ConfigSpace.hyperparameters import UniformFloatHyperparameter, UniformIntegerHyperparameter
 from ConfigSpace.read_and_write import json as pcs_json
 
-if __name__ == '__main__':
 
-    if not os.path.exists('examples'):
-        print("This script has to be run from the repositories root-directory.")
-
-    NUM_EVALUATIONS = 3000
-    ALLINONE = "examples/csv_allinone"
-    SEPARATE = "examples/csv_separate"
+def generate_csv_data(NUM_EVALUATIONS, ALLINONE, SEPARATE):
+    if not os.path.exists(ALLINONE):
+        os.makedirs(ALLINONE)
+    if not os.path.exists(SEPARATE):
+        os.makedirs(SEPARATE)
 
     config_space = ConfigurationSpace()
     config_space.add_hyperparameters([UniformFloatHyperparameter('random_parameter_1', 0, 1.2),
@@ -39,7 +37,7 @@ if __name__ == '__main__':
         new_time = time.time() - start_time
         status = 'SUCCESS'
         budget = 50 + 50 * (i // (NUM_EVALUATIONS / 3))
-        seed = np.random.randint(1, 10000000)
+        seed = 42  # should be: np.random.randint(1, 10000000) but seeds are currently not supported with budgets.
         if lowest_cost > cost:
             lowest_cost = cost
             trajectory.append([new_time, new_time, i, cost, random1, random2, random3])
@@ -73,5 +71,18 @@ if __name__ == '__main__':
                 writer.writerow(t)
 
         with open(os.path.join(path, 'scenario.txt'), 'w' ) as f:
-            f.write('paramfile = configspace.json\nrun_obj = quality')
+            f.write('paramfile = {}\nrun_obj = quality'.format(os.path.join(os.path.basename(path.rstrip('/')),
+                                                                            'configspace.json')))
 
+
+if __name__ == '__main__':
+
+    if not os.path.exists('examples'):
+        print("This script has to be run from the repositories root-directory.")
+
+    for rep in range(10):
+        NUM_EVALUATIONS = 300
+        ALLINONE = "examples/csv_allinone/run_" + str(rep)
+        SEPARATE = "examples/csv_separate/run_" + str(rep)
+
+        generate_csv_data(NUM_EVALUATIONS, ALLINONE, SEPARATE)

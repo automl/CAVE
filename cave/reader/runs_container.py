@@ -106,7 +106,7 @@ class RunsContainer(object):
             csv2smac = CSV2SMAC()
             result = csv2smac.convert(self.folders, self.ta_exec_dirs, self.output_dir)
             input_data = result
-            self.ta_exec_dirs = ['.']
+            self.ta_exec_dirs = ['.' for _ in range(len(self.folders))]
 
         ################################################################################################################
         #  Read in folders, where folders are parallel runs and for each parallel-run                                  #
@@ -119,6 +119,7 @@ class RunsContainer(object):
             if all([x in input_data[f] for x in ['new_path', 'config_space', 'runhistory', 'scenario', 'trajectory']]):
                 # Data has been converted and should therefore be available here
                 self.logger.debug('Input data already read in for folder %s', f)
+                self.logger.debug(list(input_data[f]['runhistory'].data.items())[:10])
                 cr = ConfiguratorRun(
                     scenario=input_data[f].pop('scenario'),
                     original_runhistory=input_data[f].pop('runhistory'),
@@ -150,7 +151,7 @@ class RunsContainer(object):
         return self.data[key]
 
     def get_run(self, folder, budget):
-        return self.pRun2budget[folder][budget]
+        return self._reduce_cr_to_budget(self.data[folder], [budget])
 
     def get_all_runs(self):
         return list(self.data.values())
@@ -174,6 +175,7 @@ class RunsContainer(object):
         return runs
 
     def get_folders(self):
+        self.logger.debug('Folders: %s', list(self.data.keys()))
         return list(self.data.keys())
 
     def get_runs_for_folder(self, f):
@@ -223,7 +225,7 @@ class RunsContainer(object):
 
         traj = combine_trajectories([run.trajectory for run in runs], self.logger)
 
-        path_to_folder = runs[0].path_to_folder if len(set([r.path_to_folder for r in runs])) == 1 else None
+        path_to_folder = runs[0].path_to_folder if len(set([r.path_to_folder for r in runs])) == 1 else "all_folders"
 
         new_cr = ConfiguratorRun(runs[0].scenario,
                                  orig_rh,
@@ -238,7 +240,6 @@ class RunsContainer(object):
     def _reduce_cr_to_budget(self, cr, keep_budgets):
         """Creates a new ConfiguratorRun without all the target algorithm runs that are not in the list of budgets.
         Will affect original, validated and epm-RunHistories as well as Trajectory"""
-
 
         def reduce_runhistory(rh, keep_budgets):
             if not isinstance(rh, RunHistory):
@@ -268,7 +269,10 @@ class RunsContainer(object):
                                  trajectory=[entry for entry in cr.trajectory if entry['incumbent'] in orig_rh.config_ids.keys()],
                                  options=self.analyzing_options,
                                  output_dir=self.output_dir,
-                                 path_to_folder='',
+                                 path_to_folder=cr.path_to_folder,
                                  reduced_to_budgets=keep_budgets,
                                  )
+
+        self.logger.debug("Reduced CR %s to CR %s", cr.get_identifier(), new_cr.get_identifier())
+
         return new_cr
