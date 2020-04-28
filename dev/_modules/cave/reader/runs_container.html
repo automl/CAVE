@@ -259,9 +259,9 @@
 <span class="sd">        folder (assuming folders are parallel runs). Budgets are integrated in RunHistories per conversion.</span>
 <span class="sd">        The RunHistory object provides an easy way to aggregate over parallel runs or budgets.</span>
 
-<span class="sd">        Aggregated entries can be accessed via a None-key.</span>
-
 <span class="sd">        The data is organized in self.data as {folder_name : ConfiguratorRun}.</span>
+<span class="sd">        Aggregated or reduced ConfiguratorRuns are cached by their identifier (needs to be unique from context!)</span>
+<span class="sd">          in self.cache as {identifier : ConfiguratorRun},-</span>
 
 <span class="sd">        In the internal data-management there are three types of runhistories: *original*, *validated* and *epm*.</span>
 <span class="sd">        They are saved in and provided by the ConfiguratorRuns</span>
@@ -318,8 +318,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">analyzing_options</span> <span class="o">=</span> <span class="n">load_default_options</span><span class="p">(</span><span class="n">analyzing_options</span><span class="p">,</span> <span class="n">file_format</span><span class="p">)</span>
 
         <span class="c1"># Main focus on this mapping pRun2budget2data:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>  <span class="c1"># mapping parallel runs to their budgets</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">runs_list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Just put all ConfiguratorRun-objects here</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>   <span class="c1"># mapping parallel runs to their budgets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>  <span class="c1"># Reuse already generated ConfiguratorRuns</span>
 
         <span class="c1">################################################################################################################</span>
         <span class="c1">#  Convert if necessary, determine what folders and what budgets                                               #</span>
@@ -439,6 +439,11 @@
     <span class="k">def</span> <span class="nf">_aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path_to_folder</span> <span class="o">=</span> <span class="nb">str</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">path_to_folder</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">ConfiguratorRun</span><span class="o">.</span><span class="n">identify</span><span class="p">(</span><span class="n">path_to_folder</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">ConfiguratorRun</span><span class="o">.</span><span class="n">identify</span><span class="p">(</span><span class="n">path_to_folder</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span>
+
         <span class="n">orig_rh</span><span class="p">,</span> <span class="n">vali_rh</span> <span class="o">=</span> <span class="n">RunHistory</span><span class="p">(),</span> <span class="n">RunHistory</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">:</span>
             <span class="n">orig_rh</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">original_runhistory</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">DataOrigin</span><span class="o">.</span><span class="n">INTERNAL</span><span class="p">)</span>
@@ -455,8 +460,6 @@
 
         <span class="n">traj</span> <span class="o">=</span> <span class="n">combine_trajectories</span><span class="p">([</span><span class="n">run</span><span class="o">.</span><span class="n">trajectory</span> <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
 
-        <span class="n">path_to_folder</span> <span class="o">=</span> <span class="n">runs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">path_to_folder</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">path_to_folder</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">]))</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;all_folders&quot;</span>
-
         <span class="n">new_cr</span> <span class="o">=</span> <span class="n">ConfiguratorRun</span><span class="p">(</span><span class="n">runs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span>
                                  <span class="n">orig_rh</span><span class="p">,</span>
                                  <span class="n">vali_rh</span><span class="p">,</span>
@@ -465,11 +468,15 @@
                                  <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
                                  <span class="n">path_to_folder</span><span class="o">=</span><span class="n">path_to_folder</span><span class="p">,</span>
                                  <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">(</span><span class="n">new_cr</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">new_cr</span>
 
     <span class="k">def</span> <span class="nf">_reduce_cr_to_budget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cr</span><span class="p">,</span> <span class="n">keep_budgets</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Creates a new ConfiguratorRun without all the target algorithm runs that are not in the list of budgets.</span>
 <span class="sd">        Will affect original, validated and epm-RunHistories as well as Trajectory&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ConfiguratorRun</span><span class="o">.</span><span class="n">identify</span><span class="p">(</span><span class="n">cr</span><span class="o">.</span><span class="n">path_to_folder</span><span class="p">,</span> <span class="n">keep_budgets</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">ConfiguratorRun</span><span class="o">.</span><span class="n">identify</span><span class="p">(</span><span class="n">cr</span><span class="o">.</span><span class="n">path_to_folder</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span>
 
         <span class="k">def</span> <span class="nf">reduce_runhistory</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">keep_budgets</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">RunHistory</span><span class="p">):</span>
@@ -505,7 +512,12 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Reduced CR </span><span class="si">%s</span><span class="s2"> to CR </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">cr</span><span class="o">.</span><span class="n">get_identifier</span><span class="p">(),</span> <span class="n">new_cr</span><span class="o">.</span><span class="n">get_identifier</span><span class="p">())</span>
 
-        <span class="k">return</span> <span class="n">new_cr</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">(</span><span class="n">cr</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_cr</span>
+
+    <span class="k">def</span> <span class="nf">_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configurator_run</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">configurator_run</span><span class="o">.</span><span class="n">get_identifier</span><span class="p">()]</span> <span class="o">=</span> <span class="n">configurator_run</span></div>
 </pre></div>
 
            </div>

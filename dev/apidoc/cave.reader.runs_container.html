@@ -245,8 +245,11 @@
 <p>SMAC3’s RunHistory supports budgets from 0.12.0, so this container will by default keep one ConfiguratorRun per
 folder (assuming folders are parallel runs). Budgets are integrated in RunHistories per conversion.
 The RunHistory object provides an easy way to aggregate over parallel runs or budgets.</p>
-<p>Aggregated entries can be accessed via a None-key.</p>
-<p>The data is organized in self.data as {folder_name : ConfiguratorRun}.</p>
+<p>The data is organized in self.data as {folder_name : ConfiguratorRun}.
+Aggregated or reduced ConfiguratorRuns are cached by their identifier (needs to be unique from context!)</p>
+<blockquote>
+<div><p>in self.cache as {identifier : ConfiguratorRun},-</p>
+</div></blockquote>
 <p>In the internal data-management there are three types of runhistories: <em>original</em>, <em>validated</em> and <em>epm</em>.
 They are saved in and provided by the ConfiguratorRuns</p>
 <ul class="simple">
