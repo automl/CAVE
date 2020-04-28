@@ -8,7 +8,7 @@ from ConfigSpace.hyperparameters import UniformFloatHyperparameter, UniformInteg
 from ConfigSpace.read_and_write import json as pcs_json
 
 
-def generate_csv_data(NUM_EVALUATIONS, ALLINONE, SEPARATE):
+def generate_csv_data(NUM_EVALUATIONS, NUM_BUDGETS, ALLINONE, SEPARATE):
     if not os.path.exists(ALLINONE):
         os.makedirs(ALLINONE)
     if not os.path.exists(SEPARATE):
@@ -23,7 +23,11 @@ def generate_csv_data(NUM_EVALUATIONS, ALLINONE, SEPARATE):
     runhistory = []
     lowest_cost = np.inf
     start_time = time.time()
-    for i in range(NUM_EVALUATIONS):
+    if NUM_BUDGETS <= 1:
+        budgets = [0 for _ in range(NUM_EVALUATIONS)]
+    else:
+        budgets = [50 + 50 * (i // (NUM_EVALUATIONS / NUM_BUDGETS)) for i in range(NUM_EVALUATIONS)]
+    for i, budget in enumerate(budgets):
         if i == 0:
             random1 = config_space.get_hyperparameter('random_parameter_1').default_value
             random2 = config_space.get_hyperparameter('random_parameter_2').default_value
@@ -36,7 +40,6 @@ def generate_csv_data(NUM_EVALUATIONS, ALLINONE, SEPARATE):
                                  10 * np.log(NUM_EVALUATIONS - i)) * random1
         new_time = time.time() - start_time
         status = 'SUCCESS'
-        budget = 50 + 50 * (i // (NUM_EVALUATIONS / 3))
         seed = 42  # should be: np.random.randint(1, 10000000) but seeds are currently not supported with budgets.
         if lowest_cost > cost:
             lowest_cost = cost
@@ -80,9 +83,10 @@ if __name__ == '__main__':
     if not os.path.exists('examples'):
         print("This script has to be run from the repositories root-directory.")
 
-    for rep in range(10):
+    for rep in range(30):
         NUM_EVALUATIONS = 300
+        NUM_BUDGETS = 6
         ALLINONE = "examples/csv_allinone/run_" + str(rep)
         SEPARATE = "examples/csv_separate/run_" + str(rep)
 
-        generate_csv_data(NUM_EVALUATIONS, ALLINONE, SEPARATE)
+        generate_csv_data(NUM_EVALUATIONS, NUM_BUDGETS, ALLINONE, SEPARATE)

@@ -29,9 +29,9 @@ class RunsContainer(object):
         folder (assuming folders are parallel runs). Budgets are integrated in RunHistories per conversion.
         The RunHistory object provides an easy way to aggregate over parallel runs or budgets.
 
-        Aggregated entries can be accessed via a None-key.
-
         The data is organized in self.data as {folder_name : ConfiguratorRun}.
+        Aggregated or reduced ConfiguratorRuns are cached by their identifier (needs to be unique from context!)
+          in self.cache as {identifier : ConfiguratorRun},-
 
         In the internal data-management there are three types of runhistories: *original*, *validated* and *epm*.
         They are saved in and provided by the ConfiguratorRuns
@@ -88,8 +88,8 @@ class RunsContainer(object):
         self.analyzing_options = load_default_options(analyzing_options, file_format)
 
         # Main focus on this mapping pRun2budget2data:
-        self.data = OrderedDict()  # mapping parallel runs to their budgets
-        self.runs_list = []  # Just put all ConfiguratorRun-objects here
+        self.data = OrderedDict()   # mapping parallel runs to their budgets
+        self.cache = OrderedDict()  # Reuse already generated ConfiguratorRuns
 
         ################################################################################################################
         #  Convert if necessary, determine what folders and what budgets                                               #
@@ -209,6 +209,11 @@ class RunsContainer(object):
     def _aggregate(self, runs):
         """
         """
+        path_to_folder = str([r.path_to_folder for r in runs])
+
+        if ConfiguratorRun.identify(path_to_folder, None) in self.cache:
+            return self.cache[ConfiguratorRun.identify(path_to_folder, None)]
+
         orig_rh, vali_rh = RunHistory(), RunHistory()
         for run in runs:
             orig_rh.update(run.original_runhistory, origin=DataOrigin.INTERNAL)
@@ -225,8 +230,6 @@ class RunsContainer(object):
 
         traj = combine_trajectories([run.trajectory for run in runs], self.logger)
 
-        path_to_folder = runs[0].path_to_folder if len(set([r.path_to_folder for r in runs])) == 1 else "all_folders"
-
         new_cr = ConfiguratorRun(runs[0].scenario,
                                  orig_rh,
                                  vali_rh,
@@ -235,11 +238,15 @@ class RunsContainer(object):
                                  output_dir=self.output_dir,
                                  path_to_folder=path_to_folder,
                                  )
+
+        self._cache(new_cr)
         return new_cr
 
     def _reduce_cr_to_budget(self, cr, keep_budgets):
         """Creates a new ConfiguratorRun without all the target algorithm runs that are not in the list of budgets.
         Will affect original, validated and epm-RunHistories as well as Trajectory"""
+        if ConfiguratorRun.identify(cr.path_to_folder, keep_budgets) in self.cache:
+            return self.cache[ConfiguratorRun.identify(cr.path_to_folder, None)]
 
         def reduce_runhistory(rh, keep_budgets):
             if not isinstance(rh, RunHistory):
@@ -275,4 +282,9 @@ class RunsContainer(object):
 
         self.logger.debug("Reduced CR %s to CR %s", cr.get_identifier(), new_cr.get_identifier())
 
+        self._cache(cr)
+
         return new_cr
+
+    def _cache(self, configurator_run):
+        self.cache[configurator_run.get_identifier()] = configurator_run
