@@ -83,7 +83,7 @@ if __name__ == '__main__':
     if not os.path.exists('examples'):
         print("This script has to be run from the repositories root-directory.")
 
-    for rep in range(30):
+    for rep in range(7):
         NUM_EVALUATIONS = 300
         NUM_BUDGETS = 6
         ALLINONE = "examples/csv_allinone/run_" + str(rep)

@@ -32,7 +32,7 @@ class BudgetCorrelation(BaseAnalyzer):
         """
         super().__init__(runscontainer)
 
-        self.runs = self.runscontainer.get_aggregated(True, False)
+        self.runs = self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False)
         self.budget_names = list(format_budgets(self.runscontainer.get_budgets(), allow_whitespace=True).values())
         self.logger.debug("Budget names: %s", str(self.budget_names))
 

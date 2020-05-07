@@ -199,6 +199,7 @@ class RunsContainer(object):
             self.logger.debug("Aggregating over parallel runs, keeping budgets")
             all_runs = self.get_all_runs()
             res = [self._aggregate([self._reduce_cr_to_budget(cr, [b]) for cr in all_runs]) for b in self.get_budgets()]
+            assert len(self.get_budgets()) == len(res)
         elif keep_folders and not keep_budgets:
             res = self.get_all_runs()
         else:
@@ -207,12 +208,16 @@ class RunsContainer(object):
         return res
 
     def _aggregate(self, runs):
-        """
-        """
-        path_to_folder = str([r.path_to_folder for r in runs])
+        # path_to_folder is the concatenation of all the paths of the individual runs
+        path_to_folder = '-'.join(sorted(list(set([r.path_to_folder for r in runs]))))
+        # budgets are the union of individual budgets. if they are not the same for all runs (no usecase atm),
+        #   they get an additional entry of the hash over the string of the combination to avoid false-positives
+        budgets = [r.reduced_to_budgets for r in runs]
+        budget_hash = ['budgetmix-%d' % (hash(str(budgets)))] if len(set([frozenset(b) for b in budgets])) != 1 else []
+        budgets = [a for b in [x for x in budgets if x is not None] for a in b] + budget_hash
 
-        if ConfiguratorRun.identify(path_to_folder, None) in self.cache:
-            return self.cache[ConfiguratorRun.identify(path_to_folder, None)]
+        if ConfiguratorRun.identify(path_to_folder, budgets) in self.cache:
+            return self.cache[ConfiguratorRun.identify(path_to_folder, budgets)]
 
         orig_rh, vali_rh = RunHistory(), RunHistory()
         for run in runs:
@@ -237,6 +242,7 @@ class RunsContainer(object):
                                  self.analyzing_options,
                                  output_dir=self.output_dir,
                                  path_to_folder=path_to_folder,
+                                 reduced_to_budgets=budgets,
                                  )
 
         self._cache(new_cr)
@@ -246,7 +252,7 @@ class RunsContainer(object):
         """Creates a new ConfiguratorRun without all the target algorithm runs that are not in the list of budgets.
         Will affect original, validated and epm-RunHistories as well as Trajectory"""
         if ConfiguratorRun.identify(cr.path_to_folder, keep_budgets) in self.cache:
-            return self.cache[ConfiguratorRun.identify(cr.path_to_folder, None)]
+            return self.cache[ConfiguratorRun.identify(cr.path_to_folder, keep_budgets)]
 
         def reduce_runhistory(rh, keep_budgets):
             if not isinstance(rh, RunHistory):
@@ -254,8 +260,7 @@ class RunsContainer(object):
                 return rh
             new_rh = RunHistory()
             for rk, rv in rh.data.items():
-                if rk.budget in keep_budgets or \
-                        rh.ids_config[rk.config_id] in [cr.default, cr.incumbent]:
+                if rk.budget in keep_budgets or rh.ids_config[rk.config_id] in [cr.default]:
                     new_rh.add(config=rh.ids_config[rk.config_id],
                                cost=rv.cost,
                                time=rv.time,
@@ -269,11 +274,12 @@ class RunsContainer(object):
 
         orig_rh = reduce_runhistory(cr.original_runhistory, keep_budgets)
         vali_rh = reduce_runhistory(cr.validated_runhistory, keep_budgets)
+        trajectory = [entry for entry in cr.trajectory if (entry['incumbent'] in orig_rh.config_ids.keys())]
 
         new_cr = ConfiguratorRun(scenario=cr.scenario,
                                  original_runhistory=orig_rh,
                                  validated_runhistory=vali_rh,
-                                 trajectory=[entry for entry in cr.trajectory if entry['incumbent'] in orig_rh.config_ids.keys()],
+                                 trajectory=trajectory,
                                  options=self.analyzing_options,
                                  output_dir=self.output_dir,
                                  path_to_folder=cr.path_to_folder,

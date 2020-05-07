@@ -8,9 +8,6 @@ import numpy as np
 from ConfigSpace.configuration_space import Configuration
 from smac.runhistory.runhistory import RunHistory, RunKey
 
-from cave.reader.conversion.csv2smac import CSV2SMAC
-from cave.reader.smac2_reader import SMAC2Reader
-from cave.reader.smac3_reader import SMAC3Reader
 from cave.utils.exceptions import NotApplicable
 
 
@@ -220,6 +217,10 @@ def load_default_options(options=None, file_format=None):
     return default_options
 
 def detect_fileformat(folders):
+    from cave.reader.conversion.csv2smac import CSV2SMAC
+    from cave.reader.smac2_reader import SMAC2Reader
+    from cave.reader.smac3_reader import SMAC3Reader
+
     # Check if it's BOHB
     bohb_files = ["configs.json", "results.json", "configspace.json"]
     for f in folders:
@@ -237,3 +238,19 @@ def detect_fileformat(folders):
         return "CSV"
 
     raise RuntimeError("Autodetection of file-format failed. Please try to specify (using --file_format on cmd-line)")
+
+def get_folder_basenames(folders):
+    """Shorten folder-strings as much as possible (always keeping the basename).
+    ["foo/bar/run_1", "foo/bar/run_2/"] will be ["run_1", "run_2"]
+    ["foo/run_1/bar/", "foo/run_2/bar"] will be ["run_1/bar", "run_2/bar"]
+    """
+    throw, keep = folders[:], ['' for _ in range(len(set(folders)))]
+    max_parts = max([len(f.split('/')) for f in folders])
+    for _ in range(max_parts):
+        for idx in range(len(folders)):
+            throw[idx], new = os.path.split(throw[idx].rstrip('/'))
+            keep[idx] = os.path.join(new, keep[idx]).rstrip('/')
+        if len(set(keep)) == len(set(folders)):
+            break
+
+    return keep

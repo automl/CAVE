@@ -269,7 +269,7 @@ class CostOverTime(BaseAnalyzer):
         lines = []
 
         # Get plotting data and create CDS
-        if self.bohb_results:
+        if any(self.bohb_results):
             lines.append(self._get_bohb_line(validator, runs, rh))
             for b in self.bohb_results[0].HB_config['budgets']:
                 lines.append(self._get_bohb_line(validator, runs, rh, b))

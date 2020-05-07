@@ -69,9 +69,11 @@ class ConfiguratorFootprint(BaseAnalyzer):
         # Run-specific / budget specific infos
         if len(self.runscontainer.get_budgets()) > 1:
             self.runs = self.runscontainer.get_aggregated(keep_folders=False, keep_budgets=True)
+            rh_labels = ["Budget " + str(r.reduced_to_budgets[0]) for r in self.runs]
         else:
             self.runs = self.runscontainer.get_aggregated(keep_folders=True, keep_budgets=False)
-        self.logger.debug("Analyzing runs: {}".format(self.runs))
+            rh_labels = [os.path.basename(r.path_to_folder).replace('_', ' ') for r in self.runs]
+        self.logger.debug("Analyzing runs: {}".format([r.get_identifier() for r in self.runs]))
 
         self.max_confs = self.options.getint('max_configurations_to_plot')
         self.use_timeslider = self.options.getboolean('time_slider')
@@ -89,7 +91,7 @@ class ConfiguratorFootprint(BaseAnalyzer):
                        rhs=[r.original_runhistory for r in self.runs],
                        incs=[list(incumbents.keys())],
                        final_incumbent=self.final_incumbent,
-                       rh_labels=[os.path.basename(r.path_to_folder).replace('_', ' ') for r in self.runs],
+                       rh_labels=rh_labels,
                        max_plot=self.max_confs,
                        use_timeslider=self.use_timeslider and self.num_quantiles > 1,
                        num_quantiles=self.num_quantiles,

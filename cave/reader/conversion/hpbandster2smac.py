@@ -16,6 +16,7 @@ from smac.tae.execute_ta_run import StatusType
 from smac.utils.io.traj_logging import TrajLogger, TrajEntry
 
 from cave.reader.conversion.base_converter import BaseConverter
+from cave.utils.helpers import get_folder_basenames
 from cave.utils.hpbandster_helpers import get_incumbent_trajectory, format_budgets
 
 
@@ -50,7 +51,7 @@ class HpBandSter2SMAC(BaseConverter):
         #####################
         # Actual conversion #
         #####################
-        folder_basenames = self.get_folder_basenames(folders)
+        folder_basenames = get_folder_basenames(folders)
         result = OrderedDict()
         for f, f_base, ta_exec_dir in zip(folders, folder_basenames, ta_exec_dirs):  # Those are the parallel runs
             converted_folder_path = os.path.join(output_dir, converted_dest, f_base)

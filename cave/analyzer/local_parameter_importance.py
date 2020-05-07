@@ -20,7 +20,6 @@ class LocalParameterImportance(CaveParameterImportance):
                  marginal_threshold=0.05):
 
         super().__init__(runscontainer)
-
         self.parameter_importance("lpi")
 
     def get_name(self):

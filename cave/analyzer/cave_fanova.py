@@ -19,9 +19,8 @@ class CaveFanova(CaveParameterImportance):
     def __init__(self,
                  runscontainer,
                  marginal_threshold=0.05):
-        """Wrapper for parameter_importance to save the importance-object/
-        extract the results. We want to show the top X most important
-        parameter-fanova-plots.
+        """Wrapper for parameter_importance to save the importance-object/ extract the results. We want to show the
+        top X most important parameter-fanova-plots.
 
         Parameters
         ----------
@@ -94,6 +93,7 @@ class CaveFanova(CaveParameterImportance):
         # Right now no way to access paths of the plots -> file issue
         pairwise_plots = {" & ".join(parse_pairwise(p)) : os.path.join(output_dir, 'fanova', '_'.join(parse_pairwise(p)) + '.png') for p in pairwise_imp.keys()}
         result['Pairwise Marginals'] = {p : {'figure' : path} for p, path in pairwise_plots.items() if os.path.exists(path)}
+
         return result
 
     def get_jupyter(self):
