@@ -1,7 +1,7 @@
-cave.analyzer.cave\_forward\_selection module
+cave.reader.conversion.base\_converter module
 =============================================
 
-.. automodule:: cave.analyzer.cave_forward_selection
+.. automodule:: cave.reader.conversion.base_converter
    :members:
    :undoc-members:
    :show-inheritance:

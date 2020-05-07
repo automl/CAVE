@@ -6,3 +6,4 @@ cave.analyzer.budget\_correlation module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

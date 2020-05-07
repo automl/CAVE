@@ -1,7 +1,7 @@
-cave.utils.statistical\_tests module
+cave.reader.conversion.csv2rh module
 ====================================
 
-.. automodule:: cave.utils.statistical_tests
+.. automodule:: cave.reader.conversion.csv2rh
    :members:
    :undoc-members:
    :show-inheritance:

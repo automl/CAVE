@@ -6,3 +6,4 @@ cave.analyzer.base\_analyzer module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

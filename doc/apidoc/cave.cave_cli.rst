@@ -6,3 +6,4 @@ cave.cave\_cli module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

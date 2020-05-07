@@ -6,3 +6,4 @@ cave.analyzer.feature\_clustering module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

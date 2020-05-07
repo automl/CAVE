@@ -1,7 +1,7 @@
-cave.analyzer.cave\_ablation module
+cave.plot.whisker\_quantiles module
 ===================================
 
-.. automodule:: cave.analyzer.cave_ablation
+.. automodule:: cave.plot.whisker_quantiles
    :members:
    :undoc-members:
    :show-inheritance:

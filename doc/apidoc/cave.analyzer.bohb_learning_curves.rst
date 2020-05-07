@@ -6,3 +6,4 @@ cave.analyzer.bohb\_learning\_curves module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

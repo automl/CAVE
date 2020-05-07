@@ -6,3 +6,4 @@ cave.html.html\_builder module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

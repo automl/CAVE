@@ -1,7 +1,7 @@
-cave.analyzer.cave\_forward\_selection module
+cave.reader.conversion.hpbandster2smac module
 =============================================
 
-.. automodule:: cave.analyzer.cave_forward_selection
+.. automodule:: cave.reader.conversion.hpbandster2smac
    :members:
    :undoc-members:
    :show-inheritance:
