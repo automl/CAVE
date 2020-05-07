@@ -22,7 +22,8 @@ WEB_FILES_LOCATION = os.path.join(os.path.dirname(__file__), 'cave/html/web_file
 setuptools.setup(
     name="cave",
     version=version,
-    packages=['cave', 'cave.analyzer', 'cave.feature_analysis', 'cave.reader', 'cave.reader.conversion', 'cave.html', 'cave.plot', 'cave.utils'],
+    packages=['cave', 'cave.analyzer', 'cave.feature_analysis', 'cave.reader', 'cave.reader.conversion', 'cave.html',
+              'cave.plot', 'cave.plot.parallel_plot', 'cave.utils'],
     package_data={
         'cave/analyzer': [
             'cave/analyzer/mpl_style'

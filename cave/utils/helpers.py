@@ -8,9 +8,6 @@ import numpy as np
 from ConfigSpace.configuration_space import Configuration
 from smac.runhistory.runhistory import RunHistory, RunKey
 
-from cave.reader.conversion.csv2smac import CSV2SMAC
-from cave.reader.smac2_reader import SMAC2Reader
-from cave.reader.smac3_reader import SMAC3Reader
 from cave.utils.exceptions import NotApplicable
 
 
@@ -220,6 +217,10 @@ def load_default_options(options=None, file_format=None):
     return default_options
 
 def detect_fileformat(folders):
+    from cave.reader.conversion.csv2smac import CSV2SMAC
+    from cave.reader.smac2_reader import SMAC2Reader
+    from cave.reader.smac3_reader import SMAC3Reader
+
     # Check if it's BOHB
     bohb_files = ["configs.json", "results.json", "configspace.json"]
     for f in folders:

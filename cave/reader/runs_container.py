@@ -260,8 +260,7 @@ class RunsContainer(object):
                 return rh
             new_rh = RunHistory()
             for rk, rv in rh.data.items():
-                if rk.budget in keep_budgets or \
-                        rh.ids_config[rk.config_id] in [cr.default, cr.incumbent]:
+                if rk.budget in keep_budgets or rh.ids_config[rk.config_id] in [cr.default]:
                     new_rh.add(config=rh.ids_config[rk.config_id],
                                cost=rv.cost,
                                time=rv.time,
