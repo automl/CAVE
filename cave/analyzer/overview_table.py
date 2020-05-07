@@ -42,10 +42,7 @@ class OverviewTable(BaseAnalyzer):
         html_table_general = html_table_general.to_html(escape=False, header=False, justify='left')
 
         # Run-specific / budget specific infos
-        if len(self.runscontainer.get_budgets()) > 1:
-            runs = self.runscontainer.get_aggregated(keep_folders=False, keep_budgets=True)
-        else:
-            runs = self.runscontainer.get_aggregated(keep_folders=True, keep_budgets=False)
+        runs = self.runscontainer.get_aggregated(keep_folders=True, keep_budgets=False)
         runspec_dict = self._runspec_dict(runs)
         order_spec = list(list(runspec_dict.values())[0].keys())  # Get keys of any sub-dict for order
         html_table_specific = DataFrame(runspec_dict)
@@ -76,7 +73,9 @@ class OverviewTable(BaseAnalyzer):
         #    overview['Number of configurator runs'] = num_conf_runs
 
         if len(self.runscontainer.get_budgets()) > 1:
-            general['# aggregated parallel BOHB runs'] = len(self.runscontainer.get_folders())
+            general['# budgets'] = len(self.runscontainer.get_folders())
+        if len(self.runscontainer.get_folders()) > 1:
+            general['# parallel runs'] = len(self.runscontainer.get_folders())
 
         # Scenario related
         general['# parameters'] = len(scenario.cs.get_hyperparameters())
@@ -108,7 +107,7 @@ class OverviewTable(BaseAnalyzer):
 
         for idx, run in enumerate(runs):
             self.logger.debug("Path to folder for run no. {}: {}".format(idx, str(run.path_to_folder)))
-            name = os.path.basename(run.path_to_folder).replace('_', ' ')  # TODO this should be changed with multiple BOHB-folder suppor (no basename should be necessary)
+            name = os.path.basename(run.path_to_folder)
             runspec[name] = self._stats_for_run(run.original_runhistory,
                                                 run.scenario,
                                                 run.incumbent)

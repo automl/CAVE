@@ -13,6 +13,7 @@ from smac.utils.io.traj_logging import TrajLogger
 from cave.reader.base_reader import changedir
 from cave.reader.conversion.base_converter import BaseConverter
 from cave.reader.conversion.csv2rh import CSV2RH
+from cave.utils.helpers import get_folder_basenames
 from cave.utils.io import load_config_csv, load_csv_to_pandaframe
 
 
@@ -35,7 +36,7 @@ class CSV2SMAC(BaseConverter):
         #####################
         # Actual conversion #
         #####################
-        folder_basenames = self.get_folder_basenames(folders)
+        folder_basenames = get_folder_basenames(folders)
         result = OrderedDict()
         for f, f_base, ta_exec_dir in zip(folders, folder_basenames, ta_exec_dirs):  # Those are the parallel runs
             converted_folder_path = os.path.join(output_dir, converted_dest, f_base)

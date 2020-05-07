@@ -67,7 +67,7 @@ class ConfiguratorRun(object):
         self.options = options
 
         self.path_to_folder = path_to_folder
-        self.reduced_to_budgets = reduced_to_budgets
+        self.reduced_to_budgets = [None] if reduced_to_budgets is None else reduced_to_budgets
 
         self.scenario = scenario
         self.original_runhistory = original_runhistory
@@ -226,7 +226,7 @@ class ConfiguratorRun(object):
                                max_sample_size=self.options['fANOVA'].getint("pimp_max_samples"),
                                fANOVA_pairwise=self.options['fANOVA'].getboolean("fanova_pairwise"),
                                preprocess=False,
-                               verbose=1,  # disable progressbars
+                               verbose=False,  # disable progressbars in pimp...
                                )
         # Validator (initialize without trajectory)
         self.validator = Validator(self.scenario, None, None)
@@ -318,10 +318,8 @@ class ConfiguratorRun(object):
                               ("test", self.test_inst)]:
                 not_evaluated = set(i) - evaluated
                 if len(not_evaluated) > 0:
-                    self.logger.debug("RunHistory %s only evaluated on %d/%d %s-insts "
-                                      "for %s in folder %s",
-                                      name, len(i) - len(not_evaluated), len(i),
-                                      i_name, c_name, self.folder)
+                    self.logger.debug("RunHistory %s only evaluated on %d/%d %s-insts for %s in folder %s",
+                                      name, len(i) - len(not_evaluated), len(i), i_name, c_name, self.folder)
                     return_value = False
         return return_value
 
@@ -342,9 +340,8 @@ class ConfiguratorRun(object):
 
 @contextmanager
 def _changedir(newdir):
-    """ Helper function to change directory, for example to create a scenario
-    from file, where paths to the instance- and feature-files are relative to
-    the original SMAC-execution-directory. Same with target algorithms that need
+    """ Helper function to change directory, for example to create a scenario from file, where paths to the instance-
+    and feature-files are relative to the original SMAC-execution-directory. Same with target algorithms that need
     be executed for validation. """
     olddir = os.getcwd()
     os.chdir(os.path.expanduser(newdir))

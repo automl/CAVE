@@ -26,8 +26,7 @@ class CaveParameterImportance(BaseAnalyzer):
             modus for parameter importance, from
             [forward-selection, ablation, fanova, lpi]
         """
-        runs_by_budget = self.runscontainer.get_aggregated(keep_budgets=True,
-                                                           keep_folders=False)
+        runs_by_budget = self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False)
 
         formatted_budgets = format_budgets(self.runscontainer.get_budgets(), allow_whitespace=True)
 
@@ -82,8 +81,8 @@ class CaveParameterImportance(BaseAnalyzer):
                                                                 plot_bokeh=False)[0][modus]['imp']
                     except RuntimeError as e:
                         importance = {}
-                        err = "Encountered error '{}' for '{}' in '{}', (for fANOVA this can e.g. happen with too few " \
-                              "data-points).".format(e, cr.get_identifier(), modus)
+                        err = "Encountered error '{}' for '{}' in '{}', (for fANOVA this can e.g. happen with too " \
+                              "few data-points).".format(e, cr.get_identifier(), modus)
                         self.logger.debug(err, exc_info=1)
                         self.logger.error(err)
 
@@ -103,4 +102,5 @@ class CaveParameterImportance(BaseAnalyzer):
             self.result['Whisker Plot'] = {'bokeh' : components(self.plot_whiskers()),
                                            'tooltip' : "Each dot is a parallel run (or folder) of the input data "
                                                        "and the whiskers are quartiles."}
+
         return super().get_html(d, tooltip)

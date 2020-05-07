@@ -1,9 +1,10 @@
 import inspect
+import json
 import logging
 import os
 import re
 import shutil
-from collections import OrderedDict
+from collections import OrderedDict, Counter
 from traceback import print_exc
 
 from numpy import random
@@ -182,6 +183,10 @@ for (i = 0; i < acc.length; i++) {
             self.logo_custom = False
 
     def generate_html(self, data_dict: OrderedDict):
+        with open(os.path.join(self.output_dn, 'debug', 'webpage_dict.json'), 'w') as f:
+            f.write(json.dumps(data_dict, indent=2))
+
+        # Generate
         scripts, divs = [], []
         for k, v in data_dict.items():
             if not v:  # ignore empty entry
@@ -215,11 +220,13 @@ for (i = 0; i < acc.length; i++) {
 
         if layer_name is None:
             layer_name = ""
+        unique_layer_name = layer_name + self.get_unique_id()
 
         # Add tooltip, if possible
         tooltip = data_dict.get("tooltip", None)
         if tooltip is not None:
             tooltip = "<div class=\"help-tip\"><p>{}</p></div>".format(tooltip)
+        # TODO elif is obsolete / can be merged into first option (simplify!)
         elif get_tooltip(layer_name):  # if no tooltip is parsed, try to look it up
             tooltip = "<div class=\"help-tip\"><p>{}</p></div>".format(get_tooltip(layer_name))
         else:
@@ -230,21 +237,22 @@ for (i = 0; i < acc.length; i++) {
             div += "<div class=\"accordion\">{0} {1}</div>\n".format(layer_name, tooltip)
             div += "<div class=\"panel\">\n"
 
-        # If tabs for this layer, add tabs-code
+        # If this layer represents budgets, add tabs for this layer, add tabs-code
         sublayer_names = [k for k, v in data_dict.items() if isinstance(v, dict)]
         use_tabs = False
-        if len(sublayer_names) >= 1 and all([sn.startswith('budget') for sn in sublayer_names]):
+        if len(sublayer_names) >= 1 and all([sn.lower().startswith('budget') for sn in sublayer_names]):
             use_tabs = True
 
         if use_tabs:
             div += "<div class=\"tab\">\n"
             tabs_names = [k.replace('_', ' ') for k, v in data_dict.items() if isinstance(v, dict)]
-            rnd_prefix = str(random.randn())
+
             default_open_id = "defaultOpen" + self.get_unique_id()
             div += "  <button class=\"tablinks\" onclick=\"openTab(event, '{0}', '{1}')\" "\
-                   "id=\"{2}\">{1}</button>\n".format(layer_name, tabs_names[0], default_open_id)
+                   "id=\"{2}\">{1}</button>\n".format(unique_layer_name, tabs_names[0], default_open_id)
             for name in tabs_names[1:]:
-                div += "  <button class=\"tablinks\" onclick=\"openTab(event, '{0}', '{1}')\">{1}</button>\n".format(layer_name, name)
+                div += "  <button class=\"tablinks\" onclick=\"openTab(event, '{0}', '{1}')\">{1}</button>\n".format(
+                    unique_layer_name, name)
             div += "</div>\n"
 
         for k, v in data_dict.items():
@@ -259,7 +267,7 @@ for (i = 0; i < acc.length; i++) {
                     return '', ''
             elif isinstance(v, dict):
                 if use_tabs:
-                    div += "<div id=\"{0}\" class=\"tabcontent\">\n".format((layer_name + k).replace('_', ' '))
+                    div += "<div id=\"{0}\" class=\"tabcontent\">\n".format(unique_layer_name + k.replace('_', ' '))
                     div += "<div class=\"pane\">\n"
                 add_script, add_div = self.add_layer(k, v, is_tab=use_tabs)
                 script += add_script
@@ -277,7 +285,7 @@ for (i = 0; i < acc.length; i++) {
                 div += ("<div align=\"center\">\n<a href='{}'>Interactive "
                         "Plot</a>\n</div>\n".format(v[len(self.output_dn):].lstrip("/")))
             elif k == "bokeh":
-                # Escape path for URL (remove spaces and single quotes)
+                # Escape path for URL (remove spaces, slashes and single quotes)
                 path_script = os.path.join(self.relative_content_js, '_'.join([layer_name, self.budget,
                                                                                self.get_unique_id(), 'script.js']))
                 path_script = path_script.translate({ord(c): None for c in ' \''})
