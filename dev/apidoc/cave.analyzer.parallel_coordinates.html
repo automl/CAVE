@@ -248,12 +248,10 @@ parameters, the (at most) 10 most important parameters based on a fANOVA paramet
 plotted.  To emphasize better configurations, the performance is encoded in the color of each line, ranging from
 blue to red. These plots provide insights into whether the configurator focused on specific parameter values and
 how these correlate to their costs.</p>
-<p>NOTE: the given runhistory should contain only optimization and no
+<p>NOTE: the given RunHistory should contain only optimization and no
 validation to analyze the explored parameter-space.</p>
-<p>This function prepares the data from a SMAC-related
-format (using runhistories and parameters) to a more general format
-(using a dataframe). The resulting dataframe is passed to the
-parallel_coordinates-routine</p>
+<p>This function prepares the data from a SMAC-related format (using runhistories and parameters) to a more
+general format (using a dataframe). The resulting dataframe is passed to the parallel_coordinates-routine</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -272,7 +270,7 @@ important ones</p></li>
 
 <dl class="method">
 <dt id="cave.analyzer.parallel_coordinates.ParallelCoordinates.get_html">
-<code class="sig-name descname">get_html</code><span class="sig-paren">(</span><em class="sig-param">d=None</em>, <em class="sig-param">tooltip=None</em><span class="sig-paren">)</span> &#x2192; Tuple[str, str]<a class="headerlink" href="#cave.analyzer.parallel_coordinates.ParallelCoordinates.get_html" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_html</code><span class="sig-paren">(</span><em class="sig-param">d=None</em>, <em class="sig-param">tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/parallel_coordinates.html#ParallelCoordinates.get_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.parallel_coordinates.ParallelCoordinates.get_html" title="Permalink to this definition">¶</a></dt>
 <dd><p>General reports in html-format, to be easily integrated in html-code. ALSO FOR BOKEH-OUTPUT.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -299,27 +297,9 @@ important ones</p></li>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="cave.analyzer.parallel_coordinates.ParallelCoordinates.get_params">
-<code class="sig-name descname">get_params</code><span class="sig-paren">(</span><em class="sig-param">params</em>, <em class="sig-param">importance</em>, <em class="sig-param">hp_names</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/parallel_coordinates.html#ParallelCoordinates.get_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.parallel_coordinates.ParallelCoordinates.get_params" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="cave.analyzer.parallel_coordinates.ParallelCoordinates.get_plots">
-<code class="sig-name descname">get_plots</code><span class="sig-paren">(</span><em class="sig-param">budget=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/parallel_coordinates.html#ParallelCoordinates.get_plots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.parallel_coordinates.ParallelCoordinates.get_plots" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>n_configs</strong> (<em>int</em>) – number of configurations to plot (if this is less than available, worst configurations will be removed)</p></li>
-<li><p><strong>params</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – what parameters to plot</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
 <dt id="cave.analyzer.parallel_coordinates.ParallelCoordinates.plot_bokeh">
-<code class="sig-name descname">plot_bokeh</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cave.analyzer.parallel_coordinates.ParallelCoordinates.plot_bokeh" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function needs to be called if bokeh-plots are to be displayed in notebook AND saved to webpage.</p>
+<code class="sig-name descname">plot_bokeh</code><span class="sig-paren">(</span><em class="sig-param">return_components=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/analyzer/parallel_coordinates.html#ParallelCoordinates.plot_bokeh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.analyzer.parallel_coordinates.ParallelCoordinates.plot_bokeh" title="Permalink to this definition">¶</a></dt>
+<dd><p>If components is specified, will return script, div-tuple</p>
 </dd></dl>
 
 </dd></dl>

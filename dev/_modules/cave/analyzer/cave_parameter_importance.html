@@ -256,8 +256,7 @@
 <span class="sd">            modus for parameter importance, from</span>
 <span class="sd">            [forward-selection, ablation, fanova, lpi]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">runs_by_budget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="n">keep_budgets</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                                           <span class="n">keep_folders</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">runs_by_budget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="n">keep_budgets</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keep_folders</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">formatted_budgets</span> <span class="o">=</span> <span class="n">format_budgets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_budgets</span><span class="p">(),</span> <span class="n">allow_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -312,8 +311,8 @@
                                                                 <span class="n">plot_bokeh</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="n">modus</span><span class="p">][</span><span class="s1">&#39;imp&#39;</span><span class="p">]</span>
                     <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                         <span class="n">importance</span> <span class="o">=</span> <span class="p">{}</span>
-                        <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Encountered error &#39;</span><span class="si">{}</span><span class="s2">&#39; for &#39;</span><span class="si">{}</span><span class="s2">&#39; in &#39;</span><span class="si">{}</span><span class="s2">&#39;, (for fANOVA this can e.g. happen with too few &quot;</span> \
-                              <span class="s2">&quot;data-points).&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">cr</span><span class="o">.</span><span class="n">get_identifier</span><span class="p">(),</span> <span class="n">modus</span><span class="p">)</span>
+                        <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Encountered error &#39;</span><span class="si">{}</span><span class="s2">&#39; for &#39;</span><span class="si">{}</span><span class="s2">&#39; in &#39;</span><span class="si">{}</span><span class="s2">&#39;, (for fANOVA this can e.g. happen with too &quot;</span> \
+                              <span class="s2">&quot;few data-points).&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">cr</span><span class="o">.</span><span class="n">get_identifier</span><span class="p">(),</span> <span class="n">modus</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
 
@@ -333,6 +332,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;Whisker Plot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;bokeh&#39;</span> <span class="p">:</span> <span class="n">components</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_whiskers</span><span class="p">()),</span>
                                            <span class="s1">&#39;tooltip&#39;</span> <span class="p">:</span> <span class="s2">&quot;Each dot is a parallel run (or folder) of the input data &quot;</span>
                                                        <span class="s2">&quot;and the whiskers are quartiles.&quot;</span><span class="p">}</span>
+
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_html</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">tooltip</span><span class="p">)</span></div></div>
 </pre></div>
 

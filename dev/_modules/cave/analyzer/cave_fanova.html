@@ -249,9 +249,8 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">runscontainer</span><span class="p">,</span>
                  <span class="n">marginal_threshold</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Wrapper for parameter_importance to save the importance-object/</span>
-<span class="sd">        extract the results. We want to show the top X most important</span>
-<span class="sd">        parameter-fanova-plots.</span>
+        <span class="sd">&quot;&quot;&quot;Wrapper for parameter_importance to save the importance-object/ extract the results. We want to show the</span>
+<span class="sd">        top X most important parameter-fanova-plots.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -324,6 +323,7 @@
         <span class="c1"># Right now no way to access paths of the plots -&gt; file issue</span>
         <span class="n">pairwise_plots</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot; &amp; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parse_pairwise</span><span class="p">(</span><span class="n">p</span><span class="p">))</span> <span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;fanova&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parse_pairwise</span><span class="p">(</span><span class="n">p</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pairwise_imp</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
         <span class="n">result</span><span class="p">[</span><span class="s1">&#39;Pairwise Marginals&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;figure&#39;</span> <span class="p">:</span> <span class="n">path</span><span class="p">}</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">pairwise_plots</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)}</span>
+
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="CaveFanova.get_jupyter"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova.get_jupyter">[docs]</a>    <span class="k">def</span> <span class="nf">get_jupyter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

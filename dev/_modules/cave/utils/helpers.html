@@ -238,9 +238,6 @@
 <span class="kn">from</span> <span class="nn">ConfigSpace.configuration_space</span> <span class="kn">import</span> <span class="n">Configuration</span>
 <span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="kn">import</span> <span class="n">RunHistory</span><span class="p">,</span> <span class="n">RunKey</span>
 
-<span class="kn">from</span> <span class="nn">cave.reader.conversion.csv2smac</span> <span class="kn">import</span> <span class="n">CSV2SMAC</span>
-<span class="kn">from</span> <span class="nn">cave.reader.smac2_reader</span> <span class="kn">import</span> <span class="n">SMAC2Reader</span>
-<span class="kn">from</span> <span class="nn">cave.reader.smac3_reader</span> <span class="kn">import</span> <span class="n">SMAC3Reader</span>
 <span class="kn">from</span> <span class="nn">cave.utils.exceptions</span> <span class="kn">import</span> <span class="n">NotApplicable</span>
 
 
@@ -450,6 +447,10 @@
     <span class="k">return</span> <span class="n">default_options</span></div>
 
 <div class="viewcode-block" id="detect_fileformat"><a class="viewcode-back" href="../../../apidoc/cave.utils.helpers.html#cave.utils.helpers.detect_fileformat">[docs]</a><span class="k">def</span> <span class="nf">detect_fileformat</span><span class="p">(</span><span class="n">folders</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">cave.reader.conversion.csv2smac</span> <span class="kn">import</span> <span class="n">CSV2SMAC</span>
+    <span class="kn">from</span> <span class="nn">cave.reader.smac2_reader</span> <span class="kn">import</span> <span class="n">SMAC2Reader</span>
+    <span class="kn">from</span> <span class="nn">cave.reader.smac3_reader</span> <span class="kn">import</span> <span class="n">SMAC3Reader</span>
+
     <span class="c1"># Check if it&#39;s BOHB</span>
     <span class="n">bohb_files</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;configs.json&quot;</span><span class="p">,</span> <span class="s2">&quot;results.json&quot;</span><span class="p">,</span> <span class="s2">&quot;configspace.json&quot;</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">folders</span><span class="p">:</span>
@@ -467,6 +468,22 @@
         <span class="k">return</span> <span class="s2">&quot;CSV&quot;</span>
 
     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Autodetection of file-format failed. Please try to specify (using --file_format on cmd-line)&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="get_folder_basenames"><a class="viewcode-back" href="../../../apidoc/cave.utils.helpers.html#cave.utils.helpers.get_folder_basenames">[docs]</a><span class="k">def</span> <span class="nf">get_folder_basenames</span><span class="p">(</span><span class="n">folders</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Shorten folder-strings as much as possible (always keeping the basename).</span>
+<span class="sd">    [&quot;foo/bar/run_1&quot;, &quot;foo/bar/run_2/&quot;] will be [&quot;run_1&quot;, &quot;run_2&quot;]</span>
+<span class="sd">    [&quot;foo/run_1/bar/&quot;, &quot;foo/run_2/bar&quot;] will be [&quot;run_1/bar&quot;, &quot;run_2/bar&quot;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">throw</span><span class="p">,</span> <span class="n">keep</span> <span class="o">=</span> <span class="n">folders</span><span class="p">[:],</span> <span class="p">[</span><span class="s1">&#39;&#39;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">folders</span><span class="p">)))]</span>
+    <span class="n">max_parts</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">folders</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_parts</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">folders</span><span class="p">)):</span>
+            <span class="n">throw</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">new</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">throw</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">))</span>
+            <span class="n">keep</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">keep</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">keep</span><span class="p">))</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">folders</span><span class="p">)):</span>
+            <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">keep</span></div>
 </pre></div>
 
            </div>

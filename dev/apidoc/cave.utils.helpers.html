@@ -345,6 +345,14 @@ TrajEntry = collections.namedtuple(</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="cave.utils.helpers.get_folder_basenames">
+<code class="sig-prename descclassname">cave.utils.helpers.</code><code class="sig-name descname">get_folder_basenames</code><span class="sig-paren">(</span><em class="sig-param">folders</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#get_folder_basenames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.get_folder_basenames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shorten folder-strings as much as possible (always keeping the basename).
+[“foo/bar/run_1”, “foo/bar/run_2/”] will be [“run_1”, “run_2”]
+[“foo/run_1/bar/”, “foo/run_2/bar”] will be [“run_1/bar”, “run_2/bar”]</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="cave.utils.helpers.get_timeout">
 <code class="sig-prename descclassname">cave.utils.helpers.</code><code class="sig-name descname">get_timeout</code><span class="sig-paren">(</span><em class="sig-param">rh</em>, <em class="sig-param">conf</em>, <em class="sig-param">cutoff</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/utils/helpers.html#get_timeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.utils.helpers.get_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check for timeouts. If multiple runs for an inst/config-pair are
