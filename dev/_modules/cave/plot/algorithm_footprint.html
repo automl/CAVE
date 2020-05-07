@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.plot.algorithm_footprint &mdash; CAVE 1.3.1 documentation</title>
+  <title>cave.plot.algorithm_footprint &mdash; CAVE 1.3.2 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.3.1
+                1.3.2
               </div>
             
           
@@ -130,8 +130,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.html.html">cave.html package</a><ul>
@@ -140,10 +140,15 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.html">cave.reader.conversion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
@@ -331,7 +336,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_label_instances</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_reduce_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_array</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<div class="viewcode-block" id="AlgorithmFootprintPlotter._reduce_dim"><a class="viewcode-back" href="../../../apidoc/cave.plot.algorithm_footprint.html#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter._reduce_dim">[docs]</a>    <span class="k">def</span> <span class="nf">_reduce_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_array</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Expects feature-array (not dict!), performs a PCA</span>
 
 <span class="sd">        Parameters</span>
@@ -352,9 +357,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Use PCA to reduce features to </span><span class="si">%d</span><span class="s2"> dimensions&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
             <span class="n">feature_array</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">feature_array</span><span class="p">)</span>
             <span class="n">feature_array</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">feature_array</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">feature_array</span>
+        <span class="k">return</span> <span class="n">feature_array</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="AlgorithmFootprintPlotter._get_cost"><a class="viewcode-back" href="../../../apidoc/cave.plot.algorithm_footprint.html#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter._get_cost">[docs]</a>    <span class="k">def</span> <span class="nf">_get_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return cost according to (possibly EPM-)validated runhistory.</span>
 
@@ -373,9 +378,9 @@
         <span class="k">if</span> <span class="n">instance</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__algo_cost</span><span class="p">[</span><span class="n">algorithm</span><span class="p">][</span><span class="n">instance</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__algo_cost</span><span class="p">[</span><span class="n">algorithm</span><span class="p">]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__algo_cost</span><span class="p">[</span><span class="n">algorithm</span><span class="p">]</span></div>
 
-    <span class="k">def</span> <span class="nf">_label_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.95</span><span class="p">):</span>
+<div class="viewcode-block" id="AlgorithmFootprintPlotter._label_instances"><a class="viewcode-back" href="../../../apidoc/cave.plot.algorithm_footprint.html#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter._label_instances">[docs]</a>    <span class="k">def</span> <span class="nf">_label_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.95</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns dictionary with a label for each instance.</span>
 
@@ -404,7 +409,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">label</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">algo_labels</span><span class="p">[</span><span class="n">a</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Labeling instances in </span><span class="si">%.2f</span><span class="s2"> secs.&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Labeling instances in </span><span class="si">%.2f</span><span class="s2"> secs.&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span></div>
 
 <span class="c1"># -~-~-~-~ FOOTPRINT</span>
 
@@ -544,7 +549,7 @@
         <span class="k">return</span> <span class="n">area</span></div>
 
 <span class="c1"># -~-~-~ PLOTS</span>
-    <span class="k">def</span> <span class="nf">_get_good_bad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">insts</span><span class="o">=</span><span class="p">[]):</span>
+<div class="viewcode-block" id="AlgorithmFootprintPlotter._get_good_bad"><a class="viewcode-back" href="../../../apidoc/cave.plot.algorithm_footprint.html#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter._get_good_bad">[docs]</a>    <span class="k">def</span> <span class="nf">_get_good_bad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">insts</span><span class="o">=</span><span class="p">[]):</span>
         <span class="sd">&quot;&quot;&quot; Creates a list of indices for good and bad instances for a</span>
 <span class="sd">        configuration.</span>
 
@@ -578,7 +583,7 @@
         <span class="n">good_idx</span><span class="p">,</span> <span class="n">bad_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">good_idx</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bad_idx</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;for config </span><span class="si">%s</span><span class="s2"> good: </span><span class="si">%d</span><span class="s2">, bad: </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span>
                           <span class="bp">self</span><span class="o">.</span><span class="n">algo_name</span><span class="p">[</span><span class="n">conf</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">good_idx</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">bad_idx</span><span class="p">))</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">good_idx</span><span class="p">,</span> <span class="n">bad_idx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">good_idx</span><span class="p">,</span> <span class="n">bad_idx</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AlgorithmFootprintPlotter.plot_interactive_footprint"><a class="viewcode-back" href="../../../apidoc/cave.plot.algorithm_footprint.html#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter.plot_interactive_footprint">[docs]</a>    <span class="k">def</span> <span class="nf">plot_interactive_footprint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Use bokeh to create an interactive algorithm footprint with zoom and</span>

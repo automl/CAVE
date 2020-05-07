@@ -6,3 +6,4 @@ cave.analyzer.plot\_ecdf module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

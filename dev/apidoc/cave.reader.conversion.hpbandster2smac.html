@@ -1,0 +1,390 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>cave.reader.conversion.hpbandster2smac module &mdash; CAVE 1.3.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="cave.reader.base_reader module" href="cave.reader.base_reader.html" />
+    <link rel="prev" title="cave.reader.conversion.csv2smac module" href="cave.reader.conversion.csv2smac.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> CAVE
+          
+
+          
+            
+            <img src="../_static/cave.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../manual.html">Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/commandline.html">Commandline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/fileformats.html">Input Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">F.A.Q.</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cave.analyzer.html">cave.analyzer package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.algorithm_footprint.html">cave.analyzer.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.base_analyzer.html">cave.analyzer.base_analyzer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.bohb_incumbents_per_budget.html">cave.analyzer.bohb_incumbents_per_budget module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.bohb_learning_curves.html">cave.analyzer.bohb_learning_curves module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.box_violin.html">cave.analyzer.box_violin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.budget_correlation.html">cave.analyzer.budget_correlation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.cave_ablation.html">cave.analyzer.cave_ablation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.cave_fanova.html">cave.analyzer.cave_fanova module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.cave_forward_selection.html">cave.analyzer.cave_forward_selection module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.cave_parameter_importance.html">cave.analyzer.cave_parameter_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.compare_default_incumbent.html">cave.analyzer.compare_default_incumbent module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.configurator_footprint.html">cave.analyzer.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.cost_over_time.html">cave.analyzer.cost_over_time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.feature_clustering.html">cave.analyzer.feature_clustering module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.feature_correlation.html">cave.analyzer.feature_correlation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.feature_importance.html">cave.analyzer.feature_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.local_parameter_importance.html">cave.analyzer.local_parameter_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.overview_table.html">cave.analyzer.overview_table module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.parallel_coordinates.html">cave.analyzer.parallel_coordinates module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.performance_table.html">cave.analyzer.performance_table module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.pimp_comparison_table.html">cave.analyzer.pimp_comparison_table module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.plot_ecdf.html">cave.analyzer.plot_ecdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.analyzer.plot_scatter.html">cave.analyzer.plot_scatter module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cave.cave_cli.html">cave.cave_cli module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cave.cavefacade.html">cave.cavefacade module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cave.plot.html">cave.plot package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.cdf.html">cave.plot.cdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cave.html.html">cave.html package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cave.html.html_builder.html">cave.html.html_builder module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.html.html_helpers.html">cave.html.html_helpers module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="cave.reader.html">cave.reader package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="cave.reader.conversion.html">cave.reader.conversion package</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cave.utils.html">cave.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.helpers.html">cave.utils.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.io.html">cave.utils.io module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.timing.html">cave.utils.timing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.utils.tooltips.html">cave.utils.tooltips module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contact.html">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CAVE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API Documentation</a> &raquo;</li>
+        
+          <li><a href="cave.reader.html">cave.reader package</a> &raquo;</li>
+        
+          <li><a href="cave.reader.conversion.html">cave.reader.conversion package</a> &raquo;</li>
+        
+      <li>cave.reader.conversion.hpbandster2smac module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/apidoc/cave.reader.conversion.hpbandster2smac.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-cave.reader.conversion.hpbandster2smac">
+<span id="cave-reader-conversion-hpbandster2smac-module"></span><h1>cave.reader.conversion.hpbandster2smac module<a class="headerlink" href="#module-cave.reader.conversion.hpbandster2smac" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC">
+<em class="property">class </em><code class="sig-prename descclassname">cave.reader.conversion.hpbandster2smac.</code><code class="sig-name descname">HpBandSter2SMAC</code><a class="reference internal" href="../_modules/cave/reader/conversion/hpbandster2smac.html#HpBandSter2SMAC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cave.reader.conversion.base_converter.html#cave.reader.conversion.base_converter.BaseConverter" title="cave.reader.conversion.base_converter.BaseConverter"><code class="xref py py-class docutils literal notranslate"><span class="pre">cave.reader.conversion.base_converter.BaseConverter</span></code></a></p>
+<dl class="method">
+<dt id="cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC._get_config">
+<code class="sig-name descname">_get_config</code><span class="sig-paren">(</span><em class="sig-param">config_id</em>, <em class="sig-param">id2config</em>, <em class="sig-param">cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/conversion/hpbandster2smac.html#HpBandSter2SMAC._get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC._get_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC.convert">
+<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param">folders</em>, <em class="sig-param">ta_exec_dirs=None</em>, <em class="sig-param">output_dir=None</em>, <em class="sig-param">converted_dest='converted_input_data'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/conversion/hpbandster2smac.html#HpBandSter2SMAC.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC.convert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert specific format results into SMAC-format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>folders</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of parallel configurator-runs (folder paths!)</p></li>
+<li><p><strong>ta_exec_dirs</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – only relevant if you need to load instances, this should be the path from which the paths in the scenario are valid</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – path to CAVE’s output-directory</p></li>
+<li><p><strong>converted_dest</strong> (<em>str</em>) – optional, this will be the parent folder in the output in which the converted runs (in SMAC-format) are saved
+if not specified, will use temporary folders</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>result</strong> – ‘new_path’ : converted_folder_path,
+‘config_space’ : config_space,
+‘runhistory’ : runhistory,
+‘validated_runhistory’ : validated_runhistory,
+‘scenario’ : scenario,
+‘trajectory’ : trajectory}}</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict{f : dict{</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC.get_trajectory">
+<code class="sig-name descname">get_trajectory</code><span class="sig-paren">(</span><em class="sig-param">result</em>, <em class="sig-param">output_path</em>, <em class="sig-param">scenario</em>, <em class="sig-param">rh</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/conversion/hpbandster2smac.html#HpBandSter2SMAC.get_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC.get_trajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use hpbandster’s averaging.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC.hpbandster2smac">
+<code class="sig-name descname">hpbandster2smac</code><span class="sig-paren">(</span><em class="sig-param">folder</em>, <em class="sig-param">result</em>, <em class="sig-param">cs_options</em>, <em class="sig-param">output_dir: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/conversion/hpbandster2smac.html#HpBandSter2SMAC.hpbandster2smac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC.hpbandster2smac" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reading hpbandster-result-object and creating RunHistory and trajectory…  treats each budget as an
+individual ‘smac’-run, creates an output-directory with subdirectories for each budget.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>folder</strong> (<em>str</em><em> (</em><em>path</em><em>)</em>) – original folder</p></li>
+<li><p><strong>result</strong> (<em>hpbandster.core.result.Result</em>) – bohb’s result-object</p></li>
+<li><p><strong>cs_options</strong> (<em>list</em><em>[</em><em>ConfigurationSpace</em><em>]</em>) – the configuration spaces. in the best case it’s a single element, but for pcs-format we need to guess
+through a list of possible configspaces</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – the output-dir to save the smac-runs to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>converted</strong> – ‘config_space’ : config_space,
+‘runhistory’ : runhistory,
+‘validated_runhistory’ : validated_runhistory,
+‘scenario’ : scenario,
+‘trajectory’ : trajectory,
+}</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict{</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC.load_configspace">
+<code class="sig-name descname">load_configspace</code><span class="sig-paren">(</span><em class="sig-param">folder</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/conversion/hpbandster2smac.html#HpBandSter2SMAC.load_configspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC.load_configspace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will try to load the configspace. cs_options will be a list containing all possible
+combinations of interpretation for Categoricals. If this issue will be fixed, we can drop this procedure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>folder</strong> (<em>str</em>) – path to folder in which to look for configspace</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>cs_options</strong> – list with possible interpretations for config-space-file. Only contains multiple items if file-format is pcs.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list[ConfigurationSpace]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="cave.reader.base_reader.html" class="btn btn-neutral float-right" title="cave.reader.base_reader module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="cave.reader.conversion.csv2smac.html" class="btn btn-neutral float-left" title="cave.reader.conversion.csv2smac module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

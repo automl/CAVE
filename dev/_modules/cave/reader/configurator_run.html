@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.reader.configurator_run &mdash; CAVE 1.3.1 documentation</title>
+  <title>cave.reader.configurator_run &mdash; CAVE 1.3.2 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.3.1
+                1.3.2
               </div>
             
           
@@ -130,8 +130,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.html.html">cave.html package</a><ul>
@@ -140,10 +140,15 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.html">cave.reader.conversion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
@@ -434,7 +439,7 @@
 <div class="viewcode-block" id="ConfiguratorRun.get_incumbent"><a class="viewcode-back" href="../../../apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun.get_incumbent">[docs]</a>    <span class="k">def</span> <span class="nf">get_incumbent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">incumbent</span></div>
 
-    <span class="k">def</span> <span class="nf">_init_pimp_and_validator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="ConfiguratorRun._init_pimp_and_validator"><a class="viewcode-back" href="../../../apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun._init_pimp_and_validator">[docs]</a>    <span class="k">def</span> <span class="nf">_init_pimp_and_validator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                                  <span class="n">alternative_output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                  <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create ParameterImportance-object and use it&#39;s trained model for validation and further predictions.</span>
@@ -460,9 +465,9 @@
                                <span class="p">)</span>
         <span class="c1"># Validator (initialize without trajectory)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">validator</span> <span class="o">=</span> <span class="n">Validator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">validator</span><span class="o">.</span><span class="n">epm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validator</span><span class="o">.</span><span class="n">epm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">model</span></div>
 
-    <span class="nd">@timing</span>
+<div class="viewcode-block" id="ConfiguratorRun._validate_default_and_incumbents"><a class="viewcode-back" href="../../../apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun._validate_default_and_incumbents">[docs]</a>    <span class="nd">@timing</span>
     <span class="k">def</span> <span class="nf">_validate_default_and_incumbents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                                          <span class="n">method</span><span class="p">,</span>
                                          <span class="n">ta_exec_dir</span><span class="p">,</span>
@@ -501,9 +506,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">epm_runhistory</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_rh</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Missing data method illegal (</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">validator</span><span class="o">.</span><span class="n">traj</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Avoid usage-mistakes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validator</span><span class="o">.</span><span class="n">traj</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Avoid usage-mistakes</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_feature_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ConfiguratorRun._get_feature_names"><a class="viewcode-back" href="../../../apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun._get_feature_names">[docs]</a>    <span class="k">def</span> <span class="nf">_get_feature_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">feature_dict</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No features available. Skipping feature analysis.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
@@ -521,9 +526,9 @@
                     <span class="n">feat_names</span> <span class="o">=</span> <span class="n">InputReader</span><span class="p">()</span><span class="o">.</span><span class="n">read_instance_features_file</span><span class="p">(</span><span class="n">feat_fn</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">feat_names</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">feature_names</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">feat_names</span>
+        <span class="k">return</span> <span class="n">feat_names</span></div>
 
-    <span class="k">def</span> <span class="nf">_check_rh_for_inc_and_def</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="ConfiguratorRun._check_rh_for_inc_and_def"><a class="viewcode-back" href="../../../apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun._check_rh_for_inc_and_def">[docs]</a>    <span class="k">def</span> <span class="nf">_check_rh_for_inc_and_def</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if default and incumbent are evaluated on all instances in this rh</span>
 
@@ -551,7 +556,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;RunHistory </span><span class="si">%s</span><span class="s2"> only evaluated on </span><span class="si">%d</span><span class="s2">/</span><span class="si">%d</span><span class="s2"> </span><span class="si">%s</span><span class="s2">-insts for </span><span class="si">%s</span><span class="s2"> in folder </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
                                       <span class="n">name</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">not_evaluated</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">i_name</span><span class="p">,</span> <span class="n">c_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">folder</span><span class="p">)</span>
                     <span class="n">return_value</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="n">return_value</span>
+        <span class="k">return</span> <span class="n">return_value</span></div>
 
 <div class="viewcode-block" id="ConfiguratorRun.get_reader"><a class="viewcode-back" href="../../../apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun.get_reader">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_reader</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">ta_exec_dir</span><span class="p">):</span>
@@ -568,7 +573,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> not supported as file-format&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span></div></div>
 
-<span class="nd">@contextmanager</span>
+<div class="viewcode-block" id="_changedir"><a class="viewcode-back" href="../../../apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run._changedir">[docs]</a><span class="nd">@contextmanager</span>
 <span class="k">def</span> <span class="nf">_changedir</span><span class="p">(</span><span class="n">newdir</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Helper function to change directory, for example to create a scenario from file, where paths to the instance-</span>
 <span class="sd">    and feature-files are relative to the original SMAC-execution-directory. Same with target algorithms that need</span>
@@ -578,7 +583,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="k">yield</span>
     <span class="k">finally</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">olddir</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">olddir</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

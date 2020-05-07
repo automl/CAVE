@@ -1,8 +1,9 @@
-cave.plot.parallel\_coordinates module
+cave.reader.conversion.csv2smac module
 ======================================
 
-.. automodule:: cave.plot.parallel_coordinates
+.. automodule:: cave.reader.conversion.csv2smac
    :members:
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

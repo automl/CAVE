@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.plot.algorithm_footprint module &mdash; CAVE 1.3.1 documentation</title>
+  <title>cave.plot.algorithm_footprint module &mdash; CAVE 1.3.2 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.3.1
+                1.3.2
               </div>
             
           
@@ -132,8 +132,8 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">cave.plot.algorithm_footprint module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.cdf.html">cave.plot.cdf module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cave.html.html">cave.html package</a><ul>
@@ -142,10 +142,15 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.conversion.html">cave.reader.conversion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
@@ -265,6 +270,75 @@ throughout the class.</p>
 </ul>
 </dd>
 </dl>
+<dl class="method">
+<dt id="cave.plot.algorithm_footprint.AlgorithmFootprintPlotter._get_cost">
+<code class="sig-name descname">_get_cost</code><span class="sig-paren">(</span><em class="sig-param">algorithm</em>, <em class="sig-param">instance=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/algorithm_footprint.html#AlgorithmFootprintPlotter._get_cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter._get_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return cost according to (possibly EPM-)validated runhistory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>algorithm</strong> (<em>Configuration</em>) – config</p></li>
+<li><p><strong>instance</strong> (<em>str</em>) – instance name</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.plot.algorithm_footprint.AlgorithmFootprintPlotter._get_good_bad">
+<code class="sig-name descname">_get_good_bad</code><span class="sig-paren">(</span><em class="sig-param">conf</em>, <em class="sig-param">insts=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/algorithm_footprint.html#AlgorithmFootprintPlotter._get_good_bad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter._get_good_bad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a list of indices for good and bad instances for a
+configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>conf</strong> (<em>Configuration</em>) – configuration for which to plot good vs bad</p></li>
+<li><p><strong>insts</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – instances to be plotted</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>outpath</strong> – output path</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.plot.algorithm_footprint.AlgorithmFootprintPlotter._label_instances">
+<code class="sig-name descname">_label_instances</code><span class="sig-paren">(</span><em class="sig-param">epsilon=0.95</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/algorithm_footprint.html#AlgorithmFootprintPlotter._label_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter._label_instances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns dictionary with a label for each instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>labels</strong> – maps instance-names (strings) to label (floats)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dict[str:float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.plot.algorithm_footprint.AlgorithmFootprintPlotter._reduce_dim">
+<code class="sig-name descname">_reduce_dim</code><span class="sig-paren">(</span><em class="sig-param">feature_array</em>, <em class="sig-param">n=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/algorithm_footprint.html#AlgorithmFootprintPlotter._reduce_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter._reduce_dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expects feature-array (not dict!), performs a PCA</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_array</strong> (<em>np.array</em>) – array containing features in order of self.inst_names</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – target dimension for pca, 2 or 3</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>feature_array_nd</strong> – array with pca’ed features (n-dimensional)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="method">
 <dt id="cave.plot.algorithm_footprint.AlgorithmFootprintPlotter.footprint">
 <code class="sig-name descname">footprint</code><span class="sig-paren">(</span><em class="sig-param">a</em>, <em class="sig-param">density_threshold</em>, <em class="sig-param">purity_threshold</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/algorithm_footprint.html#AlgorithmFootprintPlotter.footprint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter.footprint" title="Permalink to this definition">¶</a></dt>

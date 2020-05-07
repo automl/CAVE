@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.bohb_learning_curves &mdash; CAVE 1.3.1 documentation</title>
+  <title>cave.analyzer.bohb_learning_curves &mdash; CAVE 1.3.2 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.3.1
+                1.3.2
               </div>
             
           
@@ -130,8 +130,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.html.html">cave.html package</a><ul>
@@ -140,10 +140,15 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.html">cave.reader.conversion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
@@ -276,7 +281,7 @@
 <div class="viewcode-block" id="BohbLearningCurves.plot"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.bohb_learning_curves.html#cave.analyzer.bohb_learning_curves.BohbLearningCurves.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reset_times</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result_object</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lcs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hp_names</span><span class="p">,</span> <span class="n">reset_times</span><span class="o">=</span><span class="n">reset_times</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_object</span><span class="p">,</span> <span class="n">learning_curves</span><span class="p">,</span> <span class="n">hyperparameter_names</span><span class="p">,</span> <span class="n">reset_times</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="BohbLearningCurves._plot"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.bohb_learning_curves.html#cave.analyzer.bohb_learning_curves.BohbLearningCurves._plot">[docs]</a>    <span class="k">def</span> <span class="nf">_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_object</span><span class="p">,</span> <span class="n">learning_curves</span><span class="p">,</span> <span class="n">hyperparameter_names</span><span class="p">,</span> <span class="n">reset_times</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># Extract information from learning-curve-dict</span>
         <span class="n">times</span><span class="p">,</span> <span class="n">losses</span><span class="p">,</span> <span class="n">config_ids</span><span class="p">,</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">conf_id</span><span class="p">,</span> <span class="n">learning_curves</span> <span class="ow">in</span> <span class="n">learning_curves</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -468,7 +473,7 @@
                                <span class="n">row</span><span class="p">(</span><span class="n">widgetbox</span><span class="p">(</span><span class="n">select_all</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span>
                                    <span class="n">widgetbox</span><span class="p">(</span><span class="n">select_none</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)),</span>
                                <span class="n">widgetbox</span><span class="p">(</span><span class="n">select_color</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">200</span><span class="p">)))</span>
-        <span class="k">return</span> <span class="n">layout</span>
+        <span class="k">return</span> <span class="n">layout</span></div>
 
 <div class="viewcode-block" id="BohbLearningCurves.get_longest_run"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.bohb_learning_curves.html#cave.analyzer.bohb_learning_curves.BohbLearningCurves.get_longest_run">[docs]</a>    <span class="k">def</span> <span class="nf">get_longest_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c_id</span><span class="p">,</span> <span class="n">result_object</span><span class="p">):</span>
         <span class="n">all_runs</span> <span class="o">=</span>  <span class="n">result_object</span><span class="o">.</span><span class="n">get_runs_by_id</span><span class="p">(</span><span class="n">c_id</span><span class="p">)</span>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Commandline &mdash; CAVE 1.3.1 documentation</title>
+  <title>Commandline &mdash; CAVE 1.3.2 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.3.1
+                1.3.2
               </div>
             
           
@@ -132,8 +132,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../apidoc/cave.html.html">cave.html package</a><ul>
@@ -142,10 +142,15 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.conversion.html">cave.reader.conversion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidoc/cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidoc/cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidoc/cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidoc/cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
@@ -238,18 +243,19 @@
 <p>When running CAVE via the commandline you can use the following arguments to control it’s behaviour:</p>
 <p>Mandatory:</p>
 <ul class="simple">
-<li><p>(<code class="docutils literal notranslate"><span class="pre">--folders</span></code>): path(s) to folder(s) containing the (parallel) configurator-output (works with
-<cite>output/run_*</cite>). while the explicit call with <cite>–folders</cite> is still supported, CAVE will interpret all positional arguments as folders</p></li>
+<li><p>(<code class="docutils literal notranslate"><span class="pre">--folders</span></code>): path(s) to folder(s) containing the (parallel) configurator-output (works with glob-like <cite>output/run_*</cite>).
+while the explicit call with <cite>–folders</cite> is still supported, CAVE will interpret all positional arguments as folders</p></li>
 </ul>
 <p>Meta-parameters:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">--output</span></code>: where to save the CAVE-output</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--file_format</span></code>: only use this if automatic file format detection fails. choose from <a class="reference external" href="https://github.com/automl/SMAC3">SMAC3</a>, <a class="reference external" href="https://www.cs.ubc.ca/labs/beta/Projects/SMAC">SMAC2</a>,
+<li><p>(<code class="docutils literal notranslate"><span class="pre">--file_format</span></code>): (deprecated, should be detected automatically) only use this if automatic file format detection fails. choose from <a class="reference external" href="https://github.com/automl/SMAC3">SMAC3</a>, <a class="reference external" href="https://www.cs.ubc.ca/labs/beta/Projects/SMAC">SMAC2</a>,
 <a class="reference external" href="fileformats.html#csv">CSV</a> or <a class="reference external" href="https://github.com/automl/HpBandSter">BOHB</a>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--validation_format</span></code>: of (optional) validation data (to enhance epm-quality where appropriate), choose from
+<li><p><code class="docutils literal notranslate"><span class="pre">--validation_format</span></code>: (deprecated, should be detected automatically) of (optional) validation data (to enhance epm-quality where appropriate), choose from
 <a class="reference external" href="https://github.com/automl/SMAC3">SMAC3</a>, <a class="reference external" href="https://www.cs.ubc.ca/labs/beta/Projects/SMAC">SMAC2</a>,
 <a class="reference external" href="fileformats.html#csv">CSV</a> or None.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--ta_exec_dir</span></code>: only used for SMAC-results (and possibly CSV-results). path to the execution-directory of the configurator run. this is the path from
+<li><p><code class="docutils literal notranslate"><span class="pre">--ta_exec_dir</span></code>: only relevant when using scenario-files that redirect to relative files.
+path to the execution-directory of the configurator run. <cite>ta_exec_dir</cite> is the path from
 which the scenario is loaded, so the instance-/pcs-files specified in the
 scenario, so they are relative to this path
 (e.g. ‘ta_exec_dir/path_to_train_inst_specified_in_scenario.txt’).</p></li>
@@ -263,7 +269,7 @@ either provide a combination of those or use <cite>all</cite> or <cite>none</cit
 <li><p><code class="docutils literal notranslate"><span class="pre">--feature_analysis</span></code>: analysis of features is expensive, so you can specify which
 algorithm to run: <cite>box_violin</cite>, <cite>clustering</cite>, <cite>importance</cite> and/or <cite>correlation</cite>.
 either provide a combination of those or use <cite>all</cite> or <cite>none</cite></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--performance_table</span></code>: toggles the tabular analysis</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--no_performance_table</span></code>: toggles the tabular analysis</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--no_ecdf</span></code>, <code class="docutils literal notranslate"><span class="pre">--no_scatter_plots</span></code>: toggle ecdf- and scatter-plots</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--no_cost_over_time</span></code>: toggles the cost-over-time plot</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--no_parallel_coordinates</span></code>: toggles the parallel-coordinates plot</p></li>
@@ -272,6 +278,7 @@ either provide a combination of those or use <cite>all</cite> or <cite>none</cit
 <li><p><code class="docutils literal notranslate"><span class="pre">--cfp_time_slider</span></code>: how to display the over-time development of the configurator footprint, choose from <cite>off</cite> (which yields only the final interactive plot), <cite>static</cite> (which yields a number of <cite>.png`s to click through), `online</cite> (which generates a time-slider-widget - might be slow interaction on big data) and <cite>prerender</cite> (which also generates time-slider, but large file with low interaction time)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--cfp_number_quantiles</span></code>: if time-slider for configurator footprints is not <cite>off</cite>, determines the number of different quantiles to look at</p></li>
 </ul>
+<p>For a full view of the currently supported flags, see <cite>cave –help</cite>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you analyze BOHB-results, you can only provide one folder.</p>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.reader.csv_reader module &mdash; CAVE 1.3.1 documentation</title>
+  <title>cave.reader.conversion.base_converter module &mdash; CAVE 1.3.2 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="cave.reader.runs_container module" href="cave.reader.runs_container.html" />
-    <link rel="prev" title="cave.reader.csv2rh module" href="cave.reader.csv2rh.html" /> 
+    <link rel="next" title="cave.reader.conversion.csv2rh module" href="cave.reader.conversion.csv2rh.html" />
+    <link rel="prev" title="cave.reader.conversion package" href="cave.reader.conversion.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.3.1
+                1.3.2
               </div>
             
           
@@ -132,8 +132,8 @@
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.cdf.html">cave.plot.cdf module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cave.html.html">cave.html package</a><ul>
@@ -142,10 +142,15 @@
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="reference internal" href="cave.reader.html">cave.reader package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="cave.reader.conversion.html">cave.reader.conversion package</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">cave.reader.csv_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
@@ -216,13 +221,15 @@
         
           <li><a href="cave.reader.html">cave.reader package</a> &raquo;</li>
         
-      <li>cave.reader.csv_reader module</li>
+          <li><a href="cave.reader.conversion.html">cave.reader.conversion package</a> &raquo;</li>
+        
+      <li>cave.reader.conversion.base_converter module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/apidoc/cave.reader.csv_reader.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/apidoc/cave.reader.conversion.base_converter.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -235,8 +242,42 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="cave-reader-csv-reader-module">
-<h1>cave.reader.csv_reader module<a class="headerlink" href="#cave-reader-csv-reader-module" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-cave.reader.conversion.base_converter">
+<span id="cave-reader-conversion-base-converter-module"></span><h1>cave.reader.conversion.base_converter module<a class="headerlink" href="#module-cave.reader.conversion.base_converter" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="cave.reader.conversion.base_converter.BaseConverter">
+<em class="property">class </em><code class="sig-prename descclassname">cave.reader.conversion.base_converter.</code><code class="sig-name descname">BaseConverter</code><a class="reference internal" href="../_modules/cave/reader/conversion/base_converter.html#BaseConverter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.conversion.base_converter.BaseConverter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="cave.reader.conversion.base_converter.BaseConverter.convert">
+<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param">folders</em>, <em class="sig-param">ta_exec_dirs=None</em>, <em class="sig-param">output_dir=None</em>, <em class="sig-param">converted_dest='converted_input_data'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/conversion/base_converter.html#BaseConverter.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.conversion.base_converter.BaseConverter.convert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert specific format results into SMAC-format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>folders</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of parallel configurator-runs (folder paths!)</p></li>
+<li><p><strong>ta_exec_dirs</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – only relevant if you need to load instances, this should be the path from which the paths in the scenario are valid</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – path to CAVE’s output-directory</p></li>
+<li><p><strong>converted_dest</strong> (<em>str</em>) – optional, this will be the parent folder in the output in which the converted runs (in SMAC-format) are saved
+if not specified, will use temporary folders</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>result</strong> – ‘new_path’ : converted_folder_path,
+‘config_space’ : config_space,
+‘runhistory’ : runhistory,
+‘validated_runhistory’ : validated_runhistory,
+‘scenario’ : scenario,
+‘trajectory’ : trajectory}}</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict{f : dict{</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -247,10 +288,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="cave.reader.runs_container.html" class="btn btn-neutral float-right" title="cave.reader.runs_container module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="cave.reader.conversion.csv2rh.html" class="btn btn-neutral float-right" title="cave.reader.conversion.csv2rh module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="cave.reader.csv2rh.html" class="btn btn-neutral float-left" title="cave.reader.csv2rh module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="cave.reader.conversion.html" class="btn btn-neutral float-left" title="cave.reader.conversion package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

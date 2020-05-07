@@ -6,3 +6,4 @@ cave.analyzer.bohb\_incumbents\_per\_budget module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

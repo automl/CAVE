@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.plot.configurator_footprint module &mdash; CAVE 1.3.1 documentation</title>
+  <title>cave.plot.configurator_footprint module &mdash; CAVE 1.3.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="cave.plot.parallel_coordinates module" href="cave.plot.parallel_coordinates.html" />
+    <link rel="next" title="cave.plot.scatter module" href="cave.plot.scatter.html" />
     <link rel="prev" title="cave.plot.cdf module" href="cave.plot.cdf.html" /> 
 </head>
 
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.3.1
+                1.3.2
               </div>
             
           
@@ -132,8 +132,8 @@
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.cdf.html">cave.plot.cdf module</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">cave.plot.configurator_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cave.html.html">cave.html package</a><ul>
@@ -142,10 +142,15 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.conversion.html">cave.reader.conversion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
@@ -264,6 +269,210 @@ INCREASES FILE-SIZE DRAMATICALLY</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="method">
+<dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._contour_radiobuttongroup">
+<code class="sig-name descname">_contour_radiobuttongroup</code><span class="sig-paren">(</span><em class="sig-param">contour_data</em>, <em class="sig-param">color_mapper</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter._contour_radiobuttongroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._contour_radiobuttongroup" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>radiobuttongroup</strong> (<em>RadioButtonGroup</em>) – radiobuttongroup widget to select one of the elements</p></li>
+<li><p><strong>title</strong> (<em>Div</em>) – text-element to “show title” of widget</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._create_figure">
+<code class="sig-name descname">_create_figure</code><span class="sig-paren">(</span><em class="sig-param">x_range</em>, <em class="sig-param">y_range</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter._create_figure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._create_figure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._create_views">
+<code class="sig-name descname">_create_views</code><span class="sig-paren">(</span><em class="sig-param">source</em>, <em class="sig-param">used_configs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter._create_views"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._create_views" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create views in order of plotting, so more interesting views are
+plotted on top. Order of interest:
+default &gt; final-incumbent &gt; incumbent &gt; candidate</p>
+<blockquote>
+<div><dl class="simple">
+<dt>local &gt; random</dt><dd><p>num_runs (ascending, more evaluated -&gt; more interesting)</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Individual views are necessary, since bokeh can only plot one
+marker-type (circle, triangle, …) per ‘scatter’-call</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<em>ColumnDataSource</em>) – containing relevant information for plotting</p></li>
+<li><p><strong>used_configs</strong> (<em>List</em><em>[</em><em>Configuration</em><em>]</em>) – configs that are contained in this source. necessary to plot glyphs for the independent runs so they can be
+toggled. not all configs are in every source because of efficiency: no need to have 0-runs configs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>views</strong> (<em>List[CDSView]</em>) – views in order of plotting</p></li>
+<li><p><strong>views_by_run</strong> (<em>Dict[ConfiguratorRun -&gt; List[int]]</em>) – maps each run to a list of indices of the related glyphs in the returned ‘views’-list</p></li>
+<li><p><strong>markers</strong> (<em>List[string]</em>) – markers (to the view with the same index)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._get_color">
+<code class="sig-name descname">_get_color</code><span class="sig-paren">(</span><em class="sig-param">types</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter._get_color"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._get_color" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine appropriate color for all configurations</p>
+<dl class="simple">
+<dt>types: List[str]</dt><dd><p>type of configuration</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>colors: list</dt><dd><p>list of color per config</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._get_runs_per_config_quantiled">
+<code class="sig-name descname">_get_runs_per_config_quantiled</code><span class="sig-paren">(</span><em class="sig-param">rh</em>, <em class="sig-param">conf_list</em>, <em class="sig-param">quantiles</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter._get_runs_per_config_quantiled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._get_runs_per_config_quantiled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of lists, each sublist representing the current state
+at that timestep (quantile). The current state means a list of times
+each config was evaluated at that timestep.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rh</strong> (<em>RunHistory</em>) – rh to be split up</p></li>
+<li><p><strong>conf_list</strong> (<em>list</em>) – list of all Configuration objects that appear in runhistory</p></li>
+<li><p><strong>quantiles</strong> (<em>int</em>) – number of fractions to split rh into</p></li>
+<li><p><strong>Returns</strong> – </p></li>
+<li><p><strong>--------</strong> – </p></li>
+<li><p><strong>labels</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – labels for timeslider (i.e. wallclock-times)</p></li>
+<li><p><strong>runs_per_quantile</strong> (<em>np.array</em>) – numpy array of runs per configuration per quantile</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._get_size">
+<code class="sig-name descname">_get_size</code><span class="sig-paren">(</span><em class="sig-param">r_p_c</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter._get_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._get_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns size of scattered points in dependency of runs per config</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>r_p_c</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – list with runs per config in order of self.conf_list</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>sizes</strong> – list with appropriate sizes for dots</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._get_widgets">
+<code class="sig-name descname">_get_widgets</code><span class="sig-paren">(</span><em class="sig-param">all_glyphs</em>, <em class="sig-param">overtime_groups</em>, <em class="sig-param">run_groups</em>, <em class="sig-param">slider_labels=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter._get_widgets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._get_widgets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combine timeslider for quantiles and checkboxes for individual runs in a single javascript-snippet</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>all_glyphs</strong> (<em>List</em><em>[</em><em>Glyph</em><em>]</em>) – togglable bokeh-glyphs</p></li>
+<li><p><strong>run_groups</strong> (<em>overtime_groups</em><em>,</em>) – mapping labels to indices of the all_glyphs-list</p></li>
+<li><p><strong>slider_labels</strong> (<em>Union</em><em>[</em><em>None</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) – if provided, used as labels for timeslider-widget</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>time_slider, checkbox, select_all, select_none</strong> (<em>Widget</em>) – desired interlayed bokeh-widgets</p></li>
+<li><p><strong>checkbox_title</strong> (<em>Div</em>) – text-element to “show title” of checkbox</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._plot_contour">
+<code class="sig-name descname">_plot_contour</code><span class="sig-paren">(</span><em class="sig-param">p</em>, <em class="sig-param">contour_data</em>, <em class="sig-param">x_range</em>, <em class="sig-param">y_range</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter._plot_contour"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._plot_contour" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot contour data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>bokeh.plotting.figure</em>) – figure to be drawn upon</p></li>
+<li><p><strong>contour_data</strong> (<em>Dict</em><em>[</em><em>str -&gt; np.array</em><em>]</em>) – dict from labels to array with contour data</p></li>
+<li><p><strong>x_range</strong> (<em>List</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – min and max of x-axis</p></li>
+<li><p><strong>y_range</strong> (<em>List</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – min and max of y-axis</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>handles</strong> – mapping from label to image glyph and min/max-tuple</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict[str -&gt; tuple(ImageGlyph, tuple(float, float))]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._plot_get_source">
+<code class="sig-name descname">_plot_get_source</code><span class="sig-paren">(</span><em class="sig-param">conf_list</em>, <em class="sig-param">runs</em>, <em class="sig-param">X</em>, <em class="sig-param">inc_list</em>, <em class="sig-param">hp_names</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter._plot_get_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._plot_get_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create ColumnDataSource with all the necessary data
+Contains for each configuration evaluated on any run:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>all parameters and values</p></li>
+<li><p>origin (if conflicting, origin from best run counts)</p></li>
+<li><p>type (default, incumbent or candidate)</p></li>
+<li><p># of runs</p></li>
+<li><p>size</p></li>
+<li><p>color</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>conf_list</strong> (<em>list</em><em>[</em><em>Configuration</em><em>]</em>) – configurations</p></li>
+<li><p><strong>runs</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – runs per configuration (same order as conf_list)</p></li>
+<li><p><strong>X</strong> (<em>np.array</em>) – configuration-parameters as 2-dimensional array</p></li>
+<li><p><strong>inc_list</strong> (<em>list</em><em>[</em><em>Configuration</em><em>]</em>) – incumbents for this conf-run</p></li>
+<li><p><strong>hp_names</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – names of hyperparameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>source</strong> (<em>ColumnDataSource</em>) – source with attributes as requested</p></li>
+<li><p><strong>conf_list</strong> (<em>List[Configuration]</em>) – filtered conf_list with only configs we actually plot (i.e. &gt; 0 runs)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._scatter">
+<code class="sig-name descname">_scatter</code><span class="sig-paren">(</span><em class="sig-param">p</em>, <em class="sig-param">source</em>, <em class="sig-param">views</em>, <em class="sig-param">markers</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter._scatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._scatter" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>bokeh.plotting.figure</em>) – figure</p></li>
+<li><p><strong>source</strong> (<em>ColumnDataSource</em>) – data container</p></li>
+<li><p><strong>views</strong> (<em>List</em><em>[</em><em>CDSView</em><em>]</em>) – list with views to be plotted (in order!)</p></li>
+<li><p><strong>markers</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – corresponding markers to the views</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>scatter_handles</strong> – glyph renderer per view</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[GlyphRenderer]</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="method">
 <dt id="cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_conf_matrix">
 <code class="sig-name descname">get_conf_matrix</code><span class="sig-paren">(</span><em class="sig-param">rh</em>, <em class="sig-param">incs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/plot/configurator_footprint.html#ConfiguratorFootprintPlotter.get_conf_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_conf_matrix" title="Permalink to this definition">¶</a></dt>
@@ -437,7 +646,7 @@ data and plot the configurator footprint.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="cave.plot.parallel_coordinates.html" class="btn btn-neutral float-right" title="cave.plot.parallel_coordinates module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="cave.plot.scatter.html" class="btn btn-neutral float-right" title="cave.plot.scatter module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="cave.plot.cdf.html" class="btn btn-neutral float-left" title="cave.plot.cdf module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

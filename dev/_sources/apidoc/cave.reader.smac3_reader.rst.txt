@@ -6,3 +6,4 @@ cave.reader.smac3\_reader module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

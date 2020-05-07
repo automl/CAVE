@@ -6,3 +6,4 @@ cave.utils.bokeh\_routines module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

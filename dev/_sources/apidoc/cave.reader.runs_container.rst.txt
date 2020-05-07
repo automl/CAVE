@@ -6,3 +6,4 @@ cave.reader.runs\_container module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:
