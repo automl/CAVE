@@ -47,6 +47,9 @@ class BudgetCorrelation(BaseAnalyzer):
             table.append([])
             for b2 in runs:
                 configs = set(b1.combined_runhistory.get_all_configs()).intersection(set(b2.combined_runhistory.get_all_configs()))
+                if len(configs) < 1:
+                    table[-1].append("N/A")
+                    continue
                 costs = list(zip(*[(b1.combined_runhistory.get_cost(c), b2.combined_runhistory.get_cost(c)) for c in configs]))
                 rho, p = scipy.stats.spearmanr(costs[0], costs[1])
                 # Differentiate to generate upper diagonal
