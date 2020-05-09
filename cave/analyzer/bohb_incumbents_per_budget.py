@@ -11,6 +11,7 @@ from cave.utils.hpbandster_helpers import format_budgets
 
 
 class BohbIncumbentsPerBudget(BaseAnalyzer):
+    # todo rename (not BOHB-specific)
     """
     Show the incumbents for each budget (i.e. the best configuration by kernel-estimation using data from that
     budget).
@@ -21,7 +22,7 @@ class BohbIncumbentsPerBudget(BaseAnalyzer):
                  ):
         super().__init__(runscontainer)
 
-        runs = sorted(runscontainer.get_aggregated(True, False), key=lambda x: x.budget)
+        runs = runscontainer.get_aggregated(keep_budgets=True, keep_folders=False)
         incumbents = [r.incumbent for r in runs]
         budget_names = [f for b, f in format_budgets(runscontainer.get_budgets(), allow_whitespace=True).items()]
         epm_rhs = [r.epm_runhistory for r in runs]

@@ -6,6 +6,7 @@ cave.analyzer package
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:
 
 
 .. toctree::

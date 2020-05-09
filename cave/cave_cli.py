@@ -227,7 +227,7 @@ class CaveCLI(object):
                               action='store_false',
                               help="don't plot budget correlation.",
                               dest='budget_correlation')
-        act_opts.add_argument("--bohb_learning_curves",
+        act_opts.add_argument("--no_bohb_learning_curves",
                               action='store_false',
                               help="don't plot bohb learning curves.",
                               dest='bohb_learning_curves')

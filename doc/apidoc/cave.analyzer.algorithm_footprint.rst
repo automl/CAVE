@@ -6,3 +6,4 @@ cave.analyzer.algorithm\_footprint module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

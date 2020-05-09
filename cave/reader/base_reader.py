@@ -29,8 +29,7 @@ class BaseReader(object):
 
     def get_scenario(self):
         """Expects `self.folder/scenario.txt` with appropriately formatted
-        scenario-information (
-        `<https://automl.github.io/SMAC3/stable/options.html#scenario>`_)"""
+        scenario-information (`<https://automl.github.io/SMAC3/stable/options.html#scenario>`_)"""
         raise NotImplemented()
 
     def get_runhistory(self):
@@ -62,5 +61,6 @@ class BaseReader(object):
                 raise FileNotFoundError("The file \"{}\" does not exist in \"{}\".".format(fn, folder))
         elif len(globbed) > 1:
             if raise_on_failure:
-                raise NotUniqueError("The file \"{}\" exists {} times in \"{}\", but not in the expected place.".format(fn, folder))
+                raise NotUniqueError("The file \"{}\" exists {} times in \"{}\", but not in the expected place.".format(
+                    fn, len(globbed), folder))
         return ""

@@ -1,3 +1,23 @@
+# 1.3.2
+
+## Bug fixes
+
+* Fix bug with duplicate entries in html-builder
+
+## Major changes
+
+* Internally adapt structure to support budgets and parallel runs in accordance with new SMAC
+* Enable budgets and parallel runs for CSV-Reader (and change to converting data always (so also in hpbandster-reader) instead of maintaining different readers)
+* Add interactive parallel coordinates plot
+* Add Whisker-Quantile plot to compare importances over budgets and parallel runs
+
+## Minor changes 
+
+* Add support for new trajectory files (overdue...)
+* Add script to enable generation of example-data in CSV-format
+* Add caching of aggregated ConfiguratorRuns
+* Update CSV-examples (now with budgets instead of instances...)
+
 # 1.3.1
 
 ## Bug fixes

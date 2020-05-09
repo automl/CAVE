@@ -6,3 +6,4 @@ cave.analyzer.compare\_default\_incumbent module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

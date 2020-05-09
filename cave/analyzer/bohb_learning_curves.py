@@ -35,8 +35,8 @@ class BohbLearningCurves(BaseAnalyzer):
             raise ImportError("You need to install hpbandster (e.g. 'pip install hpbandster') to analyze bohb-results.")
 
         self.hp_names = runscontainer.scenario.cs.get_hyperparameter_names()
-        self.result_objects = self.runscontainer.folder2result
-        self.result_object = list(self.result_objects.values())[0]
+        self.result_objects = [cr.share_information['hpbandster_result'] for cr in self.runscontainer.get_all_runs()]
+        self.result_object = self.result_objects[0]
         # TODO extend to support parallel runs
         self.lcs = self.result_object.get_learning_curves(lc_extractor=extract_HBS_learning_curves)
 

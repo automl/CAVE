@@ -6,3 +6,4 @@ cave.analyzer.overview\_table module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:
