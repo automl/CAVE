@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.html.html_helpers module &mdash; CAVE 1.3.1 documentation</title>
+  <title>cave.html.html_helpers module &mdash; CAVE 1.3.2 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.3.1
+                1.3.2
               </div>
             
           
@@ -132,8 +132,8 @@
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.cdf.html">cave.plot.cdf module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="reference internal" href="cave.html.html">cave.html package</a><ul class="current">
@@ -142,10 +142,15 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.conversion.html">cave.reader.conversion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
@@ -237,6 +242,25 @@
             
   <div class="section" id="module-cave.html.html_helpers">
 <span id="cave-html-html-helpers-module"></span><h1>cave.html.html_helpers module<a class="headerlink" href="#module-cave.html.html_helpers" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="cave.html.html_helpers._split_table">
+<code class="sig-prename descclassname">cave.html.html_helpers.</code><code class="sig-name descname">_split_table</code><span class="sig-paren">(</span><em class="sig-param">table: collections.OrderedDict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/html/html_helpers.html#_split_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.html.html_helpers._split_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits an OrderedDict into a list of tuples that can be turned into a
+HTML-table with pandas DataFrame</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>table</strong> (<em>OrderedDict</em>) – table that is to be split into two columns</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>table_split</strong> – list with two key-value pairs per entry that can be used by pandas
+df.to_html()</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[tuple(key, value, key, value)]</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="function">
 <dt id="cave.html.html_helpers.figure_to_html">
 <code class="sig-prename descclassname">cave.html.html_helpers.</code><code class="sig-name descname">figure_to_html</code><span class="sig-paren">(</span><em class="sig-param">figure</em>, <em class="sig-param">prefix=None</em>, <em class="sig-param">max_in_a_row=None</em>, <em class="sig-param">true_break_between_rows=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/html/html_helpers.html#figure_to_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.html.html_helpers.figure_to_html" title="Permalink to this definition">¶</a></dt>

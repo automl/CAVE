@@ -6,3 +6,4 @@ cave.utils.convert\_for\_epm module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

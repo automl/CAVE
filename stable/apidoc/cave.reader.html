@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.reader package &mdash; CAVE 1.3.1 documentation</title>
+  <title>cave.reader package &mdash; CAVE 1.3.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="cave.reader.base_reader module" href="cave.reader.base_reader.html" />
+    <link rel="next" title="cave.reader.conversion package" href="cave.reader.conversion.html" />
     <link rel="prev" title="cave.html.html_helpers module" href="cave.html.html_helpers.html" /> 
 </head>
 
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.3.1
+                1.3.2
               </div>
             
           
@@ -132,8 +132,8 @@
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.cdf.html">cave.plot.cdf module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cave.html.html">cave.html package</a><ul>
@@ -142,10 +142,15 @@
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cave.reader.conversion.html">cave.reader.conversion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
@@ -235,12 +240,22 @@
             
   <div class="section" id="module-cave.reader">
 <span id="cave-reader-package"></span><h1>cave.reader package<a class="headerlink" href="#module-cave.reader" title="Permalink to this headline">¶</a></h1>
+<p>Subpackages</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cave.reader.conversion.html">cave.reader.conversion package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
+</ul>
+</div>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
@@ -256,7 +271,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="cave.reader.base_reader.html" class="btn btn-neutral float-right" title="cave.reader.base_reader module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="cave.reader.conversion.html" class="btn btn-neutral float-right" title="cave.reader.conversion package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="cave.html.html_helpers.html" class="btn btn-neutral float-left" title="cave.html.html_helpers module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

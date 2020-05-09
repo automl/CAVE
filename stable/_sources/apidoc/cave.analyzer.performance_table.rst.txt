@@ -6,3 +6,4 @@ cave.analyzer.performance\_table module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

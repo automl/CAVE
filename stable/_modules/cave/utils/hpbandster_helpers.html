@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.utils.hpbandster_helpers &mdash; CAVE 1.3.1 documentation</title>
+  <title>cave.utils.hpbandster_helpers &mdash; CAVE 1.3.2 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.3.1
+                1.3.2
               </div>
             
           
@@ -130,8 +130,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.html.html">cave.html package</a><ul>
@@ -140,10 +140,15 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.html">cave.reader.conversion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
@@ -250,7 +255,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    formatted_budgets: List[str]</span>
+<span class="sd">    formatted_budgets: Dict[float] -&gt; str</span>
 <span class="sd">        list with formatted budgets</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">budgets</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -260,13 +265,13 @@
         <span class="k">return</span> <span class="s1">&#39;budget_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">is_integer</span><span class="p">()</span> <span class="k">else</span> <span class="s1">&#39;budget_{:.</span><span class="si">{}</span><span class="s1">f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">round_to</span><span class="p">)</span>
 
     <span class="n">round_to</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">formatted_budgets</span> <span class="o">=</span> <span class="p">{</span><span class="n">b</span> <span class="p">:</span> <span class="n">format_budget</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">round_to</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">budgets</span><span class="p">}</span>
+    <span class="n">formatted_budgets</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="n">b</span><span class="p">,</span> <span class="n">format_budget</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">round_to</span><span class="p">))</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">budgets</span><span class="p">])</span>
     <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">formatted_budgets</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">formatted_budgets</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
         <span class="n">round_to</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">formatted_budgets</span> <span class="o">=</span> <span class="p">{</span><span class="n">b</span> <span class="p">:</span> <span class="n">format_budget</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">round_to</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">budgets</span><span class="p">}</span>
+        <span class="n">formatted_budgets</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="n">b</span><span class="p">,</span> <span class="n">format_budget</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">round_to</span><span class="p">))</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">budgets</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">allow_whitespace</span><span class="p">:</span>
-        <span class="n">formatted_budgets</span> <span class="o">=</span> <span class="p">{</span><span class="n">b</span> <span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">formatted_budgets</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">formatted_budgets</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="n">b</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">formatted_budgets</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
 
     <span class="k">return</span> <span class="n">formatted_budgets</span></div>
 
@@ -326,7 +331,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39; not a supported method for get_incumbent_trajectory&quot;</span> <span class="o">%</span> <span class="n">mode</span><span class="p">)</span></div>
 
-<span class="k">def</span> <span class="nf">_compute_trajectory_racing</span><span class="p">(</span><span class="n">all_runs</span><span class="p">,</span> <span class="n">budgets</span><span class="p">):</span>
+<div class="viewcode-block" id="_compute_trajectory_racing"><a class="viewcode-back" href="../../../apidoc/cave.utils.hpbandster_helpers.html#cave.utils.hpbandster_helpers._compute_trajectory_racing">[docs]</a><span class="k">def</span> <span class="nf">_compute_trajectory_racing</span><span class="p">(</span><span class="n">all_runs</span><span class="p">,</span> <span class="n">budgets</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the trajectory in racing mode.</span>
 <span class="sd">    If there is at time T a current incumbent I on budget B, a configuration C</span>
@@ -409,9 +414,9 @@
 
         <span class="c1"># Update the finished time to the time of setting as incumbent</span>
         <span class="n">incumbents</span><span class="p">[</span><span class="n">current_incumbent_budget</span><span class="p">]</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;finished&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;finished&#39;</span><span class="p">]</span>
-        <span class="k">yield</span> <span class="n">incumbents</span><span class="p">[</span><span class="n">current_incumbent_budget</span><span class="p">]</span>
+        <span class="k">yield</span> <span class="n">incumbents</span><span class="p">[</span><span class="n">current_incumbent_budget</span><span class="p">]</span></div>
 
-<span class="k">def</span> <span class="nf">_get_incumbent_trajectory_hpbandster</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">budgets</span><span class="p">,</span> <span class="n">bigger_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">non_decreasing_budget</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="_get_incumbent_trajectory_hpbandster"><a class="viewcode-back" href="../../../apidoc/cave.utils.hpbandster_helpers.html#cave.utils.hpbandster_helpers._get_incumbent_trajectory_hpbandster">[docs]</a><span class="k">def</span> <span class="nf">_get_incumbent_trajectory_hpbandster</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">budgets</span><span class="p">,</span> <span class="n">bigger_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">non_decreasing_budget</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the best configurations over time</span>
 
@@ -487,7 +492,7 @@
         <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;losses&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;losses&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
-    <span class="k">return</span> <span class="p">(</span><span class="n">return_dict</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">return_dict</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

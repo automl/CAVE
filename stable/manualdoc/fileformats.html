@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Input Format &mdash; CAVE 1.3.1 documentation</title>
+  <title>Input Format &mdash; CAVE 1.3.2 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.3.1
+                1.3.2
               </div>
             
           
@@ -132,8 +132,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../apidoc/cave.html.html">cave.html package</a><ul>
@@ -142,10 +142,15 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.conversion.html">cave.reader.conversion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidoc/cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidoc/cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidoc/cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidoc/cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
@@ -236,22 +241,10 @@
   <div class="section" id="input-format">
 <h1>Input Format<a class="headerlink" href="#input-format" title="Permalink to this headline">¶</a></h1>
 <p>Supported file-formats for configurator-output are currently the output of
-<a class="reference external" href="http://www.cs.ubc.ca/labs/beta/Projects/SMAC/">SMAC2</a>, <a class="reference external" href="https://github.com/automl/SMAC3">SMAC3</a> and <a class="reference external" href="https://github.com/automl/HpBandSter">BOHB</a>, as well as csv-data formatted as specified below.</p>
+<a class="reference external" href="http://www.cs.ubc.ca/labs/beta/Projects/SMAC/">SMAC2</a>, <a class="reference external" href="https://github.com/automl/SMAC3">SMAC3</a> and <a class="reference external" href="https://github.com/automl/HpBandSter">BOHB</a>, as well as csv-data formatted as specified below.
+The file-format should be detected automatically. If that fails, please report this as an issue with a minimum working example.</p>
 <div class="section" id="id1">
-<h2><em>SMAC2</em><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>Relevant files for the analysis of <em>SMAC2</em> (relative to the specified
-folder with ??? as wildcards for digits) are:</p>
-<ul class="simple">
-<li><p>scenario.txt</p></li>
-<li><p>run_and_results-it???.csv</p></li>
-<li><p>paramstrings-it???.txt</p></li>
-<li><p>../traj-run-?.txt</p></li>
-</ul>
-<p>plus the files specified in the scenario.txt (pcs_fn.pcs, instance- and
-instancefeature-fn.txt, …)</p>
-</div>
-<div class="section" id="id2">
-<h2><em>SMAC3</em><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2><em>SMAC3</em><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>Relevant files for the analysis of <em>SMAC3</em> (relative to the specified
 folder) are:</p>
 <ul class="simple">
@@ -263,8 +256,8 @@ folder) are:</p>
 <p>plus the files specified in the scenario.txt (pcs_fn.pcs, instance- and
 instancefeature-fn.txt, …)</p>
 </div>
-<div class="section" id="id3">
-<h2><em>BOHB</em><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id2">
+<h2><em>BOHB</em><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>To analyzer BOHB-results, you need to run BOHB with a result-logger (<a class="reference external" href="https://automl.github.io/HpBandSter/build/html/auto_examples/example_5_mnist.html">check
 here</a> for an example on how to do it).
 The folder you specify must contain:</p>
@@ -288,9 +281,9 @@ format. A scenario-file (and therein specified files) is still required.
 <cite>runhistory.csv</cite> substitutes the runhistory, each line representing one target
 algorithm run. The first line of the file is the header, with the following
 entries: <cite>cost</cite>, <cite>time</cite>, <cite>status</cite>, <cite>seed</cite>, <cite>config_id</cite> and <cite>instance_id</cite>.
+Also <cite>budget</cite> is supported, but optional.
 When specifying <cite>config_id</cite>, the specified folder must also contain a <cite>configurations.csv</cite>.
-If you use <cite>instance_id</cite>-columns, the instance_ids must be the same
-that are specified in the instance-feature-file.</p>
+If you use <cite>instance_id</cite>-columns, the instance_ids must be the same that are specified in the instance-feature-file.</p>
 <p><cite>instance_features.csv</cite> (path for instance_features is used from provided scenario):</p>
 <blockquote>
 <div><table class="docutils align-default">
@@ -355,12 +348,13 @@ that are specified in the instance-feature-file.</p>
 <blockquote>
 <div><table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
-<col style="width: 30%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 12%" />
+<col style="width: 26%" />
+<col style="width: 26%" />
+<col style="width: 8%" />
+<col style="width: 8%" />
+<col style="width: 8%" />
+<col style="width: 11%" />
+<col style="width: 13%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>config_id</p></th>
@@ -369,6 +363,7 @@ that are specified in the instance-feature-file.</p>
 <th class="head"><p>time</p></th>
 <th class="head"><p>seed</p></th>
 <th class="head"><p>status</p></th>
+<th class="head"><p>(budget)</p></th>
 </tr>
 </thead>
 <tbody>
@@ -378,8 +373,10 @@ that are specified in the instance-feature-file.</p>
 <td><p>…</p></td>
 <td><p>…</p></td>
 <td><p>…</p></td>
+<td><p>…</p></td>
 </tr>
 <tr class="row-odd"><td><p>…</p></td>
+<td><p>…</p></td>
 <td><p>…</p></td>
 <td><p>…</p></td>
 <td><p>…</p></td>
@@ -421,22 +418,24 @@ not needed. See below for example:</p>
 <blockquote>
 <div><table class="docutils align-default">
 <colgroup>
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 10%" />
-<col style="width: 14%" />
-<col style="width: 14%" />
 <col style="width: 6%" />
-<col style="width: 14%" />
-<col style="width: 14%" />
 <col style="width: 6%" />
+<col style="width: 6%" />
+<col style="width: 9%" />
+<col style="width: 11%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 5%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 5%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>cost</p></th>
 <th class="head"><p>time</p></th>
 <th class="head"><p>seed</p></th>
 <th class="head"><p>status</p></th>
+<th class="head"><p>(budget)</p></th>
 <th class="head"><p>parameter1</p></th>
 <th class="head"><p>parameter2</p></th>
 <th class="head"><p>…</p></th>
@@ -447,6 +446,7 @@ not needed. See below for example:</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>…</p></td>
+<td><p>…</p></td>
 <td><p>…</p></td>
 <td><p>…</p></td>
 <td><p>…</p></td>
@@ -491,6 +491,19 @@ not needed. See below for example:</p>
 </tbody>
 </table>
 </div></blockquote>
+</div>
+<div class="section" id="id3">
+<h2><em>SMAC2</em><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>Relevant files for the analysis of <em>SMAC2</em> (relative to the specified
+folder with ??? as wildcards for digits) are:</p>
+<ul class="simple">
+<li><p>scenario.txt</p></li>
+<li><p>run_and_results-it???.csv</p></li>
+<li><p>paramstrings-it???.txt</p></li>
+<li><p>../traj-run-?.txt</p></li>
+</ul>
+<p>plus the files specified in the scenario.txt (pcs_fn.pcs, instance- and
+instancefeature-fn.txt, …)</p>
 </div>
 </div>
 

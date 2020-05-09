@@ -6,3 +6,4 @@ cave.analyzer.pimp\_comparison\_table module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

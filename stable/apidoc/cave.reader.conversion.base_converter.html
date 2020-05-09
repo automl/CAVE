@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.reader.csv2rh module &mdash; CAVE 1.3.1 documentation</title>
+  <title>cave.reader.conversion.base_converter module &mdash; CAVE 1.3.2 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="cave.reader.csv_reader module" href="cave.reader.csv_reader.html" />
-    <link rel="prev" title="cave.reader.configurator_run module" href="cave.reader.configurator_run.html" /> 
+    <link rel="next" title="cave.reader.conversion.csv2rh module" href="cave.reader.conversion.csv2rh.html" />
+    <link rel="prev" title="cave.reader.conversion package" href="cave.reader.conversion.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.3.1
+                1.3.2
               </div>
             
           
@@ -132,8 +132,8 @@
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.cdf.html">cave.plot.cdf module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cave.html.html">cave.html package</a><ul>
@@ -142,10 +142,15 @@
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="reference internal" href="cave.reader.html">cave.reader package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="cave.reader.conversion.html">cave.reader.conversion package</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">cave.reader.csv2rh module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
@@ -216,13 +221,15 @@
         
           <li><a href="cave.reader.html">cave.reader package</a> &raquo;</li>
         
-      <li>cave.reader.csv2rh module</li>
+          <li><a href="cave.reader.conversion.html">cave.reader.conversion package</a> &raquo;</li>
+        
+      <li>cave.reader.conversion.base_converter module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/apidoc/cave.reader.csv2rh.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/apidoc/cave.reader.conversion.base_converter.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -235,97 +242,36 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-cave.reader.csv2rh">
-<span id="cave-reader-csv2rh-module"></span><h1>cave.reader.csv2rh module<a class="headerlink" href="#module-cave.reader.csv2rh" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-cave.reader.conversion.base_converter">
+<span id="cave-reader-conversion-base-converter-module"></span><h1>cave.reader.conversion.base_converter module<a class="headerlink" href="#module-cave.reader.conversion.base_converter" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="cave.reader.csv2rh.CSV2RH">
-<em class="property">class </em><code class="sig-prename descclassname">cave.reader.csv2rh.</code><code class="sig-name descname">CSV2RH</code><a class="reference internal" href="../_modules/cave/reader/csv2rh.html#CSV2RH"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv2rh.CSV2RH" title="Permalink to this definition">¶</a></dt>
+<dt id="cave.reader.conversion.base_converter.BaseConverter">
+<em class="property">class </em><code class="sig-prename descclassname">cave.reader.conversion.base_converter.</code><code class="sig-name descname">BaseConverter</code><a class="reference internal" href="../_modules/cave/reader/conversion/base_converter.html#BaseConverter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.conversion.base_converter.BaseConverter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
-<dt id="cave.reader.csv2rh.CSV2RH.create_cs_from_pandaframe">
-<code class="sig-name descname">create_cs_from_pandaframe</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv2rh.html#CSV2RH.create_cs_from_pandaframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv2rh.CSV2RH.create_cs_from_pandaframe" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="cave.reader.csv2rh.CSV2RH.extract_configs">
-<code class="sig-name descname">extract_configs</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">cs: ConfigSpace.configuration_space.ConfigurationSpace</em>, <em class="sig-param">id_to_config=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv2rh.html#CSV2RH.extract_configs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv2rh.CSV2RH.extract_configs" title="Permalink to this definition">¶</a></dt>
-<dd><p>After completion, every unique configuration in the data will have a
-corresponding id in the data-frame.
-The data-frame is expected to either contain a column for config-id OR
-columns for each individual hyperparameter. Parameter-names will be used
-from the provided configspace.
-If a mapping of ids to configurations already exists, it will be used.</p>
+<dt id="cave.reader.conversion.base_converter.BaseConverter.convert">
+<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param">folders</em>, <em class="sig-param">ta_exec_dirs=None</em>, <em class="sig-param">output_dir=None</em>, <em class="sig-param">converted_dest='converted_input_data'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/conversion/base_converter.html#BaseConverter.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.conversion.base_converter.BaseConverter.convert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert specific format results into SMAC-format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – pandas dataframe containing either a column called <cite>config_id</cite> or a
-column for every individual parameter</p></li>
-<li><p><strong>cs</strong> (<em>ConfigurationSpace</em>) – optional, if provided the <cite>parameters</cite>-argument will be ignored</p></li>
-<li><p><strong>id_to_config</strong> (<em>dict</em><em>[</em><em>int:Configuration</em><em>]</em>) – optional, mapping ids to Configurations (necessary when using
-<cite>config_id</cite>-column)</p></li>
+<li><p><strong>folders</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of parallel configurator-runs (folder paths!)</p></li>
+<li><p><strong>ta_exec_dirs</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – only relevant if you need to load instances, this should be the path from which the paths in the scenario are valid</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – path to CAVE’s output-directory</p></li>
+<li><p><strong>converted_dest</strong> (<em>str</em>) – optional, this will be the parent folder in the output in which the converted runs (in SMAC-format) are saved
+if not specified, will use temporary folders</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – if no config-id-columns was there before, there is one now.</p></li>
-<li><p><strong>id_to_config</strong> (<em>dict</em>) – mapping every id to a configuration</p></li>
-</ul>
-</p>
+<dd class="field-even"><p><strong>result</strong> – ‘new_path’ : converted_folder_path,
+‘config_space’ : config_space,
+‘runhistory’ : runhistory,
+‘validated_runhistory’ : validated_runhistory,
+‘scenario’ : scenario,
+‘trajectory’ : trajectory}}</p>
 </dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="cave.reader.csv2rh.CSV2RH.extract_instances">
-<code class="sig-name descname">extract_instances</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">feature_names</em>, <em class="sig-param">features</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv2rh.html#CSV2RH.extract_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv2rh.CSV2RH.extract_instances" title="Permalink to this definition">¶</a></dt>
-<dd><p>After completion, every unique instance in the data will have a
-corresponding id in the data-frame.
-The data-frame is expected to either contain a column for instance-id OR
-columns for each individual instance-feature. Parameter-names will be used
-from the provided configspace.
-If a mapping of ids to configurations already exists, it will be used.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – pandas dataframe containing either a column called <cite>instance_id</cite> or a
-column for every individual instance-features</p></li>
-<li><p><strong>feature_names</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – optional, list of feature-names</p></li>
-<li><p><strong>features</strong> (<em>dict</em><em>[</em><em>int:np.array</em><em>]</em>) – optional, mapping ids to instance-feature vectors (necessary when using
-<cite>instance_id</cite>-column)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – if no instance_id-columns was there before, there is one now.</p></li>
-<li><p><strong>id_to_inst_feats</strong> (<em>dict</em>) – mapping every id to instance-features</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="cave.reader.csv2rh.CSV2RH.read_csv_to_rh">
-<code class="sig-name descname">read_csv_to_rh</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">cs: Union[None</em>, <em class="sig-param">str</em>, <em class="sig-param">ConfigSpace.configuration_space.ConfigurationSpace] = None</em>, <em class="sig-param">id_to_config: Union[None</em>, <em class="sig-param">dict] = None</em>, <em class="sig-param">train_inst: Union[None</em>, <em class="sig-param">str</em>, <em class="sig-param">list] = None</em>, <em class="sig-param">test_inst: Union[None</em>, <em class="sig-param">str</em>, <em class="sig-param">list] = None</em>, <em class="sig-param">instance_features: Union[None</em>, <em class="sig-param">str</em>, <em class="sig-param">dict] = None</em>, <em class="sig-param">logger=None</em>, <em class="sig-param">seed=42</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/csv2rh.html#CSV2RH.read_csv_to_rh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.csv2rh.CSV2RH.read_csv_to_rh" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interpreting a .csv-file as runhistory.
-Valid values for the header of the csv-file/DataFrame are:
-[‘seed’, ‘cost’, ‘time’, ‘status’, ‘config_id’, ‘instance_id’] or any
-parameter- or instance-feature-names.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>str</em><em> or </em><em>pd.DataFrame</em>) – either string to csv-formatted runhistory-file or DataFrame
-containing the same information</p></li>
-<li><p><strong>cs</strong> (<em>str</em><em> or </em><em>ConfigurationSpace</em>) – config-space to use for this runhistory</p></li>
-<li><p><strong>id_to_config</strong> (<em>dict</em>) – mapping ids to Configuration-objects</p></li>
-<li><p><strong>train_inst</strong> (<em>str</em><em> or </em><em>list</em><em>[</em><em>str</em><em>]</em>) – train instances or path to file</p></li>
-<li><p><strong>test_inst</strong> (<em>str</em><em> or </em><em>list</em><em>[</em><em>str</em><em>]</em>) – test instances or path to file</p></li>
-<li><p><strong>instance_features</strong> (<em>str</em><em> or </em><em>dict</em>) – instance features as dict mapping instance-ids to feature-array or
-file to appropriately formatted instance-feature-file</p></li>
-<li><p><strong>Returns</strong> – </p></li>
-<li><p><strong>--------</strong> – </p></li>
-<li><p><strong>rh</strong> (<em>RunHistory</em>) – runhistory with all the runs from the csv-file</p></li>
-</ul>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict{f : dict{</p>
 </dd>
 </dl>
 </dd></dl>
@@ -342,10 +288,10 @@ file to appropriately formatted instance-feature-file</p></li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="cave.reader.csv_reader.html" class="btn btn-neutral float-right" title="cave.reader.csv_reader module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="cave.reader.conversion.csv2rh.html" class="btn btn-neutral float-right" title="cave.reader.conversion.csv2rh module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="cave.reader.configurator_run.html" class="btn btn-neutral float-left" title="cave.reader.configurator_run module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="cave.reader.conversion.html" class="btn btn-neutral float-left" title="cave.reader.conversion package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

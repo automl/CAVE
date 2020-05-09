@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.analyzer.cave_parameter_importance &mdash; CAVE 1.3.1 documentation</title>
+  <title>cave.analyzer.cave_parameter_importance &mdash; CAVE 1.3.2 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.3.1
+                1.3.2
               </div>
             
           
@@ -130,8 +130,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.html.html">cave.html package</a><ul>
@@ -140,10 +140,15 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.html">cave.reader.conversion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
@@ -228,9 +233,15 @@
            <div itemprop="articleBody">
             
   <h1>Source code for cave.analyzer.cave_parameter_importance</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span></span><span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">bokeh.embed</span> <span class="kn">import</span> <span class="n">components</span>
+
 
 <span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="kn">import</span> <span class="n">BaseAnalyzer</span>
+<span class="kn">from</span> <span class="nn">cave.plot.whisker_quantiles</span> <span class="kn">import</span> <span class="n">whisker_quantiles</span>
 <span class="kn">from</span> <span class="nn">cave.utils.hpbandster_helpers</span> <span class="kn">import</span> <span class="n">format_budgets</span>
 
 
@@ -250,18 +261,20 @@
 <span class="sd">            modus for parameter importance, from</span>
 <span class="sd">            [forward-selection, ablation, fanova, lpi]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">runs_by_budget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">runs_by_budget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="n">keep_budgets</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keep_folders</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">formatted_budgets</span> <span class="o">=</span> <span class="n">format_budgets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_budgets</span><span class="p">(),</span> <span class="n">allow_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs_by_budget</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;Importances Per Parameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;Importances Per Parameter&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">budget</span><span class="p">,</span> <span class="n">run</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">formatted_budgets</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">runs_by_budget</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;... parameter importance </span><span class="si">{}</span><span class="s2"> on </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">modus</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">get_identifier</span><span class="p">()))</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">formatted_budgets</span><span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">budget</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">formatted_budgets</span><span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">budget</span><span class="p">]]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">budget</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">budget</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
             <span class="n">n_configs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">original_runhistory</span><span class="o">.</span><span class="n">get_all_configs</span><span class="p">())</span>
             <span class="n">n_params</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">())</span>
             <span class="k">if</span> <span class="n">n_configs</span> <span class="o">&lt;</span> <span class="n">n_params</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">formatted_budgets</span><span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">budget</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">budget</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="s1">&#39;else&#39;</span> <span class="p">:</span> <span class="s2">&quot;For this run there are only </span><span class="si">{}</span><span class="s2"> configs, &quot;</span>
                              <span class="s2">&quot;but </span><span class="si">{}</span><span class="s2"> parameters. No reliable parameter importance analysis &quot;</span>
                              <span class="s2">&quot;can be performed.&quot;</span><span class="p">}</span>
@@ -270,17 +283,62 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">run</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluate_scenario</span><span class="p">([</span><span class="n">modus</span><span class="p">],</span> <span class="n">run</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Encountered error &#39;</span><span class="si">{}</span><span class="s2">&#39; for &#39;</span><span class="si">{}</span><span class="s2">&#39; in &#39;</span><span class="si">{}</span><span class="s2">&#39;, (for fANOVA this can e.g. happen with too few data-points).&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                                <span class="n">e</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">get_identifier</span><span class="p">(),</span> <span class="n">modus</span><span class="p">)</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Encountered error &#39;</span><span class="si">{}</span><span class="s2">&#39; for &#39;</span><span class="si">{}</span><span class="s2">&#39; in &#39;</span><span class="si">{}</span><span class="s2">&#39;, (for fANOVA this can e.g. happen with too few &quot;</span> \
+                      <span class="s2">&quot;data-points).&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">get_identifier</span><span class="p">(),</span> <span class="n">modus</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">formatted_budgets</span><span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">budget</span><span class="p">]][</span><span class="n">modus</span> <span class="o">+</span> <span class="s1">&#39;_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">err</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">budget</span><span class="p">][</span><span class="n">modus</span> <span class="o">+</span> <span class="s1">&#39;_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">err</span>
                 <span class="k">continue</span>
             <span class="n">individual_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">pimp</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">formatted_budgets</span><span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">budget</span><span class="p">]]</span> <span class="o">=</span> <span class="n">individual_result</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">budget</span><span class="p">]</span> <span class="o">=</span> <span class="n">individual_result</span>
 
             <span class="n">run</span><span class="o">.</span><span class="n">share_information</span><span class="p">[</span><span class="s1">&#39;parameter_importance&#39;</span><span class="p">][</span><span class="n">modus</span><span class="p">]</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">evaluated_parameter_importance</span>
-            <span class="n">run</span><span class="o">.</span><span class="n">share_information</span><span class="p">[</span><span class="s1">&#39;evaluators&#39;</span><span class="p">][</span><span class="n">modus</span><span class="p">]</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span></div></div>
+            <span class="n">run</span><span class="o">.</span><span class="n">share_information</span><span class="p">[</span><span class="s1">&#39;evaluators&#39;</span><span class="p">][</span><span class="n">modus</span><span class="p">]</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">analyzing_options</span><span class="p">[</span><span class="s1">&#39;Parameter Importance&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;whisker_quantiles_plot&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_budgets</span><span class="p">())</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_folders</span><span class="p">())</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;The Whisker-Quantiles Plot for Parameter Importance makes only sense with multiple&quot;</span>
+                                 <span class="s2">&quot;budgets and/or folders, but not with only one budget and one folder.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">analyzing_options</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;Parameter Importance&#39;</span><span class="p">,</span> <span class="s1">&#39;whisker_quantiles_plot&#39;</span><span class="p">,</span> <span class="s1">&#39;False&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">importance_per_budget</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">return</span>
+
+            <span class="n">hyperparameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">cs</span><span class="o">.</span><span class="n">get_hyperparameter_names</span><span class="p">()</span>
+            <span class="c1"># Generate data - for each parallel folder and each budget, perform an importance-analysis</span>
+            <span class="n">importance_per_budget</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>  <span class="c1"># dict[budget][folder] -&gt; (dict[param_name]-&gt;float)</span>
+            <span class="k">for</span> <span class="n">budget</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_budgets</span><span class="p">():</span>
+                <span class="n">importance_per_budget</span><span class="p">[</span><span class="n">budget</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">hp</span> <span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">hp</span> <span class="ow">in</span> <span class="n">hyperparameters</span><span class="p">}</span>
+                <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_folders</span><span class="p">():</span>
+                    <span class="n">cr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_run</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">budget</span><span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">importance</span> <span class="o">=</span> <span class="n">cr</span><span class="o">.</span><span class="n">pimp</span><span class="o">.</span><span class="n">evaluate_scenario</span><span class="p">([</span><span class="n">modus</span><span class="p">],</span>
+                                                                <span class="n">cr</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+                                                                <span class="n">plot_pyplot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                                <span class="n">plot_bokeh</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="n">modus</span><span class="p">][</span><span class="s1">&#39;imp&#39;</span><span class="p">]</span>
+                    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">importance</span> <span class="o">=</span> <span class="p">{}</span>
+                        <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Encountered error &#39;</span><span class="si">{}</span><span class="s2">&#39; for &#39;</span><span class="si">{}</span><span class="s2">&#39; in &#39;</span><span class="si">{}</span><span class="s2">&#39;, (for fANOVA this can e.g. happen with too &quot;</span> \
+                              <span class="s2">&quot;few data-points).&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">cr</span><span class="o">.</span><span class="n">get_identifier</span><span class="p">(),</span> <span class="n">modus</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Importance for folder </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">importance</span><span class="p">)</span>
+
+                    <span class="k">for</span> <span class="n">hp</span> <span class="ow">in</span> <span class="n">hyperparameters</span><span class="p">:</span>
+                        <span class="n">importance_per_budget</span><span class="p">[</span><span class="n">budget</span><span class="p">][</span><span class="n">hp</span><span class="p">][</span><span class="n">folder</span><span class="p">]</span> <span class="o">=</span> <span class="n">importance</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">hp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">importance_per_budget</span> <span class="o">=</span> <span class="n">importance_per_budget</span></div>
+
+<div class="viewcode-block" id="CaveParameterImportance.plot_whiskers"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cave_parameter_importance.html#cave.analyzer.cave_ablation.CaveParameterImportance.plot_whiskers">[docs]</a>    <span class="k">def</span> <span class="nf">plot_whiskers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">importance_per_budget</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">whisker_quantiles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">importance_per_budget</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CaveParameterImportance.get_html"><a class="viewcode-back" href="../../../apidoc/cave.analyzer.cave_parameter_importance.html#cave.analyzer.cave_ablation.CaveParameterImportance.get_html">[docs]</a>    <span class="k">def</span> <span class="nf">get_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">analyzing_options</span><span class="p">[</span><span class="s1">&#39;Parameter Importance&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;whisker_quantiles_plot&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;Whisker Plot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;bokeh&#39;</span> <span class="p">:</span> <span class="n">components</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_whiskers</span><span class="p">()),</span>
+                                           <span class="s1">&#39;tooltip&#39;</span> <span class="p">:</span> <span class="s2">&quot;Each dot is a parallel run (or folder) of the input data &quot;</span>
+                                                       <span class="s2">&quot;and the whiskers are quartiles.&quot;</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_html</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">tooltip</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

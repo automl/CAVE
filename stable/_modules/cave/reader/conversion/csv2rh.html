@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cave.reader.csv2rh &mdash; CAVE 1.3.1 documentation</title>
+  <title>cave.reader.conversion.csv2rh &mdash; CAVE 1.3.2 documentation</title>
   
 
   
@@ -17,24 +17,24 @@
   
 
   
-  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  <script type="text/javascript" src="../../../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
     
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
 
     
 
   
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -48,12 +48,12 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> CAVE
+            <a href="../../../../index.html" class="icon icon-home"> CAVE
           
 
           
             
-            <img src="../../../_static/cave.png" class="logo" alt="Logo"/>
+            <img src="../../../../_static/cave.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -61,14 +61,14 @@
             
             
               <div class="version">
-                1.3.1
+                1.3.2
               </div>
             
           
 
           
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -86,85 +86,90 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../manual.html">Manual</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/commandline.html">Commandline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../manual.html">Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/commandline.html">Commandline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/fileformats.html">Input Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.analyzer.html">cave.analyzer package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.algorithm_footprint.html">cave.analyzer.algorithm_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.base_analyzer.html">cave.analyzer.base_analyzer module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.bohb_incumbents_per_budget.html">cave.analyzer.bohb_incumbents_per_budget module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.bohb_learning_curves.html">cave.analyzer.bohb_learning_curves module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.box_violin.html">cave.analyzer.box_violin module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.budget_correlation.html">cave.analyzer.budget_correlation module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cave_ablation.html">cave.analyzer.cave_ablation module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cave_fanova.html">cave.analyzer.cave_fanova module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cave_forward_selection.html">cave.analyzer.cave_forward_selection module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cave_parameter_importance.html">cave.analyzer.cave_parameter_importance module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.compare_default_incumbent.html">cave.analyzer.compare_default_incumbent module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.configurator_footprint.html">cave.analyzer.configurator_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.cost_over_time.html">cave.analyzer.cost_over_time module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_clustering.html">cave.analyzer.feature_clustering module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_correlation.html">cave.analyzer.feature_correlation module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_importance.html">cave.analyzer.feature_importance module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.local_parameter_importance.html">cave.analyzer.local_parameter_importance module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.overview_table.html">cave.analyzer.overview_table module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.parallel_coordinates.html">cave.analyzer.parallel_coordinates module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.performance_table.html">cave.analyzer.performance_table module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.pimp_comparison_table.html">cave.analyzer.pimp_comparison_table module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.plot_ecdf.html">cave.analyzer.plot_ecdf module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.plot_scatter.html">cave.analyzer.plot_scatter module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../faq.html">F.A.Q.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api.html">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.analyzer.html">cave.analyzer package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.algorithm_footprint.html">cave.analyzer.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.base_analyzer.html">cave.analyzer.base_analyzer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.bohb_incumbents_per_budget.html">cave.analyzer.bohb_incumbents_per_budget module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.bohb_learning_curves.html">cave.analyzer.bohb_learning_curves module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.box_violin.html">cave.analyzer.box_violin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.budget_correlation.html">cave.analyzer.budget_correlation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.cave_ablation.html">cave.analyzer.cave_ablation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.cave_fanova.html">cave.analyzer.cave_fanova module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.cave_forward_selection.html">cave.analyzer.cave_forward_selection module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.cave_parameter_importance.html">cave.analyzer.cave_parameter_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.compare_default_incumbent.html">cave.analyzer.compare_default_incumbent module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.configurator_footprint.html">cave.analyzer.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.cost_over_time.html">cave.analyzer.cost_over_time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_clustering.html">cave.analyzer.feature_clustering module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_correlation.html">cave.analyzer.feature_correlation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_importance.html">cave.analyzer.feature_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.local_parameter_importance.html">cave.analyzer.local_parameter_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.overview_table.html">cave.analyzer.overview_table module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parallel_coordinates.html">cave.analyzer.parallel_coordinates module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance_table.html">cave.analyzer.performance_table module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.pimp_comparison_table.html">cave.analyzer.pimp_comparison_table module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.plot_ecdf.html">cave.analyzer.plot_ecdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.plot_scatter.html">cave.analyzer.plot_scatter module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.cave_cli.html">cave.cave_cli module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.cavefacade.html">cave.cavefacade module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.plot.html">cave.plot package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.parallel_coordinates.html">cave.plot.parallel_coordinates module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.cave_cli.html">cave.cave_cli module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.cavefacade.html">cave.cavefacade module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.plot.html">cave.plot package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.html.html">cave.html package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.html.html_builder.html">cave.html.html_builder module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.html.html_helpers.html">cave.html.html_helpers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.html.html">cave.html package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.html.html_builder.html">cave.html.html_builder module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.html.html_helpers.html">cave.html.html_helpers module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.reader.html">cave.reader package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv2rh.html">cave.reader.csv2rh module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.csv_reader.html">cave.reader.csv_reader module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.html">cave.reader.conversion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.tooltips.html">cave.utils.tooltips module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.utils.html">cave.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.tooltips.html">cave.utils.tooltips module</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../contact.html">Contact</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contact.html">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../license.html">License</a></li>
 </ul>
 
             
@@ -179,7 +184,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">CAVE</a>
+          <a href="../../../../index.html">CAVE</a>
         
       </nav>
 
@@ -208,11 +213,11 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
         
-      <li>cave.reader.csv2rh</li>
+      <li>cave.reader.conversion.csv2rh</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -227,7 +232,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for cave.reader.csv2rh</h1><div class="highlight"><pre>
+  <h1>Source code for cave.reader.conversion.csv2rh</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
@@ -250,21 +255,18 @@
 <span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">&quot;Joshua Marben&quot;</span>
 <span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;joshua.marben@neptun.uni-freiburg.de&quot;</span>
 
-<div class="viewcode-block" id="CSV2RH"><a class="viewcode-back" href="../../../apidoc/cave.reader.csv2rh.html#cave.reader.csv2rh.CSV2RH">[docs]</a><span class="k">class</span> <span class="nc">CSV2RH</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
+<div class="viewcode-block" id="CSV2RH"><a class="viewcode-back" href="../../../../apidoc/cave.reader.conversion.csv2rh.html#cave.reader.conversion.csv2rh.CSV2RH">[docs]</a><span class="k">class</span> <span class="nc">CSV2RH</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-<div class="viewcode-block" id="CSV2RH.read_csv_to_rh"><a class="viewcode-back" href="../../../apidoc/cave.reader.csv2rh.html#cave.reader.csv2rh.CSV2RH.read_csv_to_rh">[docs]</a>    <span class="k">def</span> <span class="nf">read_csv_to_rh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span>
+<div class="viewcode-block" id="CSV2RH.read_csv_to_rh"><a class="viewcode-back" href="../../../../apidoc/cave.reader.conversion.csv2rh.html#cave.reader.conversion.csv2rh.CSV2RH.read_csv_to_rh">[docs]</a>    <span class="k">def</span> <span class="nf">read_csv_to_rh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span>
                        <span class="n">cs</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ConfigurationSpace</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">id_to_config</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">train_inst</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">test_inst</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">instance_features</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                       <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                       <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">):</span>
+                       <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Interpreting a .csv-file as runhistory.</span>
 <span class="sd">        Valid values for the header of the csv-file/DataFrame are:</span>
-<span class="sd">        [&#39;seed&#39;, &#39;cost&#39;, &#39;time&#39;, &#39;status&#39;, &#39;config_id&#39;, &#39;instance_id&#39;] or any</span>
+<span class="sd">        [&#39;seed&#39;, &#39;cost&#39;, &#39;time&#39;, &#39;status&#39;, &#39;budget&#39;, &#39;config_id&#39;, &#39;instance_id&#39;] or any</span>
 <span class="sd">        parameter- or instance-feature-names.</span>
 
 <span class="sd">        Parameters</span>
@@ -289,7 +291,7 @@
 <span class="sd">        rh: RunHistory</span>
 <span class="sd">            runhistory with all the runs from the csv-file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;cave.utils.csv2rh&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_reader</span> <span class="o">=</span> <span class="n">InputReader</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_inst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_reader</span><span class="o">.</span><span class="n">read_instance_file</span><span class="p">(</span><span class="n">train_inst</span><span class="p">)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">train_inst</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="n">train_inst</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test_inst</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">input_reader</span><span class="o">.</span><span class="n">read_instance_file</span><span class="p">(</span><span class="n">test_inst</span><span class="p">)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">test_inst</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="n">test_inst</span>
@@ -303,14 +305,14 @@
             <span class="n">data</span> <span class="o">=</span> <span class="n">load_csv_to_pandaframe</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="n">apply_numeric</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># Expecting header as described in docstring</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">valid_values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;seed&#39;</span><span class="p">,</span> <span class="s1">&#39;cost&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="s1">&#39;config_id&#39;</span><span class="p">,</span> <span class="s1">&#39;instance_id&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">valid_values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;seed&#39;</span><span class="p">,</span> <span class="s1">&#39;cost&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="s1">&#39;budget&#39;</span><span class="p">,</span> <span class="s1">&#39;config_id&#39;</span><span class="p">,</span> <span class="s1">&#39;instance_id&#39;</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Reading PCS from </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">cs</span><span class="p">)</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
                 <span class="n">cs</span> <span class="o">=</span> <span class="n">pcs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">cs</span><span class="p">:</span>
-            <span class="c1"># No config-space provided, create from columns</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No config-space provided, create from columns&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_to_config</span><span class="p">:</span>
                 <span class="n">cs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id_to_config</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span><span class="o">.</span><span class="n">configuration_space</span>
             <span class="k">else</span><span class="p">:</span>
@@ -318,7 +320,7 @@
                 <span class="n">parameters</span> <span class="o">-=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_values</span><span class="p">)</span>
                 <span class="n">parameters</span> <span class="o">-=</span> <span class="nb">set</span><span class="p">(</span><span class="n">feature_names</span><span class="p">)</span>
                 <span class="n">parameters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
-            <span class="n">cs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_cs_from_pandaframe</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">parameters</span><span class="p">])</span>
+                <span class="n">cs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_cs_from_pandaframe</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">parameters</span><span class="p">])</span>
 
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">get_hyperparameter_names</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">feature_names</span> <span class="ow">and</span> <span class="ow">not</span> <span class="s1">&#39;instance_id&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
@@ -333,9 +335,9 @@
         <span class="n">data</span><span class="p">,</span> <span class="n">id_to_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_configs</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cs</span><span class="p">,</span> <span class="n">id_to_config</span><span class="p">)</span>
         <span class="n">data</span><span class="p">,</span> <span class="n">id_to_inst_feats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_instances</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">,</span>
                                                         <span class="n">instance_features</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found: seed=</span><span class="si">%s</span><span class="s2">, cost=</span><span class="si">%s</span><span class="s2">, time=</span><span class="si">%s</span><span class="s2">, status=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found: seed=</span><span class="si">%s</span><span class="s2">, cost=</span><span class="si">%s</span><span class="s2">, time=</span><span class="si">%s</span><span class="s2">, status=</span><span class="si">%s</span><span class="s2">, budget=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
                           <span class="s1">&#39;seed&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="s1">&#39;cost&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
-                          <span class="s1">&#39;time&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="s1">&#39;status&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+                          <span class="s1">&#39;time&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="s1">&#39;status&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="s1">&#39;budget&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
 
         <span class="c1"># Create RunHistory</span>
         <span class="n">rh</span> <span class="o">=</span> <span class="n">RunHistory</span><span class="p">()</span>
@@ -347,13 +349,14 @@
                    <span class="n">status</span><span class="o">=</span><span class="n">new_status</span><span class="p">,</span>
                    <span class="n">instance_id</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;instance_id&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;instance_id&#39;</span> <span class="ow">in</span> <span class="n">row</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                    <span class="n">seed</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;seed&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;seed&#39;</span> <span class="ow">in</span> <span class="n">row</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                   <span class="n">budget</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;budget&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;budget&#39;</span> <span class="ow">in</span> <span class="n">row</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
                    <span class="n">additional_info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">origin</span><span class="o">=</span><span class="n">DataOrigin</span><span class="o">.</span><span class="n">INTERNAL</span><span class="p">)</span>
 
         <span class="n">data</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">add_to_rh</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">rh</span></div>
 
-<div class="viewcode-block" id="CSV2RH.create_cs_from_pandaframe"><a class="viewcode-back" href="../../../apidoc/cave.reader.csv2rh.html#cave.reader.csv2rh.CSV2RH.create_cs_from_pandaframe">[docs]</a>    <span class="k">def</span> <span class="nf">create_cs_from_pandaframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="CSV2RH.create_cs_from_pandaframe"><a class="viewcode-back" href="../../../../apidoc/cave.reader.conversion.csv2rh.html#cave.reader.conversion.csv2rh.CSV2RH.create_cs_from_pandaframe">[docs]</a>    <span class="k">def</span> <span class="nf">create_cs_from_pandaframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="c1"># TODO use from pyimp after https://github.com/automl/ParameterImportance/issues/72 is implemented</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;No parameter configuration space (pcs) provided! &quot;</span>
                       <span class="s2">&quot;Interpreting all parameters as floats. This might lead &quot;</span>
@@ -363,10 +366,9 @@
         <span class="n">maxima</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
         <span class="n">cs</span> <span class="o">=</span> <span class="n">ConfigurationSpace</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="n">cs</span><span class="o">.</span><span class="n">add_hyperparameter</span><span class="p">(</span><span class="n">UniformFloatHyperparameter</span><span class="p">(</span><span class="n">p</span><span class="p">,</span>
-                                  <span class="n">lower</span><span class="o">=</span><span class="n">minima</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="n">maxima</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span></div>
+            <span class="n">cs</span><span class="o">.</span><span class="n">add_hyperparameter</span><span class="p">(</span><span class="n">UniformFloatHyperparameter</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="n">minima</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="n">maxima</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span></div>
 
-    <span class="k">def</span> <span class="nf">_interpret_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="CSV2RH._interpret_status"><a class="viewcode-back" href="../../../../apidoc/cave.reader.conversion.csv2rh.html#cave.reader.conversion.csv2rh.CSV2RH._interpret_status">[docs]</a>    <span class="k">def</span> <span class="nf">_interpret_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -403,9 +405,9 @@
                                 <span class="s2">&quot;are: </span><span class="si">%s</span><span class="s2">. Treating as CRASHED run.&quot;</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span>
                                 <span class="n">types</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
             <span class="n">status</span> <span class="o">=</span> <span class="n">StatusType</span><span class="o">.</span><span class="n">CRASHED</span>
-        <span class="k">return</span> <span class="n">status</span>
+        <span class="k">return</span> <span class="n">status</span></div>
 
-<div class="viewcode-block" id="CSV2RH.extract_configs"><a class="viewcode-back" href="../../../apidoc/cave.reader.csv2rh.html#cave.reader.csv2rh.CSV2RH.extract_configs">[docs]</a>    <span class="k">def</span> <span class="nf">extract_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">cs</span><span class="p">:</span> <span class="n">ConfigurationSpace</span><span class="p">,</span> <span class="n">id_to_config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="CSV2RH.extract_configs"><a class="viewcode-back" href="../../../../apidoc/cave.reader.conversion.csv2rh.html#cave.reader.conversion.csv2rh.CSV2RH.extract_configs">[docs]</a>    <span class="k">def</span> <span class="nf">extract_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">cs</span><span class="p">:</span> <span class="n">ConfigurationSpace</span><span class="p">,</span> <span class="n">id_to_config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;After completion, every unique configuration in the data will have a</span>
 <span class="sd">        corresponding id in the data-frame.</span>
 <span class="sd">        The data-frame is expected to either contain a column for config-id OR</span>
@@ -452,8 +454,7 @@
             <span class="n">ids_in_order</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">data</span><span class="p">[</span><span class="s1">&#39;config_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
             <span class="k">def</span> <span class="nf">add_config</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
-                <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span> <span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">parameters</span> <span class="k">if</span>
-                            <span class="n">row</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span> <span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">parameters</span> <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
                 <span class="n">config</span> <span class="o">=</span> <span class="n">deactivate_inactive_hyperparameters</span><span class="p">(</span><span class="n">fix_types</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">cs</span><span class="p">),</span> <span class="n">cs</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">config_to_id</span><span class="p">:</span>
                     <span class="n">config_to_id</span><span class="p">[</span><span class="n">config</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">config_to_id</span><span class="p">)</span>
@@ -464,7 +465,6 @@
 
         <span class="n">data</span><span class="p">[</span><span class="s2">&quot;config_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;config_id&quot;</span><span class="p">])</span>
 
-
         <span class="c1"># Check whether all config-ids are present</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;config_id&#39;</span><span class="p">])</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">id_to_config</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;config id </span><span class="si">{}</span><span class="s2"> cannot be identified (is your &quot;</span>
@@ -474,7 +474,7 @@
 
         <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">id_to_config</span></div>
 
-<div class="viewcode-block" id="CSV2RH.extract_instances"><a class="viewcode-back" href="../../../apidoc/cave.reader.csv2rh.html#cave.reader.csv2rh.CSV2RH.extract_instances">[docs]</a>    <span class="k">def</span> <span class="nf">extract_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">,</span> <span class="n">features</span><span class="p">):</span>
+<div class="viewcode-block" id="CSV2RH.extract_instances"><a class="viewcode-back" href="../../../../apidoc/cave.reader.conversion.csv2rh.html#cave.reader.conversion.csv2rh.CSV2RH.extract_instances">[docs]</a>    <span class="k">def</span> <span class="nf">extract_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">,</span> <span class="n">features</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;After completion, every unique instance in the data will have a</span>
 <span class="sd">        corresponding id in the data-frame.</span>
 <span class="sd">        The data-frame is expected to either contain a column for instance-id OR</span>
