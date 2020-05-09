@@ -276,6 +276,11 @@ class RunsContainer(object):
         vali_rh = reduce_runhistory(cr.validated_runhistory, keep_budgets)
         trajectory = [entry for entry in cr.trajectory if (entry['incumbent'] in orig_rh.config_ids.keys())]
 
+        if any([len(x) == 0 for x in [orig_rh.data, trajectory]]):
+            self.logger.debug("Runhistory: %s, Trajectory: %s", str(orig_rh.data), str(trajectory))
+            raise ValueError("Reducing to budget {} for ConfiguratorRun {} failed for runhistory or trajectory. Are "
+                             "same budgets used for all parallel runs?".format(str(keep_budgets), cr.path_to_folder))
+
         new_cr = ConfiguratorRun(scenario=cr.scenario,
                                  original_runhistory=orig_rh,
                                  validated_runhistory=vali_rh,
