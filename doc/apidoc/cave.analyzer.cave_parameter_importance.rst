@@ -6,3 +6,4 @@ cave.analyzer.cave\_parameter\_importance module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

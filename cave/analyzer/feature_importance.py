@@ -15,12 +15,13 @@ class FeatureImportance(BaseAnalyzer):
         check_for_features(runscontainer.scenario)
 
         formatted_budgets = format_budgets(self.runscontainer.get_budgets())
-        for run in self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False):
+        for budget, run in zip(self.runscontainer.get_budgets(),
+                               self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False)):
             feat_imp, plots = self.feature_importance(
                 pimp=run.pimp,
                 output_dir=run.output_dir,
             )
-            self.result[formatted_budgets[run.budget]] = plots
+            self.result[formatted_budgets[budget]] = plots
            # Add to run so other analysis-methods can use the information
             run.share_information['feature_importance'] = feat_imp
 

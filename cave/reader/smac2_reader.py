@@ -12,7 +12,7 @@ from smac.scenario.scenario import Scenario
 from smac.utils.io.input_reader import InputReader
 
 from cave.reader.base_reader import BaseReader, changedir
-from cave.reader.csv2rh import CSV2RH
+from cave.reader.conversion.csv2rh import CSV2RH
 from cave.utils.io import load_csv_to_pandaframe
 
 

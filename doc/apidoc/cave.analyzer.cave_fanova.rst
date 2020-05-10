@@ -6,3 +6,4 @@ cave.analyzer.cave\_fanova module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

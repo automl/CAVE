@@ -10,8 +10,8 @@ from pimp.importance.importance import Importance
 from smac.runhistory.runhistory import RunHistory, DataOrigin
 from smac.utils.io.input_reader import InputReader
 from smac.utils.validate import Validator
+from smac import __version__ as smac_version
 
-from cave.reader.csv_reader import CSVReader
 from cave.reader.smac2_reader import SMAC2Reader
 from cave.reader.smac3_reader import SMAC3Reader
 from cave.utils.helpers import scenario_sanity_check
@@ -25,7 +25,6 @@ class ConfiguratorRun(object):
     This class is responsible for providing a scenario, a runhistory and a
     trajectory and handling original/validated data appropriately.
     To create a ConfiguratorRun from a folder, use Configurator.from_folder()
-
     """
     def __init__(self,
                  scenario,
@@ -37,7 +36,7 @@ class ConfiguratorRun(object):
                  ta_exec_dir=None,
                  file_format=None,
                  validation_format=None,
-                 budget=None,
+                 reduced_to_budgets=None,
                  output_dir=None,
                  ):
         """
@@ -58,8 +57,8 @@ class ConfiguratorRun(object):
             path to the target-algorithm-execution-directory. This is only important for SMAC-optimized data
         file_format, validation_format: str
             will be autodetected some point soon, until then, specify the file-format (SMAC2, SMAC3, BOHB, etc...)
-        budget: str int or float
-            a budget, with which this cr is associated
+        reduced_to_budgets: List str int or float
+            budgets, with which this cr is associated
         output_dir: str
             where to save analysis-data for this cr
         """
@@ -68,7 +67,7 @@ class ConfiguratorRun(object):
         self.options = options
 
         self.path_to_folder = path_to_folder
-        self.budget = budget
+        self.reduced_to_budgets = [None] if reduced_to_budgets is None else reduced_to_budgets
 
         self.scenario = scenario
         self.original_runhistory = original_runhistory
@@ -99,24 +98,40 @@ class ConfiguratorRun(object):
 
         # Initialize importance and validator
         self._init_pimp_and_validator()
-        self._validate_default_and_incumbents("epm", self.ta_exec_dir)
+        try:
+            self._validate_default_and_incumbents("epm", self.ta_exec_dir)
+        except KeyError as err:
+            self.logger.debug(err, exc_info=1)
+            msg = 'Validation of default and incumbent failed. SMAC (v: %s) does not support validation '\
+                  'of budgets+instances yet, if you use budgets but no instances ignore this warning.' % str(smac_version)
+            if self.feature_names:
+                self.logger.warning(msg)
+            else:
+                self.logger.debug(msg)
 
         # Set during execution, to share information between Analyzers
         self.share_information = {'parameter_importance' : OrderedDict(),
                                   'feature_importance' : OrderedDict(),
                                   'evaluators' : OrderedDict(),
-                                  'validator' : None}
+                                  'validator' : None,
+                                  'hpbandster_result' : None,  # Only for file-format BOHB
+                                  }
 
     def get_identifier(self):
-        path = self.path_to_folder if self.path_to_folder is not None else ""
-        budget = str(self.budget) if self.budget is not None else ""
-        if path and budget:
-            res = "_".join([path, budget])
-        elif not (path or budget):
-            res = 'aggregated'
-        else:
-            res = path if path else budget
-        return res.replace('/', '_')
+        return self.identify(self.path_to_folder, self.reduced_to_budgets)
+
+    @classmethod
+    def identify(cls, path, budget):
+        path = path if path is not None else "all_folders"
+        budget = str(budget) if budget is not None else "all_budgets"
+        res = "_".join([path, budget]).replace('/', '_')
+        if len(res) > len(str(hash(res))):
+            res = str(hash(res))
+        return res
+
+
+    def get_budgets(self):
+        return set([k.budget for k in self.original_runhistory.data.keys()])
 
     @classmethod
     def from_folder(cls,
@@ -125,7 +140,6 @@ class ConfiguratorRun(object):
                     options,
                     file_format: str='SMAC3',
                     validation_format: str='NONE',
-                    budget=None,
                     output_dir=None,
                     ):
         """Initialize scenario, runhistory and incumbent from folder
@@ -145,8 +159,8 @@ class ConfiguratorRun(object):
             from [SMAC2, SMAC3, APT, CSV, NONE], in which format to look for validated data
         """
         logger = logging.getLogger("cave.ConfiguratorRun.{}".format(folder))
-        logger.debug("Loading from \'%s\' with ta_exec_dir \'%s\' with file-format '%s' and validation-format %s. "
-                          "Budget (if present): %s", folder, ta_exec_dir, file_format, validation_format, budget)
+        logger.debug("Loading from \'%s\' with ta_exec_dir \'%s\' with file-format '%s' and validation-format %s. ",
+                          folder, ta_exec_dir, file_format, validation_format)
 
         if file_format == 'BOHB' or file_format == "APT":
             logger.debug("File format is BOHB or APT, assmuming data was converted to SMAC3-format using "
@@ -184,7 +198,6 @@ class ConfiguratorRun(object):
                    ta_exec_dir=ta_exec_dir,
                    file_format=file_format,
                    validation_format=validation_format,
-                   budget=budget,
                    output_dir=output_dir,
                    )
 
@@ -213,7 +226,7 @@ class ConfiguratorRun(object):
                                max_sample_size=self.options['fANOVA'].getint("pimp_max_samples"),
                                fANOVA_pairwise=self.options['fANOVA'].getboolean("fanova_pairwise"),
                                preprocess=False,
-                               verbose=1,  # disable progressbars
+                               verbose=False,  # disable progressbars in pimp...
                                )
         # Validator (initialize without trajectory)
         self.validator = Validator(self.scenario, None, None)
@@ -305,10 +318,8 @@ class ConfiguratorRun(object):
                               ("test", self.test_inst)]:
                 not_evaluated = set(i) - evaluated
                 if len(not_evaluated) > 0:
-                    self.logger.debug("RunHistory %s only evaluated on %d/%d %s-insts "
-                                      "for %s in folder %s",
-                                      name, len(i) - len(not_evaluated), len(i),
-                                      i_name, c_name, self.folder)
+                    self.logger.debug("RunHistory %s only evaluated on %d/%d %s-insts for %s in folder %s",
+                                      name, len(i) - len(not_evaluated), len(i), i_name, c_name, self.folder)
                     return_value = False
         return return_value
 
@@ -325,15 +336,14 @@ class ConfiguratorRun(object):
         elif name == 'SMAC2':
             return SMAC2Reader(folder, ta_exec_dir)
         elif name == 'CSV':
-            return CSVReader(folder, ta_exec_dir)
+            return SMAC3Reader(folder, ta_exec_dir)
         else:
             raise ValueError("%s not supported as file-format" % name)
 
 @contextmanager
 def _changedir(newdir):
-    """ Helper function to change directory, for example to create a scenario
-    from file, where paths to the instance- and feature-files are relative to
-    the original SMAC-execution-directory. Same with target algorithms that need
+    """ Helper function to change directory, for example to create a scenario from file, where paths to the instance-
+    and feature-files are relative to the original SMAC-execution-directory. Same with target algorithms that need
     be executed for validation. """
     olddir = os.getcwd()
     os.chdir(os.path.expanduser(newdir))

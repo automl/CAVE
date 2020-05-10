@@ -6,3 +6,4 @@ cave.utils.tooltips module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

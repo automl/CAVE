@@ -6,3 +6,4 @@ cave.analyzer.cave\_ablation module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

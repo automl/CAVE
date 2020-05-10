@@ -6,3 +6,4 @@ cave.analyzer.cave\_forward\_selection module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:
