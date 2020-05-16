@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 import tempfile
@@ -30,13 +31,25 @@ class APT2SMAC(BaseConverter):
         for folder, result in results.items():
             self.logger.debug("Checking for tensorflow-event files in %s", folder)
             tf_paths[folder] = []
-            for filename in os.listdir(folder):
-                if 'tfevents' in filename:
-                    dst = shutil.copyfile(filename, os.path.join(result['new_path'], filename))
-                    tf_paths[folder].append(dst)
+            for root, d_names, f_names in os.walk(folder):
+                for f in f_names:
+                    if 'tfevents' in f:
+                        dst = shutil.copyfile(os.path.join(root, f), os.path.join(result['new_path'], f))
+                        tf_paths[folder].append(dst)
         for f, paths in tf_paths.items():
             if len(paths) == 0:
                 self.logger.warning("No tfevents-files found for APT-folder %s!", f)
             results[f]['tfevents_paths'] = paths
+
+        for folder, result in results.items():
+            apt_config_file_path = os.path.join(folder, 'autonet_config.json')
+            self.logger.info("Assuming APT config is saved in %s", apt_config_file_path)
+            with open(apt_config_file_path) as json_file:
+                results[folder]['apt_config'] = json.load(json_file)
+
+            apt_fitresults_file_path = os.path.join(folder, 'results_fit.json')
+            self.logger.info("Assuming APT config is saved in %s", apt_config_file_path)
+            with open(apt_fitresults_file_path) as json_file:
+                results[folder]['results_fit'] = json.load(json_file)
 
         return results

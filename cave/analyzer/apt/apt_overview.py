@@ -1,11 +1,12 @@
+import os
 from collections import OrderedDict
 
 from pandas import DataFrame
 
-from cave.analyzer.apt.base_apt import BaseAPT
+from cave.analyzer.base_analyzer import BaseAnalyzer
 
 
-class APTOverview(BaseAPT):
+class APTOverview(BaseAnalyzer):
     """
     Overview of AutoPyTorch-Specific Configurations
     """
@@ -18,14 +19,48 @@ class APTOverview(BaseAPT):
                                   "tooltip": "AutoPyTorch configuration."}
 
     def get_name(self):
-        return "APT Overview"
+        return "Auto-PyTorch Overview"
 
     def run(self):
         """ Generate tables. """
-        config_dict = self.runscontainer.autopytorch["autopytorch"].get_current_autonet_config()
+        # Run-specific / budget specific infos
+        runs = self.runscontainer.get_aggregated(keep_folders=True, keep_budgets=False)
+        apt_config_dict = self._runspec_dict_apt_config(runs)
+        results_fit_dict = self._runspec_dict_results_fit(runs)
 
-        html_table = DataFrame(data=OrderedDict([('Autonet Configuration', config_dict)]))
-        html_table = html_table.reindex(list(config_dict.keys()))
-        html_table = html_table.to_html(escape=False, header=False, justify='left')
+        for k, runspec_dict in [("Auto-PyTorch Configuration", apt_config_dict),
+                                ("Results of the fit()-call", results_fit_dict)]:
+            order_spec = list(list(runspec_dict.values())[0].keys())  # Get keys of any sub-dict for order
+            html_table_specific = DataFrame(runspec_dict)
+            html_table_specific = html_table_specific.reindex(order_spec)
+            html_table_specific = html_table_specific.to_html(escape=False, justify='left')
 
-        return html_table
+            self.result[k] = {"table": html_table_specific}
+
+    def _runspec_dict_results_fit(self, runs):
+        runspec = OrderedDict()
+
+        for idx, run in enumerate(runs):
+            self.logger.debug("Path to folder for run no. {}: {}".format(idx, str(run.path_to_folder)))
+            name = os.path.basename(run.path_to_folder)
+            runspec[name] = OrderedDict()
+            for k, v in run.share_information['results_fit']['info'].items():
+                runspec[name]["Info: " + str(k)] = v
+            for k, v in run.share_information['results_fit']['optimized_hyperparameter_config'].items():
+                runspec[name]["Parameter: " + str(k)] = v
+            runspec[name]["Budget"] = run.share_information['results_fit']['budget']
+            runspec[name]["Loss"] = run.share_information['results_fit']['loss']
+
+        return runspec
+
+    def _runspec_dict_apt_config(self, runs):
+        runspec = OrderedDict()
+
+        for idx, run in enumerate(runs):
+            self.logger.debug("Path to folder for run no. {}: {}".format(idx, str(run.path_to_folder)))
+            name = os.path.basename(run.path_to_folder)
+            runspec[name] = OrderedDict()
+            for k, v in run.share_information['apt_config'].items():
+                runspec[name][k] = v
+
+        return runspec

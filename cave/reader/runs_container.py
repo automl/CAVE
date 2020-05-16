@@ -25,7 +25,6 @@ class RunsContainer(object):
                  file_format=None,
                  validation_format=None,
                  analyzing_options=None,
-                 autopytorch=None,
                  ):
         """
         Reads in optimizer runs. Converts data if necessary.
@@ -68,8 +67,6 @@ class RunsContainer(object):
             from [SMAC2, SMAC3, BOHB, CSV] defines what file-format the optimizer result is in.
         validation_format: str
             from [SMAC2, SMAC3, BOHB, CSV] defines what file-format validation data is in.
-        autopytorch: AutoNet
-            optional autopytorch-instance to refit and evaluate
         """
         ################################################################################################################
         #  Initialize and find suitable parameters                                                                     #
@@ -152,13 +149,6 @@ class RunsContainer(object):
                                                  output_dir = self.output_dir)
             self.data[f] = cr
         self.scenario = list(self.data.values())[0].scenario
-
-    def get_tensorboard_result(self, configuration):
-        """ Generate (if necessary) an autopytorch-tensorboard-log of a refitting """
-        #if configuration in self.tensorboard_results:
-        #    return self.tensorboard_results[configuration]
-        #else:
-        apt_refit(self.autopytorch, configuration, self.output_dir)
 
     def __getitem__(self, key):
         """ Return highest budget for given folder. """
