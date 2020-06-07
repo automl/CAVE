@@ -1,3 +1,15 @@
+# 1.3.3
+
+## Interface changes
+
+* Deprecate deactivation of individual analysis methods using the `--no_[analysis_name]` flag
+* Add two mutually exclusive flags `--[skip|only] [analysis_name]` to activate / skip specific analysis methods
+* Remove `--pimp_sort_table_by` flag (table is sortable interactively now so no need)
+
+## Minor changes
+
+* Change name of scatter plot from "Scatterplot" to "Scatter Plot"
+
 # 1.3.2
 
 ## Bug fixes

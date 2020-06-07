@@ -43,7 +43,7 @@ class PlotScatter(BaseAnalyzer):
             )
 
     def get_name(self):
-        return "Scatterplot"
+        return "Scatter Plot"
 
     def _plot_scatter(self,
                       default: Configuration,
