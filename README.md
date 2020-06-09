@@ -61,25 +61,36 @@ Optional:
 - `--file_format`: if the automatic file-detection fails for some reason, choose from [SMAC3](https://github.com/automl/SMAC3), [SMAC2](https://www.cs.ubc.ca/labs/beta/Projects/SMAC), [CSV](https://automl.github.io/CAVE/stable/quickstart.html#csv) or [BOHB](https://github.com/automl/HpBandSter)
 - `--validation_format`: of (optional) validation data (to enhance epm-quality where appropriate), choose from [SMAC3](https://github.com/automl/SMAC3), [SMAC2](https://www.cs.ubc.ca/labs/beta/Projects/SMAC), [CSV](https://automl.github.io/CAVE/stable/quickstart.html#csv) or NONE
 - `--ta_exec_dir`: target algorithm execution directories, this should be one or multiple path(s) to
-  the directories from which the configurator was run initially. not necessary for all configurators (BOHB doesn't need it). used to find instance-files and
+  the directories from which the configurator was run initially. not necessary for all configurators (e.g. BOHB doesn't need it). used to find instance-files and
   if necessary execute the `algo`-parameter of the SMAC-scenario (DEFAULT: current working directory)
-- `--parameter_importance`: calculating parameter importance is expensive, so you can
-  specify which plots you desire: `ablation`, `forward_selection`, `fanova` and/or `lpi`.
-  either provide a combination of those or use `all` or `none`
-- `--feature_analysis`: analysis features is expensive, so you can specify which
-  algorithm to run: `box_violin`, `clustering`, `importance` and/or `feature_cdf`.
-  either provide a combination of those or use `all` or `none`
-- `--no_performance_table`: toggles the tabular analysis
-- `--no_ecdf`, `--no_scatter_plots`: toggle ecdf- and scatter-plots
-- `--no_cost_over_time`: toggles the cost-over-time plot
-- `--no_parallel_coordinates`: toggles the parallel-coordinates plot
-- `--no_configurator_footprint`: toggles the configurator-footprints
-- `--no_algorithm_footprints`: toggles the algorithm-footprints
+- `--skip` and `--only`: specify any number of analyzing methods here.
+  when using `--skip` CAVE runs all *except* those, when using `--only` CAVE runs *only* those specified.
+  `--skip` and `--only` are mutually exclusive.
+  Legal values are e.g.:
+  ablation,
+  algorithm_footprints,
+  bohb_learning_curves,
+  box_violin,
+  budget_correlation,
+  clustering,
+  configurator_footprint,
+  correlation,
+  cost_over_time,
+  ecdf,
+  fanova,
+  forward_selection,
+  importance,
+  incumbents_over_budgets,
+  local_parameter_importance,
+  lpi,
+  parallel_coordinates,
+  performance_table,
+  scatter_plot
 - `--cfp_time_slider`: `on` will add a time-slider to the interactive configurator footprint which will result in longer loading times, `off` will generate static png's at the desired quantiles
 - `--cfp_number_quantiles`: determines how many time-steps to prerender from in the configurator footprint
 - `--cot_inc_traj`: how the incumbent trajectory for the cost-over-time plot will be generated if the optimizer is BOHB (from [`racing`, `minimum`, `prefer_higher_budget`])
 
-For further information on  to use CAVE, see:
+For a full list and further information on how to use CAVE, see:
 `cave -h`
 
 # EXAMPLE

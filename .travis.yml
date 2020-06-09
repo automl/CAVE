@@ -13,8 +13,9 @@ before_cache:
 
 env:
   matrix:
-    - DISTRIB='conda' COVERAGE="true" PYTHON_VERSION="3.5"
-    - DISTRIB="conda" COVERAGE="true" PYTHON_VERSION="3.6" DOCPUSH="true"
+    - DISTRIB="conda" COVERAGE="true" PYTHON_VERSION="3.6"
+    - DISTRIB="conda" COVERAGE="true" PYTHON_VERSION="3.7" DOCPUSH="true"
+    - DISTRIB="conda" COVERAGE="true" PYTHON_VERSION="3.8"
 
 install:
   - source ci_scripts/install.sh
