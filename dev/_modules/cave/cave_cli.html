@@ -239,6 +239,7 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span><span class="p">,</span> <span class="n">SUPPRESS</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span> <span class="k">as</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">reload</span>
 
@@ -273,29 +274,36 @@
         <span class="n">logging</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
         <span class="n">reload</span><span class="p">(</span><span class="n">logging</span><span class="p">)</span>
 
-        <span class="c1"># Some choice-blocks, that can be reused throughout the CLI</span>
-        <span class="n">p_choices</span> <span class="o">=</span> <span class="p">[</span>
-                     <span class="s2">&quot;all&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;ablation&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;forward_selection&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;fanova&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;lpi&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;none&quot;</span>
-                    <span class="p">]</span>
-        <span class="n">p_sort_by_choices</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;average&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">p_choices</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">f_choices</span> <span class="o">=</span> <span class="p">[</span>
-                     <span class="s2">&quot;all&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;box_violin&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;correlation&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;clustering&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;importance&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;none&quot;</span>
-                    <span class="p">]</span>
+        <span class="c1"># Those are the options for the --only / --skip flags</span>
+        <span class="n">map_options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;performance_table&#39;</span><span class="p">:</span> <span class="s1">&#39;Performance Table&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ecdf&#39;</span><span class="p">:</span> <span class="s1">&#39;empirical Cumulative Distribution Function (eCDF)&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;scatter_plot&#39;</span><span class="p">:</span> <span class="s1">&#39;Scatter Plot&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;cost_over_time&#39;</span><span class="p">:</span> <span class="s1">&#39;Cost Over Time&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;configurator_footprint&#39;</span><span class="p">:</span> <span class="s1">&#39;Configurator Footprint&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;parallel_coordinates&#39;</span><span class="p">:</span> <span class="s1">&#39;Parallel Coordinates&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;algorithm_footprints&#39;</span><span class="p">:</span> <span class="s1">&#39;Algorithm Footprint&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;budget_correlation&#39;</span><span class="p">:</span> <span class="s1">&#39;Budget Correlation&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;bohb_learning_curves&#39;</span><span class="p">:</span> <span class="s1">&#39;BOHB Learning Curves&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;incumbents_over_budgets&#39;</span><span class="p">:</span> <span class="s1">&#39;Incumbents Over Budgets&#39;</span><span class="p">,</span>
+            <span class="c1"># Parameter Importance:</span>
+            <span class="s1">&#39;fanova&#39;</span><span class="p">:</span> <span class="s1">&#39;fANOVA&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ablation&#39;</span><span class="p">:</span> <span class="s1">&#39;Ablation&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;lpi&#39;</span><span class="p">:</span> <span class="s1">&#39;Local Parameter Importance (LPI)&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;local_parameter_importance&#39;</span><span class="p">:</span> <span class="s1">&#39;Local Parameter Importance (LPI)&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;forward_selection&#39;</span><span class="p">:</span> <span class="s1">&#39;Forward Selection&#39;</span><span class="p">,</span>
+            <span class="c1"># Feature Importance</span>
+            <span class="s1">&#39;clustering&#39;</span><span class="p">:</span> <span class="s2">&quot;Feature Clustering&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;correlation&#39;</span><span class="p">:</span> <span class="s2">&quot;Feature Correlation&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;importance&#39;</span><span class="p">:</span> <span class="s2">&quot;Feature Importance&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;box_violin&#39;</span><span class="p">:</span> <span class="s2">&quot;Violin and Box Plots&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
 
-        <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">(</span><span class="n">formatter_class</span><span class="o">=</span><span class="n">SmartArgsDefHelpFormatter</span><span class="p">,</span> <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">(</span><span class="n">formatter_class</span><span class="o">=</span><span class="n">SmartArgsDefHelpFormatter</span><span class="p">,</span>
+                                <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                 <span class="n">description</span><span class="o">=</span><span class="s1">&#39;CAVE: Configuration Assessment Vizualisation and Evaluation&#39;</span><span class="p">)</span>
 
-        <span class="n">req_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">req_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Either positional or keyword folders option</span>
         <span class="n">req_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;folders&quot;</span><span class="p">,</span>
                               <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span>
                               <span class="c1"># strings prefixed with raw| can be manually split with \n</span>
@@ -361,6 +369,7 @@
                                     <span class="s2">&quot;scenario, so they are relative to this path &quot;</span>
                                     <span class="s2">&quot;(e.g. &#39;ta_exec_dir/path_to_train_inst_specified_in_scenario.txt&#39;). &quot;</span><span class="p">,</span>
                                <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">)</span>
+
         <span class="c1"># PIMP-configs</span>
         <span class="n">pimp_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Parameter Importance&quot;</span><span class="p">,</span>
                                               <span class="s2">&quot;Define the behaviour of the ParameterImportance-module (pimp)&quot;</span><span class="p">)</span>
@@ -372,13 +381,8 @@
                                <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_false&quot;</span><span class="p">,</span>
                                <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;fanova_pairwise&quot;</span><span class="p">,</span>
                                <span class="n">help</span><span class="o">=</span><span class="s2">&quot;fANOVA won&#39;t compute pairwise marginals&quot;</span><span class="p">)</span>
-        <span class="n">pimp_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--pimp_sort_table_by&quot;</span><span class="p">,</span>
-                               <span class="n">default</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">,</span>
-                               <span class="n">choices</span><span class="o">=</span><span class="n">p_sort_by_choices</span><span class="p">,</span>
-                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;raw|what kind of parameter importance method to &quot;</span>
-                                    <span class="s2">&quot;use to sort the overview-table. &quot;</span><span class="p">)</span>
 
-        <span class="n">cfp_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Configurator Footprint&quot;</span><span class="p">,</span> <span class="s2">&quot;Finetune the configurator footprint&quot;</span><span class="p">)</span>
+        <span class="n">cfp_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Configurator Footprint&quot;</span><span class="p">,</span> <span class="s2">&quot;Fine-tune the configurator footprint&quot;</span><span class="p">)</span>
         <span class="n">cfp_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--cfp_time_slider&quot;</span><span class="p">,</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;whether or not to have a time_slider-widget on cfp-plot&quot;</span>
                                    <span class="s2">&quot;INCREASES FILE-SIZE (and loading) DRAMATICALLY. &quot;</span><span class="p">,</span>
@@ -392,14 +396,16 @@
                                    <span class="s2">&quot;you run into a MemoryError). -1 -&gt; plot all. &quot;</span><span class="p">,</span>
                               <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
 
-        <span class="n">pc_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Parallel Coordinates&quot;</span><span class="p">,</span> <span class="s2">&quot;Finetune the parameter parallel coordinates&quot;</span><span class="p">)</span>
+        <span class="n">pc_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Parallel Coordinates&quot;</span><span class="p">,</span> <span class="s2">&quot;Fine-tune the parameter parallel coordinates&quot;</span><span class="p">)</span>
+        <span class="c1"># TODO: this choice should be integrated into the bokeh plot</span>
         <span class="n">pc_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--pc_sort_by&quot;</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;parameter-importance method to determine the order (and selection) of parameters &quot;</span>
-                                   <span class="s2">&quot;for parallel coordinates. all: aggregate over all available methods. uses random &quot;</span>
-                                   <span class="s2">&quot;method if none is given. &quot;</span><span class="p">,</span>
-                              <span class="n">default</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">p_choices</span><span class="p">)</span>
+                             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;parameter-importance method to determine the order (and selection) of parameters &quot;</span>
+                                  <span class="s2">&quot;for parallel coordinates. all: aggregate over all available methods. uses random &quot;</span>
+                                  <span class="s2">&quot;method if none is given. &quot;</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span>
+                             <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;fanova&#39;</span><span class="p">,</span> <span class="s1">&#39;lpi&#39;</span><span class="p">,</span> <span class="s1">&#39;ablation&#39;</span><span class="p">,</span> <span class="s1">&#39;forward_selection&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">])</span>
 
-        <span class="n">cot_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Cost Over Time&quot;</span><span class="p">,</span> <span class="s2">&quot;Finetune the cost over time plot&quot;</span><span class="p">)</span>
+        <span class="n">cot_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Cost Over Time&quot;</span><span class="p">,</span> <span class="s2">&quot;Fine-tune the cost over time plot&quot;</span><span class="p">)</span>
         <span class="n">cot_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--cot_inc_traj&quot;</span><span class="p">,</span>
                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;if the optimizer belongs to HpBandSter (e.g. bohb), you can choose how the &quot;</span>
                                    <span class="s2">&quot;incumbent-trajectory will be interpreted with regards to the budget. You can &quot;</span>
@@ -413,99 +419,36 @@
                               <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;racing&quot;</span><span class="p">,</span> <span class="s2">&quot;minimum&quot;</span><span class="p">,</span> <span class="s2">&quot;prefer_higher_budget&quot;</span><span class="p">])</span>
 
         <span class="c1"># General analysis to be carried out</span>
-        <span class="n">act_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Analysis&quot;</span><span class="p">,</span> <span class="s2">&quot;Which analysis methods should be carried out&quot;</span><span class="p">)</span>
-        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--parameter_importance&quot;</span><span class="p">,</span>
-                              <span class="n">default</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-                              <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;raw|what kind of parameter importance method to &quot;</span>
-                                   <span class="s2">&quot;use. Choose any combination of</span><span class="se">\n</span><span class="s2">[&quot;</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p_choices</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;] or set it to &quot;</span>
-                                                                                                      <span class="s2">&quot;all/none&quot;</span><span class="p">,</span>
-                              <span class="n">choices</span><span class="o">=</span><span class="n">p_choices</span><span class="p">,</span>
-                              <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span>
-        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--feature_analysis&quot;</span><span class="p">,</span>
-                              <span class="n">default</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-                              <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;raw|what kind of feature analysis methods to use. &quot;</span>
-                                   <span class="s2">&quot;Choose any combination of</span><span class="se">\n</span><span class="s2">[&quot;</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f_choices</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;] or set it to &quot;</span>
-                                                                                                 <span class="s2">&quot;all/none&quot;</span><span class="p">,</span>
-                              <span class="n">choices</span><span class="o">=</span><span class="n">f_choices</span><span class="p">,</span>
-                              <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span>
-        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_performance_table&quot;</span><span class="p">,</span>
-                              <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t create performance table.&quot;</span><span class="p">,</span>
-                              <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;performance_table&#39;</span><span class="p">)</span>
-        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_ecdf&quot;</span><span class="p">,</span>
-                              <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t plot ecdf.&quot;</span><span class="p">,</span>
-                              <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;ecdf&#39;</span><span class="p">)</span>
-        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_scatter_plots&quot;</span><span class="p">,</span>
-                              <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t plot scatter plots.&quot;</span><span class="p">,</span>
-                              <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;scatter&#39;</span><span class="p">)</span>
-        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_cost_over_time&quot;</span><span class="p">,</span>
-                              <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t plot cost over time.&quot;</span><span class="p">,</span>
-                              <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;cost_over_time&#39;</span><span class="p">)</span>
-        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_configurator_footprint&quot;</span><span class="p">,</span>
-                              <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t plot configurator footprint.&quot;</span><span class="p">,</span>
-                              <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;configurator_footprint&#39;</span><span class="p">)</span>
-        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_parallel_coordinates&quot;</span><span class="p">,</span>
-                              <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t plot parallel coordinates.&quot;</span><span class="p">,</span>
-                              <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;parallel_coordinates&#39;</span><span class="p">)</span>
-        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_algorithm_footprints&quot;</span><span class="p">,</span>
-                              <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t plot algorithm footprints.&quot;</span><span class="p">,</span>
-                              <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;algorithm_footprints&#39;</span><span class="p">)</span>
-        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_budget_correlation&quot;</span><span class="p">,</span>
-                              <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t plot budget correlation.&quot;</span><span class="p">,</span>
-                              <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;budget_correlation&#39;</span><span class="p">)</span>
-        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_bohb_learning_curves&quot;</span><span class="p">,</span>
-                              <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t plot bohb learning curves.&quot;</span><span class="p">,</span>
-                              <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;bohb_learning_curves&#39;</span><span class="p">)</span>
-        <span class="n">act_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_incumbents_over_budgets&quot;</span><span class="p">,</span>
-                              <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
-                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t plot incumbents over budgets.&quot;</span><span class="p">,</span>
-                              <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;incumbents_over_budgets&#39;</span><span class="p">)</span>
+        <span class="n">default_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">()</span>
+        <span class="n">default_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--only&quot;</span><span class="p">,</span>
+                                  <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span>
+                                  <span class="n">help</span><span class="o">=</span><span class="s1">&#39;perform only these analysis methods. choose from: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                      <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">map_options</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+                                  <span class="p">),</span>
+                                  <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
+                                  <span class="p">)</span>
+        <span class="n">default_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--skip&quot;</span><span class="p">,</span>
+                                  <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span>
+                                  <span class="n">help</span><span class="o">=</span><span class="s1">&#39;perform all but these analysis methods. choose from: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                      <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">map_options</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+                                  <span class="p">),</span>
+                                  <span class="n">default</span><span class="o">=</span><span class="p">[]</span>
+                                  <span class="p">)</span>
+
+        <span class="c1"># Delete the following two lines and the corresponding function after 1.3.4 release</span>
+        <span class="n">dep_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Deprecated&quot;</span><span class="p">,</span> <span class="s2">&quot;Used to define which analysis methods should be performed&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_deprecated</span><span class="p">(</span><span class="n">dep_opts</span><span class="p">,</span> <span class="n">map_options</span><span class="p">)</span>
 
         <span class="n">spe_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Meta arguments&quot;</span><span class="p">)</span>
         <span class="n">spe_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="s1">&#39;--version&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;version&#39;</span><span class="p">,</span>
                               <span class="n">version</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(prog)s</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;show program&#39;s version number and exit.&quot;</span><span class="p">)</span>
         <span class="n">spe_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-h&#39;</span><span class="p">,</span> <span class="s1">&#39;--help&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;show this help message and exit&quot;</span><span class="p">)</span>
 
-        <span class="n">args_</span><span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="c1"># Parse arguments and save to args_</span>
+        <span class="n">args_</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
 
-        <span class="c1"># Expand configs</span>
-        <span class="k">if</span> <span class="s2">&quot;all&quot;</span> <span class="ow">in</span> <span class="n">args_</span><span class="o">.</span><span class="n">parameter_importance</span><span class="p">:</span>
-            <span class="n">param_imp</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ablation&quot;</span><span class="p">,</span> <span class="s2">&quot;forward_selection&quot;</span><span class="p">,</span> <span class="s2">&quot;fanova&quot;</span><span class="p">,</span> <span class="s2">&quot;lpi&quot;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="s2">&quot;none&quot;</span> <span class="ow">in</span> <span class="n">args_</span><span class="o">.</span><span class="n">parameter_importance</span><span class="p">:</span>
-            <span class="n">param_imp</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">param_imp</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">parameter_importance</span>
-
-        <span class="k">if</span> <span class="s2">&quot;fanova&quot;</span> <span class="ow">in</span> <span class="n">param_imp</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="kn">import</span> <span class="nn">fanova</span>  <span class="c1"># noqa</span>
-            <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;fANOVA is not installed! To install it please run &#39;</span>
-                                  <span class="s1">&#39;&quot;git+http://github.com/automl/fanova.git@master&quot;&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">pimp_sort_table_by</span> <span class="o">==</span> <span class="s2">&quot;average&quot;</span> <span class="ow">or</span> <span class="n">args_</span><span class="o">.</span><span class="n">pimp_sort_table_by</span> <span class="ow">in</span> <span class="n">param_imp</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Pimp comparison sorting key is </span><span class="si">{}</span><span class="s2">, but this &quot;</span>
-                             <span class="s2">&quot;method is deactivated or non-existent.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">pimp_sort_table_by</span><span class="p">))</span>
-
-
-        <span class="k">if</span> <span class="s2">&quot;all&quot;</span> <span class="ow">in</span> <span class="n">args_</span><span class="o">.</span><span class="n">feature_analysis</span><span class="p">:</span>
-            <span class="n">feature_analysis</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;box_violin&quot;</span><span class="p">,</span> <span class="s2">&quot;correlation&quot;</span><span class="p">,</span> <span class="s2">&quot;importance&quot;</span><span class="p">,</span> <span class="s2">&quot;clustering&quot;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="s2">&quot;none&quot;</span> <span class="ow">in</span> <span class="n">args_</span><span class="o">.</span><span class="n">feature_analysis</span><span class="p">:</span>
-            <span class="n">feature_analysis</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">feature_analysis</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">feature_analysis</span>
-
-        <span class="n">output_dir</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">output</span>
+        <span class="c1"># Delete the following line and the corresponding function after 1.3.4 release</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_deprecated</span><span class="p">(</span><span class="n">args_</span><span class="p">)</span>
 
         <span class="c1"># Configuration results to be analyzed</span>
         <span class="n">folders</span> <span class="o">=</span> <span class="p">[]</span>
@@ -522,6 +465,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">ta_exec_dir</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 
+        <span class="n">output_dir</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">output</span>
         <span class="n">file_format</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">file_format</span>
         <span class="n">validation_format</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">validation_format</span>
         <span class="n">validation</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">validation</span>
@@ -529,33 +473,32 @@
         <span class="n">verbose_level</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">verbose_level</span>
         <span class="n">show_jupyter</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">jupyter</span> <span class="o">==</span> <span class="s1">&#39;on&#39;</span>
 
-        <span class="n">analyzing_options</span> <span class="o">=</span> <span class="n">load_default_options</span><span class="p">(</span><span class="n">file_format</span><span class="o">=</span><span class="n">detect_fileformat</span><span class="p">(</span><span class="n">folders</span><span class="p">)</span> <span class="k">if</span> <span class="n">file_format</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;AUTO&quot;</span> <span class="k">else</span> <span class="n">file_format</span><span class="p">)</span>
+        <span class="c1"># Load default options for this file_format</span>
+        <span class="n">analyzing_options</span> <span class="o">=</span> <span class="n">load_default_options</span><span class="p">(</span><span class="n">file_format</span><span class="o">=</span><span class="n">detect_fileformat</span><span class="p">(</span><span class="n">folders</span><span class="p">)</span>
+                                                 <span class="k">if</span> <span class="n">file_format</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;AUTO&quot;</span> <span class="k">else</span> <span class="n">file_format</span><span class="p">)</span>
 
-        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Ablation&quot;</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;ablation&#39;</span> <span class="ow">in</span> <span class="n">param_imp</span><span class="p">)</span>
-        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Algorithm Footprint&quot;</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">algorithm_footprints</span><span class="p">)</span>
-        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Budget Correlation&quot;</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">budget_correlation</span><span class="p">)</span>
-        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;BOHB Learning Curves&quot;</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">bohb_learning_curves</span><span class="p">)</span>
-        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Configurator Footprint&quot;</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">configurator_footprint</span><span class="p">)</span>
+        <span class="c1"># Interpret the --skip and --only flags</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">only</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Set all to False</span>
+            <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">map_options</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">analyzing_options</span><span class="p">[</span><span class="n">o</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">args_</span><span class="o">.</span><span class="n">only</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">only</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">args_</span><span class="o">.</span><span class="n">skip</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">map_options</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to interpret `--[only|skip] </span><span class="si">{}</span><span class="s2">`.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                                 <span class="s2">&quot;Please choose from:</span><span class="se">\n</span><span class="s2">  </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">map_options</span><span class="o">.</span><span class="n">keys</span><span class="p">()))))</span>
+            <span class="c1"># Set True if flag is --only and False if flag is --skip</span>
+            <span class="n">analyzing_options</span><span class="p">[</span><span class="n">map_options</span><span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">lower</span><span class="p">()]][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">only</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Fine-tuning individual analyzer options</span>
         <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Configurator Footprint&quot;</span><span class="p">][</span><span class="s2">&quot;time_slider&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">cfp_time_slider</span><span class="p">)</span>
         <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Configurator Footprint&quot;</span><span class="p">][</span><span class="s2">&quot;number_quantiles&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">cfp_number_quantiles</span><span class="p">)</span>
         <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Configurator Footprint&quot;</span><span class="p">][</span><span class="s2">&quot;max_configurations_to_plot&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">cfp_max_configurations_to_plot</span><span class="p">)</span>
-        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Cost Over Time&quot;</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">cost_over_time</span><span class="p">)</span>
         <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Cost Over Time&quot;</span><span class="p">][</span><span class="s2">&quot;incumbent_trajectory&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">cot_inc_traj</span><span class="p">)</span>
-        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;empirical Cumulative Distribution Function (eCDF)&quot;</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">ecdf</span><span class="p">)</span>
-        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;fANOVA&quot;</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;fanova&#39;</span> <span class="ow">in</span> <span class="n">param_imp</span><span class="p">)</span>
         <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;fANOVA&quot;</span><span class="p">][</span><span class="s2">&quot;fanova_pairwise&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">fanova_pairwise</span><span class="p">)</span>
         <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;fANOVA&quot;</span><span class="p">][</span><span class="s2">&quot;pimp_max_samples&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">pimp_max_samples</span><span class="p">)</span>
-        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Feature Clustering&quot;</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;clustering&#39;</span> <span class="ow">in</span> <span class="n">feature_analysis</span><span class="p">)</span>
-        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Feature Correlation&quot;</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;correlation&#39;</span> <span class="ow">in</span> <span class="n">feature_analysis</span><span class="p">)</span>
-        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Feature Importance&quot;</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;importance&#39;</span> <span class="ow">in</span> <span class="n">feature_analysis</span><span class="p">)</span>
-        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Forward Selection&quot;</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;forward_selection&#39;</span> <span class="ow">in</span> <span class="n">param_imp</span><span class="p">)</span>
-        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Importance Table&quot;</span><span class="p">][</span><span class="s2">&quot;sort_table_by&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">pimp_sort_table_by</span><span class="p">)</span>
-        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Incumbents Over Budgets&quot;</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">incumbents_over_budgets</span><span class="p">)</span>
-        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Local Parameter Importance (LPI)&quot;</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;lpi&#39;</span> <span class="ow">in</span> <span class="n">param_imp</span><span class="p">)</span>
-        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Parallel Coordinates&quot;</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">parallel_coordinates</span><span class="p">)</span>
         <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Parallel Coordinates&quot;</span><span class="p">][</span><span class="s2">&quot;pc_sort_by&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">pc_sort_by</span><span class="p">)</span>
-        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Performance Table&quot;</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">performance_table</span><span class="p">)</span>
 
+        <span class="c1"># Initialize CAVE</span>
         <span class="n">cave</span> <span class="o">=</span> <span class="n">CAVE</span><span class="p">(</span><span class="n">folders</span><span class="p">,</span>
                     <span class="n">output_dir</span><span class="p">,</span>
                     <span class="n">ta_exec_dir</span><span class="p">,</span>
@@ -568,14 +511,89 @@
                     <span class="n">analyzing_options</span><span class="o">=</span><span class="n">analyzing_options</span><span class="p">,</span>
                     <span class="p">)</span>
 
+        <span class="c1"># Check if CAVE was successfully initialized</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">cave</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;CAVE is called with arguments: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Something went wrong with CAVE-initialization... (it&#39;s fine for running nosetests)&quot;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Error in CAVE-initialization... (it&#39;s fine for running nosetests)&quot;</span><span class="p">)</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;CAVE is called with arguments: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="p">))</span>
 
-        <span class="c1"># Analyze</span>
-        <span class="n">cave</span><span class="o">.</span><span class="n">analyze</span><span class="p">()</span></div></div>
+        <span class="c1"># Analyze (with options defined in initialization via the analyzing_options</span>
+        <span class="n">cave</span><span class="o">.</span><span class="n">analyze</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="CaveCLI._check_deprecated"><a class="viewcode-back" href="../../apidoc/cave.cave_cli.html#cave.cave_cli.CaveCLI._check_deprecated">[docs]</a>    <span class="k">def</span> <span class="nf">_check_deprecated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args_</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Delete this function after 1.3.4 release &quot;&quot;&quot;</span>
+        <span class="c1"># Expand configs  # deprecated after 1.3.4</span>
+        <span class="k">if</span> <span class="s2">&quot;all&quot;</span> <span class="ow">in</span> <span class="n">args_</span><span class="o">.</span><span class="n">parameter_importance</span><span class="p">:</span>  <span class="c1"># deprecated after 1.3.4</span>
+            <span class="n">param_imp</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ablation&quot;</span><span class="p">,</span> <span class="s2">&quot;forward_selection&quot;</span><span class="p">,</span> <span class="s2">&quot;fanova&quot;</span><span class="p">,</span> <span class="s2">&quot;lpi&quot;</span><span class="p">]</span>  <span class="c1"># deprecated after 1.3.4</span>
+        <span class="k">elif</span> <span class="s2">&quot;none&quot;</span> <span class="ow">in</span> <span class="n">args_</span><span class="o">.</span><span class="n">parameter_importance</span> <span class="ow">or</span> <span class="s2">&quot;deprecated&quot;</span> <span class="o">==</span> <span class="n">args_</span><span class="o">.</span><span class="n">parameter_importance</span><span class="p">:</span>
+            <span class="n">param_imp</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># deprecated after 1.3.4</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># deprecated after 1.3.4</span>
+            <span class="n">param_imp</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">parameter_importance</span>  <span class="c1"># deprecated after 1.3.4</span>
+
+        <span class="k">if</span> <span class="s2">&quot;all&quot;</span> <span class="ow">in</span> <span class="n">args_</span><span class="o">.</span><span class="n">feature_analysis</span><span class="p">:</span>
+            <span class="n">feature_analysis</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;box_violin&quot;</span><span class="p">,</span> <span class="s2">&quot;correlation&quot;</span><span class="p">,</span> <span class="s2">&quot;importance&quot;</span><span class="p">,</span> <span class="s2">&quot;clustering&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="s2">&quot;none&quot;</span> <span class="ow">in</span> <span class="n">args_</span><span class="o">.</span><span class="n">feature_analysis</span> <span class="ow">or</span> <span class="s2">&quot;deprecated&quot;</span> <span class="o">==</span> <span class="n">args_</span><span class="o">.</span><span class="n">feature_analysis</span><span class="p">:</span>
+            <span class="n">feature_analysis</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">feature_analysis</span> <span class="o">=</span> <span class="n">args_</span><span class="o">.</span><span class="n">feature_analysis</span>
+
+        <span class="k">if</span> <span class="n">args_</span><span class="o">.</span><span class="n">parameter_importance</span> <span class="o">!=</span> <span class="s1">&#39;deprecated&#39;</span> <span class="ow">or</span> <span class="n">args_</span><span class="o">.</span><span class="n">feature_analysis</span> <span class="o">!=</span> <span class="s1">&#39;deprecated&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="s2">&quot;The flags --parameter_importance and --feature_importance have been replaced &quot;</span>
+                                     <span class="s2">&quot;with the --only / --skip flag-combination. Please see the changelog or &quot;</span>
+                                     <span class="s2">&quot;documentation for more information. You probably want: &quot;</span>
+                                     <span class="s2">&quot;--only </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">param_imp</span> <span class="o">+</span> <span class="n">feature_analysis</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="n">args_</span><span class="o">.</span><span class="n">deprecated</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="s2">&quot;The --no_[analysis_name] flag is deprecated.&quot;</span>
+                                     <span class="s2">&quot;Please use --only and --skip flags to define what analysis methods to use.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CaveCLI._add_deprecated"><a class="viewcode-back" href="../../apidoc/cave.cave_cli.html#cave.cave_cli.CaveCLI._add_deprecated">[docs]</a>    <span class="k">def</span> <span class="nf">_add_deprecated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dep_opts</span><span class="p">,</span> <span class="n">map_options</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Delete this function after 1.3.4 release &quot;&quot;&quot;</span>
+        <span class="c1"># Some choice-blocks, that can be reused throughout the CLI  # deprecated after 1.3.4</span>
+        <span class="n">p_choices</span> <span class="o">=</span> <span class="p">[</span>  <span class="c1"># deprecated after 1.3.4</span>
+            <span class="s2">&quot;all&quot;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+            <span class="s2">&quot;ablation&quot;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+            <span class="s2">&quot;forward_selection&quot;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+            <span class="s2">&quot;fanova&quot;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+            <span class="s2">&quot;lpi&quot;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+            <span class="s2">&quot;none&quot;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+            <span class="s2">&quot;deprecated&quot;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+        <span class="p">]</span>  <span class="c1"># deprecated after 1.3.4</span>
+        <span class="n">p_sort_by_choices</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;average&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">p_choices</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># deprecated after 1.3.4</span>
+        <span class="n">f_choices</span> <span class="o">=</span> <span class="p">[</span>  <span class="c1"># deprecated after 1.3.4</span>
+            <span class="s2">&quot;all&quot;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+            <span class="s2">&quot;box_violin&quot;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+            <span class="s2">&quot;correlation&quot;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+            <span class="s2">&quot;clustering&quot;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+            <span class="s2">&quot;importance&quot;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+            <span class="s2">&quot;none&quot;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+            <span class="s2">&quot;deprecated&quot;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+        <span class="p">]</span>  <span class="c1"># deprecated after 1.3.4</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">map_options</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">dep_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--no_&#39;</span> <span class="o">+</span> <span class="n">key</span><span class="p">,</span>
+                                  <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                                  <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;deprecated&#39;</span><span class="p">)</span>
+
+        <span class="n">dep_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--parameter_importance&quot;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+                              <span class="n">default</span><span class="o">=</span><span class="s1">&#39;deprecated&#39;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+                              <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;raw|what kind of parameter importance method to &quot;</span>  <span class="c1"># deprecated after 1.3.4</span>
+                                   <span class="s2">&quot;use. Choose any combination of</span><span class="se">\n</span><span class="s2">[&quot;</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p_choices</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;] or set it to &quot;</span>  <span class="c1"># deprecated after 1.3.4</span>
+                                                                                                      <span class="s2">&quot;all/none&quot;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+                              <span class="n">choices</span><span class="o">=</span><span class="n">p_choices</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+                              <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span>  <span class="c1"># deprecated after 1.3.4</span>
+        <span class="n">dep_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--feature_analysis&quot;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+                              <span class="n">default</span><span class="o">=</span><span class="s1">&#39;deprecated&#39;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+                              <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;raw|what kind of feature analysis methods to use. &quot;</span>  <span class="c1"># deprecated after 1.3.4</span>
+                                   <span class="s2">&quot;Choose any combination of</span><span class="se">\n</span><span class="s2">[&quot;</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f_choices</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;] or set it to &quot;</span>  <span class="c1"># deprecated after 1.3.4</span>
+                                                                                                 <span class="s2">&quot;all/none&quot;</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+                              <span class="n">choices</span><span class="o">=</span><span class="n">f_choices</span><span class="p">,</span>  <span class="c1"># deprecated after 1.3.4</span>
+                              <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span>  <span class="c1"># deprecated after 1.3.4</span></div></div>
+
 
 <div class="viewcode-block" id="entry_point"><a class="viewcode-back" href="../../apidoc/cave.cave_cli.html#cave.cave_cli.entry_point">[docs]</a><span class="k">def</span> <span class="nf">entry_point</span><span class="p">():</span>
     <span class="n">cave</span> <span class="o">=</span> <span class="n">CaveCLI</span><span class="p">()</span>
