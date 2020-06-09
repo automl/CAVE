@@ -6,6 +6,10 @@
 * Add two mutually exclusive flags `--[skip|only] [analysis_name]` to activate / skip specific analysis methods
 * Remove `--pimp_sort_table_by` flag (table is sortable interactively now so no need)
 
+## Major changes
+
+* Drop support for Python 3.5, Add support for Python 3.7 and 3.8
+
 ## Minor changes
 
 * Change name of scatter plot from "Scatterplot" to "Scatter Plot"
