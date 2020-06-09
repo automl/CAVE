@@ -187,12 +187,16 @@ class CaveCLI(object):
         default_opts = parser.add_mutually_exclusive_group()
         default_opts.add_argument("--only",
                                   nargs='*',
-                                  help='perform only these analysis methods',
+                                  help='perform only these analysis methods. choose from: {}'.format(
+                                      ", ".join(sorted(map_options.keys()))
+                                  ),
                                   default=[],
                                   )
         default_opts.add_argument("--skip",
                                   nargs='*',
-                                  help='perform all but these analysis methods',
+                                  help='perform all but these analysis methods. choose from: {}'.format(
+                                      ", ".join(sorted(map_options.keys()))
+                                  ),
                                   default=[]
                                   )
 
