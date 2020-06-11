@@ -312,7 +312,8 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">rh2EPM</span> <span class="o">=</span> <span class="n">RunHistory2EPM4Cost</span><span class="p">(</span><span class="n">scenario</span><span class="o">=</span><span class="n">scenario</span><span class="p">,</span>
                                      <span class="n">num_params</span><span class="o">=</span><span class="n">num_params</span><span class="p">,</span>
-                                     <span class="n">success_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">success_states</span><span class="o">=</span><span class="p">[</span>
+                                         <span class="n">StatusType</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">,</span> <span class="p">],</span>
                                      <span class="n">impute_censored_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                      <span class="n">impute_state</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">rh2EPM</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">runhistory</span><span class="p">)</span>
