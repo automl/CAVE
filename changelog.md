@@ -9,6 +9,7 @@
 ## Major changes
 
 * Drop support for Python 3.5, Add support for Python 3.7 and 3.8
+* Add support for SMAC 0.12.1 and 0.12.2
 
 ## Minor changes
 

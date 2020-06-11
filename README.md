@@ -67,25 +67,25 @@ Optional:
   when using `--skip` CAVE runs all *except* those, when using `--only` CAVE runs *only* those specified.
   `--skip` and `--only` are mutually exclusive.
   Legal values are e.g.:
-  ablation,
-  algorithm_footprints,
-  bohb_learning_curves,
-  box_violin,
-  budget_correlation,
-  clustering,
-  configurator_footprint,
-  correlation,
-  cost_over_time,
-  ecdf,
-  fanova,
-  forward_selection,
-  importance,
-  incumbents_over_budgets,
-  local_parameter_importance,
-  lpi,
-  parallel_coordinates,
-  performance_table,
-  scatter_plot
+   * ablation
+   * algorithm_footprints
+   * bohb_learning_curves
+   * box_violin
+   * budget_correlation
+   * clustering
+   * configurator_footprint
+   * correlation
+   * cost_over_time
+   * ecdf
+   * fanova
+   * forward_selection
+   * importance
+   * incumbents_over_budgets
+   * local_parameter_importance
+   * lpi
+   * parallel_coordinates
+   * performance_table
+   * scatter_plot
 - `--cfp_time_slider`: `on` will add a time-slider to the interactive configurator footprint which will result in longer loading times, `off` will generate static png's at the desired quantiles
 - `--cfp_number_quantiles`: determines how many time-steps to prerender from in the configurator footprint
 - `--cot_inc_traj`: how the incumbent trajectory for the cost-over-time plot will be generated if the optimizer is BOHB (from [`racing`, `minimum`, `prefer_higher_budget`])
