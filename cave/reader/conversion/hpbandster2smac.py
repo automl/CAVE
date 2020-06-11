@@ -268,6 +268,7 @@ class HpBandSter2SMAC(BaseConverter):
             incumbent = rh.ids_config[incumbent_id]
             time = element["time_finished"]
             loss = element["loss"]
+            budget = element["budget"]
 
             if loss > last_loss:
                 continue
@@ -276,7 +277,7 @@ class HpBandSter2SMAC(BaseConverter):
             ta_time_used = -1
             wallclock_time = time
             train_perf = loss
-            # add
+            # add to trajectory, imitate `add_entry` method of SMAC's traj_logger
             traj_logger.trajectory.append({
                 'cpu_time' : ta_time_used,
                 'total_cpu_time' : None,
@@ -284,6 +285,13 @@ class HpBandSter2SMAC(BaseConverter):
                 "evaluations" : ta_runs,
                 "cost" : train_perf,
                 "incumbent" : incumbent,
+                "budget" : budget
             })
-            traj_logger._add_in_alljson_format(train_perf, incumbent_id, incumbent, ta_time_used, wallclock_time)
+            traj_logger._add_in_alljson_format(train_perf,
+                                               incumbent_id,
+                                               incumbent,
+                                               budget,
+                                               ta_time_used,
+                                               wallclock_time,
+                                               )
         return traj_logger.trajectory

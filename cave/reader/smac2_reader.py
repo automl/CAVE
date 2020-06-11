@@ -209,6 +209,7 @@ class SMAC2Reader(BaseReader):
             new_entry["evaluations"] = -1
             new_entry["cost"] = row["Estimated Training Performance"]
             new_entry["incumbent"] = self.id_to_config[row["Incumbent ID"]]
+            new_entry["budget"] = 0  # No budget-support for SMAC2!
             traj.append(new_entry)
         csv_data.apply(add_to_traj, axis=1)
         return traj

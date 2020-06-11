@@ -178,11 +178,13 @@ class CSV2SMAC(BaseConverter):
                 "evaluations" : int(row['evaluations']),
                 "cost" : float(row["cost"]),
                 "incumbent" : self.id_to_config[row["config_id"]],
+                "budget": float(row["budget"]) if "budget" in row else 0,
             }
             traj_logger.trajectory.append(new_entry)
             traj_logger._add_in_alljson_format(train_perf=new_entry['cost'],
                                                incumbent_id=row['config_id'],
                                                incumbent=new_entry['incumbent'],
+                                               budget=new_entry['budget'],
                                                ta_time_used=new_entry['cpu_time'],
                                                wallclock_time=new_entry['wallclock_time'],
                                                )
