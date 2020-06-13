@@ -9,7 +9,8 @@
 ## Major changes
 
 * Drop support for Python 3.5, Add support for Python 3.7 and 3.8
-* Add support for SMAC 0.12.1 and 0.12.2
+* Drop support for SMAC 0.12.0, Add support for SMAC 0.12.1 and 0.12.2
+* Distinguish between per-parallel-run and per-budget meta information (#270)
 
 ## Minor changes
 
