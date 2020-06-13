@@ -19,7 +19,7 @@ You can then use any of CAVE's methods to analyze the loaded results by simply u
 
 .. code-block:: python
 
-    cave.performance_table()
+    cave.parallel_coordinates()
 
 This also holds for budget-based optimizers.
 

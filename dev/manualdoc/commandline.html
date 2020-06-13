@@ -249,40 +249,54 @@ while the explicit call with <cite>–folders</cite> is still supported, CAVE wi
 <p>Meta-parameters:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">--output</span></code>: where to save the CAVE-output</p></li>
-<li><p>(<code class="docutils literal notranslate"><span class="pre">--file_format</span></code>): (deprecated, should be detected automatically) only use this if automatic file format detection fails. choose from <a class="reference external" href="https://github.com/automl/SMAC3">SMAC3</a>, <a class="reference external" href="https://www.cs.ubc.ca/labs/beta/Projects/SMAC">SMAC2</a>,
-<a class="reference external" href="fileformats.html#csv">CSV</a> or <a class="reference external" href="https://github.com/automl/HpBandSter">BOHB</a>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--validation_format</span></code>: (deprecated, should be detected automatically) of (optional) validation data (to enhance epm-quality where appropriate), choose from
-<a class="reference external" href="https://github.com/automl/SMAC3">SMAC3</a>, <a class="reference external" href="https://www.cs.ubc.ca/labs/beta/Projects/SMAC">SMAC2</a>,
-<a class="reference external" href="fileformats.html#csv">CSV</a> or None.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--ta_exec_dir</span></code>: only relevant when using scenario-files that redirect to relative files.
 path to the execution-directory of the configurator run. <cite>ta_exec_dir</cite> is the path from
 which the scenario is loaded, so the instance-/pcs-files specified in the
 scenario, so they are relative to this path
 (e.g. ‘ta_exec_dir/path_to_train_inst_specified_in_scenario.txt’).</p></li>
+<li><p>(<code class="docutils literal notranslate"><span class="pre">--file_format</span></code>): (deprecated, should be detected automatically) only use this if automatic file format detection fails. choose from <a class="reference external" href="https://github.com/automl/SMAC3">SMAC3</a>, <a class="reference external" href="https://www.cs.ubc.ca/labs/beta/Projects/SMAC">SMAC2</a>,
+<a class="reference external" href="fileformats.html#csv">CSV</a> or <a class="reference external" href="https://github.com/automl/HpBandSter">BOHB</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--validation_format</span></code>: (deprecated, should be detected automatically) of (optional) validation data (to enhance epm-quality where appropriate), choose from
+<a class="reference external" href="https://github.com/automl/SMAC3">SMAC3</a>, <a class="reference external" href="https://www.cs.ubc.ca/labs/beta/Projects/SMAC">SMAC2</a>,
+<a class="reference external" href="fileformats.html#csv">CSV</a> or None.</p></li>
 </ul>
 <p>Analysis-control (what methods to use in what way):</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">--parameter_importance</span></code>: calculating parameter importance is expensive, so you can
-specify which plots you desire: <cite>ablation</cite>, <cite>forward_selection</cite>, <cite>fanova</cite>
-and/or <cite>lpi</cite>.
-either provide a combination of those or use <cite>all</cite> or <cite>none</cite></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--feature_analysis</span></code>: analysis of features is expensive, so you can specify which
-algorithm to run: <cite>box_violin</cite>, <cite>clustering</cite>, <cite>importance</cite> and/or <cite>correlation</cite>.
-either provide a combination of those or use <cite>all</cite> or <cite>none</cite></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--no_performance_table</span></code>: toggles the tabular analysis</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--no_ecdf</span></code>, <code class="docutils literal notranslate"><span class="pre">--no_scatter_plots</span></code>: toggle ecdf- and scatter-plots</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--no_cost_over_time</span></code>: toggles the cost-over-time plot</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--no_parallel_coordinates</span></code>: toggles the parallel-coordinates plot</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--no_configurator_footprint</span></code>: toggles the configurator-footprints</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--no_algorithm_footprints</span></code>: toggles the algorithm-footprints</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--cfp_time_slider</span></code>: how to display the over-time development of the configurator footprint, choose from <cite>off</cite> (which yields only the final interactive plot), <cite>static</cite> (which yields a number of <cite>.png`s to click through), `online</cite> (which generates a time-slider-widget - might be slow interaction on big data) and <cite>prerender</cite> (which also generates time-slider, but large file with low interaction time)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--cfp_number_quantiles</span></code>: if time-slider for configurator footprints is not <cite>off</cite>, determines the number of different quantiles to look at</p></li>
+<li><p><cite>–skip</cite> and <cite>–only</cite>: specify any number of analyzing methods here.
+when using <cite>–skip</cite> CAVE runs all <em>except</em> those, when using <cite>–only</cite> CAVE runs <em>only</em> those specified.
+<cite>–skip</cite> and <cite>–only</cite> are mutually exclusive.
+Legal values include:</p>
+<ul>
+<li><p>ablation</p></li>
+<li><p>algorithm_footprints</p></li>
+<li><p>bohb_learning_curves</p></li>
+<li><p>box_violin</p></li>
+<li><p>budget_correlation</p></li>
+<li><p>clustering</p></li>
+<li><p>configurator_footprint</p></li>
+<li><p>correlation</p></li>
+<li><p>cost_over_time</p></li>
+<li><p>ecdf</p></li>
+<li><p>fanova</p></li>
+<li><p>forward_selection</p></li>
+<li><p>importance</p></li>
+<li><p>incumbents_over_budgets</p></li>
+<li><p>local_parameter_importance</p></li>
+<li><p>lpi</p></li>
+<li><p>parallel_coordinates</p></li>
+<li><p>performance_table</p></li>
+<li><p>scatter_plot</p></li>
 </ul>
-<p>For a full view of the currently supported flags, see <cite>cave –help</cite>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If you analyze BOHB-results, you can only provide one folder.</p>
-</div>
+</li>
+</ul>
+<p>Some flags provide additional fine-tuning of the analysis methods:</p>
+<ul class="simple">
+<li><p><cite>–cfp_time_slider</cite>: <cite>on</cite> will add a time-slider to the interactive configurator footprint which will result in longer loading times, <cite>off</cite> will generate static png’s at the desired quantiles</p></li>
+<li><p><cite>–cfp_number_quantiles</cite>: determines how many time-steps to prerender from in the configurator footprint</p></li>
+<li><p><cite>–cot_inc_traj</cite>: how the incumbent trajectory for the cost-over-time plot will be generated if the optimizer is BOHB (from [<cite>racing</cite>, <cite>minimum</cite>, <cite>prefer_higher_budget</cite>])</p></li>
+</ul>
+<p>For a full list of the currently supported flags, see <cite>cave –help</cite>.
+<cite>cave –help</cite></p>
 </div>
 
 

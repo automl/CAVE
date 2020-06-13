@@ -39,9 +39,8 @@ Contents:
 
 
 
-CAVE is mainly written in Python 3 and continuously tested with Python 3.5 and 3.6.
-Its `Random Forest <https://github.com/automl/random_forest_run>`_ is written in
-C++11.
+CAVE is mainly written in Python 3 and continuously tested with Python 3.6 to 3.8.
+Its `Random Forest <https://github.com/automl/random_forest_run>`_ is written in C++11.
 
 
 .. Indices and tables
