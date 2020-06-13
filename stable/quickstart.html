@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Quickstart &mdash; CAVE 1.3.2 documentation</title>
+  <title>Quickstart &mdash; CAVE 1.3.3 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.3.2
+                1.3.3
               </div>
             
           
@@ -238,9 +238,10 @@
             
   <div class="section" id="quickstart">
 <h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
-<p>CAVE is designed to adapt to any given workflow. While it’s possible to generate a HTML-report via the commandline on a
-given result-folder, CAVE may also run in interactive mode, running <a class="reference external" href="apidoc/cave.cavefacade.html">individual analysis-methods</a> on demand. We provide a
-few examples to demonstrate this.
+<p>CAVE is designed to adapt to any given workflow.
+While it’s possible to generate a HTML-report via the commandline on a given result-folder,
+CAVE may also run in interactive mode, running <a class="reference external" href="apidoc/cave.cavefacade.html">individual analysis-methods</a> on demand.
+We provide a few examples to demonstrate this.
 Make sure you followed the <a class="reference external" href="installation.html">installation details</a> before starting.</p>
 <div class="section" id="analyse-existing-results-via-the-commandline">
 <h2>Analyse existing results via the commandline<a class="headerlink" href="#analyse-existing-results-via-the-commandline" title="Permalink to this headline">¶</a></h2>
@@ -249,7 +250,7 @@ Run</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cave examples/smac3/example_output/* --ta_exec_dir examples/smac3/ --output output/smac3_example
 </pre></div>
 </div>
-<p>to start the example.
+<p>to run the example.
 By default, CAVE will execute all parts of the analysis. To disable certain (timeconsuming) parts
 of the analysis, please see the section <a class="reference external" href="manualdoc/commandline.html">commandline-options</a>.</p>
 <p>Most importantly though: CAVE will process one or several paths to directories with configurator output.
@@ -270,7 +271,7 @@ To run the smac3-example (within a notebook):</p>
             <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;test_jupyter_smac&quot;</span><span class="p">,</span>
             <span class="n">ta_exec_dir</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;examples/smac3&quot;</span><span class="p">],</span>
            <span class="p">)</span>
-<span class="n">cave</span><span class="o">.</span><span class="n">performance_table</span><span class="p">()</span>
+<span class="n">cave</span><span class="o">.</span><span class="n">parallel_coordinates</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

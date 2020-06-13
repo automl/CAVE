@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Input Format &mdash; CAVE 1.3.2 documentation</title>
+  <title>Input Format &mdash; CAVE 1.3.3 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.3.2
+                1.3.3
               </div>
             
           
@@ -390,20 +390,23 @@ If you use <cite>instance_id</cite>-columns, the instance_ids must be the same t
 <blockquote>
 <div><table class="docutils align-default">
 <colgroup>
-<col style="width: 23%" />
-<col style="width: 14%" />
-<col style="width: 37%" />
-<col style="width: 26%" />
+<col style="width: 19%" />
+<col style="width: 11%" />
+<col style="width: 30%" />
+<col style="width: 21%" />
+<col style="width: 19%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>cpu_time</p></th>
 <th class="head"><p>cost</p></th>
 <th class="head"><p>wallclock_time</p></th>
 <th class="head"><p>incumbent</p></th>
+<th class="head"><p>(budget)</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>…</p></td>
+<td><p>…</p></td>
 <td><p>…</p></td>
 <td><p>…</p></td>
 <td><p>…</p></td>
@@ -464,17 +467,19 @@ not needed. See below for example:</p>
 <blockquote>
 <div><table class="docutils align-default">
 <colgroup>
-<col style="width: 16%" />
-<col style="width: 10%" />
-<col style="width: 26%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
+<col style="width: 14%" />
 <col style="width: 8%" />
+<col style="width: 23%" />
+<col style="width: 14%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 7%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>cpu_time</p></th>
 <th class="head"><p>cost</p></th>
 <th class="head"><p>wallclock_time</p></th>
+<th class="head"><p>(budget)</p></th>
 <th class="head"><p>parameter1</p></th>
 <th class="head"><p>parameter2</p></th>
 <th class="head"><p>…</p></th>
@@ -487,6 +492,7 @@ not needed. See below for example:</p>
 <td><p>…</p></td>
 <td><p>…</p></td>
 <td><p>…</p></td>
+<td><p>…</p></td>
 </tr>
 </tbody>
 </table>
@@ -494,6 +500,7 @@ not needed. See below for example:</p>
 </div>
 <div class="section" id="id3">
 <h2><em>SMAC2</em><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p><strong>NOTE</strong> <em>The SMAC2 format is not extensively tested, but expected to work. If you experience any problems, please report them to CAVE’s issue tracker.</em></p>
 <p>Relevant files for the analysis of <em>SMAC2</em> (relative to the specified
 folder with ??? as wildcards for digits) are:</p>
 <ul class="simple">
