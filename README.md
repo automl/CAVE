@@ -1,9 +1,11 @@
-Status for master branch / development branch:
-
-[![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=master)](https://travis-ci.org/automl/CAVE) / [![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=development)](https://travis-ci.org/automl/CAVE)
-
 # CAVE
-CAVE is a versatile analysis tool for automatic algorithm configurators. It generates comprehensive reports (e.g. http://ml.informatik.uni-freiburg.de/~biedenka/cave.html) to
+## Configuration Assessment, Visualization and Evaluation
+
+| master ([docs](https://automl.github.io/CAVE/stable/)) | development ([docs](https://automl.github.io/CAVE/dev/)) |
+| --- | --- |
+| [![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=master)](https://travis-ci.org/automl/CAVE) | [![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=development)](https://travis-ci.org/automl/CAVE) |   |
+
+CAVE is a versatile analysis tool for automatic algorithm configurators. It generates comprehensive reports to
 give insights into the configured algorithm, the instance/feature set and also the configuration tool itself.
 
 The current version works out-of-the-box with [BOHB](https://github.com/automl/HpBandSter) and [SMAC3](https://github.com/automl/SMAC3), but can be easily adapted to other configurators: either add a custom reader or use [the CSV-Reader](https://automl.github.io/CAVE/stable/manualdoc/fileformats.html#csv) integrated in CAVE.
@@ -14,21 +16,28 @@ If you use this tool, please [cite us](#license).
 If you have feature requests or encounter bugs, feel free to contact us via the issue-tracker.
 
 # OVERVIEW 
-CAVE is an analysis tool.
-It is written in Python 3.6 and uses [SMAC3](https://github.com/automl/SMAC3), [pimp](https://github.com/automl/ParameterImportance),  and [ConfigSpace](https://github.com/automl/ConfigSpace).  
-CAVE generates performance-values (e.g. PAR10), scatter- and cdf-plots to compare the default and the optimized incumbent and provides further inside into the optimization process by quantifying the parameter- and feature-importance.  
-CAVE also generates configurator footprints to get a grip on the search behaviour of the configurator and many budget-based analyses.  
-CAVE integrates seamlessly with [jupyter-notebooks](https://github.com/automl/CAVE/blob/master/examples/cave_notebook.ipynb).
+CAVE is an analysis tool for algorithm configurators.
+The results of an algorithm configurator, e.g. SMAC or BOHB, are processed and visualized to elevate the understanding of the optimization.
+
+It is written in Python 3 and builds on [SMAC3](https://github.com/automl/SMAC3), [pyimp](https://github.com/automl/ParameterImportance),  and [ConfigSpace](https://github.com/automl/ConfigSpace).  
+
+Core features:
+  * insights into optimization process by comparison of evolution of configurations over time and budgets
+  * scatter- and cdf-plots to compare the default and the optimized incumbent and relate to the instance features
+  * quantifying parameter- and feature-importance using fANOVA, ablation or local parameter importance  
+  * interactive configurator footprints and parallel coordinate plots to get a grip on the search behaviour of the configurator
+  * using additional data generated in validation to improve performance estimations
+  * seamlessly integration with [jupyter-notebooks](https://github.com/automl/CAVE/blob/master/examples/cave_notebook.ipynb)
 
 # REQUIREMENTS
 - Python 3.6
-- SMAC3 and all its dependencies
-- ParameterImportance and all its dependencies
-- HpBandSter and all its dependencies
+- [SMAC3](https://github.com/automl/SMAC3)
+- [pyimp](https://github.com/automl/ParameterImportance)
+- [ConfigSpace](https://github.com/automl/ConfigSpace)
+- [HpBandSter](https://github.com/automl/HpBandSter)
 - everything specified in requirements.txt
 
 Some of the plots in the report are generated using [bokeh](https://bokeh.pydata.org/en/latest/). To automagically export them as `.png`s, you need to also install [phantomjs-prebuilt](https://www.npmjs.com/package/phantomjs-prebuilt). CAVE will run without it, but you will need to manually export the plots if you wish to use them (which is easily done through a button in the report).
-
 
 # INSTALLATION
 You can install CAVE via pip:
@@ -39,34 +48,47 @@ or clone the repository and install requirements into your virtual environment.
 ```
 git clone https://github.com/automl/CAVE.git && cd CAVE
 pip install -r requirements.txt
+python3 setup.py install  # (or: python3 setup.py develop)
 ```
-To have some `.png`s automagically available, you also need phantomjs.
+Optional: To have some `.png`s automagically available, you also need phantomjs.
 ```
 npm install phantomjs-prebuilt
 ```
 
 # USAGE
-Have a look at the [documentation](https://automl.github.io/CAVE/stable/) of CAVE. Here a little Quickstart-Guide for the CLI.
+Have a look at the [docs](https://automl.github.io/CAVE/stable/) of CAVE for details. Here a little Quickstart-Guide.
 
-You can analyze results of an optimizer in one or multiple folders (that are generated with the same scenario, i.e. parallel runs).
-Provide paths to all the individual parallel results using `--folders`.
+There are two ways to use CAVE: via the commandline (CLI) or in a jupyter-notebook / python script.
 
-Some helpful commandline arguments:
-- `--folders`: path(s) to folder(s) containing the configurator-output (works with `output/run_*`)
+## Jupyter-Notebooks / Python
 
-**NOTE:** *the keyword `--folders` is optional, CAVE interprets positional arguments in the commandline as folders of parallel runs*
+Using CAVE in your scripts is very similar to using CAVE in a jupyter-notebook.
+Take a look at [the demo](https://github.com/automl/CAVE/blob/master/examples/cave_notebook.ipynb).
 
-Optional:
+## CLI
+
+You can analyze results of an optimizer in one or multiple folders (multiple folders assume the same scenario, i.e. parallel runs within a single optimization).
+CAVE generates a HTML-report with all the specified analysis methods.
+Provide paths to all the individual parallel results.
+
+```
+cave /path/to/configurator/output
+```
+
+**NOTE:** *CAVE supports [glob](https://docs.python.org/3/library/glob.html) like path-expansion (as in `output/run_*` for multiple folders starting with `output/run(...)`*
+
+**NOTE:** *the `--folders`-flag is optional, CAVE interprets positional arguments in the commandline as folders of parallel runs*
+
+Important optional flags:
 - `--output`: where to save the CAVE-output
-- `--file_format`: if the automatic file-detection fails for some reason, choose from [SMAC3](https://github.com/automl/SMAC3), [SMAC2](https://www.cs.ubc.ca/labs/beta/Projects/SMAC), [CSV](https://automl.github.io/CAVE/stable/quickstart.html#csv) or [BOHB](https://github.com/automl/HpBandSter)
-- `--validation_format`: of (optional) validation data (to enhance epm-quality where appropriate), choose from [SMAC3](https://github.com/automl/SMAC3), [SMAC2](https://www.cs.ubc.ca/labs/beta/Projects/SMAC), [CSV](https://automl.github.io/CAVE/stable/quickstart.html#csv) or NONE
 - `--ta_exec_dir`: target algorithm execution directories, this should be one or multiple path(s) to
-  the directories from which the configurator was run initially. not necessary for all configurators (e.g. BOHB doesn't need it). used to find instance-files and
-  if necessary execute the `algo`-parameter of the SMAC-scenario (DEFAULT: current working directory)
+  the directories from which the configurator was run initially.
+  Not necessary for all configurators (mainly SMAC needs it).
+  Used to find instance-files and if necessary execute the `algo`-parameter of the SMAC-scenario (DEFAULT: current working directory)
 - `--skip` and `--only`: specify any number of analyzing methods here.
   when using `--skip` CAVE runs all *except* those, when using `--only` CAVE runs *only* those specified.
   `--skip` and `--only` are mutually exclusive.
-  Legal values are e.g.:
+  Legal values include:
    * ablation
    * algorithm_footprints
    * bohb_learning_curves
@@ -86,33 +108,44 @@ Optional:
    * parallel_coordinates
    * performance_table
    * scatter_plot
+
+Some flags provide additional fine-tuning of the analysis methods:
+
 - `--cfp_time_slider`: `on` will add a time-slider to the interactive configurator footprint which will result in longer loading times, `off` will generate static png's at the desired quantiles
 - `--cfp_number_quantiles`: determines how many time-steps to prerender from in the configurator footprint
 - `--cot_inc_traj`: how the incumbent trajectory for the cost-over-time plot will be generated if the optimizer is BOHB (from [`racing`, `minimum`, `prefer_higher_budget`])
 
 For a full list and further information on how to use CAVE, see:
-`cave -h`
+`cave --help`
 
-# EXAMPLE
-## SMAC3
-Run CAVE on SMAC3-data for the spear-qcp example:
+### EXAMPLE
+#### SMAC3
+Run CAVE on SMAC3-data for the spear-qcp example, skipping budget-correlation:
 ```
-cave examples/smac3/example_output/* --ta_exec_dir examples/smac3/ --output output/smac3_example
+cave examples/smac3/example_output/* --ta_exec_dir examples/smac3/ --output output/smac3_example --skip budget_correlation
 ```
-This will analyze the results located in `examples/smac3` in the dirs `example_output/run_1` and `example_output/run_2`.
-The report is located in `CAVE_results/report.html`.
+This analyzes the results located in `examples/smac3` in the directories `example_output/run_1` and `example_output/run_2`.
+The resulting report is located in `CAVE_results/report.html`. View it in your favourite browser.
 `--ta_exec_dir` corresponds to the folder from which the optimizer was originally executed (used to find the necessary files for loading the `scenario`).
-For other formats, e.g.:
+
+#### BOHB
+You can also use CAVE with configurators that use budgets to estimate a quality of a certain algorithm (e.g. epochs in neural networks).
+A good example for this behaviour is [BOHB](https://github.com/automl/HpBandSter).
+To call it, for exemplary purposes only on a selection of analyzers, run:
+```
+cave examples/bohb --output output/bohb_example --only fanova ablation budget_correlation parallel_coordinates
+```
+
+#### CSV
+All your favourite configurators can be processed using [this simple CSV-format](https://automl.github.io/CAVE/stable/manualdoc/fileformats.html#csv).
+```
+cave examples/csv_allinone/run_* --ta_exec_dir examples/csv_allinone/ --output output/csv_example
+```
+
+#### SMAC2
+The legacy format of SMAC2 is still supported, though not extensively tested
 ```
 cave examples/smac2/ --ta_exec_dir examples/smac2/smac-output/aclib/state-run1/ --output output/smac2_example
-cave examples/csv_allinone/ --ta_exec_dir examples/csv_allinone/ --output output/csv_example
-```
-
-## BOHB
-You can also use CAVE with configurators that use budgets to estimate a quality of a certain algorithm (e.g. epochs in
-neural networks), a good example for this behaviour is [BOHB](https://github.com/automl/HpBandSter).
-```
-cave examples/bohb --output output/bohb_example
 ```
 
 # LICENSE 
@@ -134,6 +167,4 @@ If you use out tool, please cite us:
     date    = {2019},
 }
 ```
-
-
 
