@@ -6,7 +6,7 @@ Installation
 Requirements
 ------------
 The random forest used in CAVE depends on a C++11 compatible compiler
-and on SWIG (>3.0).
+and on SWIG (3.0).
 
 To install both requirements system-wide on a linux system with apt, 
 please call:

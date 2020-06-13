@@ -340,22 +340,19 @@ class CaveCLI(object):
         for key in map_options.keys():
             dep_opts.add_argument('--no_' + key,
                                   action='store_true',
-                                  dest='deprecated')
+                                  dest='deprecated',
+                                  help=SUPPRESS)
 
         dep_opts.add_argument("--parameter_importance",  # deprecated after 1.3.4
                               default='deprecated',  # deprecated after 1.3.4
                               nargs='+',  # deprecated after 1.3.4
-                              help="raw|what kind of parameter importance method to "  # deprecated after 1.3.4
-                                   "use. Choose any combination of\n[" + ', '.join(p_choices[1:-1]) + "] or set it to "  # deprecated after 1.3.4
-                                                                                                      "all/none",  # deprecated after 1.3.4
+                              help=SUPPRESS,
                               choices=p_choices,  # deprecated after 1.3.4
                               type=str.lower)  # deprecated after 1.3.4
         dep_opts.add_argument("--feature_analysis",  # deprecated after 1.3.4
                               default='deprecated',  # deprecated after 1.3.4
                               nargs='+',  # deprecated after 1.3.4
-                              help="raw|what kind of feature analysis methods to use. "  # deprecated after 1.3.4
-                                   "Choose any combination of\n[" + ', '.join(f_choices[1:-1]) + "] or set it to "  # deprecated after 1.3.4
-                                                                                                 "all/none",  # deprecated after 1.3.4
+                              help=SUPPRESS,
                               choices=f_choices,  # deprecated after 1.3.4
                               type=str.lower)  # deprecated after 1.3.4
 

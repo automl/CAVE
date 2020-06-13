@@ -108,6 +108,9 @@ not needed. See below for example:
 
 *SMAC2*
 ~~~~~~~
+
+**NOTE** *The SMAC2 format is not extensively tested, but expected to work. If you experience any problems, please report them to CAVE's issue tracker.*
+
 Relevant files for the analysis of *SMAC2* (relative to the specified
 folder with ??? as wildcards for digits) are:
 
