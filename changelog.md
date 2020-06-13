@@ -1,3 +1,21 @@
+# 1.3.3
+
+## Interface changes
+
+* Deprecate deactivation of individual analysis methods using the `--no_[analysis_name]` flag
+* Add two mutually exclusive flags `--[skip|only] [analysis_name]` to activate / skip specific analysis methods
+* Remove `--pimp_sort_table_by` flag (table is sortable interactively now so no need)
+
+## Major changes
+
+* Drop support for Python 3.5, Add support for Python 3.7 and 3.8
+* Drop support for SMAC 0.12.0, Add support for SMAC 0.12.1 and 0.12.2
+* Distinguish between per-parallel-run and per-budget meta information (#270)
+
+## Minor changes
+
+* Change name of scatter plot from "Scatterplot" to "Scatter Plot"
+
 # 1.3.2
 
 ## Bug fixes

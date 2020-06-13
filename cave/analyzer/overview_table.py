@@ -19,14 +19,7 @@ class OverviewTable(BaseAnalyzer):
         super().__init__(runscontainer)
         self.output_dir = runscontainer.output_dir
 
-        html_table_general, html_table_specific, html_table_cs = self.run()
-        self.result["General"] = {"table": html_table_general,
-                                  "tooltip": "General information about the optimization scenario."}
-        self.result["Run-Specific"] = {"table": html_table_specific,
-                                       "tooltip": "Information to specific runs (if there are multiple runs). Interesting "
-                                                  "for parallel optimizations or usage of budgets/fidelities."}
-        self.result["Configuration Space"] = {"table": html_table_cs,
-                                              "tooltip": "The parameter configuration space. (See github.com/automl/ConfigSpace)"}
+        self.run()
 
     def get_name(self):
         return "Meta Data"
@@ -40,21 +33,34 @@ class OverviewTable(BaseAnalyzer):
         html_table_general = DataFrame(data=OrderedDict([('General', general_dict)]))
         html_table_general = html_table_general.reindex(list(general_dict.keys()))
         html_table_general = html_table_general.to_html(escape=False, header=False, justify='left')
+        self.result["General"] = {"table": html_table_general,
+                                  "tooltip": "General information about the optimization scenario."}
 
         # Run-specific / budget specific infos
-        runs = self.runscontainer.get_aggregated(keep_folders=True, keep_budgets=False)
-        runspec_dict = self._runspec_dict(runs)
-        order_spec = list(list(runspec_dict.values())[0].keys())  # Get keys of any sub-dict for order
-        html_table_specific = DataFrame(runspec_dict)
-        html_table_specific = html_table_specific.reindex(order_spec)
-        html_table_specific = html_table_specific.to_html(escape=False, justify='left')
+        for mode in ['parallel', 'budget']:
+            runspec_dict = self._runspec_dict(identify=mode)
+            if not runspec_dict:
+                continue
+            order_spec = list(list(runspec_dict.values())[0].keys())  # Get keys of any sub-dict for order
+            html_table_specific = DataFrame(runspec_dict)
+            html_table_specific = html_table_specific.reindex(order_spec)
+            html_table_specific = html_table_specific.to_html(escape=False, justify='left')
+            if mode == 'parallel':
+                self.result["Parallel Runs"] = {"table": html_table_specific,
+                                                "tooltip": "Information to individual parallel runs."}
+            if mode == 'budget':
+                self.result["Budgets"] = {"table": html_table_specific,
+                                          "tooltip": "Statistics related to the budgets used in this optimization."}
 
         # ConfigSpace in tabular form
         cs_dict = self._configspace(scenario.cs)
         cs_table = DataFrame(data=cs_dict)
         html_table_cs = cs_table.to_html(escape=False, justify='left', index=False)
+        self.result["Configuration Space"] = {"table": html_table_cs,
+                                              "tooltip": "The parameter configuration space. "
+                                                         "(See github.com/automl/ConfigSpace)"}
 
-        return html_table_general, html_table_specific, html_table_cs
+        return self.result
 
     def _general_dict(self, scenario):
         """ Generate the meta-information that holds for all runs (scenario info etc)
@@ -67,13 +73,8 @@ class OverviewTable(BaseAnalyzer):
         # general stores information that holds for all runs, runspec holds information on a run-basis
         general = OrderedDict()
 
-        # TODO with multiple BOHB-run-integration
-        #    overview['Run with best incumbent'] = os.path.basename(best_run.folder)
-        #if num_conf_runs != 1:
-        #    overview['Number of configurator runs'] = num_conf_runs
-
         if len(self.runscontainer.get_budgets()) > 1:
-            general['# budgets'] = len(self.runscontainer.get_folders())
+            general['# budgets'] = len(self.runscontainer.get_budgets())
         if len(self.runscontainer.get_folders()) > 1:
             general['# parallel runs'] = len(self.runscontainer.get_folders())
 
@@ -100,14 +101,39 @@ class OverviewTable(BaseAnalyzer):
         if num_feats > 0:
             general['# features (duplicates)'] = "{} ({})".format(num_feats, num_dup_feats)
 
+        general['----------'] = '----------'
+
+        combined_run = self.runscontainer.get_aggregated(False, False)[0]
+        combined_stats = self._stats_for_run(combined_run.original_runhistory,
+                                             combined_run.scenario,
+                                             combined_run.incumbent)
+        for k, v in combined_stats.items():
+            general[k] = v
+
         return general
 
-    def _runspec_dict(self, runs):
+    def _runspec_dict(self, identify='parallel'):
+        """
+        identify-keyword specifies whether to use path or budget for name
+        """
+        if identify not in ['parallel', 'budget']:
+            raise ValueError("illegal use of _runspec_dict")
+        if (identify == 'budget' and len(self.runscontainer.get_budgets()) <= 1 and
+            (self.runscontainer.get_budgets() is None or self.runscontainer.get_budgets()[0] == 0.0)):
+            return False
+        if (identify == 'parallel' and len(self.runscontainer.get_folders()) <= 1):
+            return False
+
         runspec = OrderedDict()
+        runs = self.runscontainer.get_aggregated(keep_folders=identify=='parallel',
+                                                 keep_budgets=identify=='budget')
 
         for idx, run in enumerate(runs):
+            if identify == 'budget' and len(set(run.reduced_to_budgets)) != 1:
+                raise ValueError("Runs processed here should only have a single budget specified (%s)." %
+                                 run.reduced_to_budgets)
             self.logger.debug("Path to folder for run no. {}: {}".format(idx, str(run.path_to_folder)))
-            name = os.path.basename(run.path_to_folder)
+            name = os.path.basename(run.path_to_folder) if identify == 'parallel' else str(run.reduced_to_budgets[0])
             runspec[name] = self._stats_for_run(run.original_runhistory,
                                                 run.scenario,
                                                 run.incumbent)

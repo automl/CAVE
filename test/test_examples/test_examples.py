@@ -32,9 +32,7 @@ class TestExamples(unittest.TestCase):
 
         self.cavecli = CaveCLI()
         self.cave_output_dir = "test/test_files/output_tmp"
-        self.def_args_off = ["--parameter_importance", "none", "--feature_analysis", "none",
-                             "--no_ecdf", "--no_scatter_plots", "--no_cost_over_time",
-                             "--no_configurator_footprint", "--no_parallel_coordinates", "--no_algorithm_footprints",
+        self.def_args_off = ["--only",
                              "--output", self.cave_output_dir]
 
         self.output_dirs = [self.cave_output_dir]
@@ -89,13 +87,3 @@ class TestExamples(unittest.TestCase):
                         with mock.patch.object(CAVE, 'analyze', lambda *x, **y: None):
                             self.cavecli.main_cli()
 
-    def test_exceptions(self):
-        test_folder = "test/example_output/example_output/run_1"
-
-        testargs = ["scripts/cave",
-                    "--folders", test_folder,
-                    "--ta_exec", "test/example_output",
-                    "--pimp_sort_table_by", "fanova",
-                    "--parameter_importance", "ablation"]
-        with mock.patch.object(sys, 'argv', testargs):
-            self.assertRaises(ValueError, self.cavecli.main_cli)
