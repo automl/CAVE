@@ -4,10 +4,8 @@ import logging
 import os
 import re
 import shutil
-from collections import OrderedDict, Counter
+from collections import OrderedDict
 from traceback import print_exc
-
-from numpy import random
 
 from cave.__version__ import __version__ as version
 from cave.html.html_helpers import figure_to_html

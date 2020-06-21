@@ -201,6 +201,7 @@ class SMAC2Reader(BaseReader):
         csv_data = pd.DataFrame(np.delete(csv_data, np.s_[5:], axis=1), columns=header)
         csv_data = csv_data.apply(pd.to_numeric, errors='ignore')
         traj = []
+
         def add_to_traj(row):
             new_entry = {}
             new_entry['cpu_time'] = row['CPU Time Used']
