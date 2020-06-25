@@ -1,10 +1,10 @@
 import os
 from collections import OrderedDict
 
-from cave.analyzer.parameter_importance.cave_parameter_importance import CaveParameterImportance
+from cave.analyzer.parameter_importance.base_parameter_importance import BaseParameterImportance
 
 
-class CaveAblation(CaveParameterImportance):
+class Ablation(BaseParameterImportance):
     """ Ablation Analysis is a method to determine parameter importance by comparing two parameter configurations,
     typically the default and the optimized configuration.  It uses a greedy forward search to determine the order
     of flipping the parameter settings from default configuration to incumbent such that in each step the cost is

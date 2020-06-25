@@ -26,7 +26,7 @@ class FeatureAnalysis(object):
                  scenario,
                  feat_names,
                  feat_importance=None):
-        '''
+        """
         From: https://github.com/mlindauer/asapy
 
 
@@ -40,7 +40,7 @@ class FeatureAnalysis(object):
             names of features as list
         feat_importance: dict[str] -> float
             maps names to importance
-        '''
+        """
         self.logger = logging.getLogger("Feature Analysis")
         self.scenario = scenario
         self.feat_names = scenario.feature_names
@@ -60,18 +60,13 @@ class FeatureAnalysis(object):
             os.makedirs(self.output_dn)
 
     def get_box_violin_plots(self):
-        '''
-            for each feature generate a plot with box and vilion plot
-
-            Parameters
-            ----------
-            feat_names: list[str]
-                names of the features
+        """
+            for each feature generate a plot with box and violin plot
 
             Returns
             -------
             list of tuples of feature name and feature plot file name
-        '''
+        """
         self.logger.debug("Plotting box and violin plots........")
 
         files_ = []
@@ -137,9 +132,9 @@ class FeatureAnalysis(object):
         link = linkage(data * -1, 'ward')  # input is distance -> * -1
 
         sorted_features = [[a] for a in imp_features]
-        for l in link:
-            new_cluster = sorted_features[int(l[0])][:]
-            new_cluster.extend(sorted_features[int(l[1])][:])
+        for li in link:
+            new_cluster = sorted_features[int(li[0])][:]
+            new_cluster.extend(sorted_features[int(li[1])][:])
             sorted_features.append(new_cluster)
 
         sorted_features = sorted_features[-1]
@@ -197,9 +192,9 @@ class FeatureAnalysis(object):
         return out_plot
 
     def cluster_instances(self):
-        '''
-            use pca to reduce feature dimensions to 2 and cluster instances using k-means afterwards
-        '''
+        """
+        Use pca to reduce feature dimensions to 2 and cluster instances using k-means afterwards
+        """
         matplotlib.pyplot.close()
         self.logger.debug("Plotting clusters........")
         # impute missing data; probably already done, but to be on the safe

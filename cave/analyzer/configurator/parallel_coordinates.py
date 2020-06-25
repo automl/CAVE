@@ -85,7 +85,7 @@ class ParallelCoordinates(BaseAnalyzer):
         for budget, dataframe in self.data.items():
             plot = self._plot_budget(dataframe)
             if return_components:
-                result[budget] = {'bokeh' : components(plot)}
+                result[budget] = {'bokeh': components(plot)}
             else:
                 result[budget] = plot
 
@@ -164,7 +164,7 @@ class ParallelCoordinates(BaseAnalyzer):
                             importance[p].append(imp)
                         else:
                             importance[p] = [imp]
-            importance = {k : sum(v) / len(v) for k, v in importance.items()}
+            importance = {k: sum(v) / len(v) for k, v in importance.items()}
         elif self.pc_sort_by in param_imp:
             method, importance = self.pc_sort_by, param_imp[self.pc_sort_by]
         else:
@@ -190,9 +190,9 @@ class ParallelCoordinates(BaseAnalyzer):
             all_configs = sorted(all_configs,
                                  key=lambda c: len(original_rh.get_runs_for_config(c, only_max_observed_budget=False)))
             all_configs = all_configs[:max_configs]
-            if not default in all_configs:
+            if default not in all_configs:
                 all_configs = [default] + all_configs
-            if not incumbent in all_configs:
+            if incumbent not in all_configs:
                 all_configs.append(incumbent)
 
         # Get costs for those configurations
@@ -200,28 +200,28 @@ class ParallelCoordinates(BaseAnalyzer):
         epm_rh.update(validated_rh)
         if scenario.feature_dict:  # if instances are available
             epm_rh.update(timing(validator.validate_epm)(all_configs, 'train+test', 1, runhistory=validated_rh))
-        config_to_cost = OrderedDict({c : epm_rh.get_cost(c) for c in all_configs})
+        config_to_cost = OrderedDict({c: epm_rh.get_cost(c) for c in all_configs})
 
         data = OrderedDict()
         data['cost'] = list(config_to_cost.values())
         for hp in self.runscontainer.scenario.cs.get_hyperparameter_names():
-            data[hp] = np.array([c[hp] #if hp in c.get_dictionary() and not isinstance(c[hp], str) else np.nan
+            data[hp] = np.array([c[hp]  # if hp in c.get_dictionary() and not isinstance(c[hp], str) else np.nan
                                  for c in config_to_cost.keys()])
         df = pd.DataFrame(data=data)
         return df
 
     def _plot_budget(self, df):
-        limits = OrderedDict([('cost', {'lower' : df['cost'].min(),
-                                        'upper' : df['cost'].max()})])
+        limits = OrderedDict([('cost', {'lower': df['cost'].min(),
+                                        'upper': df['cost'].max()})])
         for hp in self.runscontainer.scenario.cs.get_hyperparameters():
             if isinstance(hp, NumericalHyperparameter):
-                limits[hp.name] = {'lower' : hp.lower, 'upper' : hp.upper}
+                limits[hp.name] = {'lower': hp.lower, 'upper': hp.upper}
                 if hp.log:
                     limits[hp.name]['log'] = True
             elif isinstance(hp, CategoricalHyperparameter):
                 # We pass strings as numbers and overwrite the labels
-                df[hp.name].replace({v : i for i, v in enumerate(hp.choices)}, inplace=True)
-                limits[hp.name] = {'lower' : 0, 'upper': len(hp.choices) - 1, 'choices' : hp.choices}
+                df[hp.name].replace({v: i for i, v in enumerate(hp.choices)}, inplace=True)
+                limits[hp.name] = {'lower': 0, 'upper': len(hp.choices) - 1, 'choices': hp.choices}
             else:
                 raise ValueError("Hyperparameter %s of type %s causes undefined behaviour." % (hp.name, type(hp)))
         p = parallel_plot(df=df, axes=limits, color=df[df.columns[0]], palette=Viridis256)
@@ -232,6 +232,6 @@ class ParallelCoordinates(BaseAnalyzer):
     def get_html(self, d=None, tooltip=None):
         result = self.plot_bokeh(return_components=True)
         if d is not None:
-            result["tooltip"] =  self.__doc__
+            result["tooltip"] = self.__doc__
             d["Parallel Coordinates"] = result
         return result

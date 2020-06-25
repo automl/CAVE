@@ -22,7 +22,7 @@ class FeatureImportance(BaseAnalyzer):
                 output_dir=run.output_dir,
             )
             self.result[formatted_budgets[budget]] = plots
-           # Add to run so other analysis-methods can use the information
+            # Add to run so other analysis-methods can use the information
             run.share_information['feature_importance'] = feat_imp
 
     def get_name(self):
@@ -51,5 +51,5 @@ class FeatureImportance(BaseAnalyzer):
 
         result = {'Table': {'table': table}}
         for p in plots:
-            result[os.path.splitext(os.path.basename(p))[0]] = {'figure' : p}
-        return (feat_importance, result)
+            result[os.path.splitext(os.path.basename(p))[0]] = {'figure': p}
+        return feat_importance, result

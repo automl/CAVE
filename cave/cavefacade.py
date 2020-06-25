@@ -11,7 +11,7 @@ from typing import Union, List
 import numpy as np
 
 from cave.__version__ import __version__ as cave_version
-from cave.analyzer.budgets.bohb_incumbents_per_budget import BohbIncumbentsPerBudget
+from cave.analyzer.budgets.incumbents_over_budgets import IncumbentsOverBudgets
 from cave.analyzer.budgets.bohb_learning_curves import BohbLearningCurves
 from cave.analyzer.budgets.budget_correlation import BudgetCorrelation
 from cave.analyzer.configurator.configurator_footprint import ConfiguratorFootprint
@@ -20,9 +20,9 @@ from cave.analyzer.feature_analysis.box_violin import BoxViolin
 from cave.analyzer.feature_analysis.feature_clustering import FeatureClustering
 from cave.analyzer.feature_analysis.feature_correlation import FeatureCorrelation
 from cave.analyzer.feature_analysis.feature_importance import FeatureImportance
-from cave.analyzer.parameter_importance.cave_ablation import CaveAblation
-from cave.analyzer.parameter_importance.cave_fanova import CaveFanova
-from cave.analyzer.parameter_importance.cave_forward_selection import CaveForwardSelection
+from cave.analyzer.parameter_importance.ablation import Ablation
+from cave.analyzer.parameter_importance.fanova import Fanova
+from cave.analyzer.parameter_importance.forward_selection import ForwardSelection
 from cave.analyzer.parameter_importance.local_parameter_importance import LocalParameterImportance
 from cave.analyzer.parameter_importance.pimp_comparison_table import PimpComparisonTable
 from cave.analyzer.performance.algorithm_footprint import AlgorithmFootprint
@@ -312,7 +312,7 @@ class CAVE(object):
     @_analyzer_type
     def cave_fanova(self):
         try:
-            fanova = CaveFanova(self.runscontainer)
+            fanova = Fanova(self.runscontainer)
         except IndexError as err:
             self.logger.debug("Error in fANOVA (%s)", err, exc_info=1)
             raise IndexError("Error in fANOVA - please run with --pimp_no_fanova_pairs (this might be due to a known "
@@ -321,11 +321,11 @@ class CAVE(object):
 
     @_analyzer_type
     def cave_ablation(self):
-        return CaveAblation(self.runscontainer)
+        return Ablation(self.runscontainer)
 
     @_analyzer_type
     def pimp_forward_selection(self):
-        return CaveForwardSelection(self.runscontainer)
+        return ForwardSelection(self.runscontainer)
 
     @_analyzer_type
     def local_parameter_importance(self):
@@ -380,7 +380,7 @@ class CAVE(object):
 
     @_analyzer_type
     def bohb_incumbents_per_budget(self):
-        return BohbIncumbentsPerBudget(self.runscontainer)
+        return IncumbentsOverBudgets(self.runscontainer)
 
     @_analyzer_type
     def budget_correlation(self):

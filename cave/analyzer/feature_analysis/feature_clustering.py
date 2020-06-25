@@ -17,12 +17,13 @@ class FeatureClustering(BaseAnalyzer):
         formatted_budgets = format_budgets(self.runscontainer.get_budgets())
         for budget, run in zip(self.runscontainer.get_budgets(),
                                self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False)):
-                self.result[formatted_budgets[budget]] = self.feat_analysis(
-                output_dir=run.output_dir,
-                scenario=run.scenario,
-                feat_names=run.feature_names,
-                feat_importance=run.share_information['feature_importance'],
-            )
+            imp = run.share_information['feature_importance']
+            self.result[formatted_budgets[budget]] = self.feat_analysis(
+                                                                        output_dir=run.output_dir,
+                                                                        scenario=run.scenario,
+                                                                        feat_names=run.feature_names,
+                                                                        feat_importance=imp,
+                                                                        )
 
     def get_name(self):
         return "Feature Clustering"
@@ -39,5 +40,5 @@ class FeatureClustering(BaseAnalyzer):
                                         feat_names=feat_names,
                                         feat_importance=feat_importance)
 
-        return {'figure' : feat_analysis.cluster_instances()}
+        return {'figure': feat_analysis.cluster_instances()}
 

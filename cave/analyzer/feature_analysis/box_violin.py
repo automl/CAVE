@@ -42,4 +42,4 @@ class BoxViolin(BaseAnalyzer):
                                         scenario=scenario,
                                         feat_names=feat_names,
                                         feat_importance=feat_importance)
-        return {_[0] : {'figure' : _[1]} for _ in feat_analysis.get_box_violin_plots()}
+        return {_[0]: {'figure': _[1]} for _ in feat_analysis.get_box_violin_plots()}

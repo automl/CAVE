@@ -22,7 +22,6 @@ class BaseAnalyzer(object):
     Remember to call super.__init__(runscontainer) in your analyzer's __init__-method. This will initialize the logger,
     name and important attributes.
     All configurator data is available via the self.runscontainer.
-
     """
     def __init__(self,
                  runscontainer: RunsContainer,

@@ -1,16 +1,14 @@
-import itertools
 from collections import OrderedDict
 
 import numpy as np
 from bokeh.embed import components
-
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.plot.whisker_quantiles import whisker_quantiles
 from cave.utils.hpbandster_helpers import format_budgets
 
 
-class CaveParameterImportance(BaseAnalyzer):
+class BaseParameterImportance(BaseAnalyzer):
 
     def __init__(self,
                  runscontainer,
@@ -18,7 +16,6 @@ class CaveParameterImportance(BaseAnalyzer):
         """Calculate parameter-importance using the PIMP-package.
         """
         super().__init__(runscontainer)
-
 
     def parameter_importance(self, modus):
         """
@@ -34,15 +31,15 @@ class CaveParameterImportance(BaseAnalyzer):
         result = self.result['Importances Per Parameter']
         for budget, run in zip(formatted_budgets.values(), runs_by_budget):
             self.logger.info("... parameter importance {} on {}".format(modus, run.get_identifier()))
-            if not budget in result:
+            if budget not in result:
                 result[budget] = OrderedDict()
             n_configs = len(run.original_runhistory.get_all_configs())
             n_params = len(run.scenario.cs.get_hyperparameters())
             if n_configs < n_params:
                 result[budget] = {
-                    'else' : "For this run there are only {} configs, "
-                             "but {} parameters. No reliable parameter importance analysis "
-                             "can be performed."}
+                    'else': "For this run there are only {} configs, "
+                            "but {} parameters. No reliable parameter importance analysis "
+                            "can be performed."}
                 continue
 
             try:
@@ -71,14 +68,14 @@ class CaveParameterImportance(BaseAnalyzer):
             # Generate data - for each parallel folder and each budget, perform an importance-analysis
             importance_per_budget = OrderedDict()  # dict[budget][folder] -> (dict[param_name]->float)
             for budget in self.runscontainer.get_budgets():
-                importance_per_budget[budget] = {hp : {} for hp in hyperparameters}
+                importance_per_budget[budget] = {hp: {} for hp in hyperparameters}
                 for folder in self.runscontainer.get_folders():
                     cr = self.runscontainer.get_run(folder, budget)
                     try:
                         importance = cr.pimp.evaluate_scenario([modus],
-                                                                cr.output_dir,
-                                                                plot_pyplot=False,
-                                                                plot_bokeh=False)[0][modus]['imp']
+                                                               cr.output_dir,
+                                                               plot_pyplot=False,
+                                                               plot_bokeh=False)[0][modus]['imp']
                     except RuntimeError as e:
                         importance = {}
                         err = "Encountered error '{}' for '{}' in '{}', (for fANOVA this can e.g. happen with too " \
@@ -93,14 +90,13 @@ class CaveParameterImportance(BaseAnalyzer):
             self.importance_per_budget = importance_per_budget
 
     def plot_whiskers(self):
-        if not self.importance_per_budget is None:
+        if self.importance_per_budget is not None:
             return whisker_quantiles(self.importance_per_budget)
-
 
     def get_html(self, d=None, tooltip=None):
         if self.runscontainer.analyzing_options['Parameter Importance'].getboolean('whisker_quantiles_plot'):
-            self.result['Whisker Plot'] = {'bokeh' : components(self.plot_whiskers()),
-                                           'tooltip' : "Each dot is a parallel run (or folder) of the input data "
-                                                       "and the whiskers are quartiles."}
+            self.result['Whisker Plot'] = {'bokeh': components(self.plot_whiskers()),
+                                           'tooltip': "Each dot is a parallel run (or folder) of the input data "
+                                                      "and the whiskers are quartiles."}
 
         return super().get_html(d, tooltip)

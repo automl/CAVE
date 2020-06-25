@@ -1,7 +1,6 @@
 import warnings
 from typing import List
 
-import scipy
 from bokeh.embed import components
 from bokeh.io import output_notebook
 from bokeh.layouts import column, row
@@ -9,6 +8,7 @@ from bokeh.models import ColumnDataSource, CustomJS, Range1d
 from bokeh.models.widgets import DataTable, TableColumn, Select
 from bokeh.plotting import show, figure
 from pandas import DataFrame
+from scipy.stats import spearmanr
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.utils.hpbandster_helpers import format_budgets
@@ -47,9 +47,11 @@ class BudgetCorrelation(BaseAnalyzer):
         for b1 in runs:
             table.append([])
             for b2 in runs:
-                configs = set(b1.combined_runhistory.get_all_configs()).intersection(set(b2.combined_runhistory.get_all_configs()))
-                costs = list(zip(*[(b1.combined_runhistory.get_cost(c), b2.combined_runhistory.get_cost(c)) for c in configs]))
-                rho, p = scipy.stats.spearmanr(costs[0], costs[1])
+                configs = set(b1.combined_runhistory.get_all_configs()).intersection(
+                                set(b2.combined_runhistory.get_all_configs()))
+                costs = list(zip(*[(b1.combined_runhistory.get_cost(c),
+                                    b2.combined_runhistory.get_cost(c)) for c in configs]))
+                rho, p = spearmanr(costs[0], costs[1])
                 # Differentiate to generate upper diagonal
                 if runs.index(b2) < runs.index(b1):
                     table[-1].append("")
@@ -64,7 +66,8 @@ class BudgetCorrelation(BaseAnalyzer):
         return self._plot(self.runs)
 
     def _plot(self, runs):
-        """Create table and plot that reacts to selection of cells by updating the plotted data to visualize correlation.
+        """
+        Create table and plot that reacts to selection of cells by updating the plotted data to visualize correlation.
 
         Parameters
         ----------
@@ -79,16 +82,17 @@ class BudgetCorrelation(BaseAnalyzer):
         table_source = ColumnDataSource(data)
         # Create bokeh-datatable
         columns = [TableColumn(field='Budget', title="Budget", sortable=False, width=20)] + [
-                   TableColumn(field=header, title=header, default_sort='descending', width=10) for header in budget_names
+                   TableColumn(field=header, title=header, default_sort='descending', width=10)
+                   for header in budget_names
                   ]
         bokeh_table = DataTable(source=table_source, columns=columns, index_position=None, sortable=False,
                                 height=20 + 30 * len(data["Budget"]))
 
         # Create CDS for scatter-plot
         all_configs = set([a for b in [run.original_runhistory.get_all_configs() for run in runs] for a in b])
-        data = {self.budget_names[idx] : [run.original_runhistory.get_cost(c) if c in  # TODO
-                                                 run.original_runhistory.get_all_configs() else
-                                                 None for c in all_configs] for idx, run in enumerate(runs)}
+        data = {self.budget_names[idx]: [run.original_runhistory.get_cost(c) if c in  # TODO
+                                         run.original_runhistory.get_all_configs() else
+                                         None for c in all_configs] for idx, run in enumerate(runs)}
         data['x'] = []
         data['y'] = []
         # Default scatter should be lowest vs highest:
@@ -96,7 +100,6 @@ class BudgetCorrelation(BaseAnalyzer):
             if x is not None and y is not None:
                 data['x'].append(x)
                 data['y'].append(y)
-
 
         with warnings.catch_warnings(record=True) as list_of_warnings:
             # Catch unmatching column lengths warning
@@ -117,7 +120,7 @@ class BudgetCorrelation(BaseAnalyzer):
                    x_range=Range1d(start=min_val, end=max_val, bounds=(min_val, max_val)),
                    x_axis_label=budget_names[0], y_axis_label=budget_names[-1])
         p.circle(x='x', y='y',
-                 #x=jitter('x', 0.1), y=jitter('y', 0.1),
+                 # x=jitter('x', 0.1), y=jitter('y', 0.1),
                  source=scatter_source, size=5, color="navy", alpha=0.5)
 
         code_budgets = 'var budgets = ' + str(budget_names) + '; console.log(budgets);'
@@ -203,7 +206,8 @@ class BudgetCorrelation(BaseAnalyzer):
         select_x.js_on_change('value', callback_select)
         select_y.js_on_change('value', callback_select)
 
-        code_table_cell = code_budgets + code_try + code_get_selected_cell + code_update_selection_values + code_update_plot + code_catch
+        code_table_cell = code_budgets + code_try + code_get_selected_cell + code_update_selection_values
+        code_table_cell += code_update_plot + code_catch
         callback_table_cell = CustomJS(args=dict(table_source=table_source,
                                                  scatter_source=scatter_source,
                                                  select_x=select_x, select_y=select_y,
@@ -219,8 +223,8 @@ class BudgetCorrelation(BaseAnalyzer):
         script, div = components(self.plot())
         if d is not None:
             d["Budget Correlation"] = {
-                "bokeh" : (script, div),
-                "tooltip" : self.__doc__,
+                "bokeh": (script, div),
+                "tooltip": self.__doc__,
             }
         return script, div
 

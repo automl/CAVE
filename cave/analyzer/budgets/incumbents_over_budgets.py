@@ -10,8 +10,7 @@ from cave.utils.helpers import get_cost_dict_for_config
 from cave.utils.hpbandster_helpers import format_budgets
 
 
-class BohbIncumbentsPerBudget(BaseAnalyzer):
-    # todo rename (not BOHB-specific)
+class IncumbentsOverBudgets(BaseAnalyzer):
     """
     Show the incumbents for each budget (i.e. the best configuration by kernel-estimation using data from that
     budget).

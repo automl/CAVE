@@ -80,7 +80,7 @@ class ConfiguratorFootprint(BaseAnalyzer):
         self.num_quantiles = self.options.getint('number_quantiles')
         self.timeslider_log = self.options.getboolean('timeslider_log')
 
-        incumbents = {r.trajectory[-1]['incumbent'] : r.trajectory[-1]['cost'] for r in self.runs}
+        incumbents = {r.trajectory[-1]['incumbent']: r.trajectory[-1]['cost'] for r in self.runs}
         self.final_incumbent = min(incumbents, key=incumbents.get)
 
         if self.scenario.feature_array is None:

@@ -58,7 +58,7 @@ class SMAC3Reader(BaseReader):
         except FileNotFoundError:
             self.logger.warning("%s not found. trying to read SMAC3-output, "
                                 "if that's not correct, change it with the "
-                                "--format option!", rh_fn)
+                                "--file_format option!", rh_fn)
             raise
         return rh
 
@@ -81,6 +81,7 @@ class SMAC3Reader(BaseReader):
         return rh
 
     def get_trajectory(self, cs):
+
         def alternative_configuration_recovery(config_list: typing.List[str], cs: ConfigurationSpace):
             """ Used to recover ints and bools as categoricals or constants from trajectory """
             config_dict = {}

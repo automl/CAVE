@@ -6,8 +6,8 @@ from cave.utils.hpbandster_helpers import format_budgets
 
 class FeatureCorrelation(BaseAnalyzer):
     """
-    Correlation of features based on the Pearson product-moment correlation. Since instance features are used to train an
-    empirical performance model in model-based configurators, it can be important to remove correlated features in a
+    Correlation of features based on the Pearson product-moment correlation. Since instance features are used to train
+    an empirical performance model in model-based configurators, it can be important to remove correlated features in a
     pre-processing step depending on the machine-learning algorithm.  Darker fields corresponds to a larger correlation
     between the features."""
 
@@ -41,5 +41,5 @@ class FeatureCorrelation(BaseAnalyzer):
                                         feat_names=feat_names,
                                         feat_importance=feat_importance)
 
-        ##  feat_analysis.correlation_plot()  # Generate an additional plot
-        return {'figure' :  feat_analysis.correlation_plot(imp=False)}
+        # feat_analysis.correlation_plot()  # Generate an additional plot
+        return {'figure':  feat_analysis.correlation_plot(imp=False)}

@@ -4,11 +4,11 @@ from collections import OrderedDict
 
 from bokeh.io import output_notebook, show
 
-from cave.analyzer.parameter_importance.cave_parameter_importance import CaveParameterImportance
+from cave.analyzer.parameter_importance.base_parameter_importance import BaseParameterImportance
 from cave.html.html_helpers import figure_to_html
 
 
-class LocalParameterImportance(CaveParameterImportance):
+class LocalParameterImportance(BaseParameterImportance):
     """ Using an empirical performance model, performance changes of a configuration along each parameter are
     calculated. To quantify the importance of a parameter value, the variance of all cost values by changing that
     parameter are predicted and then the fraction of all variances is computed. This analysis is inspired by the
@@ -31,7 +31,7 @@ class LocalParameterImportance(CaveParameterImportance):
                                                key=operator.itemgetter(1), reverse=True)]:
             plots[p] = os.path.join(output_dir, 'lpi', p + '.png')
         return OrderedDict([
-            (p, {'figure' : path}) for p, path in plots.items()
+            (p, {'figure': path}) for p, path in plots.items()
         ])
 
     def get_jupyter(self):

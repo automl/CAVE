@@ -34,12 +34,13 @@ class PimpComparisonTable(BaseAnalyzer):
 
     def run(self):
         formatted_budgets = list(format_budgets(self.runscontainer.get_budgets(), allow_whitespace=True).values())
-        for budget, run in zip(formatted_budgets, self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False)):
+        for budget, run in zip(formatted_budgets,
+                               self.runscontainer.get_aggregated(keep_budgets=True, keep_folders=False)):
             self.result[budget] = self.plot(
-                pimp=run.pimp,
-                evaluators=list(run.share_information['evaluators'].values()),
-                cs=self.runscontainer.scenario.cs,
-                out_fn=os.path.join(run.output_dir, 'pimp.tex'),
+                                            pimp=run.pimp,
+                                            evaluators=list(run.share_information['evaluators'].values()),
+                                            cs=self.runscontainer.scenario.cs,
+                                            out_fn=os.path.join(run.output_dir, 'pimp.tex'),
             )
 
     def plot(self,
@@ -62,8 +63,9 @@ class PimpComparisonTable(BaseAnalyzer):
             # Sort parameters after average importance
             p_avg = {}
             for p in parameters:
-                imps = [e.evaluated_parameter_importance[p] for e in evaluators if p in e.evaluated_parameter_importance]
-                p_avg[p] = np.mean(imps) if imps else  0
+                imps = [e.evaluated_parameter_importance[p] for e in evaluators
+                        if p in e.evaluated_parameter_importance]
+                p_avg[p] = np.mean(imps) if imps else 0
             p_order = sorted(parameters, key=lambda p: p_avg[p], reverse=True)
         elif self.sort_table_by in columns_lower:
             def __get_key(p):
@@ -90,7 +92,7 @@ class PimpComparisonTable(BaseAnalyzer):
                     # Create string and add uncertainty, if available
                     value_to_add = format(value_to_add, '05.2f')  # (leading zeros for sorting!)
                     if (hasattr(e, 'evaluated_parameter_importance_uncertainty') and
-                        p in e.evaluated_parameter_importance_uncertainty):
+                       p in e.evaluated_parameter_importance_uncertainty):
                         value_to_add += ' +/- ' + format(e.evaluated_parameter_importance_uncertainty[p] * 100, '.2f')
                     values_for_p.append(value_to_add)
                 else:
@@ -100,11 +102,11 @@ class PimpComparisonTable(BaseAnalyzer):
 
         # CREATE TABLE
         comp_table = DataFrame(values, columns=['Parameters'] + columns)
-        sortable = {c : True for c in columns}
-        width = {**{'Parameters' : 150}, **{c : 100 for c in columns}}
+        sortable = {c: True for c in columns}
+        width = {**{'Parameters': 150}, **{c: 100 for c in columns}}
 
         bokeh_table = array_to_bokeh_table(comp_table, sortable=sortable, width=width, logger=self.logger)
-        return {'bokeh' : bokeh_table}
+        return {'bokeh': bokeh_table}
 
     def get_html(self, d=None, tooltip=None):
         self.run()
@@ -113,7 +115,7 @@ class PimpComparisonTable(BaseAnalyzer):
             self.result = self.result[None]
         if d is not None:
             d[self.name] = OrderedDict()
-            script, div = "", ""
+        script, div = "", ""
         for b, t in self.result.items():
             s_, d_ = components(t) if b == 'bokeh' else components(t['bokeh'])
             script += s_
@@ -121,13 +123,13 @@ class PimpComparisonTable(BaseAnalyzer):
             if d is not None:
                 if b == 'bokeh':
                     d[self.name] = {
-                     "bokeh" : (s_, d_),
-                     "tooltip" : self.__doc__,
+                     "bokeh": (s_, d_),
+                     "tooltip": self.__doc__,
                     }
                 else:
                     d[self.name][b] = {
-                        "bokeh" : (s_, d_),
-                        "tooltip" : self.__doc__,
+                        "bokeh": (s_, d_),
+                        "tooltip": self.__doc__,
                     }
         return script, div
 
