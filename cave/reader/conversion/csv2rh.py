@@ -14,20 +14,15 @@ from smac.utils.io.input_reader import InputReader
 
 from cave.utils.io import load_csv_to_pandaframe
 
-__author__ = "Joshua Marben"
-__copyright__ = "Copyright 2018, ML4AAD"
-__license__ = "3-clause BSD"
-__maintainer__ = "Joshua Marben"
-__email__ = "joshua.marben@neptun.uni-freiburg.de"
 
 class CSV2RH(object):
 
     def read_csv_to_rh(self, data,
-                       cs:Union[None, str, ConfigurationSpace]=None,
-                       id_to_config:Union[None, dict]=None,
-                       train_inst:Union[None, str, list]=None,
-                       test_inst:Union[None, str, list]=None,
-                       instance_features:Union[None, str, dict]=None,
+                       cs: Union[None, str, ConfigurationSpace] = None,
+                       id_to_config: Union[None, dict] = None,
+                       train_inst: Union[None, str, list] = None,
+                       test_inst: Union[None, str, list] = None,
+                       instance_features: Union[None, str, dict] = None,
                        ):
         """ Interpreting a .csv-file as runhistory.
         Valid values for the header of the csv-file/DataFrame are:
@@ -59,7 +54,7 @@ class CSV2RH(object):
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
         self.input_reader = InputReader()
         self.train_inst = self.input_reader.read_instance_file(train_inst) if type(train_inst) == str else train_inst
-        self.test_inst =  self.input_reader.read_instance_file(test_inst) if type(test_inst) == str else test_inst
+        self.test_inst = self.input_reader.read_instance_file(test_inst) if type(test_inst) == str else test_inst
         feature_names = []  # names of instance-features
         if type(instance_features) == str:
             feature_names, instance_features = self.input_reader.read_instance_features_file(instance_features)
@@ -78,8 +73,8 @@ class CSV2RH(object):
                 cs = pcs.read(fh)
         elif not cs:
             self.logger.debug("No config-space provided, create from columns")
-            if self.id_to_config:
-                cs = np.random.choice(list(self.id_to_config.values())).configuration_space
+            if id_to_config:
+                cs = np.random.choice(list(id_to_config.values())).configuration_space
             else:
                 parameters = set(data.columns)
                 parameters -= set(self.valid_values)
@@ -106,6 +101,7 @@ class CSV2RH(object):
 
         # Create RunHistory
         rh = RunHistory()
+
         def add_to_rh(row):
             new_status = self._interpret_status(row['status']) if 'status' in row else StatusType.SUCCESS
             rh.add(config=id_to_config[row['config_id']],
@@ -132,6 +128,7 @@ class CSV2RH(object):
         cs = ConfigurationSpace(seed=42)
         for p in data.columns:
             cs.add_hyperparameter(UniformFloatHyperparameter(p, lower=minima[p] - 1, upper=maxima[p] + 1))
+        return cs
 
     def _interpret_status(self, status, types=None):
         """
@@ -148,18 +145,18 @@ class CSV2RH(object):
             interpreted status-type
         """
         if not types:
-            types = {"SAT" : StatusType.SUCCESS,
-                     "UNSAT" : StatusType.SUCCESS,
-                     "SUCCESS" : StatusType.SUCCESS,
-                     "STATUSTYPE.SUCCESS" : StatusType.SUCCESS,
-                     "TIMEOUT" : StatusType.TIMEOUT,
-                     "STATUSTYPE.TIMEOUT" : StatusType.TIMEOUT,
-                     "CRASHED" : StatusType.CRASHED,
-                     "STATUSTYPE.CRASHED" : StatusType.CRASHED,
-                     "MEMOUT" : StatusType.MEMOUT,
-                     "STATUSTYPE.MEMOUT" : StatusType.MEMOUT,
-                     "ABORT" : StatusType.ABORT,
-                     "STATUSTYPE.ABORT" : StatusType.ABORT,
+            types = {"SAT": StatusType.SUCCESS,
+                     "UNSAT": StatusType.SUCCESS,
+                     "SUCCESS": StatusType.SUCCESS,
+                     "STATUSTYPE.SUCCESS": StatusType.SUCCESS,
+                     "TIMEOUT": StatusType.TIMEOUT,
+                     "STATUSTYPE.TIMEOUT": StatusType.TIMEOUT,
+                     "CRASHED": StatusType.CRASHED,
+                     "STATUSTYPE.CRASHED": StatusType.CRASHED,
+                     "MEMOUT": StatusType.MEMOUT,
+                     "STATUSTYPE.MEMOUT": StatusType.MEMOUT,
+                     "ABORT": StatusType.ABORT,
+                     "STATUSTYPE.ABORT": StatusType.ABORT,
                      }
 
         status = status.strip().upper()
@@ -167,13 +164,13 @@ class CSV2RH(object):
             status = types[status]
         else:
             self.logger.warning("Could not parse %s as a status. Valid values "
-                                "are: %s. Treating as CRASHED run.", status,
-                                types.keys())
+                                "are: %s. Treating as CRASHED run.", status, types.keys())
             status = StatusType.CRASHED
         return status
 
     def extract_configs(self, data, cs: ConfigurationSpace, id_to_config=None):
-        """After completion, every unique configuration in the data will have a
+        """
+        After completion, every unique configuration in the data will have a
         corresponding id in the data-frame.
         The data-frame is expected to either contain a column for config-id OR
         columns for each individual hyperparameter. Parameter-names will be used
@@ -199,7 +196,7 @@ class CSV2RH(object):
             mapping every id to a configuration
         """
         if id_to_config:
-            config_to_id = {conf : name for name, conf in id_to_config.items()}
+            config_to_id = {conf: name for name, conf in id_to_config.items()}
         else:
             id_to_config = {}
             config_to_id = {}
@@ -214,33 +211,34 @@ class CSV2RH(object):
                              "Configurations or as a path to a csv-file "
                              "containing the necessary information.")
 
-        if not 'config_id' in data.columns:
+        if 'config_id' not in data.columns:
             # Map to configurations
             ids_in_order = []
             data['config_id'] = -1
+
             def add_config(row):
-                values = {name : row[name] for name in parameters if row[name] != ''}
+                values = {name: row[name] for name in parameters if row[name] != ''}
                 config = deactivate_inactive_hyperparameters(fix_types(values, cs), cs)
-                if not config in config_to_id:
+                if config not in config_to_id:
                     config_to_id[config] = len(config_to_id)
                 row['config_id'] = config_to_id[config]
                 return row
+
             data = data.apply(add_config, axis=1)
-            id_to_config = {conf : name for name, conf in config_to_id.items()}
+            id_to_config = {conf: name for name, conf in config_to_id.items()}
 
         data["config_id"] = pd.to_numeric(data["config_id"])
 
         # Check whether all config-ids are present
         if len(set(data['config_id']) - set(id_to_config.keys())) > 0:
-            raise ValueError("config id {} cannot be identified (is your "
-                             "configurations.csv complete? Or maybe this is a type-issue...".format(
-                set(data['config_id']) - set(id_to_config.keys())
-            ))
+            raise ValueError("config id {} cannot be identified (is your configurations.csv complete? Or maybe "
+                             "this is a type-issue...".format(set(data['config_id']) - set(id_to_config.keys())))
 
         return data, id_to_config
 
     def extract_instances(self, data, feature_names, features):
-        """After completion, every unique instance in the data will have a
+        """
+        After completion, every unique instance in the data will have a
         corresponding id in the data-frame.
         The data-frame is expected to either contain a column for instance-id OR
         columns for each individual instance-feature. Parameter-names will be used
@@ -268,29 +266,27 @@ class CSV2RH(object):
         id_to_inst_feats = {}
         inst_feats_to_id = {}
         if features:
-            id_to_inst_feats = {i : tuple([str(f) for f in feat]) for i, feat in
-                                features.items()}
-            inst_feats_to_id = {feat : i for i, feat in
-                                id_to_inst_feats.items()}
+            id_to_inst_feats = {i: tuple([str(f) for f in feat]) for i, feat in features.items()}
+            inst_feats_to_id = {feat: i for i, feat in id_to_inst_feats.items()}
         if 'instance_id' in data.columns and not features:
-            raise ValueError("Instances defined via \'instance_id\'-column, "
-                             "but no instance features available.")
-        elif not 'instance_id' in data.columns and feature_names:
+            raise ValueError("Instances defined via \'instance_id\'-column, but no instance features available.")
+        elif 'instance_id' not in data.columns and feature_names:
             # Add new column for instance-ids
             data['instance_id'] = -1
             self.old = None
+
             def add_instance(row):
                 row_features = tuple([str(row[idx]) for idx in feature_names])
-                if not row_features in inst_feats_to_id:
+                if row_features not in inst_feats_to_id:
                     new_id = len(inst_feats_to_id)
                     inst_feats_to_id[row_features] = new_id
                     id_to_inst_feats[new_id] = features
                 row['instance_id'] = inst_feats_to_id[row_features]
                 self.old = row_features
                 return row
+
             data = data.apply(add_instance, axis=1)
         else:
             self.logger.info("No instances detected.")
-        id_to_inst_feats = {i : np.array(f).astype('float64') for i, f in
-                            id_to_inst_feats.items()}
+        id_to_inst_feats = {i: np.array(f).astype('float64') for i, f in id_to_inst_feats.items()}
         return data, id_to_inst_feats

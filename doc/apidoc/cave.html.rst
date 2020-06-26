@@ -10,6 +10,7 @@ cave.html package
 
 
 .. toctree::
+   :maxdepth: 4
 
    cave.html.html_builder
    cave.html.html_helpers

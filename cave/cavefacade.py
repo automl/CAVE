@@ -10,28 +10,28 @@ from typing import Union, List
 
 import numpy as np
 
-from cave.__version__ import __version__ as v
-from cave.analyzer.algorithm_footprint import AlgorithmFootprint
-from cave.analyzer.bohb_incumbents_per_budget import BohbIncumbentsPerBudget
-from cave.analyzer.bohb_learning_curves import BohbLearningCurves
-from cave.analyzer.box_violin import BoxViolin
-from cave.analyzer.budget_correlation import BudgetCorrelation
-from cave.analyzer.cave_ablation import CaveAblation
-from cave.analyzer.cave_fanova import CaveFanova
-from cave.analyzer.cave_forward_selection import CaveForwardSelection
-from cave.analyzer.compare_default_incumbent import CompareDefaultIncumbent
-from cave.analyzer.configurator_footprint import ConfiguratorFootprint
-from cave.analyzer.cost_over_time import CostOverTime
-from cave.analyzer.feature_clustering import FeatureClustering
-from cave.analyzer.feature_correlation import FeatureCorrelation
-from cave.analyzer.feature_importance import FeatureImportance
-from cave.analyzer.local_parameter_importance import LocalParameterImportance
-from cave.analyzer.overview_table import OverviewTable
-from cave.analyzer.parallel_coordinates import ParallelCoordinates
-from cave.analyzer.performance_table import PerformanceTable
-from cave.analyzer.pimp_comparison_table import PimpComparisonTable
-from cave.analyzer.plot_ecdf import PlotECDF
-from cave.analyzer.plot_scatter import PlotScatter
+from cave.__version__ import __version__ as cave_version
+from cave.analyzer.budgets.incumbents_over_budgets import IncumbentsOverBudgets
+from cave.analyzer.budgets.bohb_learning_curves import BohbLearningCurves
+from cave.analyzer.budgets.budget_correlation import BudgetCorrelation
+from cave.analyzer.configurator.configurator_footprint import ConfiguratorFootprint
+from cave.analyzer.configurator.parallel_coordinates import ParallelCoordinates
+from cave.analyzer.feature_analysis.box_violin import BoxViolin
+from cave.analyzer.feature_analysis.feature_clustering import FeatureClustering
+from cave.analyzer.feature_analysis.feature_correlation import FeatureCorrelation
+from cave.analyzer.feature_analysis.feature_importance import FeatureImportance
+from cave.analyzer.parameter_importance.ablation import Ablation
+from cave.analyzer.parameter_importance.fanova import Fanova
+from cave.analyzer.parameter_importance.forward_selection import ForwardSelection
+from cave.analyzer.parameter_importance.local_parameter_importance import LocalParameterImportance
+from cave.analyzer.parameter_importance.pimp_comparison_table import PimpComparisonTable
+from cave.analyzer.performance.algorithm_footprint import AlgorithmFootprint
+from cave.analyzer.performance.compare_default_incumbent import CompareDefaultIncumbent
+from cave.analyzer.performance.cost_over_time import CostOverTime
+from cave.analyzer.performance.overview_table import OverviewTable
+from cave.analyzer.performance.performance_table import PerformanceTable
+from cave.analyzer.performance.plot_ecdf import PlotECDF
+from cave.analyzer.performance.plot_scatter import PlotScatter
 from cave.html.html_builder import HTMLBuilder
 from cave.reader.runs_container import RunsContainer
 from cave.utils.exceptions import Deactivated, NotApplicable
@@ -75,6 +75,7 @@ def _analyzer_type(f):
         return analyzer
     return wrap
 
+
 class CAVE(object):
     def __init__(self,
                  folders: typing.List[str],
@@ -102,9 +103,9 @@ class CAVE(object):
             output for cave to write results (figures + report)
         ta_exec_dir: string
             execution directory for target algorithm (to find instance.txt specified in scenario, ..)
-        file_format: str
+        file_format: string
             what format the rundata is in, options are [SMAC3, SMAC2, BOHB and CSV]
-        validation_format: str
+        validation_format: string
             what format the validation rundata is in, options are [SMAC3, SMAC2, CSV and None]
         validation_method: string
             from [validation, epm], how to estimate missing runs
@@ -112,14 +113,14 @@ class CAVE(object):
             random seed for analysis (e.g. the random forests)
         show_jupyter: bool
             default True, tries to output plots and tables to jupyter-frontend, if available
-        verbose_level: str
+        verbose_level: string
             from [OFF, INFO, DEBUG, DEV_DEBUG and WARNING]
-        analyzing_options: str or dict
+        analyzing_options: string or dict
             options-dictionary following CAVE's options-syntax
         """
         self.show_jupyter = show_jupyter
         if self.show_jupyter:
-            # Reset logging module (needs to happen before logger initalization)
+            # Reset logging module (needs to happen before logger initialization)
             logging.shutdown()
             reload(logging)
 
@@ -131,7 +132,7 @@ class CAVE(object):
         self.set_verbosity(verbose_level.upper())
         self._create_outputdir(self.output_dir)
 
-        self.logger.debug("Running CAVE version %s", v)
+        self.logger.debug("Running CAVE version %s", cave_version)
 
         self.verbose_level = verbose_level
         self.rng = np.random.RandomState(seed)
@@ -164,13 +165,15 @@ class CAVE(object):
             logo_fn = 'automl-logo.png'
             self.logger.info("No suitable logo found. You can use a custom logo simply by having a file called '%s' "
                              "in the directory from which you run CAVE.", custom_logo)
-        self.builder = HTMLBuilder(self.output_dir, "CAVE", logo_fn=logo_fn, logo_custom=custom_logo==logo_fn)
+        use_custom_logo = custom_logo == logo_fn
+        self.builder = HTMLBuilder(self.output_dir, "CAVE", logo_fn=logo_fn, logo_custom=use_custom_logo)
         self.website = OrderedDict([])
 
     @timing
     def analyze(self,
                 options=None):
-        """Analyze the available data and build HTML-webpage as dict.
+        """
+        Analyze the available data and build HTML-webpage as dict.
         Save webpage in 'self.output_dir/CAVE/report.html'.
 
         Parameters
@@ -178,6 +181,7 @@ class CAVE(object):
         options: Dict or str
             either a dictionary or a path to an ini-file.
         """
+        # Save jupyter-flag (needs to be False while analyzing) and reset it later.
         flag_show_jupyter = self.show_jupyter
         self.show_jupyter = False
 
@@ -189,8 +193,7 @@ class CAVE(object):
             for k, v in options.items():
                 occurences = sum([1 for x in self.runscontainer.analyzing_options.sections() if k in x])
                 if occurences > 1:
-                    self.logger.warning("{} is an arbitrary option - to avoid collisions, "
-                                        "consider using a different name.")
+                    self.logger.warning("{} is an arbitrary option - to avoid collisions, consider a different name.")
                 if occurences == 0 and k not in self.runscontainer.analyzing_options.sections():
                     self.logger.warning("{} is not found in default options. Are you sure you know what you are doing?")
                 for s in self.runscontainer.analyzing_options.sections():
@@ -199,6 +202,7 @@ class CAVE(object):
                     elif k in self.runscontainer.analyzing_options[s]:
                         self.runscontainer.analyzing_options[s][k] = str(v)
 
+        # Invoke the analyzers one by one
         self.overview_table(d=self.website)
         self.compare_default_incumbent(d=self._get_dict(self.website, "Meta Data"))
 
@@ -238,16 +242,16 @@ class CAVE(object):
 
         self._build_website()
 
-        self.logger.info("CAVE finished. Report is located in %s",
-                         os.path.join(self.output_dir, 'report.html'))
+        self.logger.info("CAVE finished. Report is located in %s", os.path.join(self.output_dir, 'report.html'))
 
+        # Set jupyter-flag as it was before.
         self.show_jupyter = flag_show_jupyter
 
     def _get_dict(self, d, layername):
         """ Get the appropriate sub-dict for this layer (or layer-run combination) and create it if necessary """
         if not isinstance(d, dict):
             raise ValueError("Pass a valid dict to _get_dict!")
-        if not layername in d:
+        if layername not in d:
             d[layername] = OrderedDict()
         return d[layername]
 
@@ -308,21 +312,20 @@ class CAVE(object):
     @_analyzer_type
     def cave_fanova(self):
         try:
-            fanova = CaveFanova(self.runscontainer)
-
+            fanova = Fanova(self.runscontainer)
         except IndexError as err:
             self.logger.debug("Error in fANOVA (%s)", err, exc_info=1)
-            raise IndexError("Error in fANOVA - please run with --pimp_no_fanova_pairs (this is due to a known issue "
-                             "with ints and bools in categorical hyperparameters, see issue #192).")
+            raise IndexError("Error in fANOVA - please run with --pimp_no_fanova_pairs (this might be due to a known "
+                             "issue with ints and bools in categorical hyperparameters, see issue #192).")
         return fanova
 
     @_analyzer_type
     def cave_ablation(self):
-        return CaveAblation(self.runscontainer)
+        return Ablation(self.runscontainer)
 
     @_analyzer_type
     def pimp_forward_selection(self):
-        return CaveForwardSelection(self.runscontainer)
+        return ForwardSelection(self.runscontainer)
 
     @_analyzer_type
     def local_parameter_importance(self):
@@ -342,7 +345,8 @@ class CAVE(object):
         self.cave_ablation(d=d)
         self.pimp_forward_selection(d=d)
         self.local_parameter_importance(d=d)
-        if sum([1 for x in ['fANOVA', 'Ablation', 'Forward Selection', 'Local Parameter Importance (LPI)'] if self.runscontainer.analyzing_options[x]['run'] != 'False']) >= 2:
+        if sum([1 for x in ['fANOVA', 'Ablation', 'Forward Selection', 'Local Parameter Importance (LPI)']
+                if self.runscontainer.analyzing_options[x]['run'] != 'False']) >= 2:
             pct = self.pimp_comparison_table(d=d)
             d.move_to_end(pct.name, last=False)
 
@@ -355,11 +359,9 @@ class CAVE(object):
     def box_violin(self):
         return BoxViolin(self.runscontainer)
 
-
     @_analyzer_type
     def feature_correlation(self):
         return FeatureCorrelation(self.runscontainer)
-
 
     @_analyzer_type
     def feature_clustering(self):
@@ -378,12 +380,11 @@ class CAVE(object):
 
     @_analyzer_type
     def bohb_incumbents_per_budget(self):
-        return BohbIncumbentsPerBudget(self.runscontainer)
+        return IncumbentsOverBudgets(self.runscontainer)
 
     @_analyzer_type
     def budget_correlation(self):
         return BudgetCorrelation(self.runscontainer)
-
 
 ###########################################################################
 # HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS #
@@ -397,6 +398,14 @@ class CAVE(object):
         self.builder.generate_webpage(self.website)
 
     def set_verbosity(self, level):
+        """
+        Set verbosity level and configure loggers (to stdout and to file), create output-dir if necessary.
+
+        Parameters
+        ----------
+        level: str
+            From [INFO, WARNING, OFF, DEBUG, DEV_DEBUG]
+        """
         logging.getLogger().setLevel(logging.DEBUG)
         # Log to stream (console)
         formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
@@ -426,7 +435,8 @@ class CAVE(object):
                     logging.getLogger('cave.settings').debug("Setting logger \'%s\' on level INFO", logger)
                     logging.getLogger(logger).setLevel(logging.INFO)
         else:
-            raise ValueError("%s not recognized as a verbosity level. Choose from DEBUG, DEV_DEBUG. INFO, WARNING, OFF.".format(level))
+            raise ValueError("{} not recognized as a verbosity level."
+                             "Choose from DEBUG, DEV_DEBUG. INFO, WARNING, OFF.".format(level))
 
         logging.getLogger().addHandler(stdout_handler)
 

@@ -32,20 +32,20 @@ class BaseReader(object):
         scenario-information (`<https://automl.github.io/SMAC3/stable/options.html#scenario>`_)"""
         raise NotImplemented()
 
-    def get_runhistory(self):
+    def get_runhistory(self, config_space):
         """Create RunHistory-object from files."""
         raise NotImplemented()
 
-    def get_validated_runhistory(self):
+    def get_validated_runhistory(self, config_space):
         """Create validated runhistory from files, if available."""
         raise NotImplemented()
 
-    def get_trajectory(self):
+    def get_trajectory(self, config_space):
         """Create trajectory (list with dicts as entries)"""
         raise NotImplemented()
 
     @classmethod
-    def check_for_files(cls):
+    def check_for_files(cls, path):
         raise NotImplemented()
 
     @classmethod
