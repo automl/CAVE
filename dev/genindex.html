@@ -2,8 +2,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -13,12 +12,18 @@
   
 
   
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -30,10 +35,6 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
 </head>
@@ -49,7 +50,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> CAVE
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> CAVE
           
 
           
@@ -79,6 +80,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -100,34 +102,57 @@
 <li class="toctree-l1"><a class="reference internal" href="faq.html">F.A.Q.</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="apidoc/cave.analyzer.html">cave.analyzer package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.algorithm_footprint.html">cave.analyzer.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.budgets.html">cave.analyzer.budgets package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.budgets.bohb_incumbents_per_budget.html">cave.analyzer.budgets.bohb_incumbents_per_budget module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.budgets.bohb_learning_curves.html">cave.analyzer.budgets.bohb_learning_curves module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.budgets.budget_correlation.html">cave.analyzer.budgets.budget_correlation module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.configurator.html">cave.analyzer.configurator package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.configurator.configurator_footprint.html">cave.analyzer.configurator.configurator_footprint module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.configurator.parallel_coordinates.html">cave.analyzer.configurator.parallel_coordinates module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.feature_analysis.html">cave.analyzer.feature_analysis package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.feature_analysis.box_violin.html">cave.analyzer.feature_analysis.box_violin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.feature_analysis.feature_analysis.html">cave.analyzer.feature_analysis.feature_analysis module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.feature_analysis.feature_clustering.html">cave.analyzer.feature_analysis.feature_clustering module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.feature_analysis.feature_correlation.html">cave.analyzer.feature_analysis.feature_correlation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.feature_analysis.feature_imp.html">cave.analyzer.feature_analysis.feature_imp module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.feature_analysis.feature_importance.html">cave.analyzer.feature_analysis.feature_importance module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.parameter_importance.html">cave.analyzer.parameter_importance package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.parameter_importance.cave_ablation.html">cave.analyzer.parameter_importance.cave_ablation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.parameter_importance.cave_fanova.html">cave.analyzer.parameter_importance.cave_fanova module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.parameter_importance.cave_forward_selection.html">cave.analyzer.parameter_importance.cave_forward_selection module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.parameter_importance.cave_parameter_importance.html">cave.analyzer.parameter_importance.cave_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html">cave.analyzer.parameter_importance.local_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html">cave.analyzer.parameter_importance.pimp_comparison_table module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.performance.html">cave.analyzer.performance package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.performance.algorithm_footprint.html">cave.analyzer.performance.algorithm_footprint module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.performance.compare_default_incumbent.html">cave.analyzer.performance.compare_default_incumbent module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.performance.cost_over_time.html">cave.analyzer.performance.cost_over_time module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.performance.overview_table.html">cave.analyzer.performance.overview_table module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.performance.performance_table.html">cave.analyzer.performance.performance_table module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.performance.plot_ecdf.html">cave.analyzer.performance.plot_ecdf module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.performance.plot_scatter.html">cave.analyzer.performance.plot_scatter module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.base_analyzer.html">cave.analyzer.base_analyzer module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.bohb_incumbents_per_budget.html">cave.analyzer.bohb_incumbents_per_budget module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.bohb_learning_curves.html">cave.analyzer.bohb_learning_curves module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.box_violin.html">cave.analyzer.box_violin module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.budget_correlation.html">cave.analyzer.budget_correlation module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.cave_ablation.html">cave.analyzer.cave_ablation module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.cave_fanova.html">cave.analyzer.cave_fanova module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.cave_forward_selection.html">cave.analyzer.cave_forward_selection module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.cave_parameter_importance.html">cave.analyzer.cave_parameter_importance module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.compare_default_incumbent.html">cave.analyzer.compare_default_incumbent module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.configurator_footprint.html">cave.analyzer.configurator_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.cost_over_time.html">cave.analyzer.cost_over_time module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.feature_clustering.html">cave.analyzer.feature_clustering module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.feature_correlation.html">cave.analyzer.feature_correlation module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.feature_importance.html">cave.analyzer.feature_importance module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.local_parameter_importance.html">cave.analyzer.local_parameter_importance module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.overview_table.html">cave.analyzer.overview_table module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.parallel_coordinates.html">cave.analyzer.parallel_coordinates module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.performance_table.html">cave.analyzer.performance_table module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.pimp_comparison_table.html">cave.analyzer.pimp_comparison_table module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.plot_ecdf.html">cave.analyzer.plot_ecdf module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.plot_scatter.html">cave.analyzer.plot_scatter module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="apidoc/cave.cave_cli.html">cave.cave_cli module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="apidoc/cave.cavefacade.html">cave.cavefacade module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="apidoc/cave.plot.html">cave.plot package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="apidoc/cave.plot.parallel_plot.html">cave.plot.parallel_plot package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.plot.parallel_plot.parallel_plot.html">cave.plot.parallel_plot.parallel_plot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.plot.parallel_plot.parallel_reset.html">cave.plot.parallel_plot.parallel_reset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html">cave.plot.parallel_plot.parallel_selection_tool module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
@@ -169,6 +194,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contribute</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contact.html">Contact</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 </ul>
@@ -176,6 +202,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -214,7 +241,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Index</li>
     
@@ -247,11 +274,13 @@
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
+ | <a href="#J"><strong>J</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
+ | <a href="#Q"><strong>Q</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
@@ -268,8 +297,14 @@
 </li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade._analyzer_type">_analyzer_type() (in module cave.cavefacade)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.Line._asdict">_asdict() (cave.analyzer.cost_over_time.Line method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.Line._asdict">_asdict() (cave.analyzer.performance.cost_over_time.Line method)</a>
 </li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool._attach_document">_attach_document() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool._attach_document">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE._build_website">_build_website() (cave.cavefacade.CAVE method)</a>
 </li>
       <li><a href="apidoc/cave.reader.runs_container.html#cave.reader.runs_container.RunsContainer._cache">_cache() (cave.reader.runs_container.RunsContainer method)</a>
@@ -280,9 +315,21 @@
 </li>
       <li><a href="apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun._check_rh_for_inc_and_def">_check_rh_for_inc_and_def() (cave.reader.configurator_run.ConfiguratorRun method)</a>
 </li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool._clear_extensions">_clear_extensions() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool static method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool._clear_extensions">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool static method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool._clone">_clone() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool._clone">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
       <li><a href="apidoc/cave.utils.hpbandster_helpers.html#cave.utils.hpbandster_helpers._compute_trajectory_racing">_compute_trajectory_racing() (in module cave.utils.hpbandster_helpers)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable._configspace">_configspace() (cave.analyzer.overview_table.OverviewTable method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.overview_table.html#cave.analyzer.performance.overview_table.OverviewTable._configspace">_configspace() (cave.analyzer.performance.overview_table.OverviewTable method)</a>
 </li>
       <li><a href="apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._contour_radiobuttongroup">_contour_radiobuttongroup() (cave.plot.configurator_footprint.ConfiguratorFootprintPlotter method)</a>
 </li>
@@ -292,19 +339,25 @@
 </li>
       <li><a href="apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._create_views">_create_views() (cave.plot.configurator_footprint.ConfiguratorFootprintPlotter method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.Line._field_defaults">_field_defaults (cave.analyzer.cost_over_time.Line attribute)</a>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool._detach_document">_detach_document() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool._detach_document">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.Line._fields">_fields (cave.analyzer.cost_over_time.Line attribute)</a>
+      </ul></li>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.Line._field_defaults">_field_defaults (cave.analyzer.performance.cost_over_time.Line attribute)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.Line._fields_defaults">_fields_defaults (cave.analyzer.cost_over_time.Line attribute)</a>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.Line._fields">_fields (cave.analyzer.performance.cost_over_time.Line attribute)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable._general_dict">_general_dict() (cave.analyzer.overview_table.OverviewTable method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.Line._fields_defaults">_fields_defaults (cave.analyzer.performance.cost_over_time.Line attribute)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime._get_all_runs">_get_all_runs() (cave.analyzer.cost_over_time.CostOverTime method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.overview_table.html#cave.analyzer.performance.overview_table.OverviewTable._general_dict">_general_dict() (cave.analyzer.performance.overview_table.OverviewTable method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime._get_avg">_get_avg() (cave.analyzer.cost_over_time.CostOverTime method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.CostOverTime._get_all_runs">_get_all_runs() (cave.analyzer.performance.cost_over_time.CostOverTime method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime._get_bohb_line">_get_bohb_line() (cave.analyzer.cost_over_time.CostOverTime method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.CostOverTime._get_avg">_get_avg() (cave.analyzer.performance.cost_over_time.CostOverTime method)</a>
+</li>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.CostOverTime._get_bohb_line">_get_bohb_line() (cave.analyzer.performance.cost_over_time.CostOverTime method)</a>
 </li>
       <li><a href="apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._get_color">_get_color() (cave.plot.configurator_footprint.ConfiguratorFootprintPlotter method)</a>
 </li>
@@ -320,15 +373,15 @@
 </li>
       <li><a href="apidoc/cave.utils.hpbandster_helpers.html#cave.utils.hpbandster_helpers._get_incumbent_trajectory_hpbandster">_get_incumbent_trajectory_hpbandster() (in module cave.utils.hpbandster_helpers)</a>
 </li>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.CostOverTime._get_mean_var_time">_get_mean_var_time() (cave.analyzer.performance.cost_over_time.CostOverTime method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime._get_mean_var_time">_get_mean_var_time() (cave.analyzer.cost_over_time.CostOverTime method)</a>
-</li>
       <li><a href="apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._get_runs_per_config_quantiled">_get_runs_per_config_quantiled() (cave.plot.configurator_footprint.ConfiguratorFootprintPlotter method)</a>
 </li>
       <li><a href="apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._get_size">_get_size() (cave.plot.configurator_footprint.ConfiguratorFootprintPlotter method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.budget_correlation.html#cave.analyzer.budget_correlation.BudgetCorrelation._get_table">_get_table() (cave.analyzer.budget_correlation.BudgetCorrelation method)</a>
+      <li><a href="apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation._get_table">_get_table() (cave.analyzer.budgets.budget_correlation.BudgetCorrelation method)</a>
 </li>
       <li><a href="apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._get_widgets">_get_widgets() (cave.plot.configurator_footprint.ConfiguratorFootprintPlotter method)</a>
 </li>
@@ -338,50 +391,80 @@
 </li>
       <li><a href="apidoc/cave.plot.algorithm_footprint.html#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter._label_instances">_label_instances() (cave.plot.algorithm_footprint.AlgorithmFootprintPlotter method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.Line._make">_make() (cave.analyzer.cost_over_time.Line class method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.Line._make">_make() (cave.analyzer.performance.cost_over_time.Line class method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.performance_table.html#cave.analyzer.performance_table.PerformanceTable._paired_t_test">_paired_t_test() (cave.analyzer.performance_table.PerformanceTable method)</a>
-</li>
-      <li><a href="apidoc/cave.analyzer.performance_table.html#cave.analyzer.performance_table.PerformanceTable._permutation_test">_permutation_test() (cave.analyzer.performance_table.PerformanceTable method)</a>
-</li>
-      <li><a href="apidoc/cave.analyzer.algorithm_footprint.html#cave.analyzer.algorithm_footprint.AlgorithmFootprint._plot">_plot() (cave.analyzer.algorithm_footprint.AlgorithmFootprint method)</a>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool._overridden_defaults">_overridden_defaults() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool class method)</a>
 
       <ul>
-        <li><a href="apidoc/cave.analyzer.bohb_learning_curves.html#cave.analyzer.bohb_learning_curves.BohbLearningCurves._plot">(cave.analyzer.bohb_learning_curves.BohbLearningCurves method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.budget_correlation.html#cave.analyzer.budget_correlation.BudgetCorrelation._plot">(cave.analyzer.budget_correlation.BudgetCorrelation method)</a>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool._overridden_defaults">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool class method)</a>
 </li>
       </ul></li>
-      <li><a href="apidoc/cave.analyzer.parallel_coordinates.html#cave.analyzer.parallel_coordinates.ParallelCoordinates._plot_budget">_plot_budget() (cave.analyzer.parallel_coordinates.ParallelCoordinates method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.performance_table.html#cave.analyzer.performance.performance_table.PerformanceTable._paired_t_test">_paired_t_test() (cave.analyzer.performance.performance_table.PerformanceTable method)</a>
+</li>
+      <li><a href="apidoc/cave.analyzer.performance.performance_table.html#cave.analyzer.performance.performance_table.PerformanceTable._permutation_test">_permutation_test() (cave.analyzer.performance.performance_table.PerformanceTable method)</a>
+</li>
+      <li><a href="apidoc/cave.analyzer.budgets.bohb_learning_curves.html#cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves._plot">_plot() (cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation._plot">(cave.analyzer.budgets.budget_correlation.BudgetCorrelation method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.performance.algorithm_footprint.html#cave.analyzer.performance.algorithm_footprint.AlgorithmFootprint._plot">(cave.analyzer.performance.algorithm_footprint.AlgorithmFootprint method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.analyzer.configurator.parallel_coordinates.html#cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates._plot_budget">_plot_budget() (cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates method)</a>
 </li>
       <li><a href="apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._plot_contour">_plot_contour() (cave.plot.configurator_footprint.ConfiguratorFootprintPlotter method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.plot_ecdf.html#cave.analyzer.plot_ecdf.PlotECDF._plot_ecdf">_plot_ecdf() (cave.analyzer.plot_ecdf.PlotECDF method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.plot_ecdf.html#cave.analyzer.performance.plot_ecdf.PlotECDF._plot_ecdf">_plot_ecdf() (cave.analyzer.performance.plot_ecdf.PlotECDF method)</a>
 </li>
       <li><a href="apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._plot_get_source">_plot_get_source() (cave.plot.configurator_footprint.ConfiguratorFootprintPlotter method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.plot_scatter.html#cave.analyzer.plot_scatter.PlotScatter._plot_scatter">_plot_scatter() (cave.analyzer.plot_scatter.PlotScatter method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.plot_scatter.html#cave.analyzer.performance.plot_scatter.PlotScatter._plot_scatter">_plot_scatter() (cave.analyzer.performance.plot_scatter.PlotScatter method)</a>
 </li>
       <li><a href="apidoc/cave.utils.bokeh_routines.html#cave.utils.bokeh_routines._prepare_nested_glyphs">_prepare_nested_glyphs() (in module cave.utils.bokeh_routines)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.parallel_coordinates.html#cave.analyzer.parallel_coordinates.ParallelCoordinates._preprocess">_preprocess() (cave.analyzer.parallel_coordinates.ParallelCoordinates method)</a>
+      <li><a href="apidoc/cave.analyzer.configurator.parallel_coordinates.html#cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates._preprocess">_preprocess() (cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.parallel_coordinates.html#cave.analyzer.parallel_coordinates.ParallelCoordinates._preprocess_budget">_preprocess_budget() (cave.analyzer.parallel_coordinates.ParallelCoordinates method)</a>
+      <li><a href="apidoc/cave.analyzer.configurator.parallel_coordinates.html#cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates._preprocess_budget">_preprocess_budget() (cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates method)</a>
 </li>
       <li><a href="apidoc/cave.reader.runs_container.html#cave.reader.runs_container.RunsContainer._reduce_cr_to_budget">_reduce_cr_to_budget() (cave.reader.runs_container.RunsContainer method)</a>
 </li>
       <li><a href="apidoc/cave.plot.algorithm_footprint.html#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter._reduce_dim">_reduce_dim() (cave.plot.algorithm_footprint.AlgorithmFootprintPlotter method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.Line._replace">_replace() (cave.analyzer.cost_over_time.Line method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.Line._replace">_replace() (cave.analyzer.performance.cost_over_time.Line method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable._runspec_dict">_runspec_dict() (cave.analyzer.overview_table.OverviewTable method)</a>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool._repr_html_">_repr_html_() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool._repr_html_">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.analyzer.performance.overview_table.html#cave.analyzer.performance.overview_table.OverviewTable._runspec_dict">_runspec_dict() (cave.analyzer.performance.overview_table.OverviewTable method)</a>
 </li>
       <li><a href="apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter._scatter">_scatter() (cave.plot.configurator_footprint.ConfiguratorFootprintPlotter method)</a>
 </li>
       <li><a href="apidoc/cave.html.html_helpers.html#cave.html.html_helpers._split_table">_split_table() (in module cave.html.html_helpers)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable._stats_for_run">_stats_for_run() (cave.analyzer.overview_table.OverviewTable method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.overview_table.html#cave.analyzer.performance.overview_table.OverviewTable._stats_for_run">_stats_for_run() (cave.analyzer.performance.overview_table.OverviewTable method)</a>
 </li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool._to_json_like">_to_json_like() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool._to_json_like">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool._trigger_event">_trigger_event() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool._trigger_event">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool._update_event_callbacks">_update_event_callbacks() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool._update_event_callbacks">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
       <li><a href="apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun._validate_default_and_incumbents">_validate_default_and_incumbents() (cave.reader.configurator_run.ConfiguratorRun method)</a>
 </li>
   </ul></td>
@@ -394,12 +477,18 @@
 </li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.algorithm_footprints">algorithm_footprints() (cave.cavefacade.CAVE method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.algorithm_footprint.html#cave.analyzer.algorithm_footprint.AlgorithmFootprint">AlgorithmFootprint (class in cave.analyzer.algorithm_footprint)</a>
+      <li><a href="apidoc/cave.analyzer.performance.algorithm_footprint.html#cave.analyzer.performance.algorithm_footprint.AlgorithmFootprint">AlgorithmFootprint (class in cave.analyzer.performance.algorithm_footprint)</a>
 </li>
       <li><a href="apidoc/cave.plot.algorithm_footprint.html#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter">AlgorithmFootprintPlotter (class in cave.plot.algorithm_footprint)</a>
 </li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.analyze">analyze() (cave.cavefacade.CAVE method)</a>
 </li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.apply_theme">apply_theme() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.apply_theme">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidoc/cave.utils.exceptions.html#cave.utils.exceptions.Deactivated.args">args (cave.utils.exceptions.Deactivated attribute)</a>
@@ -430,23 +519,23 @@
 </li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.bohb_learning_curves">bohb_learning_curves() (cave.cavefacade.CAVE method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.bohb_incumbents_per_budget.html#cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget">BohbIncumbentsPerBudget (class in cave.analyzer.bohb_incumbents_per_budget)</a>
+      <li><a href="apidoc/cave.analyzer.budgets.bohb_learning_curves.html#cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves">BohbLearningCurves (class in cave.analyzer.budgets.bohb_learning_curves)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidoc/cave.analyzer.bohb_learning_curves.html#cave.analyzer.bohb_learning_curves.BohbLearningCurves">BohbLearningCurves (class in cave.analyzer.bohb_learning_curves)</a>
-</li>
-      <li><a href="apidoc/cave.analyzer.box_violin.html#cave.analyzer.box_violin.BoxViolin.box_violin">box_violin() (cave.analyzer.box_violin.BoxViolin method)</a>
+      <li><a href="apidoc/cave.analyzer.feature_analysis.box_violin.html#cave.analyzer.feature_analysis.box_violin.BoxViolin.box_violin">box_violin() (cave.analyzer.feature_analysis.box_violin.BoxViolin method)</a>
 
       <ul>
         <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.box_violin">(cave.cavefacade.CAVE method)</a>
 </li>
       </ul></li>
-      <li><a href="apidoc/cave.analyzer.box_violin.html#cave.analyzer.box_violin.BoxViolin">BoxViolin (class in cave.analyzer.box_violin)</a>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.box_width">box_width (cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool attribute)</a>
+</li>
+      <li><a href="apidoc/cave.analyzer.feature_analysis.box_violin.html#cave.analyzer.feature_analysis.box_violin.BoxViolin">BoxViolin (class in cave.analyzer.feature_analysis.box_violin)</a>
 </li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.budget_correlation">budget_correlation() (cave.cavefacade.CAVE method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.budget_correlation.html#cave.analyzer.budget_correlation.BudgetCorrelation">BudgetCorrelation (class in cave.analyzer.budget_correlation)</a>
+      <li><a href="apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation">BudgetCorrelation (class in cave.analyzer.budgets.budget_correlation)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -454,6 +543,8 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.callback">callback (cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool attribute)</a>
+</li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE">CAVE (class in cave.cavefacade)</a>
 </li>
       <li><a href="api.html#module-cave">cave (module)</a>, <a href="manual.html#module-cave">[1]</a>
@@ -462,51 +553,53 @@
 </li>
       <li><a href="apidoc/cave.analyzer.html#module-cave.analyzer">cave.analyzer (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.algorithm_footprint.html#module-cave.analyzer.algorithm_footprint">cave.analyzer.algorithm_footprint (module)</a>
-</li>
       <li><a href="apidoc/cave.analyzer.base_analyzer.html#module-cave.analyzer.base_analyzer">cave.analyzer.base_analyzer (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.bohb_incumbents_per_budget.html#module-cave.analyzer.bohb_incumbents_per_budget">cave.analyzer.bohb_incumbents_per_budget (module)</a>
+      <li><a href="apidoc/cave.analyzer.budgets.html#module-cave.analyzer.budgets">cave.analyzer.budgets (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.bohb_learning_curves.html#module-cave.analyzer.bohb_learning_curves">cave.analyzer.bohb_learning_curves (module)</a>
+      <li><a href="apidoc/cave.analyzer.budgets.bohb_learning_curves.html#module-cave.analyzer.budgets.bohb_learning_curves">cave.analyzer.budgets.bohb_learning_curves (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.box_violin.html#module-cave.analyzer.box_violin">cave.analyzer.box_violin (module)</a>
+      <li><a href="apidoc/cave.analyzer.budgets.budget_correlation.html#module-cave.analyzer.budgets.budget_correlation">cave.analyzer.budgets.budget_correlation (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.budget_correlation.html#module-cave.analyzer.budget_correlation">cave.analyzer.budget_correlation (module)</a>
+      <li><a href="apidoc/cave.analyzer.configurator.html#module-cave.analyzer.configurator">cave.analyzer.configurator (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cave_ablation.html#module-cave.analyzer.cave_ablation">cave.analyzer.cave_ablation (module)</a>
+      <li><a href="apidoc/cave.analyzer.configurator.configurator_footprint.html#module-cave.analyzer.configurator.configurator_footprint">cave.analyzer.configurator.configurator_footprint (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cave_fanova.html#module-cave.analyzer.cave_fanova">cave.analyzer.cave_fanova (module)</a>
+      <li><a href="apidoc/cave.analyzer.configurator.parallel_coordinates.html#module-cave.analyzer.configurator.parallel_coordinates">cave.analyzer.configurator.parallel_coordinates (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cave_forward_selection.html#module-cave.analyzer.cave_forward_selection">cave.analyzer.cave_forward_selection (module)</a>
+      <li><a href="apidoc/cave.analyzer.feature_analysis.html#module-cave.analyzer.feature_analysis">cave.analyzer.feature_analysis (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cave_parameter_importance.html#module-cave.analyzer.cave_parameter_importance">cave.analyzer.cave_parameter_importance (module)</a>
+      <li><a href="apidoc/cave.analyzer.feature_analysis.box_violin.html#module-cave.analyzer.feature_analysis.box_violin">cave.analyzer.feature_analysis.box_violin (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.compare_default_incumbent.html#module-cave.analyzer.compare_default_incumbent">cave.analyzer.compare_default_incumbent (module)</a>
+      <li><a href="apidoc/cave.analyzer.feature_analysis.feature_analysis.html#module-cave.analyzer.feature_analysis.feature_analysis">cave.analyzer.feature_analysis.feature_analysis (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.configurator_footprint.html#module-cave.analyzer.configurator_footprint">cave.analyzer.configurator_footprint (module)</a>
+      <li><a href="apidoc/cave.analyzer.feature_analysis.feature_clustering.html#module-cave.analyzer.feature_analysis.feature_clustering">cave.analyzer.feature_analysis.feature_clustering (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#module-cave.analyzer.cost_over_time">cave.analyzer.cost_over_time (module)</a>
+      <li><a href="apidoc/cave.analyzer.feature_analysis.feature_correlation.html#module-cave.analyzer.feature_analysis.feature_correlation">cave.analyzer.feature_analysis.feature_correlation (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.feature_clustering.html#module-cave.analyzer.feature_clustering">cave.analyzer.feature_clustering (module)</a>
+      <li><a href="apidoc/cave.analyzer.feature_analysis.feature_importance.html#module-cave.analyzer.feature_analysis.feature_importance">cave.analyzer.feature_analysis.feature_importance (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.feature_correlation.html#module-cave.analyzer.feature_correlation">cave.analyzer.feature_correlation (module)</a>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.html#module-cave.analyzer.parameter_importance">cave.analyzer.parameter_importance (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.feature_importance.html#module-cave.analyzer.feature_importance">cave.analyzer.feature_importance (module)</a>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#module-cave.analyzer.parameter_importance.local_parameter_importance">cave.analyzer.parameter_importance.local_parameter_importance (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.local_parameter_importance.html#module-cave.analyzer.local_parameter_importance">cave.analyzer.local_parameter_importance (module)</a>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html#module-cave.analyzer.parameter_importance.pimp_comparison_table">cave.analyzer.parameter_importance.pimp_comparison_table (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.overview_table.html#module-cave.analyzer.overview_table">cave.analyzer.overview_table (module)</a>
+      <li><a href="apidoc/cave.analyzer.performance.html#module-cave.analyzer.performance">cave.analyzer.performance (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.parallel_coordinates.html#module-cave.analyzer.parallel_coordinates">cave.analyzer.parallel_coordinates (module)</a>
+      <li><a href="apidoc/cave.analyzer.performance.algorithm_footprint.html#module-cave.analyzer.performance.algorithm_footprint">cave.analyzer.performance.algorithm_footprint (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.performance_table.html#module-cave.analyzer.performance_table">cave.analyzer.performance_table (module)</a>
+      <li><a href="apidoc/cave.analyzer.performance.compare_default_incumbent.html#module-cave.analyzer.performance.compare_default_incumbent">cave.analyzer.performance.compare_default_incumbent (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.pimp_comparison_table.html#module-cave.analyzer.pimp_comparison_table">cave.analyzer.pimp_comparison_table (module)</a>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#module-cave.analyzer.performance.cost_over_time">cave.analyzer.performance.cost_over_time (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.plot_ecdf.html#module-cave.analyzer.plot_ecdf">cave.analyzer.plot_ecdf (module)</a>
+      <li><a href="apidoc/cave.analyzer.performance.overview_table.html#module-cave.analyzer.performance.overview_table">cave.analyzer.performance.overview_table (module)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.plot_scatter.html#module-cave.analyzer.plot_scatter">cave.analyzer.plot_scatter (module)</a>
+      <li><a href="apidoc/cave.analyzer.performance.performance_table.html#module-cave.analyzer.performance.performance_table">cave.analyzer.performance.performance_table (module)</a>
+</li>
+      <li><a href="apidoc/cave.analyzer.performance.plot_ecdf.html#module-cave.analyzer.performance.plot_ecdf">cave.analyzer.performance.plot_ecdf (module)</a>
+</li>
+      <li><a href="apidoc/cave.analyzer.performance.plot_scatter.html#module-cave.analyzer.performance.plot_scatter">cave.analyzer.performance.plot_scatter (module)</a>
 </li>
       <li><a href="apidoc/cave.cave_cli.html#module-cave.cave_cli">cave.cave_cli (module)</a>
 </li>
@@ -525,6 +618,14 @@
       <li><a href="apidoc/cave.plot.cdf.html#module-cave.plot.cdf">cave.plot.cdf (module)</a>
 </li>
       <li><a href="apidoc/cave.plot.configurator_footprint.html#module-cave.plot.configurator_footprint">cave.plot.configurator_footprint (module)</a>
+</li>
+      <li><a href="apidoc/cave.plot.parallel_plot.html#module-cave.plot.parallel_plot">cave.plot.parallel_plot (module)</a>
+</li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_plot.html#module-cave.plot.parallel_plot.parallel_plot">cave.plot.parallel_plot.parallel_plot (module)</a>
+</li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#module-cave.plot.parallel_plot.parallel_reset">cave.plot.parallel_plot.parallel_reset (module)</a>
+</li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#module-cave.plot.parallel_plot.parallel_selection_tool">cave.plot.parallel_plot.parallel_selection_tool (module)</a>
 </li>
       <li><a href="apidoc/cave.plot.scatter.html#module-cave.plot.scatter">cave.plot.scatter (module)</a>
 </li>
@@ -556,6 +657,8 @@
 </li>
       <li><a href="apidoc/cave.utils.bokeh_routines.html#module-cave.utils.bokeh_routines">cave.utils.bokeh_routines (module)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidoc/cave.utils.convert_for_epm.html#module-cave.utils.convert_for_epm">cave.utils.convert_for_epm (module)</a>
 </li>
       <li><a href="apidoc/cave.utils.exceptions.html#module-cave.utils.exceptions">cave.utils.exceptions (module)</a>
@@ -570,72 +673,52 @@
 </li>
       <li><a href="apidoc/cave.utils.timing.html#module-cave.utils.timing">cave.utils.timing (module)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidoc/cave.utils.tooltips.html#module-cave.utils.tooltips">cave.utils.tooltips (module)</a>
 </li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.cave_ablation">cave_ablation() (cave.cavefacade.CAVE method)</a>
 </li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.cave_fanova">cave_fanova() (cave.cavefacade.CAVE method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cave_ablation.html#cave.analyzer.cave_ablation.CaveAblation">CaveAblation (class in cave.analyzer.cave_ablation)</a>
-</li>
       <li><a href="apidoc/cave.cave_cli.html#cave.cave_cli.CaveCLI">CaveCLI (class in cave.cave_cli)</a>
-</li>
-      <li><a href="apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova">CaveFanova (class in cave.analyzer.cave_fanova)</a>
-</li>
-      <li><a href="apidoc/cave.analyzer.cave_forward_selection.html#cave.analyzer.cave_forward_selection.CaveForwardSelection">CaveForwardSelection (class in cave.analyzer.cave_forward_selection)</a>
-</li>
-      <li><a href="apidoc/cave.analyzer.cave_parameter_importance.html#cave.analyzer.cave_parameter_importance.CaveParameterImportance">CaveParameterImportance (class in cave.analyzer.cave_parameter_importance)</a>
 </li>
       <li><a href="apidoc/cave.reader.base_reader.html#cave.reader.base_reader.changedir">changedir() (in module cave.reader.base_reader)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.algorithm_footprint.html#cave.analyzer.algorithm_footprint.AlgorithmFootprint.check_for_bokeh">check_for_bokeh() (cave.analyzer.algorithm_footprint.AlgorithmFootprint class method)</a>
+      <li><a href="apidoc/cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer.check_for_bokeh">check_for_bokeh() (cave.analyzer.base_analyzer.BaseAnalyzer class method)</a>
 
       <ul>
-        <li><a href="apidoc/cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer.check_for_bokeh">(cave.analyzer.base_analyzer.BaseAnalyzer class method)</a>
+        <li><a href="apidoc/cave.analyzer.budgets.bohb_learning_curves.html#cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves.check_for_bokeh">(cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves class method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.bohb_incumbents_per_budget.html#cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget.check_for_bokeh">(cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget class method)</a>
+        <li><a href="apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation.check_for_bokeh">(cave.analyzer.budgets.budget_correlation.BudgetCorrelation class method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.bohb_learning_curves.html#cave.analyzer.bohb_learning_curves.BohbLearningCurves.check_for_bokeh">(cave.analyzer.bohb_learning_curves.BohbLearningCurves class method)</a>
+        <li><a href="apidoc/cave.analyzer.configurator.configurator_footprint.html#cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint.check_for_bokeh">(cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint class method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.box_violin.html#cave.analyzer.box_violin.BoxViolin.check_for_bokeh">(cave.analyzer.box_violin.BoxViolin class method)</a>
+        <li><a href="apidoc/cave.analyzer.configurator.parallel_coordinates.html#cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates.check_for_bokeh">(cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates class method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.budget_correlation.html#cave.analyzer.budget_correlation.BudgetCorrelation.check_for_bokeh">(cave.analyzer.budget_correlation.BudgetCorrelation class method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.box_violin.html#cave.analyzer.feature_analysis.box_violin.BoxViolin.check_for_bokeh">(cave.analyzer.feature_analysis.box_violin.BoxViolin class method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_ablation.html#cave.analyzer.cave_ablation.CaveAblation.check_for_bokeh">(cave.analyzer.cave_ablation.CaveAblation class method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.feature_clustering.html#cave.analyzer.feature_analysis.feature_clustering.FeatureClustering.check_for_bokeh">(cave.analyzer.feature_analysis.feature_clustering.FeatureClustering class method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova.check_for_bokeh">(cave.analyzer.cave_fanova.CaveFanova class method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.feature_correlation.html#cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation.check_for_bokeh">(cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation class method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_forward_selection.html#cave.analyzer.cave_forward_selection.CaveForwardSelection.check_for_bokeh">(cave.analyzer.cave_forward_selection.CaveForwardSelection class method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.feature_importance.html#cave.analyzer.feature_analysis.feature_importance.FeatureImportance.check_for_bokeh">(cave.analyzer.feature_analysis.feature_importance.FeatureImportance class method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_parameter_importance.html#cave.analyzer.cave_parameter_importance.CaveParameterImportance.check_for_bokeh">(cave.analyzer.cave_parameter_importance.CaveParameterImportance class method)</a>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.check_for_bokeh">(cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance class method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.compare_default_incumbent.html#cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent.check_for_bokeh">(cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent class method)</a>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html#cave.analyzer.parameter_importance.pimp_comparison_table.PimpComparisonTable.check_for_bokeh">(cave.analyzer.parameter_importance.pimp_comparison_table.PimpComparisonTable class method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.configurator_footprint.html#cave.analyzer.configurator_footprint.ConfiguratorFootprint.check_for_bokeh">(cave.analyzer.configurator_footprint.ConfiguratorFootprint class method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.algorithm_footprint.html#cave.analyzer.performance.algorithm_footprint.AlgorithmFootprint.check_for_bokeh">(cave.analyzer.performance.algorithm_footprint.AlgorithmFootprint class method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime.check_for_bokeh">(cave.analyzer.cost_over_time.CostOverTime class method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.compare_default_incumbent.html#cave.analyzer.performance.compare_default_incumbent.CompareDefaultIncumbent.check_for_bokeh">(cave.analyzer.performance.compare_default_incumbent.CompareDefaultIncumbent class method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.feature_clustering.html#cave.analyzer.feature_clustering.FeatureClustering.check_for_bokeh">(cave.analyzer.feature_clustering.FeatureClustering class method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.CostOverTime.check_for_bokeh">(cave.analyzer.performance.cost_over_time.CostOverTime class method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.feature_correlation.html#cave.analyzer.feature_correlation.FeatureCorrelation.check_for_bokeh">(cave.analyzer.feature_correlation.FeatureCorrelation class method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.overview_table.html#cave.analyzer.performance.overview_table.OverviewTable.check_for_bokeh">(cave.analyzer.performance.overview_table.OverviewTable class method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.feature_importance.html#cave.analyzer.feature_importance.FeatureImportance.check_for_bokeh">(cave.analyzer.feature_importance.FeatureImportance class method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.performance_table.html#cave.analyzer.performance.performance_table.PerformanceTable.check_for_bokeh">(cave.analyzer.performance.performance_table.PerformanceTable class method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.local_parameter_importance.html#cave.analyzer.local_parameter_importance.LocalParameterImportance.check_for_bokeh">(cave.analyzer.local_parameter_importance.LocalParameterImportance class method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.plot_ecdf.html#cave.analyzer.performance.plot_ecdf.PlotECDF.check_for_bokeh">(cave.analyzer.performance.plot_ecdf.PlotECDF class method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable.check_for_bokeh">(cave.analyzer.overview_table.OverviewTable class method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.parallel_coordinates.html#cave.analyzer.parallel_coordinates.ParallelCoordinates.check_for_bokeh">(cave.analyzer.parallel_coordinates.ParallelCoordinates class method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.performance_table.html#cave.analyzer.performance_table.PerformanceTable.check_for_bokeh">(cave.analyzer.performance_table.PerformanceTable class method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.pimp_comparison_table.html#cave.analyzer.pimp_comparison_table.PimpComparisonTable.check_for_bokeh">(cave.analyzer.pimp_comparison_table.PimpComparisonTable class method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.plot_ecdf.html#cave.analyzer.plot_ecdf.PlotECDF.check_for_bokeh">(cave.analyzer.plot_ecdf.PlotECDF class method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.plot_scatter.html#cave.analyzer.plot_scatter.PlotScatter.check_for_bokeh">(cave.analyzer.plot_scatter.PlotScatter class method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.plot_scatter.html#cave.analyzer.performance.plot_scatter.PlotScatter.check_for_bokeh">(cave.analyzer.performance.plot_scatter.PlotScatter class method)</a>
 </li>
       </ul></li>
       <li><a href="apidoc/cave.utils.helpers.html#cave.utils.helpers.check_for_features">check_for_features() (in module cave.utils.helpers)</a>
@@ -650,19 +733,21 @@
         <li><a href="apidoc/cave.reader.smac3_reader.html#cave.reader.smac3_reader.SMAC3Reader.check_for_files">(cave.reader.smac3_reader.SMAC3Reader class method)</a>
 </li>
       </ul></li>
+      <li><a href="apidoc/cave.analyzer.feature_analysis.feature_analysis.html#cave.analyzer.feature_analysis.feature_analysis.FeatureAnalysis.cluster_instances">cluster_instances() (cave.analyzer.feature_analysis.feature_analysis.FeatureAnalysis method)</a>
+</li>
       <li><a href="apidoc/cave.utils.helpers.html#cave.utils.helpers.combine_runhistories">combine_runhistories() (in module cave.utils.helpers)</a>
 </li>
       <li><a href="apidoc/cave.utils.helpers.html#cave.utils.helpers.combine_trajectories">combine_trajectories() (in module cave.utils.helpers)</a>
 </li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.compare_default_incumbent">compare_default_incumbent() (cave.cavefacade.CAVE method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.compare_default_incumbent.html#cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent">CompareDefaultIncumbent (class in cave.analyzer.compare_default_incumbent)</a>
+      <li><a href="apidoc/cave.analyzer.performance.compare_default_incumbent.html#cave.analyzer.performance.compare_default_incumbent.CompareDefaultIncumbent">CompareDefaultIncumbent (class in cave.analyzer.performance.compare_default_incumbent)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.Line.config">config() (cave.analyzer.cost_over_time.Line property)</a>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.Line.config">config() (cave.analyzer.performance.cost_over_time.Line property)</a>
 </li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.configurator_footprint">configurator_footprint() (cave.cavefacade.CAVE method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.configurator_footprint.html#cave.analyzer.configurator_footprint.ConfiguratorFootprint">ConfiguratorFootprint (class in cave.analyzer.configurator_footprint)</a>
+      <li><a href="apidoc/cave.analyzer.configurator.configurator_footprint.html#cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint">ConfiguratorFootprint (class in cave.analyzer.configurator.configurator_footprint)</a>
 </li>
       <li><a href="apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter">ConfiguratorFootprintPlotter (class in cave.plot.configurator_footprint)</a>
 </li>
@@ -678,17 +763,17 @@
       </ul></li>
       <li><a href="apidoc/cave.utils.convert_for_epm.html#cave.utils.convert_for_epm.convert_data_for_epm">convert_data_for_epm() (in module cave.utils.convert_for_epm)</a>
 </li>
+      <li><a href="apidoc/cave.analyzer.feature_analysis.feature_analysis.html#cave.analyzer.feature_analysis.feature_analysis.FeatureAnalysis.correlation_plot">correlation_plot() (cave.analyzer.feature_analysis.feature_analysis.FeatureAnalysis method)</a>
+</li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.cost_over_time">cost_over_time() (cave.cavefacade.CAVE method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime">CostOverTime (class in cave.analyzer.cost_over_time)</a>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.CostOverTime">CostOverTime (class in cave.analyzer.performance.cost_over_time)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.Line.count">count() (cave.analyzer.cost_over_time.Line method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.Line.count">count() (cave.analyzer.performance.cost_over_time.Line method)</a>
 </li>
       <li><a href="apidoc/cave.reader.conversion.csv2rh.html#cave.reader.conversion.csv2rh.CSV2RH.create_cs_from_pandaframe">create_cs_from_pandaframe() (cave.reader.conversion.csv2rh.CSV2RH method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.performance_table.html#cave.analyzer.performance_table.PerformanceTable.create_performance_table">create_performance_table() (cave.analyzer.performance_table.PerformanceTable method)</a>
-</li>
-      <li><a href="apidoc/cave.analyzer.bohb_incumbents_per_budget.html#cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget.create_table">create_table() (cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.performance_table.html#cave.analyzer.performance.performance_table.PerformanceTable.create_performance_table">create_performance_table() (cave.analyzer.performance.performance_table.PerformanceTable method)</a>
 </li>
       <li><a href="apidoc/cave.reader.conversion.csv2rh.html#cave.reader.conversion.csv2rh.CSV2RH">CSV2RH (class in cave.reader.conversion.csv2rh)</a>
 </li>
@@ -700,12 +785,32 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidoc/cave.utils.exceptions.html#cave.utils.exceptions.Deactivated">Deactivated</a>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.dataspecs">dataspecs() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool class method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.dataspecs">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool class method)</a>
 </li>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.dataspecs_with_props">dataspecs_with_props() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool class method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.dataspecs_with_props">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool class method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidoc/cave.utils.exceptions.html#cave.utils.exceptions.Deactivated">Deactivated</a>
+</li>
       <li><a href="apidoc/cave.utils.helpers.html#cave.utils.helpers.detect_fileformat">detect_fileformat() (in module cave.utils.helpers)</a>
 </li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.dimensions">dimensions (cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool attribute)</a>
+</li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.document">document() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool property)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.document">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool property)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -714,10 +819,16 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidoc/cave.cave_cli.html#cave.cave_cli.entry_point">entry_point() (in module cave.cave_cli)</a>
 </li>
-      <li><a href="apidoc/cave.utils.helpers.html#cave.utils.helpers.escape_parameter_name">escape_parameter_name() (in module cave.utils.helpers)</a>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.equals">equals() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.equals">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidoc/cave.utils.helpers.html#cave.utils.helpers.escape_parameter_name">escape_parameter_name() (in module cave.utils.helpers)</a>
+</li>
       <li><a href="apidoc/cave.utils.io.html#cave.utils.io.export_bokeh">export_bokeh() (in module cave.utils.io)</a>
 </li>
       <li><a href="apidoc/cave.reader.conversion.csv2rh.html#cave.reader.conversion.csv2rh.CSV2RH.extract_configs">extract_configs() (cave.reader.conversion.csv2rh.CSV2RH method)</a>
@@ -730,10 +841,10 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidoc/cave.analyzer.feature_clustering.html#cave.analyzer.feature_clustering.FeatureClustering.feat_analysis">feat_analysis() (cave.analyzer.feature_clustering.FeatureClustering method)</a>
+      <li><a href="apidoc/cave.analyzer.feature_analysis.feature_clustering.html#cave.analyzer.feature_analysis.feature_clustering.FeatureClustering.feat_analysis">feat_analysis() (cave.analyzer.feature_analysis.feature_clustering.FeatureClustering method)</a>
 
       <ul>
-        <li><a href="apidoc/cave.analyzer.feature_correlation.html#cave.analyzer.feature_correlation.FeatureCorrelation.feat_analysis">(cave.analyzer.feature_correlation.FeatureCorrelation method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.feature_correlation.html#cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation.feat_analysis">(cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation method)</a>
 </li>
       </ul></li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.feature_analysis">feature_analysis() (cave.cavefacade.CAVE method)</a>
@@ -742,19 +853,21 @@
 </li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.feature_correlation">feature_correlation() (cave.cavefacade.CAVE method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.feature_importance.html#cave.analyzer.feature_importance.FeatureImportance.feature_importance">feature_importance() (cave.analyzer.feature_importance.FeatureImportance method)</a>
+      <li><a href="apidoc/cave.analyzer.feature_analysis.feature_importance.html#cave.analyzer.feature_analysis.feature_importance.FeatureImportance.feature_importance">feature_importance() (cave.analyzer.feature_analysis.feature_importance.FeatureImportance method)</a>
 
       <ul>
         <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.feature_importance">(cave.cavefacade.CAVE method)</a>
 </li>
       </ul></li>
+      <li><a href="apidoc/cave.analyzer.feature_analysis.feature_analysis.html#cave.analyzer.feature_analysis.feature_analysis.FeatureAnalysis">FeatureAnalysis (class in cave.analyzer.feature_analysis.feature_analysis)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidoc/cave.analyzer.feature_clustering.html#cave.analyzer.feature_clustering.FeatureClustering">FeatureClustering (class in cave.analyzer.feature_clustering)</a>
+      <li><a href="apidoc/cave.analyzer.feature_analysis.feature_clustering.html#cave.analyzer.feature_analysis.feature_clustering.FeatureClustering">FeatureClustering (class in cave.analyzer.feature_analysis.feature_clustering)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.feature_correlation.html#cave.analyzer.feature_correlation.FeatureCorrelation">FeatureCorrelation (class in cave.analyzer.feature_correlation)</a>
+      <li><a href="apidoc/cave.analyzer.feature_analysis.feature_correlation.html#cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation">FeatureCorrelation (class in cave.analyzer.feature_analysis.feature_correlation)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.feature_importance.html#cave.analyzer.feature_importance.FeatureImportance">FeatureImportance (class in cave.analyzer.feature_importance)</a>
+      <li><a href="apidoc/cave.analyzer.feature_analysis.feature_importance.html#cave.analyzer.feature_analysis.feature_importance.FeatureImportance">FeatureImportance (class in cave.analyzer.feature_analysis.feature_importance)</a>
 </li>
       <li><a href="apidoc/cave.html.html_helpers.html#cave.html.html_helpers.figure_to_html">figure_to_html() (in module cave.html.html_helpers)</a>
 </li>
@@ -779,6 +892,8 @@
       <li><a href="apidoc/cave.reader.runs_container.html#cave.reader.runs_container.RunsContainer.get_aggregated">get_aggregated() (cave.reader.runs_container.RunsContainer method)</a>
 </li>
       <li><a href="apidoc/cave.reader.runs_container.html#cave.reader.runs_container.RunsContainer.get_all_runs">get_all_runs() (cave.reader.runs_container.RunsContainer method)</a>
+</li>
+      <li><a href="apidoc/cave.analyzer.feature_analysis.feature_analysis.html#cave.analyzer.feature_analysis.feature_analysis.FeatureAnalysis.get_box_violin_plots">get_box_violin_plots() (cave.analyzer.feature_analysis.feature_analysis.FeatureAnalysis method)</a>
 </li>
       <li><a href="apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun.get_budgets">get_budgets() (cave.reader.configurator_run.ConfiguratorRun method)</a>
 
@@ -814,52 +929,42 @@
       </ul></li>
       <li><a href="apidoc/cave.reader.runs_container.html#cave.reader.runs_container.RunsContainer.get_highest_budget">get_highest_budget() (cave.reader.runs_container.RunsContainer method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.algorithm_footprint.html#cave.analyzer.algorithm_footprint.AlgorithmFootprint.get_html">get_html() (cave.analyzer.algorithm_footprint.AlgorithmFootprint method)</a>
+      <li><a href="apidoc/cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer.get_html">get_html() (cave.analyzer.base_analyzer.BaseAnalyzer method)</a>
 
       <ul>
-        <li><a href="apidoc/cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer.get_html">(cave.analyzer.base_analyzer.BaseAnalyzer method)</a>
+        <li><a href="apidoc/cave.analyzer.budgets.bohb_learning_curves.html#cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves.get_html">(cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.bohb_incumbents_per_budget.html#cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget.get_html">(cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget method)</a>
+        <li><a href="apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation.get_html">(cave.analyzer.budgets.budget_correlation.BudgetCorrelation method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.bohb_learning_curves.html#cave.analyzer.bohb_learning_curves.BohbLearningCurves.get_html">(cave.analyzer.bohb_learning_curves.BohbLearningCurves method)</a>
+        <li><a href="apidoc/cave.analyzer.configurator.configurator_footprint.html#cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint.get_html">(cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.box_violin.html#cave.analyzer.box_violin.BoxViolin.get_html">(cave.analyzer.box_violin.BoxViolin method)</a>
+        <li><a href="apidoc/cave.analyzer.configurator.parallel_coordinates.html#cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates.get_html">(cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.budget_correlation.html#cave.analyzer.budget_correlation.BudgetCorrelation.get_html">(cave.analyzer.budget_correlation.BudgetCorrelation method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.box_violin.html#cave.analyzer.feature_analysis.box_violin.BoxViolin.get_html">(cave.analyzer.feature_analysis.box_violin.BoxViolin method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_ablation.html#cave.analyzer.cave_ablation.CaveAblation.get_html">(cave.analyzer.cave_ablation.CaveAblation method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.feature_clustering.html#cave.analyzer.feature_analysis.feature_clustering.FeatureClustering.get_html">(cave.analyzer.feature_analysis.feature_clustering.FeatureClustering method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova.get_html">(cave.analyzer.cave_fanova.CaveFanova method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.feature_correlation.html#cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation.get_html">(cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_forward_selection.html#cave.analyzer.cave_forward_selection.CaveForwardSelection.get_html">(cave.analyzer.cave_forward_selection.CaveForwardSelection method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.feature_importance.html#cave.analyzer.feature_analysis.feature_importance.FeatureImportance.get_html">(cave.analyzer.feature_analysis.feature_importance.FeatureImportance method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_parameter_importance.html#cave.analyzer.cave_parameter_importance.CaveParameterImportance.get_html">(cave.analyzer.cave_parameter_importance.CaveParameterImportance method)</a>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.get_html">(cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.compare_default_incumbent.html#cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent.get_html">(cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent method)</a>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html#cave.analyzer.parameter_importance.pimp_comparison_table.PimpComparisonTable.get_html">(cave.analyzer.parameter_importance.pimp_comparison_table.PimpComparisonTable method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.configurator_footprint.html#cave.analyzer.configurator_footprint.ConfiguratorFootprint.get_html">(cave.analyzer.configurator_footprint.ConfiguratorFootprint method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.algorithm_footprint.html#cave.analyzer.performance.algorithm_footprint.AlgorithmFootprint.get_html">(cave.analyzer.performance.algorithm_footprint.AlgorithmFootprint method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime.get_html">(cave.analyzer.cost_over_time.CostOverTime method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.compare_default_incumbent.html#cave.analyzer.performance.compare_default_incumbent.CompareDefaultIncumbent.get_html">(cave.analyzer.performance.compare_default_incumbent.CompareDefaultIncumbent method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.feature_clustering.html#cave.analyzer.feature_clustering.FeatureClustering.get_html">(cave.analyzer.feature_clustering.FeatureClustering method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.CostOverTime.get_html">(cave.analyzer.performance.cost_over_time.CostOverTime method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.feature_correlation.html#cave.analyzer.feature_correlation.FeatureCorrelation.get_html">(cave.analyzer.feature_correlation.FeatureCorrelation method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.overview_table.html#cave.analyzer.performance.overview_table.OverviewTable.get_html">(cave.analyzer.performance.overview_table.OverviewTable method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.feature_importance.html#cave.analyzer.feature_importance.FeatureImportance.get_html">(cave.analyzer.feature_importance.FeatureImportance method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.performance_table.html#cave.analyzer.performance.performance_table.PerformanceTable.get_html">(cave.analyzer.performance.performance_table.PerformanceTable method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.local_parameter_importance.html#cave.analyzer.local_parameter_importance.LocalParameterImportance.get_html">(cave.analyzer.local_parameter_importance.LocalParameterImportance method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.plot_ecdf.html#cave.analyzer.performance.plot_ecdf.PlotECDF.get_html">(cave.analyzer.performance.plot_ecdf.PlotECDF method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable.get_html">(cave.analyzer.overview_table.OverviewTable method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.parallel_coordinates.html#cave.analyzer.parallel_coordinates.ParallelCoordinates.get_html">(cave.analyzer.parallel_coordinates.ParallelCoordinates method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.performance_table.html#cave.analyzer.performance_table.PerformanceTable.get_html">(cave.analyzer.performance_table.PerformanceTable method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.pimp_comparison_table.html#cave.analyzer.pimp_comparison_table.PimpComparisonTable.get_html">(cave.analyzer.pimp_comparison_table.PimpComparisonTable method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.plot_ecdf.html#cave.analyzer.plot_ecdf.PlotECDF.get_html">(cave.analyzer.plot_ecdf.PlotECDF method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.plot_scatter.html#cave.analyzer.plot_scatter.PlotScatter.get_html">(cave.analyzer.plot_scatter.PlotScatter method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.plot_scatter.html#cave.analyzer.performance.plot_scatter.PlotScatter.get_html">(cave.analyzer.performance.plot_scatter.PlotScatter method)</a>
 </li>
       </ul></li>
       <li><a href="apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun.get_identifier">get_identifier() (cave.reader.configurator_run.ConfiguratorRun method)</a>
@@ -868,120 +973,100 @@
 </li>
       <li><a href="apidoc/cave.utils.hpbandster_helpers.html#cave.utils.hpbandster_helpers.get_incumbent_trajectory">get_incumbent_trajectory() (in module cave.utils.hpbandster_helpers)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.algorithm_footprint.html#cave.analyzer.algorithm_footprint.AlgorithmFootprint.get_jupyter">get_jupyter() (cave.analyzer.algorithm_footprint.AlgorithmFootprint method)</a>
+      <li><a href="apidoc/cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer.get_jupyter">get_jupyter() (cave.analyzer.base_analyzer.BaseAnalyzer method)</a>
 
       <ul>
-        <li><a href="apidoc/cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer.get_jupyter">(cave.analyzer.base_analyzer.BaseAnalyzer method)</a>
+        <li><a href="apidoc/cave.analyzer.budgets.bohb_learning_curves.html#cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves.get_jupyter">(cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.bohb_incumbents_per_budget.html#cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget.get_jupyter">(cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget method)</a>
+        <li><a href="apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation.get_jupyter">(cave.analyzer.budgets.budget_correlation.BudgetCorrelation method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.bohb_learning_curves.html#cave.analyzer.bohb_learning_curves.BohbLearningCurves.get_jupyter">(cave.analyzer.bohb_learning_curves.BohbLearningCurves method)</a>
+        <li><a href="apidoc/cave.analyzer.configurator.configurator_footprint.html#cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint.get_jupyter">(cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.box_violin.html#cave.analyzer.box_violin.BoxViolin.get_jupyter">(cave.analyzer.box_violin.BoxViolin method)</a>
+        <li><a href="apidoc/cave.analyzer.configurator.parallel_coordinates.html#cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates.get_jupyter">(cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.budget_correlation.html#cave.analyzer.budget_correlation.BudgetCorrelation.get_jupyter">(cave.analyzer.budget_correlation.BudgetCorrelation method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.box_violin.html#cave.analyzer.feature_analysis.box_violin.BoxViolin.get_jupyter">(cave.analyzer.feature_analysis.box_violin.BoxViolin method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_ablation.html#cave.analyzer.cave_ablation.CaveAblation.get_jupyter">(cave.analyzer.cave_ablation.CaveAblation method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.feature_clustering.html#cave.analyzer.feature_analysis.feature_clustering.FeatureClustering.get_jupyter">(cave.analyzer.feature_analysis.feature_clustering.FeatureClustering method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova.get_jupyter">(cave.analyzer.cave_fanova.CaveFanova method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.feature_correlation.html#cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation.get_jupyter">(cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_forward_selection.html#cave.analyzer.cave_forward_selection.CaveForwardSelection.get_jupyter">(cave.analyzer.cave_forward_selection.CaveForwardSelection method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.feature_importance.html#cave.analyzer.feature_analysis.feature_importance.FeatureImportance.get_jupyter">(cave.analyzer.feature_analysis.feature_importance.FeatureImportance method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_parameter_importance.html#cave.analyzer.cave_parameter_importance.CaveParameterImportance.get_jupyter">(cave.analyzer.cave_parameter_importance.CaveParameterImportance method)</a>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.get_jupyter">(cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.compare_default_incumbent.html#cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent.get_jupyter">(cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent method)</a>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html#cave.analyzer.parameter_importance.pimp_comparison_table.PimpComparisonTable.get_jupyter">(cave.analyzer.parameter_importance.pimp_comparison_table.PimpComparisonTable method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.configurator_footprint.html#cave.analyzer.configurator_footprint.ConfiguratorFootprint.get_jupyter">(cave.analyzer.configurator_footprint.ConfiguratorFootprint method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.algorithm_footprint.html#cave.analyzer.performance.algorithm_footprint.AlgorithmFootprint.get_jupyter">(cave.analyzer.performance.algorithm_footprint.AlgorithmFootprint method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime.get_jupyter">(cave.analyzer.cost_over_time.CostOverTime method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.compare_default_incumbent.html#cave.analyzer.performance.compare_default_incumbent.CompareDefaultIncumbent.get_jupyter">(cave.analyzer.performance.compare_default_incumbent.CompareDefaultIncumbent method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.feature_clustering.html#cave.analyzer.feature_clustering.FeatureClustering.get_jupyter">(cave.analyzer.feature_clustering.FeatureClustering method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.CostOverTime.get_jupyter">(cave.analyzer.performance.cost_over_time.CostOverTime method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.feature_correlation.html#cave.analyzer.feature_correlation.FeatureCorrelation.get_jupyter">(cave.analyzer.feature_correlation.FeatureCorrelation method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.overview_table.html#cave.analyzer.performance.overview_table.OverviewTable.get_jupyter">(cave.analyzer.performance.overview_table.OverviewTable method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.feature_importance.html#cave.analyzer.feature_importance.FeatureImportance.get_jupyter">(cave.analyzer.feature_importance.FeatureImportance method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.performance_table.html#cave.analyzer.performance.performance_table.PerformanceTable.get_jupyter">(cave.analyzer.performance.performance_table.PerformanceTable method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.local_parameter_importance.html#cave.analyzer.local_parameter_importance.LocalParameterImportance.get_jupyter">(cave.analyzer.local_parameter_importance.LocalParameterImportance method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.plot_ecdf.html#cave.analyzer.performance.plot_ecdf.PlotECDF.get_jupyter">(cave.analyzer.performance.plot_ecdf.PlotECDF method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable.get_jupyter">(cave.analyzer.overview_table.OverviewTable method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.parallel_coordinates.html#cave.analyzer.parallel_coordinates.ParallelCoordinates.get_jupyter">(cave.analyzer.parallel_coordinates.ParallelCoordinates method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.performance_table.html#cave.analyzer.performance_table.PerformanceTable.get_jupyter">(cave.analyzer.performance_table.PerformanceTable method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.pimp_comparison_table.html#cave.analyzer.pimp_comparison_table.PimpComparisonTable.get_jupyter">(cave.analyzer.pimp_comparison_table.PimpComparisonTable method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.plot_ecdf.html#cave.analyzer.plot_ecdf.PlotECDF.get_jupyter">(cave.analyzer.plot_ecdf.PlotECDF method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.plot_scatter.html#cave.analyzer.plot_scatter.PlotScatter.get_jupyter">(cave.analyzer.plot_scatter.PlotScatter method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.plot_scatter.html#cave.analyzer.performance.plot_scatter.PlotScatter.get_jupyter">(cave.analyzer.performance.plot_scatter.PlotScatter method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidoc/cave.analyzer.bohb_learning_curves.html#cave.analyzer.bohb_learning_curves.BohbLearningCurves.get_longest_run">get_longest_run() (cave.analyzer.bohb_learning_curves.BohbLearningCurves method)</a>
+      <li><a href="apidoc/cave.analyzer.budgets.bohb_learning_curves.html#cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves.get_longest_run">get_longest_run() (cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves static method)</a>
 </li>
       <li><a href="apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_mds">get_mds() (cave.plot.configurator_footprint.ConfiguratorFootprintPlotter method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.algorithm_footprint.html#cave.analyzer.algorithm_footprint.AlgorithmFootprint.get_name">get_name() (cave.analyzer.algorithm_footprint.AlgorithmFootprint method)</a>
+      <li><a href="apidoc/cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer.get_name">get_name() (cave.analyzer.base_analyzer.BaseAnalyzer method)</a>
 
       <ul>
-        <li><a href="apidoc/cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer.get_name">(cave.analyzer.base_analyzer.BaseAnalyzer method)</a>
+        <li><a href="apidoc/cave.analyzer.budgets.bohb_learning_curves.html#cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves.get_name">(cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.bohb_incumbents_per_budget.html#cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget.get_name">(cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget method)</a>
+        <li><a href="apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation.get_name">(cave.analyzer.budgets.budget_correlation.BudgetCorrelation method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.bohb_learning_curves.html#cave.analyzer.bohb_learning_curves.BohbLearningCurves.get_name">(cave.analyzer.bohb_learning_curves.BohbLearningCurves method)</a>
+        <li><a href="apidoc/cave.analyzer.configurator.configurator_footprint.html#cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint.get_name">(cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.box_violin.html#cave.analyzer.box_violin.BoxViolin.get_name">(cave.analyzer.box_violin.BoxViolin method)</a>
+        <li><a href="apidoc/cave.analyzer.configurator.parallel_coordinates.html#cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates.get_name">(cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.budget_correlation.html#cave.analyzer.budget_correlation.BudgetCorrelation.get_name">(cave.analyzer.budget_correlation.BudgetCorrelation method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.box_violin.html#cave.analyzer.feature_analysis.box_violin.BoxViolin.get_name">(cave.analyzer.feature_analysis.box_violin.BoxViolin method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_ablation.html#cave.analyzer.cave_ablation.CaveAblation.get_name">(cave.analyzer.cave_ablation.CaveAblation method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.feature_clustering.html#cave.analyzer.feature_analysis.feature_clustering.FeatureClustering.get_name">(cave.analyzer.feature_analysis.feature_clustering.FeatureClustering method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova.get_name">(cave.analyzer.cave_fanova.CaveFanova method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.feature_correlation.html#cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation.get_name">(cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_forward_selection.html#cave.analyzer.cave_forward_selection.CaveForwardSelection.get_name">(cave.analyzer.cave_forward_selection.CaveForwardSelection method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.feature_importance.html#cave.analyzer.feature_analysis.feature_importance.FeatureImportance.get_name">(cave.analyzer.feature_analysis.feature_importance.FeatureImportance method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_parameter_importance.html#cave.analyzer.cave_parameter_importance.CaveParameterImportance.get_name">(cave.analyzer.cave_parameter_importance.CaveParameterImportance method)</a>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.get_name">(cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.compare_default_incumbent.html#cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent.get_name">(cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent method)</a>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html#cave.analyzer.parameter_importance.pimp_comparison_table.PimpComparisonTable.get_name">(cave.analyzer.parameter_importance.pimp_comparison_table.PimpComparisonTable method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.configurator_footprint.html#cave.analyzer.configurator_footprint.ConfiguratorFootprint.get_name">(cave.analyzer.configurator_footprint.ConfiguratorFootprint method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.algorithm_footprint.html#cave.analyzer.performance.algorithm_footprint.AlgorithmFootprint.get_name">(cave.analyzer.performance.algorithm_footprint.AlgorithmFootprint method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime.get_name">(cave.analyzer.cost_over_time.CostOverTime method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.compare_default_incumbent.html#cave.analyzer.performance.compare_default_incumbent.CompareDefaultIncumbent.get_name">(cave.analyzer.performance.compare_default_incumbent.CompareDefaultIncumbent method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.feature_clustering.html#cave.analyzer.feature_clustering.FeatureClustering.get_name">(cave.analyzer.feature_clustering.FeatureClustering method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.CostOverTime.get_name">(cave.analyzer.performance.cost_over_time.CostOverTime method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.feature_correlation.html#cave.analyzer.feature_correlation.FeatureCorrelation.get_name">(cave.analyzer.feature_correlation.FeatureCorrelation method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.overview_table.html#cave.analyzer.performance.overview_table.OverviewTable.get_name">(cave.analyzer.performance.overview_table.OverviewTable method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.feature_importance.html#cave.analyzer.feature_importance.FeatureImportance.get_name">(cave.analyzer.feature_importance.FeatureImportance method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.performance_table.html#cave.analyzer.performance.performance_table.PerformanceTable.get_name">(cave.analyzer.performance.performance_table.PerformanceTable method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.local_parameter_importance.html#cave.analyzer.local_parameter_importance.LocalParameterImportance.get_name">(cave.analyzer.local_parameter_importance.LocalParameterImportance method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.plot_ecdf.html#cave.analyzer.performance.plot_ecdf.PlotECDF.get_name">(cave.analyzer.performance.plot_ecdf.PlotECDF method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable.get_name">(cave.analyzer.overview_table.OverviewTable method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.parallel_coordinates.html#cave.analyzer.parallel_coordinates.ParallelCoordinates.get_name">(cave.analyzer.parallel_coordinates.ParallelCoordinates method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.performance_table.html#cave.analyzer.performance_table.PerformanceTable.get_name">(cave.analyzer.performance_table.PerformanceTable method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.pimp_comparison_table.html#cave.analyzer.pimp_comparison_table.PimpComparisonTable.get_name">(cave.analyzer.pimp_comparison_table.PimpComparisonTable method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.plot_ecdf.html#cave.analyzer.plot_ecdf.PlotECDF.get_name">(cave.analyzer.plot_ecdf.PlotECDF method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.plot_scatter.html#cave.analyzer.plot_scatter.PlotScatter.get_name">(cave.analyzer.plot_scatter.PlotScatter method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.plot_scatter.html#cave.analyzer.performance.plot_scatter.PlotScatter.get_name">(cave.analyzer.performance.plot_scatter.PlotScatter method)</a>
 </li>
       </ul></li>
-      <li><a href="apidoc/cave.analyzer.performance_table.html#cave.analyzer.performance_table.PerformanceTable.get_oracle">get_oracle() (cave.analyzer.performance_table.PerformanceTable method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.performance_table.html#cave.analyzer.performance.performance_table.PerformanceTable.get_oracle">get_oracle() (cave.analyzer.performance.performance_table.PerformanceTable method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.performance_table.html#cave.analyzer.performance_table.PerformanceTable.get_parX">get_parX() (cave.analyzer.performance_table.PerformanceTable method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.performance_table.html#cave.analyzer.performance.performance_table.PerformanceTable.get_parX">get_parX() (cave.analyzer.performance.performance_table.PerformanceTable method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.performance_table.html#cave.analyzer.performance_table.PerformanceTable.get_performance_table">get_performance_table() (cave.analyzer.performance_table.PerformanceTable method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.performance_table.html#cave.analyzer.performance.performance_table.PerformanceTable.get_performance_table">get_performance_table() (cave.analyzer.performance.performance_table.PerformanceTable method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.algorithm_footprint.html#cave.analyzer.algorithm_footprint.AlgorithmFootprint.get_plots">get_plots() (cave.analyzer.algorithm_footprint.AlgorithmFootprint method)</a>
+      <li><a href="apidoc/cave.analyzer.configurator.configurator_footprint.html#cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint.get_plots">get_plots() (cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint method)</a>
 
       <ul>
-        <li><a href="apidoc/cave.analyzer.configurator_footprint.html#cave.analyzer.configurator_footprint.ConfiguratorFootprint.get_plots">(cave.analyzer.configurator_footprint.ConfiguratorFootprint method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.algorithm_footprint.html#cave.analyzer.performance.algorithm_footprint.AlgorithmFootprint.get_plots">(cave.analyzer.performance.algorithm_footprint.AlgorithmFootprint method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime.get_plots">(cave.analyzer.cost_over_time.CostOverTime method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.CostOverTime.get_plots">(cave.analyzer.performance.cost_over_time.CostOverTime method)</a>
 </li>
       </ul></li>
       <li><a href="apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.get_pred_surface">get_pred_surface() (cave.plot.configurator_footprint.ConfiguratorFootprintPlotter method)</a>
@@ -1064,19 +1149,69 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun.identify">identify() (cave.reader.configurator_run.ConfiguratorRun class method)</a>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.id">id() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool property)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.id">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool property)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.Line.index">index() (cave.analyzer.cost_over_time.Line method)</a>
+      <li><a href="apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun.identify">identify() (cave.reader.configurator_run.ConfiguratorRun class method)</a>
 </li>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.Line.index">index() (cave.analyzer.performance.cost_over_time.Line method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.js_event_callbacks">js_event_callbacks (cave.plot.parallel_plot.parallel_reset.ParallelResetTool attribute)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.js_event_callbacks">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.js_link">js_link() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.js_link">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.js_on_change">js_on_change() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.js_on_change">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.js_on_event">js_on_event() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.js_on_event">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.js_property_callbacks">js_property_callbacks (cave.plot.parallel_plot.parallel_reset.ParallelResetTool attribute)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.js_property_callbacks">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.Line">Line (class in cave.analyzer.cost_over_time)</a>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.layout">layout() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.layout">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.Line">Line (class in cave.analyzer.performance.cost_over_time)</a>
 </li>
       <li><a href="apidoc/cave.utils.io.html#cave.utils.io.load_config_csv">load_config_csv() (in module cave.utils.io)</a>
 </li>
@@ -1090,9 +1225,15 @@
 </li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.local_parameter_importance">local_parameter_importance() (cave.cavefacade.CAVE method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.local_parameter_importance.html#cave.analyzer.local_parameter_importance.LocalParameterImportance">LocalParameterImportance (class in cave.analyzer.local_parameter_importance)</a>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance">LocalParameterImportance (class in cave.analyzer.parameter_importance.local_parameter_importance)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.Line.lower">lower() (cave.analyzer.cost_over_time.Line property)</a>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.lookup">lookup() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool class method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.lookup">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool class method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.Line.lower">lower() (cave.analyzer.performance.cost_over_time.Line property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1104,7 +1245,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.Line.mean">mean() (cave.analyzer.cost_over_time.Line property)</a>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.Line.mean">mean() (cave.analyzer.performance.cost_over_time.Line property)</a>
 </li>
       <li><a href="apidoc/cave.utils.helpers.html#cave.utils.helpers.MissingInstancesError">MissingInstancesError</a>
 </li>
@@ -1114,10 +1255,18 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.Line.name">name() (cave.analyzer.cost_over_time.Line property)</a>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.name">name (cave.plot.parallel_plot.parallel_reset.ParallelResetTool attribute)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.name">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.Line.name">name() (cave.analyzer.performance.cost_over_time.Line property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.names">names (cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool attribute)</a>
+</li>
       <li><a href="apidoc/cave.utils.exceptions.html#cave.utils.exceptions.NotApplicable">NotApplicable</a>
 </li>
       <li><a href="apidoc/cave.utils.exceptions.html#cave.utils.exceptions.NotUniqueError">NotUniqueError</a>
@@ -1128,11 +1277,27 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.overview_table">overview_table() (cave.cavefacade.CAVE method)</a>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.on_change">on_change() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.on_change">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
 </li>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.on_event">on_event() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.on_event">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable">OverviewTable (class in cave.analyzer.overview_table)</a>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.origin">origin (cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool attribute)</a>
+</li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.overlay">overlay (cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool attribute)</a>
+</li>
+      <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.overview_table">overview_table() (cave.cavefacade.CAVE method)</a>
+</li>
+      <li><a href="apidoc/cave.analyzer.performance.overview_table.html#cave.analyzer.performance.overview_table.OverviewTable">OverviewTable (class in cave.analyzer.performance.overview_table)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1146,94 +1311,82 @@
 </li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.parallel_coordinates">parallel_coordinates() (cave.cavefacade.CAVE method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.parallel_coordinates.html#cave.analyzer.parallel_coordinates.ParallelCoordinates">ParallelCoordinates (class in cave.analyzer.parallel_coordinates)</a>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_plot.html#cave.plot.parallel_plot.parallel_plot.parallel_plot">parallel_plot() (in module cave.plot.parallel_plot.parallel_plot)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cave_ablation.html#cave.analyzer.cave_ablation.CaveAblation.parameter_importance">parameter_importance() (cave.analyzer.cave_ablation.CaveAblation method)</a>
+      <li><a href="apidoc/cave.analyzer.configurator.parallel_coordinates.html#cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates">ParallelCoordinates (class in cave.analyzer.configurator.parallel_coordinates)</a>
+</li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool">ParallelResetTool (class in cave.plot.parallel_plot.parallel_reset)</a>
+</li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool">ParallelSelectionTool (class in cave.plot.parallel_plot.parallel_selection_tool)</a>
+</li>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.parameter_importance">parameter_importance() (cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance method)</a>
 
       <ul>
-        <li><a href="apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova.parameter_importance">(cave.analyzer.cave_fanova.CaveFanova method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.cave_forward_selection.html#cave.analyzer.cave_forward_selection.CaveForwardSelection.parameter_importance">(cave.analyzer.cave_forward_selection.CaveForwardSelection method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.cave_parameter_importance.html#cave.analyzer.cave_parameter_importance.CaveParameterImportance.parameter_importance">(cave.analyzer.cave_parameter_importance.CaveParameterImportance method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.local_parameter_importance.html#cave.analyzer.local_parameter_importance.LocalParameterImportance.parameter_importance">(cave.analyzer.local_parameter_importance.LocalParameterImportance method)</a>
-</li>
         <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.parameter_importance">(cave.cavefacade.CAVE method)</a>
 </li>
       </ul></li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.performance_table">performance_table() (cave.cavefacade.CAVE method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.performance_table.html#cave.analyzer.performance_table.PerformanceTable">PerformanceTable (class in cave.analyzer.performance_table)</a>
+      <li><a href="apidoc/cave.analyzer.performance.performance_table.html#cave.analyzer.performance.performance_table.PerformanceTable">PerformanceTable (class in cave.analyzer.performance.performance_table)</a>
 </li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.pimp_comparison_table">pimp_comparison_table() (cave.cavefacade.CAVE method)</a>
 </li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.pimp_forward_selection">pimp_forward_selection() (cave.cavefacade.CAVE method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.pimp_comparison_table.html#cave.analyzer.pimp_comparison_table.PimpComparisonTable">PimpComparisonTable (class in cave.analyzer.pimp_comparison_table)</a>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html#cave.analyzer.parameter_importance.pimp_comparison_table.PimpComparisonTable">PimpComparisonTable (class in cave.analyzer.parameter_importance.pimp_comparison_table)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.bohb_learning_curves.html#cave.analyzer.bohb_learning_curves.BohbLearningCurves.plot">plot() (cave.analyzer.bohb_learning_curves.BohbLearningCurves method)</a>
+      <li><a href="apidoc/cave.analyzer.budgets.bohb_learning_curves.html#cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves.plot">plot() (cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves method)</a>
 
       <ul>
-        <li><a href="apidoc/cave.analyzer.budget_correlation.html#cave.analyzer.budget_correlation.BudgetCorrelation.plot">(cave.analyzer.budget_correlation.BudgetCorrelation method)</a>
+        <li><a href="apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation.plot">(cave.analyzer.budgets.budget_correlation.BudgetCorrelation method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.configurator_footprint.html#cave.analyzer.configurator_footprint.ConfiguratorFootprint.plot">(cave.analyzer.configurator_footprint.ConfiguratorFootprint method)</a>
+        <li><a href="apidoc/cave.analyzer.configurator.configurator_footprint.html#cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint.plot">(cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime.plot">(cave.analyzer.cost_over_time.CostOverTime method)</a>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html#cave.analyzer.parameter_importance.pimp_comparison_table.PimpComparisonTable.plot">(cave.analyzer.parameter_importance.pimp_comparison_table.PimpComparisonTable method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.pimp_comparison_table.html#cave.analyzer.pimp_comparison_table.PimpComparisonTable.plot">(cave.analyzer.pimp_comparison_table.PimpComparisonTable method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.CostOverTime.plot">(cave.analyzer.performance.cost_over_time.CostOverTime method)</a>
 </li>
         <li><a href="apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.plot">(cave.plot.configurator_footprint.ConfiguratorFootprintPlotter method)</a>
 </li>
       </ul></li>
       <li><a href="apidoc/cave.plot.algorithm_footprint.html#cave.plot.algorithm_footprint.AlgorithmFootprintPlotter.plot3d">plot3d() (cave.plot.algorithm_footprint.AlgorithmFootprintPlotter method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.algorithm_footprint.html#cave.analyzer.algorithm_footprint.AlgorithmFootprint.plot_bokeh">plot_bokeh() (cave.analyzer.algorithm_footprint.AlgorithmFootprint method)</a>
+      <li><a href="apidoc/cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer.plot_bokeh">plot_bokeh() (cave.analyzer.base_analyzer.BaseAnalyzer method)</a>
 
       <ul>
-        <li><a href="apidoc/cave.analyzer.base_analyzer.html#cave.analyzer.base_analyzer.BaseAnalyzer.plot_bokeh">(cave.analyzer.base_analyzer.BaseAnalyzer method)</a>
+        <li><a href="apidoc/cave.analyzer.budgets.bohb_learning_curves.html#cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves.plot_bokeh">(cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.bohb_incumbents_per_budget.html#cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget.plot_bokeh">(cave.analyzer.bohb_incumbents_per_budget.BohbIncumbentsPerBudget method)</a>
+        <li><a href="apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation.plot_bokeh">(cave.analyzer.budgets.budget_correlation.BudgetCorrelation method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.bohb_learning_curves.html#cave.analyzer.bohb_learning_curves.BohbLearningCurves.plot_bokeh">(cave.analyzer.bohb_learning_curves.BohbLearningCurves method)</a>
+        <li><a href="apidoc/cave.analyzer.configurator.configurator_footprint.html#cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint.plot_bokeh">(cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.box_violin.html#cave.analyzer.box_violin.BoxViolin.plot_bokeh">(cave.analyzer.box_violin.BoxViolin method)</a>
+        <li><a href="apidoc/cave.analyzer.configurator.parallel_coordinates.html#cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates.plot_bokeh">(cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.budget_correlation.html#cave.analyzer.budget_correlation.BudgetCorrelation.plot_bokeh">(cave.analyzer.budget_correlation.BudgetCorrelation method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.box_violin.html#cave.analyzer.feature_analysis.box_violin.BoxViolin.plot_bokeh">(cave.analyzer.feature_analysis.box_violin.BoxViolin method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_ablation.html#cave.analyzer.cave_ablation.CaveAblation.plot_bokeh">(cave.analyzer.cave_ablation.CaveAblation method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.feature_clustering.html#cave.analyzer.feature_analysis.feature_clustering.FeatureClustering.plot_bokeh">(cave.analyzer.feature_analysis.feature_clustering.FeatureClustering method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova.plot_bokeh">(cave.analyzer.cave_fanova.CaveFanova method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.feature_correlation.html#cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation.plot_bokeh">(cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_forward_selection.html#cave.analyzer.cave_forward_selection.CaveForwardSelection.plot_bokeh">(cave.analyzer.cave_forward_selection.CaveForwardSelection method)</a>
+        <li><a href="apidoc/cave.analyzer.feature_analysis.feature_importance.html#cave.analyzer.feature_analysis.feature_importance.FeatureImportance.plot_bokeh">(cave.analyzer.feature_analysis.feature_importance.FeatureImportance method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_parameter_importance.html#cave.analyzer.cave_parameter_importance.CaveParameterImportance.plot_bokeh">(cave.analyzer.cave_parameter_importance.CaveParameterImportance method)</a>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.plot_bokeh">(cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.compare_default_incumbent.html#cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent.plot_bokeh">(cave.analyzer.compare_default_incumbent.CompareDefaultIncumbent method)</a>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html#cave.analyzer.parameter_importance.pimp_comparison_table.PimpComparisonTable.plot_bokeh">(cave.analyzer.parameter_importance.pimp_comparison_table.PimpComparisonTable method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.configurator_footprint.html#cave.analyzer.configurator_footprint.ConfiguratorFootprint.plot_bokeh">(cave.analyzer.configurator_footprint.ConfiguratorFootprint method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.algorithm_footprint.html#cave.analyzer.performance.algorithm_footprint.AlgorithmFootprint.plot_bokeh">(cave.analyzer.performance.algorithm_footprint.AlgorithmFootprint method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.CostOverTime.plot_bokeh">(cave.analyzer.cost_over_time.CostOverTime method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.compare_default_incumbent.html#cave.analyzer.performance.compare_default_incumbent.CompareDefaultIncumbent.plot_bokeh">(cave.analyzer.performance.compare_default_incumbent.CompareDefaultIncumbent method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.feature_clustering.html#cave.analyzer.feature_clustering.FeatureClustering.plot_bokeh">(cave.analyzer.feature_clustering.FeatureClustering method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.CostOverTime.plot_bokeh">(cave.analyzer.performance.cost_over_time.CostOverTime method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.feature_correlation.html#cave.analyzer.feature_correlation.FeatureCorrelation.plot_bokeh">(cave.analyzer.feature_correlation.FeatureCorrelation method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.overview_table.html#cave.analyzer.performance.overview_table.OverviewTable.plot_bokeh">(cave.analyzer.performance.overview_table.OverviewTable method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.feature_importance.html#cave.analyzer.feature_importance.FeatureImportance.plot_bokeh">(cave.analyzer.feature_importance.FeatureImportance method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.performance_table.html#cave.analyzer.performance.performance_table.PerformanceTable.plot_bokeh">(cave.analyzer.performance.performance_table.PerformanceTable method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.local_parameter_importance.html#cave.analyzer.local_parameter_importance.LocalParameterImportance.plot_bokeh">(cave.analyzer.local_parameter_importance.LocalParameterImportance method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.plot_ecdf.html#cave.analyzer.performance.plot_ecdf.PlotECDF.plot_bokeh">(cave.analyzer.performance.plot_ecdf.PlotECDF method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable.plot_bokeh">(cave.analyzer.overview_table.OverviewTable method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.parallel_coordinates.html#cave.analyzer.parallel_coordinates.ParallelCoordinates.plot_bokeh">(cave.analyzer.parallel_coordinates.ParallelCoordinates method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.performance_table.html#cave.analyzer.performance_table.PerformanceTable.plot_bokeh">(cave.analyzer.performance_table.PerformanceTable method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.pimp_comparison_table.html#cave.analyzer.pimp_comparison_table.PimpComparisonTable.plot_bokeh">(cave.analyzer.pimp_comparison_table.PimpComparisonTable method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.plot_ecdf.html#cave.analyzer.plot_ecdf.PlotECDF.plot_bokeh">(cave.analyzer.plot_ecdf.PlotECDF method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.plot_scatter.html#cave.analyzer.plot_scatter.PlotScatter.plot_bokeh">(cave.analyzer.plot_scatter.PlotScatter method)</a>
+        <li><a href="apidoc/cave.analyzer.performance.plot_scatter.html#cave.analyzer.performance.plot_scatter.PlotScatter.plot_bokeh">(cave.analyzer.performance.plot_scatter.PlotScatter method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1250,34 +1403,52 @@
 </li>
       <li><a href="apidoc/cave.plot.scatter.html#cave.plot.scatter.plot_scatter_plot">plot_scatter_plot() (in module cave.plot.scatter)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.cave_ablation.html#cave.analyzer.cave_ablation.CaveAblation.plot_whiskers">plot_whiskers() (cave.analyzer.cave_ablation.CaveAblation method)</a>
-
-      <ul>
-        <li><a href="apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova.plot_whiskers">(cave.analyzer.cave_fanova.CaveFanova method)</a>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.plot_whiskers">plot_whiskers() (cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance method)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_forward_selection.html#cave.analyzer.cave_forward_selection.CaveForwardSelection.plot_whiskers">(cave.analyzer.cave_forward_selection.CaveForwardSelection method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.plot_ecdf.html#cave.analyzer.performance.plot_ecdf.PlotECDF">PlotECDF (class in cave.analyzer.performance.plot_ecdf)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.cave_parameter_importance.html#cave.analyzer.cave_parameter_importance.CaveParameterImportance.plot_whiskers">(cave.analyzer.cave_parameter_importance.CaveParameterImportance method)</a>
+      <li><a href="apidoc/cave.analyzer.performance.plot_scatter.html#cave.analyzer.performance.plot_scatter.PlotScatter">PlotScatter (class in cave.analyzer.performance.plot_scatter)</a>
 </li>
-        <li><a href="apidoc/cave.analyzer.local_parameter_importance.html#cave.analyzer.local_parameter_importance.LocalParameterImportance.plot_whiskers">(cave.analyzer.local_parameter_importance.LocalParameterImportance method)</a>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.postprocess">postprocess() (cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance method)</a>
 </li>
-      </ul></li>
-      <li><a href="apidoc/cave.analyzer.plot_ecdf.html#cave.analyzer.plot_ecdf.PlotECDF">PlotECDF (class in cave.analyzer.plot_ecdf)</a>
-</li>
-      <li><a href="apidoc/cave.analyzer.plot_scatter.html#cave.analyzer.plot_scatter.PlotScatter">PlotScatter (class in cave.analyzer.plot_scatter)</a>
-</li>
-      <li><a href="apidoc/cave.analyzer.cave_ablation.html#cave.analyzer.cave_ablation.CaveAblation.postprocess">postprocess() (cave.analyzer.cave_ablation.CaveAblation method)</a>
-
-      <ul>
-        <li><a href="apidoc/cave.analyzer.cave_fanova.html#cave.analyzer.cave_fanova.CaveFanova.postprocess">(cave.analyzer.cave_fanova.CaveFanova method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.cave_forward_selection.html#cave.analyzer.cave_forward_selection.CaveForwardSelection.postprocess">(cave.analyzer.cave_forward_selection.CaveForwardSelection method)</a>
-</li>
-        <li><a href="apidoc/cave.analyzer.local_parameter_importance.html#cave.analyzer.local_parameter_importance.LocalParameterImportance.postprocess">(cave.analyzer.local_parameter_importance.LocalParameterImportance method)</a>
-</li>
-      </ul></li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.print_budgets">print_budgets() (cave.cavefacade.CAVE method)</a>
 </li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.properties">properties() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool class method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.properties">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool class method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.properties_containers">properties_containers() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool class method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.properties_containers">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool class method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.properties_with_refs">properties_with_refs() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool class method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.properties_with_refs">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool class method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.properties_with_values">properties_with_values() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.properties_with_values">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Q">Q</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.query_properties_with_values">query_properties_with_values() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.query_properties_with_values">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -1288,16 +1459,40 @@
 </li>
       <li><a href="apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.reduce_runhistory">reduce_runhistory() (cave.plot.configurator_footprint.ConfiguratorFootprintPlotter method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.overview_table.html#cave.analyzer.overview_table.OverviewTable.run">run() (cave.analyzer.overview_table.OverviewTable method)</a>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.ref">ref() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool property)</a>
 
       <ul>
-        <li><a href="apidoc/cave.analyzer.pimp_comparison_table.html#cave.analyzer.pimp_comparison_table.PimpComparisonTable.run">(cave.analyzer.pimp_comparison_table.PimpComparisonTable method)</a>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.ref">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool property)</a>
 </li>
-        <li><a href="apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.run">(cave.plot.configurator_footprint.ConfiguratorFootprintPlotter method)</a>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.references">references() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.references">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.remove_on_change">remove_on_change() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.remove_on_change">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.renderer_data">renderer_data (cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool attribute)</a>
+</li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.renderer_select">renderer_select (cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool attribute)</a>
+</li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.renderers">renderers (cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool attribute)</a>
+</li>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html#cave.analyzer.parameter_importance.pimp_comparison_table.PimpComparisonTable.run">run() (cave.analyzer.parameter_importance.pimp_comparison_table.PimpComparisonTable method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.analyzer.performance.overview_table.html#cave.analyzer.performance.overview_table.OverviewTable.run">(cave.analyzer.performance.overview_table.OverviewTable method)</a>
+</li>
+        <li><a href="apidoc/cave.plot.configurator_footprint.html#cave.plot.configurator_footprint.ConfiguratorFootprintPlotter.run">(cave.plot.configurator_footprint.ConfiguratorFootprintPlotter method)</a>
+</li>
+      </ul></li>
       <li><a href="apidoc/cave.reader.runs_container.html#cave.reader.runs_container.RunsContainer">RunsContainer (class in cave.reader.runs_container)</a>
 </li>
   </ul></td>
@@ -1308,35 +1503,117 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidoc/cave.utils.helpers.html#cave.utils.helpers.scenario_sanity_check">scenario_sanity_check() (in module cave.utils.helpers)</a>
 </li>
-      <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.set_verbosity">set_verbosity() (cave.cavefacade.CAVE method)</a>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.select">select() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.select">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
 </li>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.select_every_mousemove">select_every_mousemove (cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool attribute)</a>
+</li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.select_one">select_one() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.select_one">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.set_from_json">set_from_json() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.set_from_json">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.set_select">set_select() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.set_select">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.set_verbosity">set_verbosity() (cave.cavefacade.CAVE method)</a>
+</li>
       <li><a href="apidoc/cave.reader.smac2_reader.html#cave.reader.smac2_reader.SMAC2Reader">SMAC2Reader (class in cave.reader.smac2_reader)</a>
 </li>
       <li><a href="apidoc/cave.reader.smac3_reader.html#cave.reader.smac3_reader.SMAC3Reader">SMAC3Reader (class in cave.reader.smac3_reader)</a>
 </li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.subscribed_events">subscribed_events (cave.plot.parallel_plot.parallel_reset.ParallelResetTool attribute)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.subscribed_events">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.Line.time">time() (cave.analyzer.cost_over_time.Line property)</a>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.tags">tags (cave.plot.parallel_plot.parallel_reset.ParallelResetTool attribute)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.tags">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.themed_values">themed_values() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.themed_values">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.Line.time">time() (cave.analyzer.performance.cost_over_time.Line property)</a>
+</li>
+      <li><a href="apidoc/cave.analyzer.performance.performance_table.html#cave.analyzer.performance.performance_table.PerformanceTable.timeouts_to_tuple">timeouts_to_tuple() (cave.analyzer.performance.performance_table.PerformanceTable method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidoc/cave.analyzer.performance_table.html#cave.analyzer.performance_table.PerformanceTable.timeouts_to_tuple">timeouts_to_tuple() (cave.analyzer.performance_table.PerformanceTable method)</a>
-</li>
       <li><a href="apidoc/cave.utils.timing.html#cave.utils.timing.timing">timing() (in module cave.utils.timing)</a>
 </li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.to_json">to_json() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.to_json">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.to_json_string">to_json_string() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.to_json_string">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.trigger">trigger() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.trigger">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apidoc/cave.analyzer.cost_over_time.html#cave.analyzer.cost_over_time.Line.upper">upper() (cave.analyzer.cost_over_time.Line property)</a>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.unapply_theme">unapply_theme() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.unapply_theme">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.update">update() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.update">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.update_from_json">update_from_json() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool.update_from_json">(cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool method)</a>
+</li>
+      </ul></li>
+      <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.Line.upper">upper() (cave.analyzer.performance.cost_over_time.Line property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1371,11 +1648,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1386,7 +1671,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

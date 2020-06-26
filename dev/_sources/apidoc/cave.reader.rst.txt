@@ -11,11 +11,13 @@ cave.reader package
 Subpackages
 
 .. toctree::
+   :maxdepth: 4
 
    cave.reader.conversion
 
 
 .. toctree::
+   :maxdepth: 4
 
    cave.reader.base_reader
    cave.reader.configurator_run

@@ -1,0 +1,1469 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>bokeh.core.property.descriptors &mdash; CAVE 1.3.4.dev documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> CAVE
+          
+
+          
+            
+            <img src="../../../../_static/cave.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3.4.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../manual.html">Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/commandline.html">Commandline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/fileformats.html">Input Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../faq.html">F.A.Q.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api.html">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.analyzer.html">cave.analyzer package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.budgets.html">cave.analyzer.budgets package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.budgets.bohb_incumbents_per_budget.html">cave.analyzer.budgets.bohb_incumbents_per_budget module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.budgets.bohb_learning_curves.html">cave.analyzer.budgets.bohb_learning_curves module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.budgets.budget_correlation.html">cave.analyzer.budgets.budget_correlation module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.configurator.html">cave.analyzer.configurator package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.configurator.configurator_footprint.html">cave.analyzer.configurator.configurator_footprint module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.configurator.parallel_coordinates.html">cave.analyzer.configurator.parallel_coordinates module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.html">cave.analyzer.feature_analysis package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.box_violin.html">cave.analyzer.feature_analysis.box_violin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.feature_analysis.html">cave.analyzer.feature_analysis.feature_analysis module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.feature_clustering.html">cave.analyzer.feature_analysis.feature_clustering module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.feature_correlation.html">cave.analyzer.feature_analysis.feature_correlation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.feature_imp.html">cave.analyzer.feature_analysis.feature_imp module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.feature_importance.html">cave.analyzer.feature_analysis.feature_importance module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.html">cave.analyzer.parameter_importance package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.cave_ablation.html">cave.analyzer.parameter_importance.cave_ablation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.cave_fanova.html">cave.analyzer.parameter_importance.cave_fanova module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.cave_forward_selection.html">cave.analyzer.parameter_importance.cave_forward_selection module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.cave_parameter_importance.html">cave.analyzer.parameter_importance.cave_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html">cave.analyzer.parameter_importance.local_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html">cave.analyzer.parameter_importance.pimp_comparison_table module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.html">cave.analyzer.performance package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.algorithm_footprint.html">cave.analyzer.performance.algorithm_footprint module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.compare_default_incumbent.html">cave.analyzer.performance.compare_default_incumbent module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.cost_over_time.html">cave.analyzer.performance.cost_over_time module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.overview_table.html">cave.analyzer.performance.overview_table module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.performance_table.html">cave.analyzer.performance.performance_table module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.plot_ecdf.html">cave.analyzer.performance.plot_ecdf module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.plot_scatter.html">cave.analyzer.performance.plot_scatter module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.base_analyzer.html">cave.analyzer.base_analyzer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.cave_cli.html">cave.cave_cli module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.cavefacade.html">cave.cavefacade module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.plot.html">cave.plot package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.parallel_plot.html">cave.plot.parallel_plot package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.plot.parallel_plot.parallel_plot.html">cave.plot.parallel_plot.parallel_plot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.plot.parallel_plot.parallel_reset.html">cave.plot.parallel_plot.parallel_reset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.plot.parallel_plot.parallel_selection_tool.html">cave.plot.parallel_plot.parallel_selection_tool module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.html.html">cave.html package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.html.html_builder.html">cave.html.html_builder module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.html.html_helpers.html">cave.html.html_helpers module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.html">cave.reader.conversion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.utils.html">cave.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.tooltips.html">cave.utils.tooltips module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contribute.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contact.html">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../license.html">License</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">CAVE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>bokeh.core.property.descriptors</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for bokeh.core.property.descriptors</h1><div class="highlight"><pre>
+<span></span><span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Copyright (c) 2012 - 2019, Anaconda, Inc., and Bokeh Contributors.</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># The full license is in the file LICENSE.txt, distributed with this software.</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="sd">&#39;&#39;&#39; Provide Python descriptors for delegating to Bokeh properties.</span>
+
+<span class="sd">The Python `descriptor protocol`_ allows fine-grained control over all</span>
+<span class="sd">attribute access on instances (&quot;You control the dot&quot;). Bokeh uses the</span>
+<span class="sd">descriptor protocol to provide easy-to-use, declarative, type-based</span>
+<span class="sd">class properties that can automatically validate and serialize their</span>
+<span class="sd">values, as well as help provide sophisticated documentation.</span>
+
+<span class="sd">A Bokeh property really consist of two parts: a familiar &quot;property&quot;</span>
+<span class="sd">portion, such as ``Int``, ``String``, etc., as well as an associated</span>
+<span class="sd">Python descriptor that delegates attribute access to the property instance.</span>
+
+<span class="sd">For example, a very simplified definition of a range-like object might</span>
+<span class="sd">be:</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    from bokeh.model import Model</span>
+<span class="sd">    from bokeh.core.properties import Float</span>
+
+<span class="sd">    class Range(Model):</span>
+<span class="sd">        start = Float(help=&quot;start point&quot;)</span>
+<span class="sd">        end   = Float(help=&quot;end point&quot;)</span>
+
+<span class="sd">When this class is created, the ``MetaHasProps`` metaclass wires up both</span>
+<span class="sd">the ``start`` and ``end`` attributes to a ``Float`` property. Then, when</span>
+<span class="sd">a user accesses those attributes, the descriptor delegates all get and</span>
+<span class="sd">set operations to the ``Float`` property.</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    rng = Range()</span>
+
+<span class="sd">    # The descriptor __set__ method delegates to Float, which can validate</span>
+<span class="sd">    # the value 10.3 as a valid floating point value</span>
+<span class="sd">    rng.start = 10.3</span>
+
+<span class="sd">    # But can raise a validation exception if an attempt to set to a list</span>
+<span class="sd">    # is made</span>
+<span class="sd">    rng.end = [1,2,3]   # ValueError !</span>
+
+<span class="sd">More sophisticated properties such as ``DataSpec`` and its subclasses can</span>
+<span class="sd">exert control over how values are serialized. Consider this example with</span>
+<span class="sd">the ``Circle`` glyph and its ``x`` attribute that is a ``NumberSpec``:</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    from bokeh.models import Circle</span>
+
+<span class="sd">    c = Circle()</span>
+
+<span class="sd">    c.x = 10      # serializes to {&#39;value&#39;: 10}</span>
+
+<span class="sd">    c.x = &#39;foo&#39;   # serializes to {&#39;field&#39;: &#39;foo&#39;}</span>
+
+<span class="sd">There are many other examples like this throughout Bokeh. In this way users</span>
+<span class="sd">may operate simply and naturally, and not be concerned with the low-level</span>
+<span class="sd">details around validation, serialization, and documentation.</span>
+
+<span class="sd">This module provides the class |PropertyDescriptor| and various subclasses</span>
+<span class="sd">that can be used to attach Bokeh properties to Bokeh models.</span>
+
+<span class="sd">.. note::</span>
+<span class="sd">    These classes form part of the very low-level machinery that implements</span>
+<span class="sd">    the Bokeh model and property system. It is unlikely that any of these</span>
+<span class="sd">    classes or their methods will be applicable to any standard usage or to</span>
+<span class="sd">    anyone who is not directly developing on Bokeh&#39;s own infrastructure.</span>
+
+<span class="sd">.. _descriptor protocol: https://docs.python.org/3/howto/descriptor.html</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Boilerplate</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">unicode_literals</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Imports</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+
+
+<span class="c1"># Standard library imports</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+
+<span class="c1"># External imports</span>
+<span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">string_types</span>
+
+<span class="c1"># Bokeh imports</span>
+<span class="kn">from</span> <span class="nn">.wrappers</span> <span class="kn">import</span> <span class="n">PropertyValueContainer</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Globals and constants</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;BasicPropertyDescriptor&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ColumnDataPropertyDescriptor&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;DataSpecPropertyDescriptor&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;PropertyDescriptor&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;UnitsSpecPropertyDescriptor&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># General API</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Dev API</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+
+<span class="k">class</span> <span class="nc">PropertyDescriptor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Base class for a python descriptor that delegates access for a named</span>
+<span class="sd">    attribute to a Bokeh |Property| instance.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Create a descriptor for a hooking up a named Bokeh property</span>
+<span class="sd">        as an attribute on a |HasProps| class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str) : the attribute name that this descriptor is for</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Basic string representation of ``PropertyDescriptor``.</span>
+
+<span class="sd">        **Subclasses must implement this to serve their specific needs.**</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="s2">&quot;PropertyDescriptor(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">owner</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Implement the getter for the Python `descriptor protocol`_.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps or None) :</span>
+<span class="sd">                The instance to set a new property value on (for instance</span>
+<span class="sd">                attribute access), or None (for class attribute access)</span>
+
+<span class="sd">            owner (obj) :</span>
+<span class="sd">                The new value to set the property to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError</span>
+
+<span class="sd">        **Subclasses must implement this to serve their specific needs.**</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Implement __get__&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Implement the setter for the Python `descriptor protocol`_.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            An optional argument ``setter`` has been added to the standard</span>
+<span class="sd">            setter arguments. When needed, this value should be provided by</span>
+<span class="sd">            explicitly invoking ``__set__``. See below for more information.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps) :</span>
+<span class="sd">                The instance to set a new property value on</span>
+
+<span class="sd">            value (obj) :</span>
+<span class="sd">                The new value to set the property to</span>
+
+<span class="sd">            setter (ClientSession or ServerSession or None, optional) :</span>
+<span class="sd">                This is used to prevent &quot;boomerang&quot; updates to Bokeh apps.</span>
+<span class="sd">                (default: None)</span>
+
+<span class="sd">                In the context of a Bokeh server application, incoming updates</span>
+<span class="sd">                to properties will be annotated with the session that is</span>
+<span class="sd">                doing the updating. This value is propagated through any</span>
+<span class="sd">                subsequent change notifications that the update triggers.</span>
+<span class="sd">                The session can compare the event setter to itself, and</span>
+<span class="sd">                suppress any updates that originate from itself.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError</span>
+
+<span class="sd">        **Subclasses must implement this to serve their specific needs.**</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Implement __set__&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__delete__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Implement the deleter for the Python `descriptor protocol`_.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps) : An instance to delete this property from</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError</span>
+
+<span class="sd">        **Subclasses must implement this to serve their specific needs.**</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Implement __delete__&quot;</span><span class="p">)</span>
+
+    <span class="c1"># This would probably be cleaner with some form of multiple dispatch</span>
+    <span class="c1"># on (descriptor, property). Currently this method has to know about</span>
+    <span class="c1"># various other classes, and that is annoying.</span>
+    <span class="k">def</span> <span class="nf">add_prop_descriptor_to_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">new_class_attrs</span><span class="p">,</span> <span class="n">names_with_refs</span><span class="p">,</span> <span class="n">container_names</span><span class="p">,</span> <span class="n">dataspecs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; ``MetaHasProps`` calls this during class creation as it iterates</span>
+<span class="sd">        over properties to add, to update its registry of new properties.</span>
+
+<span class="sd">        The parameters passed in are mutable and this function is expected to</span>
+<span class="sd">        update them accordingly.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            class_name (str) :</span>
+<span class="sd">                name of the class this descriptor is added to</span>
+
+<span class="sd">            new_class_attrs(dict[str, PropertyDescriptor]) :</span>
+<span class="sd">                mapping of attribute names to PropertyDescriptor that this</span>
+<span class="sd">                function will update</span>
+
+<span class="sd">            names_with_refs (set[str]) :</span>
+<span class="sd">                set of all property names for properties that also have</span>
+<span class="sd">                references, that this function will update</span>
+
+<span class="sd">            container_names (set[str]) :</span>
+<span class="sd">                set of all property names for properties that are</span>
+<span class="sd">                container props, that this function will update</span>
+
+<span class="sd">            dataspecs(dict[str, PropertyDescriptor]) :</span>
+<span class="sd">                mapping of attribute names to PropertyDescriptor for DataSpec</span>
+<span class="sd">                properties that this function will update</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="kn">from</span> <span class="nn">.bases</span> <span class="kn">import</span> <span class="n">ContainerProperty</span>
+        <span class="kn">from</span> <span class="nn">.dataspec</span> <span class="kn">import</span> <span class="n">DataSpec</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">new_class_attrs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Two property generators both created </span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+        <span class="n">new_class_attrs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ref</span><span class="p">:</span>
+            <span class="n">names_with_refs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">BasicPropertyDescriptor</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="p">,</span> <span class="n">ContainerProperty</span><span class="p">):</span>
+                <span class="n">container_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="p">,</span> <span class="n">DataSpec</span><span class="p">):</span>
+                <span class="n">dataspecs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">class_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; The default as computed for a certain class, ignoring any</span>
+<span class="sd">        per-instance theming.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError</span>
+
+<span class="sd">        **Subclasses must implement this to serve their specific needs.**</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Implement class_default()&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">serializable_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Produce the value as it should be serialized.</span>
+
+<span class="sd">        Sometimes it is desirable for the serialized value to differ from</span>
+<span class="sd">        the ``__get__`` in order for the ``__get__`` value to appear simpler</span>
+<span class="sd">        for user or developer convenience.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps) : the object to get the serialized attribute for</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            JSON-like</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">serialize_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_from_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">json</span><span class="p">,</span> <span class="n">models</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Sets the value of this property from a JSON value.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj: (HasProps) : instance to set the property value on</span>
+
+<span class="sd">            json: (JSON-value) : value to set to the attribute to</span>
+
+<span class="sd">            models (dict or None, optional) :</span>
+<span class="sd">                Mapping of model ids to models (default: None)</span>
+
+<span class="sd">                This is needed in cases where the attributes to update also</span>
+<span class="sd">                have values that have references.</span>
+
+<span class="sd">            setter (ClientSession or ServerSession or None, optional) :</span>
+<span class="sd">                This is used to prevent &quot;boomerang&quot; updates to Bokeh apps.</span>
+<span class="sd">                (default: None)</span>
+
+<span class="sd">                In the context of a Bokeh server application, incoming updates</span>
+<span class="sd">                to properties will be annotated with the session that is</span>
+<span class="sd">                doing the updating. This value is propagated through any</span>
+<span class="sd">                subsequent change notifications that the update triggers.</span>
+<span class="sd">                The session can compare the event setter to itself, and</span>
+<span class="sd">                suppress any updates that originate from itself.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_internal_set</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">json</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="n">setter</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">trigger_if_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">old</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Send a change event notification if the property is set to a</span>
+<span class="sd">        value is not equal to ``old``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps)</span>
+<span class="sd">                The object the property is being set on.</span>
+
+<span class="sd">            old (obj) :</span>
+<span class="sd">                The previous value of the property to compare</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError</span>
+
+<span class="sd">        **Subclasses must implement this to serve their specific needs.**</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Implement trigger_if_changed()&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">has_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Whether the property can refer to another ``HasProps`` instance.</span>
+
+<span class="sd">        This is typically True for container properties, ``Instance``, etc.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError</span>
+
+<span class="sd">        **Subclasses must implement this to serve their specific needs.**</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Implement has_ref()&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">readonly</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Whether this property is read-only.</span>
+
+<span class="sd">        Read-only properties may only be modified by the client (i.e., by</span>
+<span class="sd">        BokehJS, in the browser). Read only properties are useful for</span>
+<span class="sd">        quantities that originate or that can only be computed in the</span>
+<span class="sd">        browser, for instance the &quot;inner&quot; plot dimension of a plot area,</span>
+<span class="sd">        which depend on the current layout state. It is useful for Python</span>
+<span class="sd">        callbacks to be able to know these values, but they can only be</span>
+<span class="sd">        computed in the actual browser.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError</span>
+
+<span class="sd">        **Subclasses must implement this to serve their specific needs.**</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Implement readonly()&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">serialized</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Whether the property should be serialized when serializing</span>
+<span class="sd">        an object.</span>
+
+<span class="sd">        This would be False for a &quot;virtual&quot; or &quot;convenience&quot; property that</span>
+<span class="sd">        duplicates information already available in other properties, for</span>
+<span class="sd">        example.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError</span>
+
+<span class="sd">        **Subclasses must implement this to serve their specific needs.**</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Implement serialized()&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_internal_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Internal implementation to set property values, that is used</span>
+<span class="sd">        by __set__, set_from_json, etc.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps)</span>
+<span class="sd">                The object the property is being set on.</span>
+
+<span class="sd">            old (obj) :</span>
+<span class="sd">                The previous value of the property to compare</span>
+
+<span class="sd">            hint (event hint or None, optional)</span>
+<span class="sd">                An optional update event hint, e.g. ``ColumnStreamedEvent``</span>
+<span class="sd">                (default: None)</span>
+
+<span class="sd">                Update event hints are usually used at times when better</span>
+<span class="sd">                update performance can be obtained by special-casing in</span>
+<span class="sd">                some way (e.g. streaming or patching column data sources)</span>
+
+<span class="sd">            setter (ClientSession or ServerSession or None, optional) :</span>
+<span class="sd">                This is used to prevent &quot;boomerang&quot; updates to Bokeh apps.</span>
+<span class="sd">                (default: None)</span>
+
+<span class="sd">                In the context of a Bokeh server application, incoming updates</span>
+<span class="sd">                to properties will be annotated with the session that is</span>
+<span class="sd">                doing the updating. This value is propagated through any</span>
+<span class="sd">                subsequent change notifications that the update triggers.</span>
+<span class="sd">                The session can compare the event setter to itself, and</span>
+<span class="sd">                suppress any updates that originate from itself.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError</span>
+
+<span class="sd">        **Subclasses must implement this to serve their specific needs.**</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Implement _internal_set()&quot;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">BasicPropertyDescriptor</span><span class="p">(</span><span class="n">PropertyDescriptor</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; A ``PropertyDescriptor`` for basic Bokeh properties (e.g, ``Int``,</span>
+<span class="sd">    ``String``, ``Float``, etc.) with simple get/set and serialization</span>
+<span class="sd">    behavior.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="nb">property</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Create a PropertyDescriptor for basic Bokeh properties.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str) : The attribute name that this property is for</span>
+<span class="sd">            property (Property) : A basic property to create a descriptor for</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BasicPropertyDescriptor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">property</span> <span class="o">=</span> <span class="nb">property</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="vm">__doc__</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Basic string representation of ``BasicPropertyDescriptor``.</span>
+
+<span class="sd">        Delegates to ``self.property.__str__``</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">property</span>
+
+    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">owner</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Implement the getter for the Python `descriptor protocol`_.</span>
+
+<span class="sd">        For instance attribute access, we delegate to the |Property|. For</span>
+<span class="sd">        class attribute access, we return ourself.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps or None) :</span>
+<span class="sd">                The instance to set a new property value on (for instance</span>
+<span class="sd">                attribute access), or None (for class attribute access)</span>
+
+<span class="sd">            owner (obj) :</span>
+<span class="sd">                The new value to set the property to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Examples:</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                &gt;&gt;&gt; from bokeh.models import Range1d</span>
+
+<span class="sd">                &gt;&gt;&gt; r = Range1d(start=10, end=20)</span>
+
+<span class="sd">                # instance attribute access, returns the property value</span>
+<span class="sd">                &gt;&gt;&gt; r.start</span>
+<span class="sd">                10</span>
+
+<span class="sd">                # class attribute access, returns the property descriptor</span>
+<span class="sd">                &gt;&gt;&gt; Range1d.start</span>
+<span class="sd">                &lt;bokeh.core.property.descriptors.BasicPropertyDescriptor at 0x1148b3390&gt;</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># This should really never happen. If it does, it means we&#39;ve</span>
+            <span class="c1"># called __get__ explicitly but in a bad way.</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;both &#39;obj&#39; and &#39;owner&#39; are None, don&#39;t know what to do&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Implement the setter for the Python `descriptor protocol`_.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            An optional argument ``setter`` has been added to the standard</span>
+<span class="sd">            setter arguments. When needed, this value should be provided by</span>
+<span class="sd">            explicitly invoking ``__set__``. See below for more information.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps) :</span>
+<span class="sd">                The instance to set a new property value on</span>
+
+<span class="sd">            value (obj) :</span>
+<span class="sd">                The new value to set the property to</span>
+
+<span class="sd">            setter (ClientSession or ServerSession or None, optional) :</span>
+<span class="sd">                This is used to prevent &quot;boomerang&quot; updates to Bokeh apps.</span>
+<span class="sd">                (default: None)</span>
+
+<span class="sd">                In the context of a Bokeh server application, incoming updates</span>
+<span class="sd">                to properties will be annotated with the session that is</span>
+<span class="sd">                doing the updating. This value is propagated through any</span>
+<span class="sd">                subsequent change notifications that the update triggers.</span>
+<span class="sd">                The session can compare the event setter to itself, and</span>
+<span class="sd">                suppress any updates that originate from itself.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;_property_values&#39;</span><span class="p">):</span>
+            <span class="c1"># Initial values should be passed in to __init__, not set directly</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Cannot set a property value &#39;</span><span class="si">%s</span><span class="s2">&#39; on a </span><span class="si">%s</span><span class="s2"> instance before HasProps.__init__&quot;</span> <span class="o">%</span>
+                               <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">_readonly</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2"> is a readonly property&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_internal_set</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="n">setter</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__delete__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Implement the deleter for the Python `descriptor protocol`_.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps) : An instance to delete this property from</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">_property_values</span><span class="p">:</span>
+            <span class="n">old_value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_property_values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">obj</span><span class="o">.</span><span class="n">_property_values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trigger_if_changed</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">old_value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">_unstable_default_values</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">obj</span><span class="o">.</span><span class="n">_unstable_default_values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">class_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Get the default value for a specific subtype of ``HasProps``,</span>
+<span class="sd">        which may not be used for an individual instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cls (class) : The class to get the default value for.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object</span>
+
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">themed_default</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">instance_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Get the default value that will be used for a specific instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps) : The instance to get the default value for.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">themed_default</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">themed_values</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">set_from_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">json</span><span class="p">,</span> <span class="n">models</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Sets the value of this property from a JSON value.</span>
+
+<span class="sd">        This method first</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps) :</span>
+
+<span class="sd">            json (JSON-dict) :</span>
+
+<span class="sd">            models(seq[Model], optional) :</span>
+
+<span class="sd">            setter (ClientSession or ServerSession or None, optional) :</span>
+<span class="sd">                This is used to prevent &quot;boomerang&quot; updates to Bokeh apps.</span>
+<span class="sd">                (default: None)</span>
+
+<span class="sd">                In the context of a Bokeh server application, incoming updates</span>
+<span class="sd">                to properties will be annotated with the session that is</span>
+<span class="sd">                doing the updating. This value is propagated through any</span>
+<span class="sd">                subsequent change notifications that the update triggers.</span>
+<span class="sd">                The session can compare the event setter to itself, and</span>
+<span class="sd">                suppress any updates that originate from itself.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">BasicPropertyDescriptor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_from_json</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span>
+                                                        <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">json</span><span class="p">,</span> <span class="n">models</span><span class="p">),</span>
+                                                        <span class="n">models</span><span class="p">,</span> <span class="n">setter</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">trigger_if_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">old</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Send a change event notification if the property is set to a</span>
+<span class="sd">        value is not equal to ``old``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps)</span>
+<span class="sd">                The object the property is being set on.</span>
+
+<span class="sd">            old (obj) :</span>
+<span class="sd">                The previous value of the property to compare</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">new_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">has_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Whether the property can refer to another ``HasProps`` instance.</span>
+
+<span class="sd">        For basic properties, delegate to the ``has_ref`` attribute on the</span>
+<span class="sd">        |Property|.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">has_ref</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">readonly</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Whether this property is read-only.</span>
+
+<span class="sd">        Read-only properties may only be modified by the client (i.e., by BokehJS</span>
+<span class="sd">        in the browser).</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">readonly</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">serialized</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Whether the property should be serialized when serializing an</span>
+<span class="sd">        object.</span>
+
+<span class="sd">        This would be False for a &quot;virtual&quot; or &quot;convenience&quot; property that</span>
+<span class="sd">        duplicates information already available in other properties, for</span>
+<span class="sd">        example.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">serialized</span>
+
+    <span class="k">def</span> <span class="nf">_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Internal implementation of instance attribute access for the</span>
+<span class="sd">        ``BasicPropertyDescriptor`` getter.</span>
+
+<span class="sd">        If the value has not been explicitly set by a user, return that</span>
+<span class="sd">        value. Otherwise, return the default.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps) : the instance to get a value of this property for</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError</span>
+<span class="sd">                If the |HasProps| instance has not yet been initialized, or if</span>
+<span class="sd">                this descriptor is on a class that is not a |HasProps|.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;_property_values&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Cannot get a property value &#39;</span><span class="si">%s</span><span class="s2">&#39; from a </span><span class="si">%s</span><span class="s2"> instance before HasProps.__init__&quot;</span> <span class="o">%</span>
+                               <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">_property_values</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_default</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">_property_values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Internal implementation of instance attribute access for default</span>
+<span class="sd">        values.</span>
+
+<span class="sd">        Handles bookeeping around |PropertyContainer| value, etc.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">_property_values</span><span class="p">:</span>
+            <span class="c1"># this shouldn&#39;t happen because we should have checked before _get_default()</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Bokeh internal error, does not handle the case of self.name already in _property_values&quot;</span><span class="p">)</span>
+
+        <span class="n">is_themed</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">themed_values</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">themed_values</span><span class="p">()</span>
+
+        <span class="n">default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_default</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">is_themed</span><span class="p">:</span>
+            <span class="n">unstable_dict</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_unstable_themed_values</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">unstable_dict</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_unstable_default_values</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">unstable_dict</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">unstable_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">_may_have_unstable_default</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">PropertyValueContainer</span><span class="p">):</span>
+                <span class="n">default</span><span class="o">.</span><span class="n">_register_owner</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="n">unstable_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">default</span>
+
+        <span class="k">return</span> <span class="n">default</span>
+
+    <span class="k">def</span> <span class="nf">_internal_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Internal implementation to set property values, that is used</span>
+<span class="sd">        by __set__, set_from_json, etc.</span>
+
+<span class="sd">        Delegate to the |Property| instance to prepare the value appropriately,</span>
+<span class="sd">        then `set.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps)</span>
+<span class="sd">                The object the property is being set on.</span>
+
+<span class="sd">            old (obj) :</span>
+<span class="sd">                The previous value of the property to compare</span>
+
+<span class="sd">            hint (event hint or None, optional)</span>
+<span class="sd">                An optional update event hint, e.g. ``ColumnStreamedEvent``</span>
+<span class="sd">                (default: None)</span>
+
+<span class="sd">                Update event hints are usually used at times when better</span>
+<span class="sd">                update performance can be obtained by special-casing in</span>
+<span class="sd">                some way (e.g. streaming or patching column data sources)</span>
+
+<span class="sd">            setter (ClientSession or ServerSession or None, optional) :</span>
+<span class="sd">                This is used to prevent &quot;boomerang&quot; updates to Bokeh apps.</span>
+<span class="sd">                (default: None)</span>
+
+<span class="sd">                In the context of a Bokeh server application, incoming updates</span>
+<span class="sd">                to properties will be annotated with the session that is</span>
+<span class="sd">                doing the updating. This value is propagated through any</span>
+<span class="sd">                subsequent change notifications that the update triggers.</span>
+<span class="sd">                The session can compare the event setter to itself, and</span>
+<span class="sd">                suppress any updates that originate from itself.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">prepare_value</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="n">old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_real_set</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="n">hint</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="n">setter</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_real_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Internal implementation helper to set property values.</span>
+
+<span class="sd">        This function handles bookkeeping around noting whether values have</span>
+<span class="sd">        been explicitly set, etc.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps)</span>
+<span class="sd">                The object the property is being set on.</span>
+
+<span class="sd">            old (obj) :</span>
+<span class="sd">                The previous value of the property to compare</span>
+
+<span class="sd">            hint (event hint or None, optional)</span>
+<span class="sd">                An optional update event hint, e.g. ``ColumnStreamedEvent``</span>
+<span class="sd">                (default: None)</span>
+
+<span class="sd">                Update event hints are usually used at times when better</span>
+<span class="sd">                update performance can be obtained by special-casing in</span>
+<span class="sd">                some way (e.g. streaming or patching column data sources)</span>
+
+<span class="sd">            setter (ClientSession or ServerSession or None, optional) :</span>
+<span class="sd">                This is used to prevent &quot;boomerang&quot; updates to Bokeh apps.</span>
+<span class="sd">                (default: None)</span>
+
+<span class="sd">                In the context of a Bokeh server application, incoming updates</span>
+<span class="sd">                to properties will be annotated with the session that is</span>
+<span class="sd">                doing the updating. This value is propagated through any</span>
+<span class="sd">                subsequent change notifications that the update triggers.</span>
+<span class="sd">                The session can compare the event setter to itself, and</span>
+<span class="sd">                suppress any updates that originate from itself.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># Normally we want a &quot;no-op&quot; if the new value and old value are identical</span>
+        <span class="c1"># but some hinted events are in-place. This check will allow those cases</span>
+        <span class="c1"># to continue on to the notification machinery</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">old</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">hint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="n">was_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">_property_values</span>
+
+        <span class="c1"># &quot;old&quot; is the logical old value, but it may not be the actual current</span>
+        <span class="c1"># attribute value if our value was mutated behind our back and we got</span>
+        <span class="c1"># _notify_mutated.</span>
+        <span class="k">if</span> <span class="n">was_set</span><span class="p">:</span>
+            <span class="n">old_attr_value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_property_values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">old_attr_value</span> <span class="o">=</span> <span class="n">old</span>
+
+        <span class="k">if</span> <span class="n">old_attr_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">old_attr_value</span><span class="p">,</span> <span class="n">PropertyValueContainer</span><span class="p">):</span>
+                <span class="n">old_attr_value</span><span class="o">.</span><span class="n">_unregister_owner</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">PropertyValueContainer</span><span class="p">):</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">_register_owner</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">_unstable_themed_values</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">obj</span><span class="o">.</span><span class="n">_unstable_themed_values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">_unstable_default_values</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">obj</span><span class="o">.</span><span class="n">_unstable_default_values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+
+            <span class="n">obj</span><span class="o">.</span><span class="n">_property_values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="c1"># for notification purposes, &quot;old&quot; should be the logical old</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="n">hint</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="n">setter</span><span class="p">)</span>
+
+    <span class="c1"># called when a container is mutated &quot;behind our back&quot; and</span>
+    <span class="c1"># we detect it with our collection wrappers.</span>
+    <span class="k">def</span> <span class="nf">_notify_mutated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; A method to call when a container is mutated &quot;behind our back&quot;</span>
+<span class="sd">        and we detect it with our |PropertyContainer| wrappers.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps) :</span>
+<span class="sd">                The object who&#39;s container value was mutated</span>
+
+<span class="sd">            old (object) :</span>
+<span class="sd">                The &quot;old&quot; value of the container</span>
+
+<span class="sd">                In this case, somewhat weirdly, ``old`` is a copy and the</span>
+<span class="sd">                new value should already be set unless we change it due to</span>
+<span class="sd">                validation.</span>
+
+<span class="sd">            hint (event hint or None, optional)</span>
+<span class="sd">                An optional update event hint, e.g. ``ColumnStreamedEvent``</span>
+<span class="sd">                (default: None)</span>
+
+<span class="sd">                Update event hints are usually used at times when better</span>
+<span class="sd">                update performance can be obtained by special-casing in</span>
+<span class="sd">                some way (e.g. streaming or patching column data sources)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+
+        <span class="c1"># re-validate because the contents of &#39;old&#39; have changed,</span>
+        <span class="c1"># in some cases this could give us a new object for the value</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">prepare_value</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_real_set</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="n">hint</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Unconditionally send a change event notification for the property.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps)</span>
+<span class="sd">                The object the property is being set on.</span>
+
+<span class="sd">            old (obj) :</span>
+<span class="sd">                The previous value of the property</span>
+
+<span class="sd">            new (obj) :</span>
+<span class="sd">                The new value of the property</span>
+
+<span class="sd">            hint (event hint or None, optional)</span>
+<span class="sd">                An optional update event hint, e.g. ``ColumnStreamedEvent``</span>
+<span class="sd">                (default: None)</span>
+
+<span class="sd">                Update event hints are usually used at times when better</span>
+<span class="sd">                update performance can be obtained by special-casing in</span>
+<span class="sd">                some way (e.g. streaming or patching column data sources)</span>
+
+<span class="sd">            setter (ClientSession or ServerSession or None, optional) :</span>
+<span class="sd">                This is used to prevent &quot;boomerang&quot; updates to Bokeh apps.</span>
+<span class="sd">                (default: None)</span>
+
+<span class="sd">                In the context of a Bokeh server application, incoming updates</span>
+<span class="sd">                to properties will be annotated with the session that is</span>
+<span class="sd">                doing the updating. This value is propagated through any</span>
+<span class="sd">                subsequent change notifications that the update triggers.</span>
+<span class="sd">                The session can compare the event setter to itself, and</span>
+<span class="sd">                suppress any updates that originate from itself.</span>
+
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;trigger&#39;</span><span class="p">):</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">hint</span><span class="p">,</span> <span class="n">setter</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ColumnDataPropertyDescriptor</span><span class="p">(</span><span class="n">BasicPropertyDescriptor</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; A ``PropertyDescriptor`` specialized to handling ``ColumnData`` properties.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Implement the setter for the Python `descriptor protocol`_.</span>
+
+<span class="sd">        This method first separately extracts and removes any ``units`` field</span>
+<span class="sd">        in the JSON, and sets the associated units property directly. The</span>
+<span class="sd">        remaining value is then passed to the superclass ``__set__`` to</span>
+<span class="sd">        be handled.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            An optional argument ``setter`` has been added to the standard</span>
+<span class="sd">            setter arguments. When needed, this value should be provided by</span>
+<span class="sd">            explicitly invoking ``__set__``. See below for more information.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps) :</span>
+<span class="sd">                The instance to set a new property value on</span>
+
+<span class="sd">            value (obj) :</span>
+<span class="sd">                The new value to set the property to</span>
+
+<span class="sd">            setter (ClientSession or ServerSession or None, optional) :</span>
+<span class="sd">                This is used to prevent &quot;boomerang&quot; updates to Bokeh apps.</span>
+<span class="sd">                (default: None)</span>
+
+<span class="sd">                In the context of a Bokeh server application, incoming updates</span>
+<span class="sd">                to properties will be annotated with the session that is</span>
+<span class="sd">                doing the updating. This value is propagated through any</span>
+<span class="sd">                subsequent change notifications that the update triggers.</span>
+<span class="sd">                The session can compare the event setter to itself, and</span>
+<span class="sd">                suppress any updates that originate from itself.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;_property_values&#39;</span><span class="p">):</span>
+            <span class="c1"># Initial values should be passed in to __init__, not set directly</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Cannot set a property value &#39;</span><span class="si">%s</span><span class="s2">&#39; on a </span><span class="si">%s</span><span class="s2"> instance before HasProps.__init__&quot;</span> <span class="o">%</span>
+                               <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">_readonly</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2"> is a readonly property&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+        <span class="kn">from</span> <span class="nn">...document.events</span> <span class="kn">import</span> <span class="n">ColumnDataChangedEvent</span>
+
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">document</span><span class="p">:</span>
+            <span class="n">hint</span> <span class="o">=</span> <span class="n">ColumnDataChangedEvent</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">document</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="n">setter</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">hint</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_internal_set</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="n">hint</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="n">setter</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">DataSpecPropertyDescriptor</span><span class="p">(</span><span class="n">BasicPropertyDescriptor</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; A ``PropertyDescriptor`` for Bokeh |DataSpec| properties that serialize to</span>
+<span class="sd">    field/value dictionaries.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">serializable_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">to_serializable</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">set_from_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">json</span><span class="p">,</span> <span class="n">models</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Sets the value of this property from a JSON value.</span>
+
+<span class="sd">        This method first</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps) :</span>
+
+<span class="sd">            json (JSON-dict) :</span>
+
+<span class="sd">            models(seq[Model], optional) :</span>
+
+<span class="sd">            setter (ClientSession or ServerSession or None, optional) :</span>
+<span class="sd">                This is used to prevent &quot;boomerang&quot; updates to Bokeh apps.</span>
+<span class="sd">                (default: None)</span>
+
+<span class="sd">                In the context of a Bokeh server application, incoming updates</span>
+<span class="sd">                to properties will be annotated with the session that is</span>
+<span class="sd">                doing the updating. This value is propagated through any</span>
+<span class="sd">                subsequent change notifications that the update triggers.</span>
+<span class="sd">                The session can compare the event setter to itself, and</span>
+<span class="sd">                suppress any updates that originate from itself.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">json</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="c1"># we want to try to keep the &quot;format&quot; of the data spec as string, dict, or number,</span>
+            <span class="c1"># assuming the serialized dict is compatible with that.</span>
+            <span class="n">old</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">old</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">_type</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="s1">&#39;value&#39;</span> <span class="ow">in</span> <span class="n">json</span><span class="p">:</span>
+                        <span class="n">json</span> <span class="o">=</span> <span class="n">json</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">string_types</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;field&#39;</span> <span class="ow">in</span> <span class="n">json</span><span class="p">:</span>
+                        <span class="n">json</span> <span class="o">=</span> <span class="n">json</span><span class="p">[</span><span class="s1">&#39;field&#39;</span><span class="p">]</span>
+                <span class="c1"># leave it as a dict if &#39;old&#39; was a dict</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">DataSpecPropertyDescriptor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_from_json</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">json</span><span class="p">,</span> <span class="n">models</span><span class="p">,</span> <span class="n">setter</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">UnitsSpecPropertyDescriptor</span><span class="p">(</span><span class="n">DataSpecPropertyDescriptor</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; A ``PropertyDecscriptor`` for Bokeh |UnitsSpec| properties that contribute</span>
+<span class="sd">    associated ``_units`` properties automatically as a side effect.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="nb">property</span><span class="p">,</span> <span class="n">units_property</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str) :</span>
+<span class="sd">                The attribute name that this property is for</span>
+
+<span class="sd">            property (Property) :</span>
+<span class="sd">                A basic property to create a descriptor for</span>
+
+<span class="sd">            units_property (Property) :</span>
+<span class="sd">                An associated property to hold units information</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">UnitsSpecPropertyDescriptor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">property</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units_prop</span> <span class="o">=</span> <span class="n">units_property</span>
+
+    <span class="k">def</span> <span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Implement the setter for the Python `descriptor protocol`_.</span>
+
+<span class="sd">        This method first separately extracts and removes any ``units`` field</span>
+<span class="sd">        in the JSON, and sets the associated units property directly. The</span>
+<span class="sd">        remaining value is then passed to the superclass ``__set__`` to</span>
+<span class="sd">        be handled.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            An optional argument ``setter`` has been added to the standard</span>
+<span class="sd">            setter arguments. When needed, this value should be provided by</span>
+<span class="sd">            explicitly invoking ``__set__``. See below for more information.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps) :</span>
+<span class="sd">                The instance to set a new property value on</span>
+
+<span class="sd">            value (obj) :</span>
+<span class="sd">                The new value to set the property to</span>
+
+<span class="sd">            setter (ClientSession or ServerSession or None, optional) :</span>
+<span class="sd">                This is used to prevent &quot;boomerang&quot; updates to Bokeh apps.</span>
+<span class="sd">                (default: None)</span>
+
+<span class="sd">                In the context of a Bokeh server application, incoming updates</span>
+<span class="sd">                to properties will be annotated with the session that is</span>
+<span class="sd">                doing the updating. This value is propagated through any</span>
+<span class="sd">                subsequent change notifications that the update triggers.</span>
+<span class="sd">                The session can compare the event setter to itself, and</span>
+<span class="sd">                suppress any updates that originate from itself.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_units</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">UnitsSpecPropertyDescriptor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">setter</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_from_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">json</span><span class="p">,</span> <span class="n">models</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Sets the value of this property from a JSON value.</span>
+
+<span class="sd">        This method first separately extracts and removes any ``units`` field</span>
+<span class="sd">        in the JSON, and sets the associated units property directly. The</span>
+<span class="sd">        remaining JSON is then passed to the superclass ``set_from_json`` to</span>
+<span class="sd">        be handled.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj: (HasProps) : instance to set the property value on</span>
+
+<span class="sd">            json: (JSON-value) : value to set to the attribute to</span>
+
+<span class="sd">            models (dict or None, optional) :</span>
+<span class="sd">                Mapping of model ids to models (default: None)</span>
+
+<span class="sd">                This is needed in cases where the attributes to update also</span>
+<span class="sd">                have values that have references.</span>
+
+<span class="sd">            setter (ClientSession or ServerSession or None, optional) :</span>
+<span class="sd">                This is used to prevent &quot;boomerang&quot; updates to Bokeh apps.</span>
+<span class="sd">                (default: None)</span>
+
+<span class="sd">                In the context of a Bokeh server application, incoming updates</span>
+<span class="sd">                to properties will be annotated with the session that is</span>
+<span class="sd">                doing the updating. This value is propagated through any</span>
+<span class="sd">                subsequent change notifications that the update triggers.</span>
+<span class="sd">                The session can compare the event setter to itself, and</span>
+<span class="sd">                suppress any updates that originate from itself.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_units</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">json</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">UnitsSpecPropertyDescriptor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_from_json</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">json</span><span class="p">,</span> <span class="n">models</span><span class="p">,</span> <span class="n">setter</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_extract_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Internal helper for dealing with units associated units properties</span>
+<span class="sd">        when setting values on |UnitsSpec| properties.</span>
+
+<span class="sd">        When ``value`` is a dict, this function may mutate the value of the</span>
+<span class="sd">        associated units property.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (HasProps) : instance to update units spec property value for</span>
+<span class="sd">            value (obj) : new value to set for the property</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            copy of ``value``, with &#39;units&#39; key and value removed when</span>
+<span class="sd">            applicable</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;units&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="c1"># so we can modify it</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;units&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">units</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">units_prop</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">units</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Private API</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Code</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

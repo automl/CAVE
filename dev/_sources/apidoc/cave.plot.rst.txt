@@ -8,8 +8,16 @@ cave.plot package
    :inherited-members:
    :private-members:
 
+Subpackages
 
 .. toctree::
+   :maxdepth: 4
+
+   cave.plot.parallel_plot
+
+
+.. toctree::
+   :maxdepth: 4
 
    cave.plot.algorithm_footprint
    cave.plot.cdf

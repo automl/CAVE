@@ -1,0 +1,544 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>cave.analyzer.budgets.budget_correlation &mdash; CAVE 1.3.4.dev documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> CAVE
+          
+
+          
+            
+            <img src="../../../../_static/cave.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3.4.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../manual.html">Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/commandline.html">Commandline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/fileformats.html">Input Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../faq.html">F.A.Q.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api.html">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.analyzer.html">cave.analyzer package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.budgets.html">cave.analyzer.budgets package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.budgets.bohb_incumbents_per_budget.html">cave.analyzer.budgets.bohb_incumbents_per_budget module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.budgets.bohb_learning_curves.html">cave.analyzer.budgets.bohb_learning_curves module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.budgets.budget_correlation.html">cave.analyzer.budgets.budget_correlation module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.configurator.html">cave.analyzer.configurator package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.configurator.configurator_footprint.html">cave.analyzer.configurator.configurator_footprint module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.configurator.parallel_coordinates.html">cave.analyzer.configurator.parallel_coordinates module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.html">cave.analyzer.feature_analysis package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.box_violin.html">cave.analyzer.feature_analysis.box_violin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.feature_analysis.html">cave.analyzer.feature_analysis.feature_analysis module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.feature_clustering.html">cave.analyzer.feature_analysis.feature_clustering module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.feature_correlation.html">cave.analyzer.feature_analysis.feature_correlation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.feature_imp.html">cave.analyzer.feature_analysis.feature_imp module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.feature_importance.html">cave.analyzer.feature_analysis.feature_importance module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.html">cave.analyzer.parameter_importance package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.cave_ablation.html">cave.analyzer.parameter_importance.cave_ablation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.cave_fanova.html">cave.analyzer.parameter_importance.cave_fanova module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.cave_forward_selection.html">cave.analyzer.parameter_importance.cave_forward_selection module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.cave_parameter_importance.html">cave.analyzer.parameter_importance.cave_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html">cave.analyzer.parameter_importance.local_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html">cave.analyzer.parameter_importance.pimp_comparison_table module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.html">cave.analyzer.performance package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.algorithm_footprint.html">cave.analyzer.performance.algorithm_footprint module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.compare_default_incumbent.html">cave.analyzer.performance.compare_default_incumbent module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.cost_over_time.html">cave.analyzer.performance.cost_over_time module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.overview_table.html">cave.analyzer.performance.overview_table module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.performance_table.html">cave.analyzer.performance.performance_table module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.plot_ecdf.html">cave.analyzer.performance.plot_ecdf module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.plot_scatter.html">cave.analyzer.performance.plot_scatter module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.base_analyzer.html">cave.analyzer.base_analyzer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.cave_cli.html">cave.cave_cli module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.cavefacade.html">cave.cavefacade module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.plot.html">cave.plot package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.parallel_plot.html">cave.plot.parallel_plot package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.plot.parallel_plot.parallel_plot.html">cave.plot.parallel_plot.parallel_plot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.plot.parallel_plot.parallel_reset.html">cave.plot.parallel_plot.parallel_reset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.plot.parallel_plot.parallel_selection_tool.html">cave.plot.parallel_plot.parallel_selection_tool module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.html.html">cave.html package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.html.html_builder.html">cave.html.html_builder module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.html.html_helpers.html">cave.html.html_helpers module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.html">cave.reader.conversion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.utils.html">cave.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.tooltips.html">cave.utils.tooltips module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contribute.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contact.html">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../license.html">License</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">CAVE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>cave.analyzer.budgets.budget_correlation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for cave.analyzer.budgets.budget_correlation</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">bokeh.embed</span> <span class="kn">import</span> <span class="n">components</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="kn">import</span> <span class="n">output_notebook</span>
+<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="kn">import</span> <span class="n">column</span><span class="p">,</span> <span class="n">row</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="kn">import</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">CustomJS</span><span class="p">,</span> <span class="n">Range1d</span>
+<span class="kn">from</span> <span class="nn">bokeh.models.widgets</span> <span class="kn">import</span> <span class="n">DataTable</span><span class="p">,</span> <span class="n">TableColumn</span><span class="p">,</span> <span class="n">Select</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">show</span><span class="p">,</span> <span class="n">figure</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">spearmanr</span>
+
+<span class="kn">from</span> <span class="nn">cave.analyzer.base_analyzer</span> <span class="kn">import</span> <span class="n">BaseAnalyzer</span>
+<span class="kn">from</span> <span class="nn">cave.utils.hpbandster_helpers</span> <span class="kn">import</span> <span class="n">format_budgets</span>
+
+
+<div class="viewcode-block" id="BudgetCorrelation"><a class="viewcode-back" href="../../../../apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation">[docs]</a><span class="k">class</span> <span class="nc">BudgetCorrelation</span><span class="p">(</span><span class="n">BaseAnalyzer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Use spearman correlation to get a correlation-value and a p-value for every pairwise combination of budgets.</span>
+<span class="sd">    First value is the correlation, second is the p-value (the p-value roughly estimates the likelihood to obtain</span>
+<span class="sd">    this correlation coefficient with uncorrelated datasets).</span>
+<span class="sd">    This can be used to estimate how well a budget approximates the function to be optimized.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">runscontainer</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        runscontainer: RunsContainer</span>
+<span class="sd">            contains all important information about the configurator runs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">runscontainer</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">runs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_aggregated</span><span class="p">(</span><span class="n">keep_budgets</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keep_folders</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">budget_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">format_budgets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">get_budgets</span><span class="p">(),</span> <span class="n">allow_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Budget names: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">budget_names</span><span class="p">))</span>
+
+        <span class="c1"># To be set</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="BudgetCorrelation.get_name"><a class="viewcode-back" href="../../../../apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Budget Correlation&quot;</span></div>
+
+<div class="viewcode-block" id="BudgetCorrelation._get_table"><a class="viewcode-back" href="../../../../apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation._get_table">[docs]</a>    <span class="k">def</span> <span class="nf">_get_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runs</span><span class="p">):</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">b1</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">:</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+            <span class="k">for</span> <span class="n">b2</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">:</span>
+                <span class="n">configs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">b1</span><span class="o">.</span><span class="n">combined_runhistory</span><span class="o">.</span><span class="n">get_all_configs</span><span class="p">())</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span>
+                                <span class="nb">set</span><span class="p">(</span><span class="n">b2</span><span class="o">.</span><span class="n">combined_runhistory</span><span class="o">.</span><span class="n">get_all_configs</span><span class="p">()))</span>
+                <span class="n">costs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[(</span><span class="n">b1</span><span class="o">.</span><span class="n">combined_runhistory</span><span class="o">.</span><span class="n">get_cost</span><span class="p">(</span><span class="n">c</span><span class="p">),</span>
+                                    <span class="n">b2</span><span class="o">.</span><span class="n">combined_runhistory</span><span class="o">.</span><span class="n">get_cost</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">]))</span>
+                <span class="n">rho</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">spearmanr</span><span class="p">(</span><span class="n">costs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">costs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="c1"># Differentiate to generate upper diagonal</span>
+                <span class="k">if</span> <span class="n">runs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">runs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">b1</span><span class="p">):</span>
+                    <span class="n">table</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">table</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.2f}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2"> samples)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">costs</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+
+        <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">table</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">budget_names</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">budget_names</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BudgetCorrelation.plot"><a class="viewcode-back" href="../../../../apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create table and plot that reacts to selection of cells by updating the plotted data to visualize</span>
+<span class="sd">        correlation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BudgetCorrelation._plot"><a class="viewcode-back" href="../../../../apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation._plot">[docs]</a>    <span class="k">def</span> <span class="nf">_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create table and plot that reacts to selection of cells by updating the plotted data to visualize correlation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        runs: List[ConfiguratorRun]</span>
+<span class="sd">            list with runs (budgets) to be compared</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_table</span><span class="p">(</span><span class="n">runs</span><span class="p">)</span>
+        <span class="c1"># Create CDS from pandas dataframe</span>
+        <span class="n">budget_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">budget_names</span><span class="p">])</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Budget&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">table_source</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="c1"># Create bokeh-datatable</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">TableColumn</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s1">&#39;Budget&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Budget&quot;</span><span class="p">,</span> <span class="n">sortable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span>
+                   <span class="n">TableColumn</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">default_sort</span><span class="o">=</span><span class="s1">&#39;descending&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+                   <span class="k">for</span> <span class="n">header</span> <span class="ow">in</span> <span class="n">budget_names</span>
+                  <span class="p">]</span>
+        <span class="n">bokeh_table</span> <span class="o">=</span> <span class="n">DataTable</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">table_source</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">index_position</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sortable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                <span class="n">height</span><span class="o">=</span><span class="mi">20</span> <span class="o">+</span> <span class="mi">30</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Budget&quot;</span><span class="p">]))</span>
+
+        <span class="c1"># Create CDS for scatter-plot</span>
+        <span class="n">all_configs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">a</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">original_runhistory</span><span class="o">.</span><span class="n">get_all_configs</span><span class="p">()</span> <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">b</span><span class="p">])</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">budget_names</span><span class="p">[</span><span class="n">idx</span><span class="p">]:</span> <span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">original_runhistory</span><span class="o">.</span><span class="n">get_cost</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span>  <span class="c1"># TODO</span>
+                                         <span class="n">run</span><span class="o">.</span><span class="n">original_runhistory</span><span class="o">.</span><span class="n">get_all_configs</span><span class="p">()</span> <span class="k">else</span>
+                                         <span class="kc">None</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_configs</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">run</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">runs</span><span class="p">)}</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Default scatter should be lowest vs highest:</span>
+        <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">budget_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">data</span><span class="p">[</span><span class="n">budget_names</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]):</span>
+            <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                <span class="n">data</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">(</span><span class="n">record</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">list_of_warnings</span><span class="p">:</span>
+            <span class="c1"># Catch unmatching column lengths warning</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;always&#39;</span><span class="p">)</span>
+            <span class="n">scatter_source</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">list_of_warnings</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;During budget correlation a </span><span class="si">%s</span><span class="s2"> was raised: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">category</span><span class="p">),</span> <span class="n">w</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="c1"># Create figure and dynamically updating plot (linked with table)</span>
+        <span class="n">min_val</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="nb">min</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">val</span> <span class="k">if</span> <span class="n">v</span><span class="p">])</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">max_val</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">max</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">val</span> <span class="k">if</span> <span class="n">v</span><span class="p">])</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">padding</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_val</span> <span class="o">-</span> <span class="n">min_val</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span>  <span class="c1"># Small padding to border (fraction of total intervall)</span>
+        <span class="n">min_val</span> <span class="o">-=</span> <span class="n">padding</span>
+        <span class="n">max_val</span> <span class="o">+=</span> <span class="n">padding</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">plot_width</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">plot_height</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+                   <span class="n">match_aspect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                   <span class="n">y_range</span><span class="o">=</span><span class="n">Range1d</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">min_val</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">max_val</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">)),</span>
+                   <span class="n">x_range</span><span class="o">=</span><span class="n">Range1d</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">min_val</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">max_val</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">)),</span>
+                   <span class="n">x_axis_label</span><span class="o">=</span><span class="n">budget_names</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y_axis_label</span><span class="o">=</span><span class="n">budget_names</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span>
+                 <span class="c1"># x=jitter(&#39;x&#39;, 0.1), y=jitter(&#39;y&#39;, 0.1),</span>
+                 <span class="n">source</span><span class="o">=</span><span class="n">scatter_source</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;navy&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="n">code_budgets</span> <span class="o">=</span> <span class="s1">&#39;var budgets = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">budget_names</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;; console.log(budgets);&#39;</span>
+
+        <span class="n">code_try</span> <span class="o">=</span> <span class="s1">&#39;try {&#39;</span>
+        <span class="n">code_get_selected_cell</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            // This first part only extracts selected row and column!</span>
+<span class="s2">            var grid = document.getElementsByClassName(&#39;grid-canvas&#39;)[0].children;</span>
+<span class="s2">            var row = &#39;&#39;;</span>
+<span class="s2">            var col = &#39;&#39;;</span>
+<span class="s2">            for (var i=0,max=grid.length;i&lt;max;i++){</span>
+<span class="s2">                if (grid[i].outerHTML.includes(&#39;active&#39;)){</span>
+<span class="s2">                    row=i;</span>
+<span class="s2">                    for (var j=0,jmax=grid[i].children.length;j&lt;jmax;j++){</span>
+<span class="s2">                        if(grid[i].children[j].outerHTML.includes(&#39;active&#39;)){col=j}</span>
+<span class="s2">                    }</span>
+<span class="s2">                }</span>
+<span class="s2">            }</span>
+<span class="s2">            col = col - 1;</span>
+<span class="s2">            console.log(&#39;row&#39;, row, budgets[row]);</span>
+<span class="s2">            console.log(&#39;col&#39;, col, budgets[col]);</span>
+<span class="s2">            table_source.selected.indices = [];  // Reset, so gets triggered again when clicked again</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+        <span class="n">code_selected</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        row = budgets.indexOf(select_x.value);</span>
+<span class="s2">        col = budgets.indexOf(select_y.value);</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+        <span class="n">code_update_selection_values</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        select_x.value = budgets[row];</span>
+<span class="s2">        select_y.value = budgets[col];</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+        <span class="n">code_update_plot</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            // This is the actual updating of the plot</span>
+<span class="s2">            if (row =&gt;  0 &amp;&amp; col &gt; 0) {</span>
+<span class="s2">              // Copy relevant arrays</span>
+<span class="s2">              var new_x = scatter_source.data[budgets[row]].slice();</span>
+<span class="s2">              var new_y = scatter_source.data[budgets[col]].slice();</span>
+<span class="s2">              // Remove all pairs where one value is null</span>
+<span class="s2">              while ((next_null = new_x.indexOf(null)) &gt; -1) {</span>
+<span class="s2">                new_x.splice(next_null, 1);</span>
+<span class="s2">                new_y.splice(next_null, 1);</span>
+<span class="s2">              }</span>
+<span class="s2">              while ((next_null = new_y.indexOf(null)) &gt; -1) {</span>
+<span class="s2">                new_x.splice(next_null, 1);</span>
+<span class="s2">                new_y.splice(next_null, 1);</span>
+<span class="s2">              }</span>
+<span class="s2">              // Assign new data to the plotted columns</span>
+<span class="s2">              scatter_source.data[&#39;x&#39;] = new_x;</span>
+<span class="s2">              scatter_source.data[&#39;y&#39;] = new_y;</span>
+<span class="s2">              scatter_source.change.emit();</span>
+<span class="s2">              // Update axis-labels</span>
+<span class="s2">              xaxis.attributes.axis_label = budgets[row];</span>
+<span class="s2">              yaxis.attributes.axis_label = budgets[col];</span>
+<span class="s2">              // Update ranges</span>
+<span class="s2">              var min = Math.min(...[Math.min(...new_x), Math.min(...new_y)])</span>
+<span class="s2">                  max = Math.max(...[Math.max(...new_x), Math.max(...new_y)]);</span>
+<span class="s2">              var padding = (max - min) / 10;</span>
+<span class="s2">              console.log(min, max, padding);</span>
+<span class="s2">              xr.start = min - padding;</span>
+<span class="s2">              yr.start = min - padding;</span>
+<span class="s2">              xr.end = max + padding;</span>
+<span class="s2">              yr.end = max + padding;</span>
+<span class="s2">            }</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+        <span class="n">code_catch</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        } catch(err) {</span>
+<span class="s2">            console.log(err.message);</span>
+<span class="s2">        }</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+        <span class="n">code_selected</span> <span class="o">=</span> <span class="n">code_budgets</span> <span class="o">+</span> <span class="n">code_try</span> <span class="o">+</span> <span class="n">code_selected</span> <span class="o">+</span> <span class="n">code_update_plot</span> <span class="o">+</span> <span class="n">code_catch</span>
+        <span class="n">select_x</span> <span class="o">=</span> <span class="n">Select</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;X-axis:&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">budget_names</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>  <span class="n">options</span><span class="o">=</span><span class="n">budget_names</span><span class="p">)</span>
+        <span class="n">select_y</span> <span class="o">=</span> <span class="n">Select</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Y-axis:&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">budget_names</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">options</span><span class="o">=</span><span class="n">budget_names</span><span class="p">)</span>
+        <span class="n">callback_select</span> <span class="o">=</span> <span class="n">CustomJS</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">scatter_source</span><span class="o">=</span><span class="n">scatter_source</span><span class="p">,</span>
+                                             <span class="n">select_x</span><span class="o">=</span><span class="n">select_x</span><span class="p">,</span> <span class="n">select_y</span><span class="o">=</span><span class="n">select_y</span><span class="p">,</span>
+                                             <span class="n">xaxis</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">yaxis</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">yaxis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                             <span class="n">xr</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">x_range</span><span class="p">,</span> <span class="n">yr</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">y_range</span><span class="p">,</span>
+                                             <span class="p">),</span> <span class="n">code</span><span class="o">=</span><span class="n">code_selected</span><span class="p">)</span>
+        <span class="n">select_x</span><span class="o">.</span><span class="n">js_on_change</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">callback_select</span><span class="p">)</span>
+        <span class="n">select_y</span><span class="o">.</span><span class="n">js_on_change</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">callback_select</span><span class="p">)</span>
+
+        <span class="n">code_table_cell</span> <span class="o">=</span> <span class="n">code_budgets</span> <span class="o">+</span> <span class="n">code_try</span> <span class="o">+</span> <span class="n">code_get_selected_cell</span> <span class="o">+</span> <span class="n">code_update_selection_values</span>
+        <span class="n">code_table_cell</span> <span class="o">+=</span> <span class="n">code_update_plot</span> <span class="o">+</span> <span class="n">code_catch</span>
+        <span class="n">callback_table_cell</span> <span class="o">=</span> <span class="n">CustomJS</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">table_source</span><span class="o">=</span><span class="n">table_source</span><span class="p">,</span>
+                                                 <span class="n">scatter_source</span><span class="o">=</span><span class="n">scatter_source</span><span class="p">,</span>
+                                                 <span class="n">select_x</span><span class="o">=</span><span class="n">select_x</span><span class="p">,</span> <span class="n">select_y</span><span class="o">=</span><span class="n">select_y</span><span class="p">,</span>
+                                                 <span class="n">xaxis</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">yaxis</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">yaxis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                                 <span class="n">xr</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">x_range</span><span class="p">,</span> <span class="n">yr</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">y_range</span><span class="p">,</span>
+                                                 <span class="p">),</span> <span class="n">code</span><span class="o">=</span><span class="n">code_table_cell</span><span class="p">)</span>
+        <span class="n">table_source</span><span class="o">.</span><span class="n">selected</span><span class="o">.</span><span class="n">js_on_change</span><span class="p">(</span><span class="s1">&#39;indices&#39;</span><span class="p">,</span> <span class="n">callback_table_cell</span><span class="p">)</span>
+
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">column</span><span class="p">(</span><span class="n">bokeh_table</span><span class="p">,</span> <span class="n">row</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">column</span><span class="p">(</span><span class="n">select_x</span><span class="p">,</span> <span class="n">select_y</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">layout</span></div>
+
+<div class="viewcode-block" id="BudgetCorrelation.get_html"><a class="viewcode-back" href="../../../../apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation.get_html">[docs]</a>    <span class="k">def</span> <span class="nf">get_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">script</span><span class="p">,</span> <span class="n">div</span> <span class="o">=</span> <span class="n">components</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Budget Correlation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;bokeh&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="n">div</span><span class="p">),</span>
+                <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">return</span> <span class="n">script</span><span class="p">,</span> <span class="n">div</span></div>
+
+<div class="viewcode-block" id="BudgetCorrelation.get_jupyter"><a class="viewcode-back" href="../../../../apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation.get_jupyter">[docs]</a>    <span class="k">def</span> <span class="nf">get_jupyter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">output_notebook</span><span class="p">()</span>
+        <span class="n">show</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">())</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

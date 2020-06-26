@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,18 @@
   
 
   
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -29,10 +34,6 @@
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
@@ -48,7 +49,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> CAVE
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> CAVE
           
 
           
@@ -78,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -99,34 +101,57 @@
 <li class="toctree-l1"><a class="reference internal" href="../../faq.html">F.A.Q.</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../apidoc/cave.analyzer.html">cave.analyzer package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.algorithm_footprint.html">cave.analyzer.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.budgets.html">cave.analyzer.budgets package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.budgets.bohb_incumbents_per_budget.html">cave.analyzer.budgets.bohb_incumbents_per_budget module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.budgets.bohb_learning_curves.html">cave.analyzer.budgets.bohb_learning_curves module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.budgets.budget_correlation.html">cave.analyzer.budgets.budget_correlation module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.configurator.html">cave.analyzer.configurator package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.configurator.configurator_footprint.html">cave.analyzer.configurator.configurator_footprint module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.configurator.parallel_coordinates.html">cave.analyzer.configurator.parallel_coordinates module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_analysis.html">cave.analyzer.feature_analysis package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_analysis.box_violin.html">cave.analyzer.feature_analysis.box_violin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_analysis.feature_analysis.html">cave.analyzer.feature_analysis.feature_analysis module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_analysis.feature_clustering.html">cave.analyzer.feature_analysis.feature_clustering module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_analysis.feature_correlation.html">cave.analyzer.feature_analysis.feature_correlation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_analysis.feature_imp.html">cave.analyzer.feature_analysis.feature_imp module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_analysis.feature_importance.html">cave.analyzer.feature_analysis.feature_importance module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.html">cave.analyzer.parameter_importance package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.cave_ablation.html">cave.analyzer.parameter_importance.cave_ablation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.cave_fanova.html">cave.analyzer.parameter_importance.cave_fanova module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.cave_forward_selection.html">cave.analyzer.parameter_importance.cave_forward_selection module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.cave_parameter_importance.html">cave.analyzer.parameter_importance.cave_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html">cave.analyzer.parameter_importance.local_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html">cave.analyzer.parameter_importance.pimp_comparison_table module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.performance.html">cave.analyzer.performance package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.performance.algorithm_footprint.html">cave.analyzer.performance.algorithm_footprint module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.performance.compare_default_incumbent.html">cave.analyzer.performance.compare_default_incumbent module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.performance.cost_over_time.html">cave.analyzer.performance.cost_over_time module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.performance.overview_table.html">cave.analyzer.performance.overview_table module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.performance.performance_table.html">cave.analyzer.performance.performance_table module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.performance.plot_ecdf.html">cave.analyzer.performance.plot_ecdf module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.performance.plot_scatter.html">cave.analyzer.performance.plot_scatter module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.base_analyzer.html">cave.analyzer.base_analyzer module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.bohb_incumbents_per_budget.html">cave.analyzer.bohb_incumbents_per_budget module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.bohb_learning_curves.html">cave.analyzer.bohb_learning_curves module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.box_violin.html">cave.analyzer.box_violin module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.budget_correlation.html">cave.analyzer.budget_correlation module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.cave_ablation.html">cave.analyzer.cave_ablation module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.cave_fanova.html">cave.analyzer.cave_fanova module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.cave_forward_selection.html">cave.analyzer.cave_forward_selection module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.cave_parameter_importance.html">cave.analyzer.cave_parameter_importance module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.compare_default_incumbent.html">cave.analyzer.compare_default_incumbent module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.configurator_footprint.html">cave.analyzer.configurator_footprint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.cost_over_time.html">cave.analyzer.cost_over_time module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_clustering.html">cave.analyzer.feature_clustering module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_correlation.html">cave.analyzer.feature_correlation module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_importance.html">cave.analyzer.feature_importance module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.local_parameter_importance.html">cave.analyzer.local_parameter_importance module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.overview_table.html">cave.analyzer.overview_table module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.parallel_coordinates.html">cave.analyzer.parallel_coordinates module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.performance_table.html">cave.analyzer.performance_table module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.pimp_comparison_table.html">cave.analyzer.pimp_comparison_table module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.plot_ecdf.html">cave.analyzer.plot_ecdf module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.plot_scatter.html">cave.analyzer.plot_scatter module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../apidoc/cave.cave_cli.html">cave.cave_cli module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../apidoc/cave.cavefacade.html">cave.cavefacade module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../apidoc/cave.plot.html">cave.plot package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.plot.parallel_plot.html">cave.plot.parallel_plot package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.plot.parallel_plot.parallel_plot.html">cave.plot.parallel_plot.parallel_plot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.plot.parallel_plot.parallel_reset.html">cave.plot.parallel_plot.parallel_reset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.plot.parallel_plot.parallel_selection_tool.html">cave.plot.parallel_plot.parallel_selection_tool module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
@@ -168,6 +193,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contribute</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contact.html">Contact</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../license.html">License</a></li>
 </ul>
@@ -175,6 +201,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -213,7 +240,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
@@ -245,28 +272,28 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">cave.__version__</span> <span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">v</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.algorithm_footprint</span> <span class="kn">import</span> <span class="n">AlgorithmFootprint</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.bohb_incumbents_per_budget</span> <span class="kn">import</span> <span class="n">BohbIncumbentsPerBudget</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.bohb_learning_curves</span> <span class="kn">import</span> <span class="n">BohbLearningCurves</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.box_violin</span> <span class="kn">import</span> <span class="n">BoxViolin</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.budget_correlation</span> <span class="kn">import</span> <span class="n">BudgetCorrelation</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.cave_ablation</span> <span class="kn">import</span> <span class="n">CaveAblation</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.cave_fanova</span> <span class="kn">import</span> <span class="n">CaveFanova</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.cave_forward_selection</span> <span class="kn">import</span> <span class="n">CaveForwardSelection</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.compare_default_incumbent</span> <span class="kn">import</span> <span class="n">CompareDefaultIncumbent</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.configurator_footprint</span> <span class="kn">import</span> <span class="n">ConfiguratorFootprint</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.cost_over_time</span> <span class="kn">import</span> <span class="n">CostOverTime</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.feature_clustering</span> <span class="kn">import</span> <span class="n">FeatureClustering</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.feature_correlation</span> <span class="kn">import</span> <span class="n">FeatureCorrelation</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.feature_importance</span> <span class="kn">import</span> <span class="n">FeatureImportance</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.local_parameter_importance</span> <span class="kn">import</span> <span class="n">LocalParameterImportance</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.overview_table</span> <span class="kn">import</span> <span class="n">OverviewTable</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.parallel_coordinates</span> <span class="kn">import</span> <span class="n">ParallelCoordinates</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.performance_table</span> <span class="kn">import</span> <span class="n">PerformanceTable</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.pimp_comparison_table</span> <span class="kn">import</span> <span class="n">PimpComparisonTable</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.plot_ecdf</span> <span class="kn">import</span> <span class="n">PlotECDF</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.plot_scatter</span> <span class="kn">import</span> <span class="n">PlotScatter</span>
+<span class="kn">from</span> <span class="nn">cave.__version__</span> <span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">cave_version</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.budgets.incumbents_over_budgets</span> <span class="kn">import</span> <span class="n">IncumbentsOverBudgets</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.budgets.bohb_learning_curves</span> <span class="kn">import</span> <span class="n">BohbLearningCurves</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.budgets.budget_correlation</span> <span class="kn">import</span> <span class="n">BudgetCorrelation</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.configurator.configurator_footprint</span> <span class="kn">import</span> <span class="n">ConfiguratorFootprint</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.configurator.parallel_coordinates</span> <span class="kn">import</span> <span class="n">ParallelCoordinates</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.feature_analysis.box_violin</span> <span class="kn">import</span> <span class="n">BoxViolin</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.feature_analysis.feature_clustering</span> <span class="kn">import</span> <span class="n">FeatureClustering</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.feature_analysis.feature_correlation</span> <span class="kn">import</span> <span class="n">FeatureCorrelation</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.feature_analysis.feature_importance</span> <span class="kn">import</span> <span class="n">FeatureImportance</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.parameter_importance.ablation</span> <span class="kn">import</span> <span class="n">Ablation</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.parameter_importance.fanova</span> <span class="kn">import</span> <span class="n">Fanova</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.parameter_importance.forward_selection</span> <span class="kn">import</span> <span class="n">ForwardSelection</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.parameter_importance.local_parameter_importance</span> <span class="kn">import</span> <span class="n">LocalParameterImportance</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.parameter_importance.pimp_comparison_table</span> <span class="kn">import</span> <span class="n">PimpComparisonTable</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.performance.algorithm_footprint</span> <span class="kn">import</span> <span class="n">AlgorithmFootprint</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.performance.compare_default_incumbent</span> <span class="kn">import</span> <span class="n">CompareDefaultIncumbent</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.performance.cost_over_time</span> <span class="kn">import</span> <span class="n">CostOverTime</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.performance.overview_table</span> <span class="kn">import</span> <span class="n">OverviewTable</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.performance.performance_table</span> <span class="kn">import</span> <span class="n">PerformanceTable</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.performance.plot_ecdf</span> <span class="kn">import</span> <span class="n">PlotECDF</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.performance.plot_scatter</span> <span class="kn">import</span> <span class="n">PlotScatter</span>
 <span class="kn">from</span> <span class="nn">cave.html.html_builder</span> <span class="kn">import</span> <span class="n">HTMLBuilder</span>
 <span class="kn">from</span> <span class="nn">cave.reader.runs_container</span> <span class="kn">import</span> <span class="n">RunsContainer</span>
 <span class="kn">from</span> <span class="nn">cave.utils.exceptions</span> <span class="kn">import</span> <span class="n">Deactivated</span><span class="p">,</span> <span class="n">NotApplicable</span>
@@ -310,6 +337,7 @@
         <span class="k">return</span> <span class="n">analyzer</span>
     <span class="k">return</span> <span class="n">wrap</span></div>
 
+
 <div class="viewcode-block" id="CAVE"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE">[docs]</a><span class="k">class</span> <span class="nc">CAVE</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">folders</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -337,9 +365,9 @@
 <span class="sd">            output for cave to write results (figures + report)</span>
 <span class="sd">        ta_exec_dir: string</span>
 <span class="sd">            execution directory for target algorithm (to find instance.txt specified in scenario, ..)</span>
-<span class="sd">        file_format: str</span>
+<span class="sd">        file_format: string</span>
 <span class="sd">            what format the rundata is in, options are [SMAC3, SMAC2, BOHB and CSV]</span>
-<span class="sd">        validation_format: str</span>
+<span class="sd">        validation_format: string</span>
 <span class="sd">            what format the validation rundata is in, options are [SMAC3, SMAC2, CSV and None]</span>
 <span class="sd">        validation_method: string</span>
 <span class="sd">            from [validation, epm], how to estimate missing runs</span>
@@ -347,14 +375,14 @@
 <span class="sd">            random seed for analysis (e.g. the random forests)</span>
 <span class="sd">        show_jupyter: bool</span>
 <span class="sd">            default True, tries to output plots and tables to jupyter-frontend, if available</span>
-<span class="sd">        verbose_level: str</span>
+<span class="sd">        verbose_level: string</span>
 <span class="sd">            from [OFF, INFO, DEBUG, DEV_DEBUG and WARNING]</span>
-<span class="sd">        analyzing_options: str or dict</span>
+<span class="sd">        analyzing_options: string or dict</span>
 <span class="sd">            options-dictionary following CAVE&#39;s options-syntax</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_jupyter</span> <span class="o">=</span> <span class="n">show_jupyter</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_jupyter</span><span class="p">:</span>
-            <span class="c1"># Reset logging module (needs to happen before logger initalization)</span>
+            <span class="c1"># Reset logging module (needs to happen before logger initialization)</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
             <span class="n">reload</span><span class="p">(</span><span class="n">logging</span><span class="p">)</span>
 
@@ -366,7 +394,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_verbosity</span><span class="p">(</span><span class="n">verbose_level</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_outputdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Running CAVE version </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Running CAVE version </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">cave_version</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose_level</span> <span class="o">=</span> <span class="n">verbose_level</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
@@ -399,13 +427,15 @@
             <span class="n">logo_fn</span> <span class="o">=</span> <span class="s1">&#39;automl-logo.png&#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No suitable logo found. You can use a custom logo simply by having a file called &#39;</span><span class="si">%s</span><span class="s2">&#39; &quot;</span>
                              <span class="s2">&quot;in the directory from which you run CAVE.&quot;</span><span class="p">,</span> <span class="n">custom_logo</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">builder</span> <span class="o">=</span> <span class="n">HTMLBuilder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;CAVE&quot;</span><span class="p">,</span> <span class="n">logo_fn</span><span class="o">=</span><span class="n">logo_fn</span><span class="p">,</span> <span class="n">logo_custom</span><span class="o">=</span><span class="n">custom_logo</span><span class="o">==</span><span class="n">logo_fn</span><span class="p">)</span>
+        <span class="n">use_custom_logo</span> <span class="o">=</span> <span class="n">custom_logo</span> <span class="o">==</span> <span class="n">logo_fn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">builder</span> <span class="o">=</span> <span class="n">HTMLBuilder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;CAVE&quot;</span><span class="p">,</span> <span class="n">logo_fn</span><span class="o">=</span><span class="n">logo_fn</span><span class="p">,</span> <span class="n">logo_custom</span><span class="o">=</span><span class="n">use_custom_logo</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">website</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([])</span>
 
 <div class="viewcode-block" id="CAVE.analyze"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.analyze">[docs]</a>    <span class="nd">@timing</span>
     <span class="k">def</span> <span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                 <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Analyze the available data and build HTML-webpage as dict.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Analyze the available data and build HTML-webpage as dict.</span>
 <span class="sd">        Save webpage in &#39;self.output_dir/CAVE/report.html&#39;.</span>
 
 <span class="sd">        Parameters</span>
@@ -413,6 +443,7 @@
 <span class="sd">        options: Dict or str</span>
 <span class="sd">            either a dictionary or a path to an ini-file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Save jupyter-flag (needs to be False while analyzing) and reset it later.</span>
         <span class="n">flag_show_jupyter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_jupyter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_jupyter</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -424,8 +455,7 @@
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">occurences</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">analyzing_options</span><span class="o">.</span><span class="n">sections</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span>
                 <span class="k">if</span> <span class="n">occurences</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> is an arbitrary option - to avoid collisions, &quot;</span>
-                                        <span class="s2">&quot;consider using a different name.&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> is an arbitrary option - to avoid collisions, consider a different name.&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">occurences</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">analyzing_options</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> is not found in default options. Are you sure you know what you are doing?&quot;</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">analyzing_options</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
@@ -434,6 +464,7 @@
                     <span class="k">elif</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">analyzing_options</span><span class="p">[</span><span class="n">s</span><span class="p">]:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">analyzing_options</span><span class="p">[</span><span class="n">s</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
+        <span class="c1"># Invoke the analyzers one by one</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">overview_table</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">website</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">compare_default_incumbent</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">website</span><span class="p">,</span> <span class="s2">&quot;Meta Data&quot;</span><span class="p">))</span>
 
@@ -473,16 +504,16 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_website</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;CAVE finished. Report is located in </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-                         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;report.html&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;CAVE finished. Report is located in </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;report.html&#39;</span><span class="p">))</span>
 
+        <span class="c1"># Set jupyter-flag as it was before.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_jupyter</span> <span class="o">=</span> <span class="n">flag_show_jupyter</span></div>
 
 <div class="viewcode-block" id="CAVE._get_dict"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE._get_dict">[docs]</a>    <span class="k">def</span> <span class="nf">_get_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">layername</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the appropriate sub-dict for this layer (or layer-run combination) and create it if necessary &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Pass a valid dict to _get_dict!&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">layername</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">layername</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
             <span class="n">d</span><span class="p">[</span><span class="n">layername</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="n">layername</span><span class="p">]</span></div>
 
@@ -543,21 +574,20 @@
 <div class="viewcode-block" id="CAVE.cave_fanova"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.cave_fanova">[docs]</a>    <span class="nd">@_analyzer_type</span>
     <span class="k">def</span> <span class="nf">cave_fanova</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">fanova</span> <span class="o">=</span> <span class="n">CaveFanova</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="p">)</span>
-
+            <span class="n">fanova</span> <span class="o">=</span> <span class="n">Fanova</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Error in fANOVA (</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Error in fANOVA - please run with --pimp_no_fanova_pairs (this is due to a known issue &quot;</span>
-                             <span class="s2">&quot;with ints and bools in categorical hyperparameters, see issue #192).&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Error in fANOVA - please run with --pimp_no_fanova_pairs (this might be due to a known &quot;</span>
+                             <span class="s2">&quot;issue with ints and bools in categorical hyperparameters, see issue #192).&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">fanova</span></div>
 
 <div class="viewcode-block" id="CAVE.cave_ablation"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.cave_ablation">[docs]</a>    <span class="nd">@_analyzer_type</span>
     <span class="k">def</span> <span class="nf">cave_ablation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">CaveAblation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">Ablation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CAVE.pimp_forward_selection"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.pimp_forward_selection">[docs]</a>    <span class="nd">@_analyzer_type</span>
     <span class="k">def</span> <span class="nf">pimp_forward_selection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">CaveForwardSelection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">ForwardSelection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CAVE.local_parameter_importance"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.local_parameter_importance">[docs]</a>    <span class="nd">@_analyzer_type</span>
     <span class="k">def</span> <span class="nf">local_parameter_importance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -577,7 +607,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cave_ablation</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pimp_forward_selection</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">local_parameter_importance</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">sum</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;fANOVA&#39;</span><span class="p">,</span> <span class="s1">&#39;Ablation&#39;</span><span class="p">,</span> <span class="s1">&#39;Forward Selection&#39;</span><span class="p">,</span> <span class="s1">&#39;Local Parameter Importance (LPI)&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">analyzing_options</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;False&#39;</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">sum</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;fANOVA&#39;</span><span class="p">,</span> <span class="s1">&#39;Ablation&#39;</span><span class="p">,</span> <span class="s1">&#39;Forward Selection&#39;</span><span class="p">,</span> <span class="s1">&#39;Local Parameter Importance (LPI)&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">analyzing_options</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;False&#39;</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">pct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pimp_comparison_table</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
             <span class="n">d</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="n">pct</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
@@ -590,11 +621,9 @@
     <span class="k">def</span> <span class="nf">box_violin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">BoxViolin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="p">)</span></div>
 
-
 <div class="viewcode-block" id="CAVE.feature_correlation"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.feature_correlation">[docs]</a>    <span class="nd">@_analyzer_type</span>
     <span class="k">def</span> <span class="nf">feature_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">FeatureCorrelation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="p">)</span></div>
-
 
 <div class="viewcode-block" id="CAVE.feature_clustering"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.feature_clustering">[docs]</a>    <span class="nd">@_analyzer_type</span>
     <span class="k">def</span> <span class="nf">feature_clustering</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -613,12 +642,11 @@
 
 <div class="viewcode-block" id="CAVE.bohb_incumbents_per_budget"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.bohb_incumbents_per_budget">[docs]</a>    <span class="nd">@_analyzer_type</span>
     <span class="k">def</span> <span class="nf">bohb_incumbents_per_budget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">BohbIncumbentsPerBudget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">IncumbentsOverBudgets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CAVE.budget_correlation"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.budget_correlation">[docs]</a>    <span class="nd">@_analyzer_type</span>
     <span class="k">def</span> <span class="nf">budget_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">BudgetCorrelation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="p">)</span></div>
-
 
 <span class="c1">###########################################################################</span>
 <span class="c1"># HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS #</span>
@@ -632,6 +660,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">generate_webpage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">website</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CAVE.set_verbosity"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.set_verbosity">[docs]</a>    <span class="k">def</span> <span class="nf">set_verbosity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set verbosity level and configure loggers (to stdout and to file), create output-dir if necessary.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        level: str</span>
+<span class="sd">            From [INFO, WARNING, OFF, DEBUG, DEV_DEBUG]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
         <span class="c1"># Log to stream (console)</span>
         <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(levelname)s</span><span class="s1">:</span><span class="si">%(name)s</span><span class="s1">:</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -661,7 +697,8 @@
                     <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;cave.settings&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting logger </span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s2"> on level INFO&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
                     <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> not recognized as a verbosity level. Choose from DEBUG, DEV_DEBUG. INFO, WARNING, OFF.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">level</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> not recognized as a verbosity level.&quot;</span>
+                             <span class="s2">&quot;Choose from DEBUG, DEV_DEBUG. INFO, WARNING, OFF.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">level</span><span class="p">))</span>
 
         <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">stdout_handler</span><span class="p">)</span>
 
@@ -712,11 +749,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -727,7 +772,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

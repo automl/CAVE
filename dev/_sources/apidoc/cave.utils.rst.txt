@@ -10,6 +10,7 @@ cave.utils package
 
 
 .. toctree::
+   :maxdepth: 4
 
    cave.utils.bokeh_routines
    cave.utils.convert_for_epm
