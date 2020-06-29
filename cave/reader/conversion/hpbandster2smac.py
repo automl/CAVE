@@ -134,9 +134,7 @@ class HpBandSter2SMAC(BaseConverter):
         return config
 
     def hpbandster2smac(self, folder, result, cs_options, output_dir: str):
-        """
-        Reading hpbandster-result-object and creating RunHistory and trajectory...  treats each budget as an
-        individual 'smac'-run, creates an output-directory with subdirectories for each budget.
+        """Reading hpbandster-result-object and creating RunHistory and trajectory...
 
         Parameters
         ----------
@@ -147,18 +145,21 @@ class HpBandSter2SMAC(BaseConverter):
         cs_options: list[ConfigurationSpace]
             the configuration spaces. in the best case it's a single element, but for pcs-format we need to guess
             through a list of possible configspaces
-        output_dir: str
+        output_dir_base: str
             the output-dir to save the smac-runs to
         
         Returns
         -------
         converted: dict{
+                'new_path' : path_to_converted_input,
+                'hp_bandster_result' : result_in_hpbandster_format,
                 'config_space' : config_space,
                 'runhistory' : runhistory,
                 'validated_runhistory' : validated_runhistory,
                 'scenario' : scenario,
                 'trajectory' : trajectory,
                 }
+
         """
         self.logger.debug("Budgets for '%s': %s" % (folder, str(result.HB_config['budgets'])))
         ##########################

@@ -153,16 +153,16 @@ class ConfiguratorRun(object):
             in the scenario-object. since instance- and PCS-files are necessary,
             specify the path to the execution-dir of SMAC here
         file_format: string
-            from [SMAC2, SMAC3, BOHB, CSV]
+            from [SMAC2, SMAC3, BOHB, APT, CSV]
         validation_format: string
-            from [SMAC2, SMAC3, CSV, NONE], in which format to look for validated data
+            from [SMAC2, SMAC3, APT, CSV, NONE], in which format to look for validated data
         """
         logger = logging.getLogger("cave.ConfiguratorRun.{}".format(folder))
         logger.debug("Loading from \'%s\' with ta_exec_dir \'%s\' with file-format '%s' and validation-format %s. ",
                      folder, ta_exec_dir, file_format, validation_format)
 
-        if file_format == 'BOHB':
-            logger.debug("File format is BOHB, assmuming data was converted to SMAC3-format using "
+        if file_format == 'BOHB' or file_format == "APT":
+            logger.debug("File format is BOHB or APT, assmuming data was converted to SMAC3-format using "
                          "HpBandSter2SMAC from cave.reader.converter.hpbandster2smac.")
         validation_format = validation_format if validation_format != 'NONE' else None
 
@@ -330,6 +330,8 @@ class ConfiguratorRun(object):
         if name == 'SMAC3':
             return SMAC3Reader(folder, ta_exec_dir)
         elif name == 'BOHB':
+            return SMAC3Reader(folder, ta_exec_dir)
+        elif name == 'APT':
             return SMAC3Reader(folder, ta_exec_dir)
         elif name == 'SMAC2':
             return SMAC2Reader(folder, ta_exec_dir)

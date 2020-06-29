@@ -11,9 +11,11 @@ from typing import Union, List
 import numpy as np
 
 from cave.__version__ import __version__ as cave_version
-from cave.analyzer.budgets.incumbents_over_budgets import IncumbentsOverBudgets
+from cave.analyzer.apt.apt_overview import APTOverview
+from cave.analyzer.apt.apt_tensorboard import APTTensorboard
 from cave.analyzer.budgets.bohb_learning_curves import BohbLearningCurves
 from cave.analyzer.budgets.budget_correlation import BudgetCorrelation
+from cave.analyzer.budgets.incumbents_over_budgets import IncumbentsOverBudgets
 from cave.analyzer.configurator.configurator_footprint import ConfiguratorFootprint
 from cave.analyzer.configurator.parallel_coordinates import ParallelCoordinates
 from cave.analyzer.feature_analysis.box_violin import BoxViolin
@@ -240,6 +242,13 @@ class CAVE(object):
         # Parallel Coordinates should be after parameter importance, if performed.
         self.parallel_coordinates(d=self._get_dict(self.website, title))
 
+        ###################################################
+        #            Auto-PyTorch specific                #
+        ###################################################
+        title = "Auto-PyTorch specific"
+        self.apt_overview(d=self._get_dict(self.website, title))
+        self.apt_tensorboard(d=self._get_dict(self.website, title))
+
         self._build_website()
 
         self.logger.info("CAVE finished. Report is located in %s", os.path.join(self.output_dir, 'report.html'))
@@ -385,6 +394,14 @@ class CAVE(object):
     @_analyzer_type
     def budget_correlation(self):
         return BudgetCorrelation(self.runscontainer)
+
+    @_analyzer_type
+    def apt_overview(self):
+        return APTOverview(self.runscontainer)
+
+    @_analyzer_type
+    def apt_tensorboard(self):
+        return APTTensorboard(self.runscontainer)
 
 ###########################################################################
 # HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS #

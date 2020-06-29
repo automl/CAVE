@@ -32,7 +32,7 @@ class CaveCLI(object):
 
     def main_cli(self):
         """
-        Main cli, implementing comparison between and analysis of Configuration-results.
+        Main cli, implementing comparison between and analysis of Configurator-results.
         """
         # Reset logging module (needs to happen before logger initalization)
         logging.shutdown()
@@ -119,7 +119,7 @@ class CaveCLI(object):
         cave_opts.add_argument("--file_format",
                                default='auto',
                                help="specify the format of the configurator-files. ",
-                               choices=['auto', 'SMAC2', 'SMAC3', 'CSV', 'BOHB'],
+                               choices=['auto', 'SMAC2', 'SMAC3', 'CSV', 'BOHB', 'APT'],
                                type=str.upper)
         cave_opts.add_argument("--validation_format",
                                default='NONE',
