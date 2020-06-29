@@ -43,7 +43,6 @@ setuptools.setup(
         ],
         'cave/utils': [
             'cave/utils/options/default_analysis_options.ini',
-            'cave/utils/options/default_bohb_analysis_options.ini',
         ],
         'cave/html': [
             'cave/html/web_files/css/accordion.css',

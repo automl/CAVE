@@ -39,7 +39,7 @@ class BaseParameterImportance(BaseAnalyzer):
                 result[budget] = {
                     'else': "For this run there are only {} configs, "
                             "but {} parameters. No reliable parameter importance analysis "
-                            "can be performed."}
+                            "can be performed.".format(n_configs, n_params)}
                 continue
 
             try:
@@ -52,6 +52,15 @@ class BaseParameterImportance(BaseAnalyzer):
                 continue
             individual_result = self.postprocess(run.pimp, run.output_dir)
             result[budget] = individual_result
+
+            # Interactive Plots
+            if self.runscontainer.analyzing_options['Parameter Importance'].getboolean('interactive_bokeh_plots'):
+                try:
+                    result[budget]['Interactive Plots'] = {
+                        'bokeh': components(run.pimp.evaluator.plot_bokeh(show_plot=False))
+                    }
+                except AttributeError as err:
+                    self.logger.debug(err, exc_info=1)
 
             run.share_information['parameter_importance'][modus] = run.pimp.evaluator.evaluated_parameter_importance
             run.share_information['evaluators'][modus] = run.pimp.evaluator

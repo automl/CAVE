@@ -137,6 +137,15 @@ class CaveCLI(object):
         # PIMP-configs
         pimp_opts = parser.add_argument_group("Parameter Importance",
                                               "Define the behaviour of the ParameterImportance-module (pimp)")
+
+        pimp_opts.add_argument("--pimp_interactive",
+                               choices=["on", "off"],
+                               default="on",
+                               help="Whether or not to plot interactive bokeh plots for parameter importance analysis")
+        pimp_opts.add_argument("--pimp_whiskers",
+                               choices=["on", "off"],
+                               default="on",
+                               help="Whether or not to plot interactive whisker plot for parameter importance analysis")
         pimp_opts.add_argument("--pimp_max_samples",
                                default=-1,
                                type=int,
@@ -261,6 +270,8 @@ class CaveCLI(object):
         analyzing_options["fANOVA"]["fanova_pairwise"] = str(args_.fanova_pairwise)
         analyzing_options["fANOVA"]["pimp_max_samples"] = str(args_.pimp_max_samples)
         analyzing_options["Parallel Coordinates"]["pc_sort_by"] = str(args_.pc_sort_by)
+        analyzing_options["Parameter Importance"]["whisker_quantiles_plot"] = str(args_.pimp_whiskers)
+        analyzing_options["Parameter Importance"]["interactive_bokeh_plots"] = str(args_.pimp_interactive)
 
         # Initialize CAVE
         cave = CAVE(folders,

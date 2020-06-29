@@ -114,6 +114,7 @@ Some flags provide additional fine-tuning of the analysis methods:
 - `--cfp_time_slider`: `on` will add a time-slider to the interactive configurator footprint which will result in longer loading times, `off` will generate static png's at the desired quantiles
 - `--cfp_number_quantiles`: determines how many time-steps to prerender from in the configurator footprint
 - `--cot_inc_traj`: how the incumbent trajectory for the cost-over-time plot will be generated if the optimizer is BOHB (from [`racing`, `minimum`, `prefer_higher_budget`])
+- `--pimp_interactive`: whether to plot interactive bokeh-plots for parameter importance
 
 For a full list and further information on how to use CAVE, see:
 `cave --help`

@@ -211,9 +211,6 @@ def load_default_options(options=None, file_format=None):
         else:
             default_options.read_dict(options)
 
-    if file_format == "BOHB":
-        default_options.read(os.path.join(own_folder, 'options/default_bohb_analysis_options.ini'))
-
     return default_options
 
 def detect_fileformat(folders):
