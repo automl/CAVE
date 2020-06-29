@@ -1,7 +1,7 @@
 import logging
 
 from bokeh.models import (CustomJS, ColumnDataSource)
-from bokeh.models.widgets import (RadioButtonGroup, CheckboxButtonGroup, CheckboxGroup, Button, DataTable, TableColumn)
+from bokeh.models.widgets import (RadioButtonGroup, CheckboxButtonGroup, Button, DataTable, TableColumn)
 
 
 def get_checkbox(glyph_renderers, labels, max_checkbox_length=None):
@@ -54,10 +54,11 @@ def get_checkbox(glyph_renderers, labels, max_checkbox_length=None):
     # Select all/none:
     handle_list_as_string = str(list(range(len(glyph_renderers))))
     code_button_tail = "checkbox.active = labels;" + code.replace('cb_obj', 'checkbox')
-    select_all = Button(label="All", callback=CustomJS(args=dict({'checkbox':checkbox}, **args_checkbox),
-                                                       code="var labels = {}; ".format(handle_list_as_string) + code_button_tail))
-    select_none = Button(label="None", callback=CustomJS(args=dict({'checkbox':checkbox}, **args_checkbox),
-                                                       code="var labels = {}; ".format('[]') + code_button_tail))
+    select_all = Button(label="All", callback=CustomJS(args=dict({'checkbox': checkbox}, **args_checkbox),
+                                                       code="var labels = {}; {}".format(
+                                                           handle_list_as_string, code_button_tail)))
+    select_none = Button(label="None", callback=CustomJS(args=dict({'checkbox': checkbox}, **args_checkbox),
+                                                         code="var labels = {}; {}".format('[]', code_button_tail)))
 
     if max_checkbox_length:
         # Keep all and none buttons, but create new checkboxes and return a list
@@ -66,6 +67,7 @@ def get_checkbox(glyph_renderers, labels, max_checkbox_length=None):
         return checkboxes, select_all, select_none
 
     return checkbox, select_all, select_none
+
 
 def get_radiobuttongroup(glyph_renderers, labels):
     """
@@ -106,6 +108,7 @@ def get_radiobuttongroup(glyph_renderers, labels):
     radio = RadioButtonGroup(labels=labels, active=0, callback=callback)
     return radio
 
+
 def _prepare_nested_glyphs(glyph_renderers):
     # First create a consecutive list of strings named glyph_renderer_i for i in len(all_renderers)
     num_total_lines = sum([len(group) for group in glyph_renderers])
@@ -123,8 +126,10 @@ def _prepare_nested_glyphs(glyph_renderers):
     # Create javascript-code
     code = "len_labels = " + str(len(aliases)) + ";"
     # Create nested list of glyph renderers to be toggled by a button
-    code += "glyph_renderers = [" + ','.join(['[' + ','.join([str(idx) for idx in group]) + ']' for group in aliases]) + '];'
+    code += "glyph_renderers = [{}];".format(
+                    ','.join(['[' + ','.join([str(idx) for idx in group]) + ']' for group in aliases]))
     return code, args
+
 
 def array_to_bokeh_table(df, sortable=None, width=None, logger=None):
     """
@@ -132,7 +137,7 @@ def array_to_bokeh_table(df, sortable=None, width=None, logger=None):
 
     Parameters
     ----------
-    array: pandas.DataFrame
+    df: pandas.DataFrame
         dataframe with columns and index set
     sortable: dict(str : boolean)
         columns that should be sortable, default none
@@ -157,7 +162,7 @@ def array_to_bokeh_table(df, sortable=None, width=None, logger=None):
     data = dict(df[columns])
 
     # Sanity checks
-    for attr, d in {'width' : width, 'sortable' : sortable}.items():
+    for attr, d in {'width': width, 'sortable': sortable}.items():
         diff = set(d.keys()).difference(set(columns))
         if len(diff) > 0:
             logger.debug("For attr %s with value %s and columns %s there is a diff %s", attr, d, columns, diff)
@@ -169,7 +174,7 @@ def array_to_bokeh_table(df, sortable=None, width=None, logger=None):
                            sortable=sortable.get(header, False),
                            default_sort='descending',
                            width=width.get(header, 100)) for header in columns
-              ]
+               ]
     data_table = DataTable(source=source,
                            columns=columns,
                            height=20 + 30 * len(list(data.values())[0]),

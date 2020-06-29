@@ -64,9 +64,13 @@ class RunsContainer(object):
         output_dir: str
             directory for output (temporary directory if not set)
         file_format: str
-            from [SMAC2, SMAC3, BOHB, CSV] defines what file-format the optimizer result is in.
+            optional, from [AUTO, SMAC2, SMAC3, BOHB, CSV] defines what file-format the optimizer result is in.
+            AUTO or None will lead to attempted automatic detection
         validation_format: str
             from [SMAC2, SMAC3, BOHB, CSV] defines what file-format validation data is in.
+        analyzing_options: dict / ConfigParser
+            contains important global configurations on how to run CAVE, see
+            `options <https://github.com/automl/CAVE/blob/master/cave/utils/options/default_analysis_options.ini>`_
         """
         ################################################################################################################
         #  Initialize and find suitable parameters                                                                     #
@@ -83,7 +87,7 @@ class RunsContainer(object):
 
         self.output_dir = output_dir if output_dir else tempfile.mkdtemp()
 
-        if file_format.upper() == "AUTO":
+        if file_format.upper() == "AUTO" or file_format is None:
             file_format = detect_fileformat(folders=self.folders)
             self.logger.info("Format of input detected automatically: %s", file_format)
         self.file_format = file_format

@@ -19,7 +19,9 @@ from cave.utils.helpers import get_folder_basenames
 
 
 class HpBandSter2SMAC(BaseConverter):
-
+    """
+    Converts data from `hpbandster <https://github.com/automl/HpBandSter>`_ at least up to the 1.0 release into SMAC3 data.
+    """
     def convert(self, folders, ta_exec_dirs=None, output_dir=None, converted_dest='converted_input_data'):
         try:
             from hpbandster.core.result import Result as HPBResult
@@ -27,8 +29,8 @@ class HpBandSter2SMAC(BaseConverter):
         except ImportError as e:
             raise ImportError("To analyze BOHB-data, please install hpbandster (e.g. `pip install hpbandster`)")
 
-        self.logger.debug("Converting BOHB-data to SMAC3-data. Called with: folders=%s, ta_exec_dirs=%s, output_dir=%s, "
-                          "converted_dest=%s", str(folders), str(ta_exec_dirs), str(output_dir), str(converted_dest))
+        self.logger.debug("Converting BOHB-data to SMAC3-data. Called with: folders=%s, ta_exec_dirs=%s, output_dir=%s,"
+                          " converted_dest=%s", str(folders), str(ta_exec_dirs), str(output_dir), str(converted_dest))
 
         # Using temporary files for the intermediate smac-result-like format if no output_dir specified
         if not output_dir:
@@ -38,7 +40,6 @@ class HpBandSter2SMAC(BaseConverter):
             ta_exec_dirs = ['.']
         if len(ta_exec_dirs) != len(folders):
             ta_exec_dirs = [ta_exec_dirs[0] for _ in folders]
-
 
         # Get a list with alternative interpretations of the configspace-file
         # (if it's a .pcs-file, for .json-files it's a length-one-list)
@@ -66,7 +67,8 @@ class HpBandSter2SMAC(BaseConverter):
         return result
 
     def load_configspace(self, folder):
-        """Will try to load the configspace. cs_options will be a list containing all possible
+        """
+        Will try to load the configspace. cs_options will be a list containing all possible
         combinations of interpretation for Categoricals. If this issue will be fixed, we can drop this procedure.
 
         Parameters
@@ -172,14 +174,14 @@ class HpBandSter2SMAC(BaseConverter):
             while config is None:
                 if len(cs_options) == 0:
                     self.logger.debug("None of the alternatives worked...")
-                    raise ValueError("Your configspace seems to be corrupt. If you use floats (or mix up ints, bools and strings) as categoricals, "
-                                     "please consider using the .json-format, as the .pcs-format cannot recover the type "
-                                     "of categoricals. Otherwise please report this to "
-                                     "https://github.com/automl/CAVE/issues (and attach the debug.log)")
+                    raise ValueError("Your configspace seems to be corrupt. If you use floats (or mix up ints, bools "
+                                     "and strings) as categoricals, please consider using the .json-format, as the "
+                                     ".pcs-format cannot recover the type of categoricals. Otherwise please report "
+                                     "this to https://github.com/automl/CAVE/issues (and attach the debug.log)")
                 try:
                     config = self._get_config(run.config_id, id2config_mapping, cs_options[0])
                 except ValueError as err:
-                    self.logger.debug("Loading configuration failed... trying %d alternatives" % len(cs_options) - 1, exc_info=1)
+                    self.logger.debug("Loading config failed. Trying %d alternatives" % len(cs_options) - 1, exc_info=1)
                     cs_options = cs_options[1:]  # remove the failing cs-version
 
             # Filter corrupted loss-values (ignore them)
@@ -203,10 +205,10 @@ class HpBandSter2SMAC(BaseConverter):
         ##########################
         # 2. Create all else     #
         ##########################
-        scenario = Scenario({'run_obj' : 'quality',
-                             'cs' : cs_options[0],
-                             'output_dir' : output_dir,
-                             'deterministic' : True,  # At the time of writing, BOHB is always treating ta's as deterministic
+        scenario = Scenario({'run_obj': 'quality',
+                             'cs': cs_options[0],
+                             'output_dir': output_dir,
+                             'deterministic': True,  # At the time of writing, BOHB is always treating ta's as deterministic
                             })
         scenario.output_dir_for_this_run = output_dir
         scenario.write()
@@ -218,13 +220,13 @@ class HpBandSter2SMAC(BaseConverter):
 
         trajectory = self.get_trajectory(result, output_dir, scenario, rh)
 
-        return {'new_path' : output_dir,
-                'hpbandster_result' : result,
-                'config_space' : cs_options[0],
-                'runhistory' : rh,
-                'validated_runhistory' : None,
-                'scenario' : scenario,
-                'trajectory' : trajectory,
+        return {'new_path': output_dir,
+                'hpbandster_result': result,
+                'config_space': cs_options[0],
+                'runhistory': rh,
+                'validated_runhistory': None,
+                'scenario': scenario,
+                'trajectory': trajectory,
                 }
 
     def get_trajectory(self, result, output_path, scenario, rh):
@@ -260,7 +262,8 @@ class HpBandSter2SMAC(BaseConverter):
                                     'budget' : budget,
                                     'loss' : loss})
         if len(failed_entries) > 0:
-            self.logger.warning("Failed to load %d (of %d total) entries from trajectory", len(failed_entries), len(failed_entries) + len(total_traj_dict))
+            self.logger.warning("Failed to load %d (of %d total) entries from trajectory",
+                                len(failed_entries), len(failed_entries) + len(total_traj_dict))
 
         last_loss = np.inf
         for element in sorted(total_traj_dict, key=lambda x: x['time_finished']):
@@ -268,6 +271,7 @@ class HpBandSter2SMAC(BaseConverter):
             incumbent = rh.ids_config[incumbent_id]
             time = element["time_finished"]
             loss = element["loss"]
+            budget = element["budget"]
 
             if loss > last_loss:
                 continue
@@ -276,14 +280,21 @@ class HpBandSter2SMAC(BaseConverter):
             ta_time_used = -1
             wallclock_time = time
             train_perf = loss
-            # add
+            # add to trajectory, imitate `add_entry` method of SMAC's traj_logger
             traj_logger.trajectory.append({
-                'cpu_time' : ta_time_used,
-                'total_cpu_time' : None,
-                "wallclock_time" : wallclock_time,
-                "evaluations" : ta_runs,
-                "cost" : train_perf,
-                "incumbent" : incumbent,
+                'cpu_time': ta_time_used,
+                'total_cpu_time': None,
+                "wallclock_time": wallclock_time,
+                "evaluations": ta_runs,
+                "cost": train_perf,
+                "incumbent": incumbent,
+                "budget": budget
             })
-            traj_logger._add_in_alljson_format(train_perf, incumbent_id, incumbent, ta_time_used, wallclock_time)
+            traj_logger._add_in_alljson_format(train_perf,
+                                               incumbent_id,
+                                               incumbent,
+                                               budget,
+                                               ta_time_used,
+                                               wallclock_time,
+                                               )
         return traj_logger.trajectory

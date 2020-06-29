@@ -80,11 +80,11 @@ If you use `instance_id`-columns, the instance_ids must be the same that are spe
 
 `trajectory.csv`:
 
-    +----------+------+----------------+-----------+
-    | cpu_time | cost | wallclock_time | incumbent |
-    +==========+======+================+===========+
-    | ...      | ...  | ...            | ...       |
-    +----------+------+----------------+-----------+
+    +----------+------+----------------+-----------+----------+
+    | cpu_time | cost | wallclock_time | incumbent | (budget) |
+    +==========+======+================+===========+==========+
+    | ...      | ...  | ...            | ...       | ...      |
+    +----------+------+----------------+-----------+----------+
 
 Alternatively CAVE can also read in one `runhistory.csv`-file containing all the information
 about parameters and instances, in this case the file `configurations.csv` is
@@ -100,14 +100,17 @@ not needed. See below for example:
 
 `trajectory.csv`:
 
-    +----------+------+----------------+------------+------------+-----+
-    | cpu_time | cost | wallclock_time | parameter1 | parameter2 | ... |
-    +==========+======+================+============+============+=====+
-    | ...      | ...  | ...            | ...        | ...        | ... |
-    +----------+------+----------------+------------+------------+-----+
+    +----------+------+----------------+----------+------------+------------+-----+
+    | cpu_time | cost | wallclock_time | (budget) | parameter1 | parameter2 | ... |
+    +==========+======+================+==========+============+============+=====+
+    | ...      | ...  | ...            | ...      | ...        | ...        | ... |
+    +----------+------+----------------+----------+------------+------------+-----+
 
 *SMAC2*
 ~~~~~~~
+
+**NOTE** *The SMAC2 format is not extensively tested, but expected to work. If you experience any problems, please report them to CAVE's issue tracker.*
+
 Relevant files for the analysis of *SMAC2* (relative to the specified
 folder with ??? as wildcards for digits) are:
 

@@ -6,13 +6,14 @@ __maintainer__ = "Joshua Marben"
 __email__ = "marbenj@cs.uni-freiburg.de"
 
 import copy
-import inspect
 import logging
 import os
-import sys
 import time
 
 import numpy as np
+from ConfigSpace import CategoricalHyperparameter
+from ConfigSpace.configuration_space import Configuration, ConfigurationSpace
+from ConfigSpace.util import impute_inactive_values
 from bokeh.layouts import column, row, widgetbox
 from bokeh.models import HoverTool, ColorBar, LinearColorMapper, BasicTicker, CustomJS, Slider
 from bokeh.models.filters import GroupFilter, BooleanFilter
@@ -22,24 +23,15 @@ from bokeh.plotting import figure, ColumnDataSource
 from sklearn.decomposition import PCA
 from sklearn.manifold.mds import MDS
 from sklearn.preprocessing import StandardScaler
-
-cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))  # noqa
-cmd_folder = os.path.realpath(os.path.join(cmd_folder, ".."))  # noqa
-if cmd_folder not in sys.path:  # noqa
-    sys.path.append(cmd_folder)  # noqa
-
-from smac.scenario.scenario import Scenario
-from smac.runhistory.runhistory import RunHistory
-from smac.utils.constants import MAXINT
 from smac.epm.rf_with_instances import RandomForestWithInstances
-from ConfigSpace.util import impute_inactive_values
-from ConfigSpace import CategoricalHyperparameter
-from ConfigSpace.configuration_space import Configuration, ConfigurationSpace
+from smac.runhistory.runhistory import RunHistory
+from smac.scenario.scenario import Scenario
+from smac.utils.constants import MAXINT
 
 from cave.utils.convert_for_epm import convert_data_for_epm
 from cave.utils.helpers import escape_parameter_name, get_config_origin, combine_runhistories
-from cave.utils.timing import timing
 from cave.utils.io import export_bokeh
+from cave.utils.timing import timing
 
 
 class ConfiguratorFootprintPlotter(object):
@@ -58,7 +50,7 @@ class ConfiguratorFootprintPlotter(object):
                  rng=None,
                  output_dir: str=None,
                  ):
-        '''
+        """
         Creating an interactive plot, visualizing the configuration search space.
         The runhistories are correlated to the individual runs.
         Each run consists of a runhistory (in the smac-format), a list of incumbents
@@ -90,7 +82,7 @@ class ConfiguratorFootprintPlotter(object):
             random number generator
         output_dir: str
             output directory
-        '''
+        """
         self.logger = logging.getLogger(self.__module__ + '.' + self.__class__.__name__)
         self.rng = rng
         if rng is None:
