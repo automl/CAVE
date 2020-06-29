@@ -111,9 +111,9 @@ class RunsContainer(object):
             self.logger.debug("Converting %d %s folders to SMAC-format", len(folders), self.file_format)
             converter = converters[self.file_format]()
             input_data = converter.convert(self.folders,
-                                          ta_exec_dirs=self.ta_exec_dirs,
-                                          output_dir=self.output_dir,
-                                          )
+                                           ta_exec_dirs=self.ta_exec_dirs,
+                                           output_dir=self.output_dir,
+                                           )
             # Also setting ta_exec_dirs to cwd, since we are now using the converted paths...
             self.ta_exec_dirs = ['.' for _ in range(len(self.folders))]
 

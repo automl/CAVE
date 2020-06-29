@@ -4,6 +4,8 @@ from collections import OrderedDict
 from pandas import DataFrame
 
 from cave.analyzer.base_analyzer import BaseAnalyzer
+from cave.utils.apt_helpers.apt_warning import apt_warning
+from cave.utils.exceptions import Deactivated
 
 
 class APTOverview(BaseAnalyzer):
@@ -13,6 +15,13 @@ class APTOverview(BaseAnalyzer):
     def __init__(self, runscontainer):
         super().__init__(runscontainer)
         self.output_dir = runscontainer.output_dir
+
+        if self.runscontainer.file_format != "APT":
+            raise Deactivated("{} deactivated, only designed for file-format APT (but detected {})".format(
+                self.get_name(), self.runscontainer.file_format
+            ))
+
+        apt_warning(self.logger)
 
         html_table = self.run()
         self.result["General"] = {"table": html_table,

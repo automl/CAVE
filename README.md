@@ -142,6 +142,11 @@ All your favourite configurators can be processed using [this simple CSV-format]
 cave examples/csv_allinone/run_* --ta_exec_dir examples/csv_allinone/ --output output/csv_example
 ```
 
+#### Auto-PyTorch
+While APT is still in alpha and work in progress at the time of writing, *CAVE* strives to support it as closely as possible.
+There is no unified output available right now, so we provide a [notebook](https://github.com/automl/CAVE/blob/master/examples/autopytorch/apt_notebook.ipynb)
+to showcase some exemplary analysis.
+
 #### SMAC2
 The legacy format of SMAC2 is still supported, though not extensively tested
 ```

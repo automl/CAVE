@@ -5,11 +5,14 @@ import tempfile
 
 from cave.reader.conversion.base_converter import BaseConverter
 from cave.reader.conversion.hpbandster2smac import HpBandSter2SMAC
+from cave.utils.apt_helpers.apt_warning import apt_warning
 
 
 class APT2SMAC(BaseConverter):
 
     def convert(self, folders, ta_exec_dirs=None, output_dir=None, converted_dest='converted_input_data'):
+        apt_warning(self.logger)
+
         self.logger.debug(
             "Converting APT-data to SMAC3-data. Called with: folders=%s, ta_exec_dirs=%s, output_dir=%s, "
             "converted_dest=%s", str(folders), str(ta_exec_dirs), str(output_dir), str(converted_dest))

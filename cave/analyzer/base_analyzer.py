@@ -43,7 +43,7 @@ class BaseAnalyzer(object):
             self.logger.warning("Please state in the analyzing options whether or not to run this Analyzer "
                                 "(simply add a line to the .ini file containing [{}])".format(self.name))
         elif not options[self.name].getboolean('run'):
-            raise Deactivated("This method ({0}) has been deactivated in the options. To enable, just set "
+            raise Deactivated("{0} has been deactivated in the options. To enable, just set "
                               "[{0}][run] = True in the .ini file or pass the appropriate flags.".format(self.name))
 
         self.options = options[self.name]

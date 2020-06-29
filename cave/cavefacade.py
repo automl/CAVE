@@ -242,6 +242,13 @@ class CAVE(object):
         # Parallel Coordinates should be after parameter importance, if performed.
         self.parallel_coordinates(d=self._get_dict(self.website, title))
 
+        ###################################################
+        #            Auto-PyTorch specific                #
+        ###################################################
+        title = "Auto-PyTorch specific"
+        self.apt_overview(d=self._get_dict(self.website, title))
+        self.apt_tensorboard(d=self._get_dict(self.website, title))
+
         self._build_website()
 
         self.logger.info("CAVE finished. Report is located in %s", os.path.join(self.output_dir, 'report.html'))

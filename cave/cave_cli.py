@@ -32,7 +32,7 @@ class CaveCLI(object):
 
     def main_cli(self):
         """
-        Main cli, implementing comparison between and analysis of Configuration-results.
+        Main cli, implementing comparison between and analysis of Configurator-results.
         """
         # Reset logging module (needs to happen before logger initalization)
         logging.shutdown()
