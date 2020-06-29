@@ -10,7 +10,6 @@ cave.analyzer.configurator package
 
 
 .. toctree::
-   :maxdepth: 4
 
    cave.analyzer.configurator.configurator_footprint
    cave.analyzer.configurator.parallel_coordinates

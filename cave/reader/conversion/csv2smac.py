@@ -18,7 +18,9 @@ from cave.utils.io import load_config_csv, load_csv_to_pandaframe
 
 
 class CSV2SMAC(BaseConverter):
-
+    """
+    Converting `CSV-data <manualdoc/fileformats.html>`_ to SMAC3-format.
+    """
     def convert(self, folders, ta_exec_dirs=None, output_dir=None, converted_dest='converted_input_data'):
 
         self.logger.debug("Converting CSV-data to SMAC3-data. Called with: folders=%s, ta_exec_dirs=%s, output_dir=%s, "
@@ -75,12 +77,12 @@ class CSV2SMAC(BaseConverter):
             scenario.write()
 
             result[f] = {
-                'new_path' : converted_folder_path,
-                'config_space' : config_space,
-                'runhistory' : runhistory,
-                'validated_runhistory' : validated_runhistory,
-                'scenario' : scenario,
-                'trajectory' : trajectory,
+                'new_path': converted_folder_path,
+                'config_space': config_space,
+                'runhistory': runhistory,
+                'validated_runhistory': validated_runhistory,
+                'scenario': scenario,
+                'trajectory': trajectory,
             }
 
         return result

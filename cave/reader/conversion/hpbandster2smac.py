@@ -20,7 +20,7 @@ from cave.utils.helpers import get_folder_basenames
 
 class HpBandSter2SMAC(BaseConverter):
     """
-    Converts data from hpbandster (https://github.com/automl/HpBandSter) at least up to the 1.0 release into SMAC3 data.
+    Converts data from `hpbandster <https://github.com/automl/HpBandSter>`_ at least up to the 1.0 release into SMAC3 data.
     """
     def convert(self, folders, ta_exec_dirs=None, output_dir=None, converted_dest='converted_input_data'):
         try:
@@ -40,7 +40,6 @@ class HpBandSter2SMAC(BaseConverter):
             ta_exec_dirs = ['.']
         if len(ta_exec_dirs) != len(folders):
             ta_exec_dirs = [ta_exec_dirs[0] for _ in folders]
-
 
         # Get a list with alternative interpretations of the configspace-file
         # (if it's a .pcs-file, for .json-files it's a length-one-list)

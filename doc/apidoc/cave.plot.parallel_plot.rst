@@ -10,7 +10,6 @@ cave.plot.parallel\_plot package
 
 
 .. toctree::
-   :maxdepth: 4
 
    cave.plot.parallel_plot.parallel_plot
    cave.plot.parallel_plot.parallel_reset

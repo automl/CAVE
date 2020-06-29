@@ -10,7 +10,6 @@ cave.analyzer.performance package
 
 
 .. toctree::
-   :maxdepth: 4
 
    cave.analyzer.performance.algorithm_footprint
    cave.analyzer.performance.compare_default_incumbent
