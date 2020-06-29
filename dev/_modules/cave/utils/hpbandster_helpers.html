@@ -102,9 +102,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.analyzer.html">cave.analyzer package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.budgets.html">cave.analyzer.budgets package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.budgets.bohb_incumbents_per_budget.html">cave.analyzer.budgets.bohb_incumbents_per_budget module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.budgets.bohb_learning_curves.html">cave.analyzer.budgets.bohb_learning_curves module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.budgets.budget_correlation.html">cave.analyzer.budgets.budget_correlation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.budgets.incumbents_over_budgets.html">cave.analyzer.budgets.incumbents_over_budgets module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.configurator.html">cave.analyzer.configurator package</a><ul>
@@ -117,15 +117,14 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_analysis.feature_analysis.html">cave.analyzer.feature_analysis.feature_analysis module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_analysis.feature_clustering.html">cave.analyzer.feature_analysis.feature_clustering module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_analysis.feature_correlation.html">cave.analyzer.feature_analysis.feature_correlation module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_analysis.feature_imp.html">cave.analyzer.feature_analysis.feature_imp module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_analysis.feature_importance.html">cave.analyzer.feature_analysis.feature_importance module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.html">cave.analyzer.parameter_importance package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.cave_ablation.html">cave.analyzer.parameter_importance.cave_ablation module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.cave_fanova.html">cave.analyzer.parameter_importance.cave_fanova module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.cave_forward_selection.html">cave.analyzer.parameter_importance.cave_forward_selection module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.cave_parameter_importance.html">cave.analyzer.parameter_importance.cave_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.ablation.html">cave.analyzer.parameter_importance.ablation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.base_parameter_importance.html">cave.analyzer.parameter_importance.base_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.fanova.html">cave.analyzer.parameter_importance.fanova module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.forward_selection.html">cave.analyzer.parameter_importance.forward_selection module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html">cave.analyzer.parameter_importance.local_parameter_importance module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html">cave.analyzer.parameter_importance.pimp_comparison_table module</a></li>
 </ul>
@@ -337,7 +336,9 @@
         <span class="n">return_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;config_ids&#39;</span><span class="p">:</span> <span class="p">[],</span>
                        <span class="s1">&#39;times_finished&#39;</span><span class="p">:</span> <span class="p">[],</span>
                        <span class="s1">&#39;budgets&#39;</span><span class="p">:</span> <span class="p">[],</span>
-                       <span class="s1">&#39;losses&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+                       <span class="s1">&#39;losses&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                       <span class="s1">&#39;config&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                       <span class="p">}</span>
         <span class="n">last_run</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">_compute_trajectory_racing</span><span class="p">(</span><span class="n">all_runs</span><span class="p">,</span> <span class="n">budgets</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">last_run</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">last_run</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">r</span><span class="p">:</span>
@@ -345,6 +346,7 @@
                 <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;times_finished&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;finished&#39;</span><span class="p">])</span>
                 <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">budget</span><span class="p">)</span>
                 <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;losses&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">loss</span><span class="p">)</span>
+                <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;config&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get_id2config_mapping</span><span class="p">()[</span><span class="n">r</span><span class="o">.</span><span class="n">config_id</span><span class="p">])</span>
             <span class="n">last_run</span> <span class="o">=</span> <span class="n">r</span>
         <span class="k">return</span> <span class="n">return_dict</span>
     <span class="k">else</span><span class="p">:</span>
@@ -468,6 +470,7 @@
 <span class="sd">                finished, their respective budgets, and corresponding losses</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">all_runs</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get_all_runs</span><span class="p">(</span><span class="n">only_largest_budget</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">id2config</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get_id2config_mapping</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">budgets</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">all_runs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">budget</span> <span class="ow">in</span> <span class="n">budgets</span><span class="p">,</span> <span class="n">all_runs</span><span class="p">))</span>
@@ -482,6 +485,7 @@
                     <span class="s1">&#39;times_finished&#39;</span><span class="p">:</span> <span class="p">[],</span>
                     <span class="s1">&#39;budgets&#39;</span>    <span class="p">:</span> <span class="p">[],</span>
                     <span class="s1">&#39;losses&#39;</span>     <span class="p">:</span> <span class="p">[],</span>
+                    <span class="s1">&#39;config&#39;</span>     <span class="p">:</span> <span class="p">[],</span>
     <span class="p">}</span>
 
     <span class="n">current_incumbent</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
@@ -510,6 +514,7 @@
             <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;times_finished&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;finished&#39;</span><span class="p">])</span>
             <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">budget</span><span class="p">)</span>
             <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;losses&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">loss</span><span class="p">)</span>
+            <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;config&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">id2config</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">config_id</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">current_incumbent</span> <span class="o">!=</span> <span class="n">r</span><span class="o">.</span><span class="n">loss</span><span class="p">:</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">all_runs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -518,6 +523,7 @@
         <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;times_finished&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="s1">&#39;finished&#39;</span><span class="p">])</span>
         <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;budgets&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;losses&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;losses&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;config&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">id2config</span><span class="p">[</span><span class="n">return_dict</span><span class="p">[</span><span class="s1">&#39;config_ids&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
 
     <span class="k">return</span> <span class="p">(</span><span class="n">return_dict</span><span class="p">)</span></div>
 </pre></div>

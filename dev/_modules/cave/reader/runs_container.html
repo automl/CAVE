@@ -102,9 +102,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.analyzer.html">cave.analyzer package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.budgets.html">cave.analyzer.budgets package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.budgets.bohb_incumbents_per_budget.html">cave.analyzer.budgets.bohb_incumbents_per_budget module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.budgets.bohb_learning_curves.html">cave.analyzer.budgets.bohb_learning_curves module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.budgets.budget_correlation.html">cave.analyzer.budgets.budget_correlation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.budgets.incumbents_over_budgets.html">cave.analyzer.budgets.incumbents_over_budgets module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.configurator.html">cave.analyzer.configurator package</a><ul>
@@ -117,15 +117,14 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_analysis.feature_analysis.html">cave.analyzer.feature_analysis.feature_analysis module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_analysis.feature_clustering.html">cave.analyzer.feature_analysis.feature_clustering module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_analysis.feature_correlation.html">cave.analyzer.feature_analysis.feature_correlation module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_analysis.feature_imp.html">cave.analyzer.feature_analysis.feature_imp module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_analysis.feature_importance.html">cave.analyzer.feature_analysis.feature_importance module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.html">cave.analyzer.parameter_importance package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.cave_ablation.html">cave.analyzer.parameter_importance.cave_ablation module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.cave_fanova.html">cave.analyzer.parameter_importance.cave_fanova module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.cave_forward_selection.html">cave.analyzer.parameter_importance.cave_forward_selection module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.cave_parameter_importance.html">cave.analyzer.parameter_importance.cave_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.ablation.html">cave.analyzer.parameter_importance.ablation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.base_parameter_importance.html">cave.analyzer.parameter_importance.base_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.fanova.html">cave.analyzer.parameter_importance.fanova module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.forward_selection.html">cave.analyzer.parameter_importance.forward_selection module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html">cave.analyzer.parameter_importance.local_parameter_importance module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html">cave.analyzer.parameter_importance.pimp_comparison_table module</a></li>
 </ul>
@@ -261,18 +260,22 @@
             
   <h1>Source code for cave.reader.runs_container</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
 <span class="kn">from</span> <span class="nn">numpy.random.mtrand</span> <span class="kn">import</span> <span class="n">RandomState</span>
 <span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="kn">import</span> <span class="n">RunHistory</span><span class="p">,</span> <span class="n">DataOrigin</span>
 
 <span class="kn">from</span> <span class="nn">cave.reader.configurator_run</span> <span class="kn">import</span> <span class="n">ConfiguratorRun</span>
+<span class="kn">from</span> <span class="nn">cave.reader.conversion.apt2smac</span> <span class="kn">import</span> <span class="n">APT2SMAC</span>
 <span class="kn">from</span> <span class="nn">cave.reader.conversion.csv2smac</span> <span class="kn">import</span> <span class="n">CSV2SMAC</span>
 <span class="kn">from</span> <span class="nn">cave.reader.conversion.hpbandster2smac</span> <span class="kn">import</span> <span class="n">HpBandSter2SMAC</span>
 <span class="kn">from</span> <span class="nn">cave.utils.helpers</span> <span class="kn">import</span> <span class="n">combine_trajectories</span><span class="p">,</span> <span class="n">load_default_options</span><span class="p">,</span> <span class="n">detect_fileformat</span>
-
+<span class="kn">from</span> <span class="nn">cave.utils.apt_helpers.refitting_routine</span> <span class="kn">import</span> <span class="n">apt_refit</span>
 
 <div class="viewcode-block" id="RunsContainer"><a class="viewcode-back" href="../../../apidoc/cave.reader.runs_container.html#cave.reader.runs_container.RunsContainer">[docs]</a><span class="k">class</span> <span class="nc">RunsContainer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
@@ -322,9 +325,13 @@
 <span class="sd">        output_dir: str</span>
 <span class="sd">            directory for output (temporary directory if not set)</span>
 <span class="sd">        file_format: str</span>
-<span class="sd">            from [SMAC2, SMAC3, BOHB, CSV] defines what file-format the optimizer result is in.</span>
+<span class="sd">            optional, from [AUTO, SMAC2, SMAC3, BOHB, CSV] defines what file-format the optimizer result is in.</span>
+<span class="sd">            AUTO or None will lead to attempted automatic detection</span>
 <span class="sd">        validation_format: str</span>
 <span class="sd">            from [SMAC2, SMAC3, BOHB, CSV] defines what file-format validation data is in.</span>
+<span class="sd">        analyzing_options: dict / ConfigParser</span>
+<span class="sd">            contains important global configurations on how to run CAVE, see</span>
+<span class="sd">            `options &lt;https://github.com/automl/CAVE/blob/master/cave/utils/options/default_analysis_options.ini&gt;`_</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">################################################################################################################</span>
         <span class="c1">#  Initialize and find suitable parameters                                                                     #</span>
@@ -341,7 +348,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="k">if</span> <span class="n">output_dir</span> <span class="k">else</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="n">file_format</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;AUTO&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">file_format</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;AUTO&quot;</span> <span class="ow">or</span> <span class="n">file_format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">file_format</span> <span class="o">=</span> <span class="n">detect_fileformat</span><span class="p">(</span><span class="n">folders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">folders</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Format of input detected automatically: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file_format</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_format</span> <span class="o">=</span> <span class="n">file_format</span>
@@ -356,18 +363,19 @@
         <span class="c1">################################################################################################################</span>
         <span class="c1">#  Convert if necessary, determine what folders and what budgets                                               #</span>
         <span class="c1">################################################################################################################</span>
-        <span class="c1"># Both budgets and folders have &quot;None&quot; in the key-list for the aggregation over all available budgets/folders</span>
         <span class="n">input_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span> <span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">folders</span><span class="p">}</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_format</span> <span class="o">==</span> <span class="s1">&#39;BOHB&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Converting </span><span class="si">%d</span><span class="s2"> BOHB folders to SMAC-format&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">folders</span><span class="p">))</span>
-            <span class="n">hpbandster2smac</span> <span class="o">=</span> <span class="n">HpBandSter2SMAC</span><span class="p">()</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">hpbandster2smac</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folders</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
-            <span class="n">input_data</span> <span class="o">=</span> <span class="n">result</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_format</span> <span class="o">==</span> <span class="s1">&#39;CSV&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Check whether CSV-data needs to be split up (only if budgets are used)&quot;</span><span class="p">)</span>
-            <span class="n">csv2smac</span> <span class="o">=</span> <span class="n">CSV2SMAC</span><span class="p">()</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">csv2smac</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folders</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ta_exec_dirs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
-            <span class="n">input_data</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="n">converters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;BOHB&#39;</span> <span class="p">:</span> <span class="n">HpBandSter2SMAC</span><span class="p">,</span>
+                      <span class="s1">&#39;CSV&#39;</span>  <span class="p">:</span> <span class="n">CSV2SMAC</span><span class="p">,</span>
+                      <span class="s1">&#39;APT&#39;</span>  <span class="p">:</span> <span class="n">APT2SMAC</span><span class="p">,</span>
+                      <span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_format</span> <span class="ow">in</span> <span class="n">converters</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Converting </span><span class="si">%d</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> folders to SMAC-format&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">folders</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_format</span><span class="p">)</span>
+            <span class="n">converter</span> <span class="o">=</span> <span class="n">converters</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">file_format</span><span class="p">]()</span>
+            <span class="n">input_data</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folders</span><span class="p">,</span>
+                                           <span class="n">ta_exec_dirs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ta_exec_dirs</span><span class="p">,</span>
+                                           <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+                                           <span class="p">)</span>
+            <span class="c1"># Also setting ta_exec_dirs to cwd, since we are now using the converted paths...</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ta_exec_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;.&#39;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folders</span><span class="p">))]</span>
 
         <span class="c1">################################################################################################################</span>
@@ -406,7 +414,6 @@
                                                  <span class="n">output_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">cr</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scenario</span>
-
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Return highest budget for given folder. &quot;&quot;&quot;</span>

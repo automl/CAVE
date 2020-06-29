@@ -103,9 +103,9 @@
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="apidoc/cave.analyzer.html">cave.analyzer package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.budgets.html">cave.analyzer.budgets package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.budgets.bohb_incumbents_per_budget.html">cave.analyzer.budgets.bohb_incumbents_per_budget module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.budgets.bohb_learning_curves.html">cave.analyzer.budgets.bohb_learning_curves module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.budgets.budget_correlation.html">cave.analyzer.budgets.budget_correlation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.budgets.incumbents_over_budgets.html">cave.analyzer.budgets.incumbents_over_budgets module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.configurator.html">cave.analyzer.configurator package</a><ul>
@@ -118,15 +118,14 @@
 <li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.feature_analysis.feature_analysis.html">cave.analyzer.feature_analysis.feature_analysis module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.feature_analysis.feature_clustering.html">cave.analyzer.feature_analysis.feature_clustering module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.feature_analysis.feature_correlation.html">cave.analyzer.feature_analysis.feature_correlation module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.feature_analysis.feature_imp.html">cave.analyzer.feature_analysis.feature_imp module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.feature_analysis.feature_importance.html">cave.analyzer.feature_analysis.feature_importance module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="apidoc/cave.analyzer.parameter_importance.html">cave.analyzer.parameter_importance package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.parameter_importance.cave_ablation.html">cave.analyzer.parameter_importance.cave_ablation module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.parameter_importance.cave_fanova.html">cave.analyzer.parameter_importance.cave_fanova module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.parameter_importance.cave_forward_selection.html">cave.analyzer.parameter_importance.cave_forward_selection module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.parameter_importance.cave_parameter_importance.html">cave.analyzer.parameter_importance.cave_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.parameter_importance.ablation.html">cave.analyzer.parameter_importance.ablation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.parameter_importance.base_parameter_importance.html">cave.analyzer.parameter_importance.base_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.parameter_importance.fanova.html">cave.analyzer.parameter_importance.fanova module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.parameter_importance.forward_selection.html">cave.analyzer.parameter_importance.forward_selection module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html">cave.analyzer.parameter_importance.local_parameter_importance module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html">cave.analyzer.parameter_importance.pimp_comparison_table module</a></li>
 </ul>
@@ -473,6 +472,8 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.ablation.html#cave.analyzer.parameter_importance.ablation.Ablation">Ablation (class in cave.analyzer.parameter_importance.ablation)</a>
+</li>
       <li><a href="apidoc/cave.html.html_builder.html#cave.html.html_builder.HTMLBuilder.add_layer">add_layer() (cave.html.html_builder.HTMLBuilder method)</a>
 </li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.algorithm_footprints">algorithm_footprints() (cave.cavefacade.CAVE method)</a>
@@ -491,6 +492,10 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.apt_overview">apt_overview() (cave.cavefacade.CAVE method)</a>
+</li>
+      <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.apt_tensorboard">apt_tensorboard() (cave.cavefacade.CAVE method)</a>
+</li>
       <li><a href="apidoc/cave.utils.exceptions.html#cave.utils.exceptions.Deactivated.args">args (cave.utils.exceptions.Deactivated attribute)</a>
 
       <ul>
@@ -513,16 +518,18 @@
 </li>
       <li><a href="apidoc/cave.reader.conversion.base_converter.html#cave.reader.conversion.base_converter.BaseConverter">BaseConverter (class in cave.reader.conversion.base_converter)</a>
 </li>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.base_parameter_importance.html#cave.analyzer.parameter_importance.base_parameter_importance.BaseParameterImportance">BaseParameterImportance (class in cave.analyzer.parameter_importance.base_parameter_importance)</a>
+</li>
       <li><a href="apidoc/cave.reader.base_reader.html#cave.reader.base_reader.BaseReader">BaseReader (class in cave.reader.base_reader)</a>
 </li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.bohb_incumbents_per_budget">bohb_incumbents_per_budget() (cave.cavefacade.CAVE method)</a>
 </li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.bohb_learning_curves">bohb_learning_curves() (cave.cavefacade.CAVE method)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.budgets.bohb_learning_curves.html#cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves">BohbLearningCurves (class in cave.analyzer.budgets.bohb_learning_curves)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidoc/cave.analyzer.budgets.bohb_learning_curves.html#cave.analyzer.budgets.bohb_learning_curves.BohbLearningCurves">BohbLearningCurves (class in cave.analyzer.budgets.bohb_learning_curves)</a>
+</li>
       <li><a href="apidoc/cave.analyzer.feature_analysis.box_violin.html#cave.analyzer.feature_analysis.box_violin.BoxViolin.box_violin">box_violin() (cave.analyzer.feature_analysis.box_violin.BoxViolin method)</a>
 
       <ul>
@@ -561,6 +568,8 @@
 </li>
       <li><a href="apidoc/cave.analyzer.budgets.budget_correlation.html#module-cave.analyzer.budgets.budget_correlation">cave.analyzer.budgets.budget_correlation (module)</a>
 </li>
+      <li><a href="apidoc/cave.analyzer.budgets.incumbents_over_budgets.html#module-cave.analyzer.budgets.incumbents_over_budgets">cave.analyzer.budgets.incumbents_over_budgets (module)</a>
+</li>
       <li><a href="apidoc/cave.analyzer.configurator.html#module-cave.analyzer.configurator">cave.analyzer.configurator (module)</a>
 </li>
       <li><a href="apidoc/cave.analyzer.configurator.configurator_footprint.html#module-cave.analyzer.configurator.configurator_footprint">cave.analyzer.configurator.configurator_footprint (module)</a>
@@ -580,6 +589,14 @@
       <li><a href="apidoc/cave.analyzer.feature_analysis.feature_importance.html#module-cave.analyzer.feature_analysis.feature_importance">cave.analyzer.feature_analysis.feature_importance (module)</a>
 </li>
       <li><a href="apidoc/cave.analyzer.parameter_importance.html#module-cave.analyzer.parameter_importance">cave.analyzer.parameter_importance (module)</a>
+</li>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.ablation.html#module-cave.analyzer.parameter_importance.ablation">cave.analyzer.parameter_importance.ablation (module)</a>
+</li>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.base_parameter_importance.html#module-cave.analyzer.parameter_importance.base_parameter_importance">cave.analyzer.parameter_importance.base_parameter_importance (module)</a>
+</li>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.fanova.html#module-cave.analyzer.parameter_importance.fanova">cave.analyzer.parameter_importance.fanova (module)</a>
+</li>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.forward_selection.html#module-cave.analyzer.parameter_importance.forward_selection">cave.analyzer.parameter_importance.forward_selection (module)</a>
 </li>
       <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#module-cave.analyzer.parameter_importance.local_parameter_importance">cave.analyzer.parameter_importance.local_parameter_importance (module)</a>
 </li>
@@ -690,6 +707,8 @@
 </li>
         <li><a href="apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation.check_for_bokeh">(cave.analyzer.budgets.budget_correlation.BudgetCorrelation class method)</a>
 </li>
+        <li><a href="apidoc/cave.analyzer.budgets.incumbents_over_budgets.html#cave.analyzer.budgets.incumbents_over_budgets.IncumbentsOverBudgets.check_for_bokeh">(cave.analyzer.budgets.incumbents_over_budgets.IncumbentsOverBudgets class method)</a>
+</li>
         <li><a href="apidoc/cave.analyzer.configurator.configurator_footprint.html#cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint.check_for_bokeh">(cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint class method)</a>
 </li>
         <li><a href="apidoc/cave.analyzer.configurator.parallel_coordinates.html#cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates.check_for_bokeh">(cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates class method)</a>
@@ -701,6 +720,14 @@
         <li><a href="apidoc/cave.analyzer.feature_analysis.feature_correlation.html#cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation.check_for_bokeh">(cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation class method)</a>
 </li>
         <li><a href="apidoc/cave.analyzer.feature_analysis.feature_importance.html#cave.analyzer.feature_analysis.feature_importance.FeatureImportance.check_for_bokeh">(cave.analyzer.feature_analysis.feature_importance.FeatureImportance class method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.ablation.html#cave.analyzer.parameter_importance.ablation.Ablation.check_for_bokeh">(cave.analyzer.parameter_importance.ablation.Ablation class method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.base_parameter_importance.html#cave.analyzer.parameter_importance.base_parameter_importance.BaseParameterImportance.check_for_bokeh">(cave.analyzer.parameter_importance.base_parameter_importance.BaseParameterImportance class method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.fanova.html#cave.analyzer.parameter_importance.fanova.Fanova.check_for_bokeh">(cave.analyzer.parameter_importance.fanova.Fanova class method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.forward_selection.html#cave.analyzer.parameter_importance.forward_selection.ForwardSelection.check_for_bokeh">(cave.analyzer.parameter_importance.forward_selection.ForwardSelection class method)</a>
 </li>
         <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.check_for_bokeh">(cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance class method)</a>
 </li>
@@ -775,6 +802,8 @@
 </li>
       <li><a href="apidoc/cave.analyzer.performance.performance_table.html#cave.analyzer.performance.performance_table.PerformanceTable.create_performance_table">create_performance_table() (cave.analyzer.performance.performance_table.PerformanceTable method)</a>
 </li>
+      <li><a href="apidoc/cave.analyzer.budgets.incumbents_over_budgets.html#cave.analyzer.budgets.incumbents_over_budgets.IncumbentsOverBudgets.create_table">create_table() (cave.analyzer.budgets.incumbents_over_budgets.IncumbentsOverBudgets method)</a>
+</li>
       <li><a href="apidoc/cave.reader.conversion.csv2rh.html#cave.reader.conversion.csv2rh.CSV2RH">CSV2RH (class in cave.reader.conversion.csv2rh)</a>
 </li>
       <li><a href="apidoc/cave.reader.conversion.csv2smac.html#cave.reader.conversion.csv2smac.CSV2SMAC">CSV2SMAC (class in cave.reader.conversion.csv2smac)</a>
@@ -841,6 +870,8 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.fanova.html#cave.analyzer.parameter_importance.fanova.Fanova">Fanova (class in cave.analyzer.parameter_importance.fanova)</a>
+</li>
       <li><a href="apidoc/cave.analyzer.feature_analysis.feature_clustering.html#cave.analyzer.feature_analysis.feature_clustering.FeatureClustering.feat_analysis">feat_analysis() (cave.analyzer.feature_analysis.feature_clustering.FeatureClustering method)</a>
 
       <ul>
@@ -876,6 +907,8 @@
       <li><a href="apidoc/cave.utils.convert_for_epm.html#cave.utils.convert_for_epm.force_finite_runhistory">force_finite_runhistory() (in module cave.utils.convert_for_epm)</a>
 </li>
       <li><a href="apidoc/cave.utils.hpbandster_helpers.html#cave.utils.hpbandster_helpers.format_budgets">format_budgets() (in module cave.utils.hpbandster_helpers)</a>
+</li>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.forward_selection.html#cave.analyzer.parameter_importance.forward_selection.ForwardSelection">ForwardSelection (class in cave.analyzer.parameter_importance.forward_selection)</a>
 </li>
       <li><a href="apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun.from_folder">from_folder() (cave.reader.configurator_run.ConfiguratorRun class method)</a>
 </li>
@@ -936,6 +969,8 @@
 </li>
         <li><a href="apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation.get_html">(cave.analyzer.budgets.budget_correlation.BudgetCorrelation method)</a>
 </li>
+        <li><a href="apidoc/cave.analyzer.budgets.incumbents_over_budgets.html#cave.analyzer.budgets.incumbents_over_budgets.IncumbentsOverBudgets.get_html">(cave.analyzer.budgets.incumbents_over_budgets.IncumbentsOverBudgets method)</a>
+</li>
         <li><a href="apidoc/cave.analyzer.configurator.configurator_footprint.html#cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint.get_html">(cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint method)</a>
 </li>
         <li><a href="apidoc/cave.analyzer.configurator.parallel_coordinates.html#cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates.get_html">(cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates method)</a>
@@ -947,6 +982,14 @@
         <li><a href="apidoc/cave.analyzer.feature_analysis.feature_correlation.html#cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation.get_html">(cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation method)</a>
 </li>
         <li><a href="apidoc/cave.analyzer.feature_analysis.feature_importance.html#cave.analyzer.feature_analysis.feature_importance.FeatureImportance.get_html">(cave.analyzer.feature_analysis.feature_importance.FeatureImportance method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.ablation.html#cave.analyzer.parameter_importance.ablation.Ablation.get_html">(cave.analyzer.parameter_importance.ablation.Ablation method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.base_parameter_importance.html#cave.analyzer.parameter_importance.base_parameter_importance.BaseParameterImportance.get_html">(cave.analyzer.parameter_importance.base_parameter_importance.BaseParameterImportance method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.fanova.html#cave.analyzer.parameter_importance.fanova.Fanova.get_html">(cave.analyzer.parameter_importance.fanova.Fanova method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.forward_selection.html#cave.analyzer.parameter_importance.forward_selection.ForwardSelection.get_html">(cave.analyzer.parameter_importance.forward_selection.ForwardSelection method)</a>
 </li>
         <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.get_html">(cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance method)</a>
 </li>
@@ -980,6 +1023,8 @@
 </li>
         <li><a href="apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation.get_jupyter">(cave.analyzer.budgets.budget_correlation.BudgetCorrelation method)</a>
 </li>
+        <li><a href="apidoc/cave.analyzer.budgets.incumbents_over_budgets.html#cave.analyzer.budgets.incumbents_over_budgets.IncumbentsOverBudgets.get_jupyter">(cave.analyzer.budgets.incumbents_over_budgets.IncumbentsOverBudgets method)</a>
+</li>
         <li><a href="apidoc/cave.analyzer.configurator.configurator_footprint.html#cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint.get_jupyter">(cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint method)</a>
 </li>
         <li><a href="apidoc/cave.analyzer.configurator.parallel_coordinates.html#cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates.get_jupyter">(cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates method)</a>
@@ -991,6 +1036,14 @@
         <li><a href="apidoc/cave.analyzer.feature_analysis.feature_correlation.html#cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation.get_jupyter">(cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation method)</a>
 </li>
         <li><a href="apidoc/cave.analyzer.feature_analysis.feature_importance.html#cave.analyzer.feature_analysis.feature_importance.FeatureImportance.get_jupyter">(cave.analyzer.feature_analysis.feature_importance.FeatureImportance method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.ablation.html#cave.analyzer.parameter_importance.ablation.Ablation.get_jupyter">(cave.analyzer.parameter_importance.ablation.Ablation method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.base_parameter_importance.html#cave.analyzer.parameter_importance.base_parameter_importance.BaseParameterImportance.get_jupyter">(cave.analyzer.parameter_importance.base_parameter_importance.BaseParameterImportance method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.fanova.html#cave.analyzer.parameter_importance.fanova.Fanova.get_jupyter">(cave.analyzer.parameter_importance.fanova.Fanova method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.forward_selection.html#cave.analyzer.parameter_importance.forward_selection.ForwardSelection.get_jupyter">(cave.analyzer.parameter_importance.forward_selection.ForwardSelection method)</a>
 </li>
         <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.get_jupyter">(cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance method)</a>
 </li>
@@ -1024,6 +1077,8 @@
 </li>
         <li><a href="apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation.get_name">(cave.analyzer.budgets.budget_correlation.BudgetCorrelation method)</a>
 </li>
+        <li><a href="apidoc/cave.analyzer.budgets.incumbents_over_budgets.html#cave.analyzer.budgets.incumbents_over_budgets.IncumbentsOverBudgets.get_name">(cave.analyzer.budgets.incumbents_over_budgets.IncumbentsOverBudgets method)</a>
+</li>
         <li><a href="apidoc/cave.analyzer.configurator.configurator_footprint.html#cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint.get_name">(cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint method)</a>
 </li>
         <li><a href="apidoc/cave.analyzer.configurator.parallel_coordinates.html#cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates.get_name">(cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates method)</a>
@@ -1035,6 +1090,14 @@
         <li><a href="apidoc/cave.analyzer.feature_analysis.feature_correlation.html#cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation.get_name">(cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation method)</a>
 </li>
         <li><a href="apidoc/cave.analyzer.feature_analysis.feature_importance.html#cave.analyzer.feature_analysis.feature_importance.FeatureImportance.get_name">(cave.analyzer.feature_analysis.feature_importance.FeatureImportance method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.ablation.html#cave.analyzer.parameter_importance.ablation.Ablation.get_name">(cave.analyzer.parameter_importance.ablation.Ablation method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.base_parameter_importance.html#cave.analyzer.parameter_importance.base_parameter_importance.BaseParameterImportance.get_name">(cave.analyzer.parameter_importance.base_parameter_importance.BaseParameterImportance method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.fanova.html#cave.analyzer.parameter_importance.fanova.Fanova.get_name">(cave.analyzer.parameter_importance.fanova.Fanova method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.forward_selection.html#cave.analyzer.parameter_importance.forward_selection.ForwardSelection.get_name">(cave.analyzer.parameter_importance.forward_selection.ForwardSelection method)</a>
 </li>
         <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.get_name">(cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance method)</a>
 </li>
@@ -1158,6 +1221,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidoc/cave.reader.configurator_run.html#cave.reader.configurator_run.ConfiguratorRun.identify">identify() (cave.reader.configurator_run.ConfiguratorRun class method)</a>
+</li>
+      <li><a href="apidoc/cave.analyzer.budgets.incumbents_over_budgets.html#cave.analyzer.budgets.incumbents_over_budgets.IncumbentsOverBudgets">IncumbentsOverBudgets (class in cave.analyzer.budgets.incumbents_over_budgets)</a>
 </li>
       <li><a href="apidoc/cave.analyzer.performance.cost_over_time.html#cave.analyzer.performance.cost_over_time.Line.index">index() (cave.analyzer.performance.cost_over_time.Line method)</a>
 </li>
@@ -1319,9 +1384,17 @@
 </li>
       <li><a href="apidoc/cave.plot.parallel_plot.parallel_selection_tool.html#cave.plot.parallel_plot.parallel_selection_tool.ParallelSelectionTool">ParallelSelectionTool (class in cave.plot.parallel_plot.parallel_selection_tool)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.parameter_importance">parameter_importance() (cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance method)</a>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.ablation.html#cave.analyzer.parameter_importance.ablation.Ablation.parameter_importance">parameter_importance() (cave.analyzer.parameter_importance.ablation.Ablation method)</a>
 
       <ul>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.base_parameter_importance.html#cave.analyzer.parameter_importance.base_parameter_importance.BaseParameterImportance.parameter_importance">(cave.analyzer.parameter_importance.base_parameter_importance.BaseParameterImportance method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.fanova.html#cave.analyzer.parameter_importance.fanova.Fanova.parameter_importance">(cave.analyzer.parameter_importance.fanova.Fanova method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.forward_selection.html#cave.analyzer.parameter_importance.forward_selection.ForwardSelection.parameter_importance">(cave.analyzer.parameter_importance.forward_selection.ForwardSelection method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.parameter_importance">(cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance method)</a>
+</li>
         <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.parameter_importance">(cave.cavefacade.CAVE method)</a>
 </li>
       </ul></li>
@@ -1358,6 +1431,8 @@
 </li>
         <li><a href="apidoc/cave.analyzer.budgets.budget_correlation.html#cave.analyzer.budgets.budget_correlation.BudgetCorrelation.plot_bokeh">(cave.analyzer.budgets.budget_correlation.BudgetCorrelation method)</a>
 </li>
+        <li><a href="apidoc/cave.analyzer.budgets.incumbents_over_budgets.html#cave.analyzer.budgets.incumbents_over_budgets.IncumbentsOverBudgets.plot_bokeh">(cave.analyzer.budgets.incumbents_over_budgets.IncumbentsOverBudgets method)</a>
+</li>
         <li><a href="apidoc/cave.analyzer.configurator.configurator_footprint.html#cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint.plot_bokeh">(cave.analyzer.configurator.configurator_footprint.ConfiguratorFootprint method)</a>
 </li>
         <li><a href="apidoc/cave.analyzer.configurator.parallel_coordinates.html#cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates.plot_bokeh">(cave.analyzer.configurator.parallel_coordinates.ParallelCoordinates method)</a>
@@ -1369,6 +1444,14 @@
         <li><a href="apidoc/cave.analyzer.feature_analysis.feature_correlation.html#cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation.plot_bokeh">(cave.analyzer.feature_analysis.feature_correlation.FeatureCorrelation method)</a>
 </li>
         <li><a href="apidoc/cave.analyzer.feature_analysis.feature_importance.html#cave.analyzer.feature_analysis.feature_importance.FeatureImportance.plot_bokeh">(cave.analyzer.feature_analysis.feature_importance.FeatureImportance method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.ablation.html#cave.analyzer.parameter_importance.ablation.Ablation.plot_bokeh">(cave.analyzer.parameter_importance.ablation.Ablation method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.base_parameter_importance.html#cave.analyzer.parameter_importance.base_parameter_importance.BaseParameterImportance.plot_bokeh">(cave.analyzer.parameter_importance.base_parameter_importance.BaseParameterImportance method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.fanova.html#cave.analyzer.parameter_importance.fanova.Fanova.plot_bokeh">(cave.analyzer.parameter_importance.fanova.Fanova method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.forward_selection.html#cave.analyzer.parameter_importance.forward_selection.ForwardSelection.plot_bokeh">(cave.analyzer.parameter_importance.forward_selection.ForwardSelection method)</a>
 </li>
         <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.plot_bokeh">(cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance method)</a>
 </li>
@@ -1403,14 +1486,32 @@
 </li>
       <li><a href="apidoc/cave.plot.scatter.html#cave.plot.scatter.plot_scatter_plot">plot_scatter_plot() (in module cave.plot.scatter)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.plot_whiskers">plot_whiskers() (cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance method)</a>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.ablation.html#cave.analyzer.parameter_importance.ablation.Ablation.plot_whiskers">plot_whiskers() (cave.analyzer.parameter_importance.ablation.Ablation method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.base_parameter_importance.html#cave.analyzer.parameter_importance.base_parameter_importance.BaseParameterImportance.plot_whiskers">(cave.analyzer.parameter_importance.base_parameter_importance.BaseParameterImportance method)</a>
 </li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.fanova.html#cave.analyzer.parameter_importance.fanova.Fanova.plot_whiskers">(cave.analyzer.parameter_importance.fanova.Fanova method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.forward_selection.html#cave.analyzer.parameter_importance.forward_selection.ForwardSelection.plot_whiskers">(cave.analyzer.parameter_importance.forward_selection.ForwardSelection method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.plot_whiskers">(cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance method)</a>
+</li>
+      </ul></li>
       <li><a href="apidoc/cave.analyzer.performance.plot_ecdf.html#cave.analyzer.performance.plot_ecdf.PlotECDF">PlotECDF (class in cave.analyzer.performance.plot_ecdf)</a>
 </li>
       <li><a href="apidoc/cave.analyzer.performance.plot_scatter.html#cave.analyzer.performance.plot_scatter.PlotScatter">PlotScatter (class in cave.analyzer.performance.plot_scatter)</a>
 </li>
-      <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.postprocess">postprocess() (cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance method)</a>
+      <li><a href="apidoc/cave.analyzer.parameter_importance.ablation.html#cave.analyzer.parameter_importance.ablation.Ablation.postprocess">postprocess() (cave.analyzer.parameter_importance.ablation.Ablation method)</a>
+
+      <ul>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.fanova.html#cave.analyzer.parameter_importance.fanova.Fanova.postprocess">(cave.analyzer.parameter_importance.fanova.Fanova method)</a>
 </li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.forward_selection.html#cave.analyzer.parameter_importance.forward_selection.ForwardSelection.postprocess">(cave.analyzer.parameter_importance.forward_selection.ForwardSelection method)</a>
+</li>
+        <li><a href="apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.postprocess">(cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance method)</a>
+</li>
+      </ul></li>
       <li><a href="apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.print_budgets">print_budgets() (cave.cavefacade.CAVE method)</a>
 </li>
       <li><a href="apidoc/cave.plot.parallel_plot.parallel_reset.html#cave.plot.parallel_plot.parallel_reset.ParallelResetTool.properties">properties() (cave.plot.parallel_plot.parallel_reset.ParallelResetTool class method)</a>

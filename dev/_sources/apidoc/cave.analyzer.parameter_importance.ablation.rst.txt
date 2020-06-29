@@ -1,7 +1,7 @@
-cave.analyzer.feature\_analysis.feature\_imp module
+cave.analyzer.parameter\_importance.ablation module
 ===================================================
 
-.. automodule:: cave.analyzer.feature_analysis.feature_imp
+.. automodule:: cave.analyzer.parameter_importance.ablation
    :members:
    :undoc-members:
    :show-inheritance:

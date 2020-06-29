@@ -11,7 +11,6 @@ cave.analyzer package
 Subpackages
 
 .. toctree::
-   :maxdepth: 4
 
    cave.analyzer.budgets
    cave.analyzer.configurator
@@ -21,6 +20,5 @@ Subpackages
 
 
 .. toctree::
-   :maxdepth: 4
 
    cave.analyzer.base_analyzer

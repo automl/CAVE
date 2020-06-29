@@ -10,11 +10,9 @@ cave.analyzer.feature\_analysis package
 
 
 .. toctree::
-   :maxdepth: 4
 
    cave.analyzer.feature_analysis.box_violin
    cave.analyzer.feature_analysis.feature_analysis
    cave.analyzer.feature_analysis.feature_clustering
    cave.analyzer.feature_analysis.feature_correlation
-   cave.analyzer.feature_analysis.feature_imp
    cave.analyzer.feature_analysis.feature_importance

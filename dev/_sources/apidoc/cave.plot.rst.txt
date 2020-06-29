@@ -11,13 +11,11 @@ cave.plot package
 Subpackages
 
 .. toctree::
-   :maxdepth: 4
 
    cave.plot.parallel_plot
 
 
 .. toctree::
-   :maxdepth: 4
 
    cave.plot.algorithm_footprint
    cave.plot.cdf

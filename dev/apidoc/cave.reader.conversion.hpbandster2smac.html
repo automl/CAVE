@@ -104,9 +104,9 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="cave.analyzer.html">cave.analyzer package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="cave.analyzer.budgets.html">cave.analyzer.budgets package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.budgets.bohb_incumbents_per_budget.html">cave.analyzer.budgets.bohb_incumbents_per_budget module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cave.analyzer.budgets.bohb_learning_curves.html">cave.analyzer.budgets.bohb_learning_curves module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cave.analyzer.budgets.budget_correlation.html">cave.analyzer.budgets.budget_correlation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.budgets.incumbents_over_budgets.html">cave.analyzer.budgets.incumbents_over_budgets module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cave.analyzer.configurator.html">cave.analyzer.configurator package</a><ul>
@@ -119,15 +119,14 @@
 <li class="toctree-l4"><a class="reference internal" href="cave.analyzer.feature_analysis.feature_analysis.html">cave.analyzer.feature_analysis.feature_analysis module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cave.analyzer.feature_analysis.feature_clustering.html">cave.analyzer.feature_analysis.feature_clustering module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cave.analyzer.feature_analysis.feature_correlation.html">cave.analyzer.feature_analysis.feature_correlation module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.feature_analysis.feature_imp.html">cave.analyzer.feature_analysis.feature_imp module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cave.analyzer.feature_analysis.feature_importance.html">cave.analyzer.feature_analysis.feature_importance module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cave.analyzer.parameter_importance.html">cave.analyzer.parameter_importance package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.cave_ablation.html">cave.analyzer.parameter_importance.cave_ablation module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.cave_fanova.html">cave.analyzer.parameter_importance.cave_fanova module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.cave_forward_selection.html">cave.analyzer.parameter_importance.cave_forward_selection module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.cave_parameter_importance.html">cave.analyzer.parameter_importance.cave_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.ablation.html">cave.analyzer.parameter_importance.ablation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.base_parameter_importance.html">cave.analyzer.parameter_importance.base_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.fanova.html">cave.analyzer.parameter_importance.fanova module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.forward_selection.html">cave.analyzer.parameter_importance.forward_selection module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.local_parameter_importance.html">cave.analyzer.parameter_importance.local_parameter_importance module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.pimp_comparison_table.html">cave.analyzer.parameter_importance.pimp_comparison_table module</a></li>
 </ul>
@@ -275,7 +274,7 @@
 <dt id="cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC">
 <em class="property">class </em><code class="sig-prename descclassname">cave.reader.conversion.hpbandster2smac.</code><code class="sig-name descname">HpBandSter2SMAC</code><a class="reference internal" href="../_modules/cave/reader/conversion/hpbandster2smac.html#HpBandSter2SMAC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cave.reader.conversion.base_converter.html#cave.reader.conversion.base_converter.BaseConverter" title="cave.reader.conversion.base_converter.BaseConverter"><code class="xref py py-class docutils literal notranslate"><span class="pre">cave.reader.conversion.base_converter.BaseConverter</span></code></a></p>
-<p>Converts data from hpbandster (<a class="reference external" href="https://github.com/automl/HpBandSter">https://github.com/automl/HpBandSter</a>) at least up to the 1.0 release into SMAC3 data.</p>
+<p>Converts data from <a class="reference external" href="https://github.com/automl/HpBandSter">hpbandster</a> at least up to the 1.0 release into SMAC3 data.</p>
 <dl class="method">
 <dt id="cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC._get_config">
 <code class="sig-name descname">_get_config</code><span class="sig-paren">(</span><em class="sig-param">config_id</em>, <em class="sig-param">id2config</em>, <em class="sig-param">cs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/conversion/hpbandster2smac.html#HpBandSter2SMAC._get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC._get_config" title="Permalink to this definition">¶</a></dt>
@@ -284,27 +283,37 @@
 <dl class="method">
 <dt id="cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC.convert">
 <code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param">folders</em>, <em class="sig-param">ta_exec_dirs=None</em>, <em class="sig-param">output_dir=None</em>, <em class="sig-param">converted_dest='converted_input_data'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/conversion/hpbandster2smac.html#HpBandSter2SMAC.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC.convert" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert specific format results into SMAC-format.</p>
+<dd><p>Convert specific format results into SMAC3-format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>folders</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of parallel configurator-runs (folder paths!)</p></li>
-<li><p><strong>ta_exec_dirs</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – only relevant if you need to load instances, this should be the path from which the paths in the scenario are valid</p></li>
+<li><p><strong>ta_exec_dirs</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – only if you need to load instances, this is the path(s) from which the paths in the scenario are valid</p></li>
 <li><p><strong>output_dir</strong> (<em>str</em>) – path to CAVE’s output-directory</p></li>
-<li><p><strong>converted_dest</strong> (<em>str</em>) – optional, this will be the parent folder in the output in which the converted runs (in SMAC-format) are saved
-if not specified, will use temporary folders</p></li>
+<li><p><strong>converted_dest</strong> (<em>str</em>) – optional, this will be the parent folder in CAVE’s output in which the converted runs (in SMAC-format) are
+saved, if not specified, will use temporary folders</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>result</strong> – ‘new_path’ : converted_folder_path,
-‘config_space’ : config_space,
-‘runhistory’ : runhistory,
-‘validated_runhistory’ : validated_runhistory,
-‘scenario’ : scenario,
-‘trajectory’ : trajectory}}</p>
+<dd class="field-even"><p><p><strong>result</strong> –</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">dict</span><span class="p">{</span>
+  <span class="n">original_folder</span> <span class="p">:</span> <span class="nb">dict</span><span class="p">{</span>
+    <span class="s1">&#39;new_path&#39;</span> <span class="p">:</span> <span class="n">converted_folder_path</span><span class="p">,</span>
+    <span class="s1">&#39;config_space&#39;</span> <span class="p">:</span> <span class="n">config_space</span><span class="p">,</span>
+    <span class="s1">&#39;runhistory&#39;</span> <span class="p">:</span> <span class="n">runhistory</span><span class="p">,</span>
+    <span class="s1">&#39;validated_runhistory&#39;</span> <span class="p">:</span> <span class="n">validated_runhistory</span><span class="p">,</span>
+    <span class="s1">&#39;scenario&#39;</span> <span class="p">:</span> <span class="n">scenario</span><span class="p">,</span>
+    <span class="s1">&#39;trajectory&#39;</span> <span class="p">:</span> <span class="n">trajectory</span><span class="p">,</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>in addition, the result-dictionary can contain any number of arbitrary key-value pairs, that will be
+available in CAVE’s <cite>RunsContainer</cite></p>
+</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict{f : dict{</p>
+<dd class="field-odd"><p>dictionary</p>
 </dd>
 </dl>
 </dd></dl>
@@ -318,8 +327,7 @@ if not specified, will use temporary folders</p></li>
 <dl class="method">
 <dt id="cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC.hpbandster2smac">
 <code class="sig-name descname">hpbandster2smac</code><span class="sig-paren">(</span><em class="sig-param">folder</em>, <em class="sig-param">result</em>, <em class="sig-param">cs_options</em>, <em class="sig-param">output_dir: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cave/reader/conversion/hpbandster2smac.html#HpBandSter2SMAC.hpbandster2smac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cave.reader.conversion.hpbandster2smac.HpBandSter2SMAC.hpbandster2smac" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reading hpbandster-result-object and creating RunHistory and trajectory…  treats each budget as an
-individual ‘smac’-run, creates an output-directory with subdirectories for each budget.</p>
+<dd><p>Reading hpbandster-result-object and creating RunHistory and trajectory…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -327,11 +335,13 @@ individual ‘smac’-run, creates an output-directory with subdirectories for e
 <li><p><strong>result</strong> (<em>hpbandster.core.result.Result</em>) – bohb’s result-object</p></li>
 <li><p><strong>cs_options</strong> (<em>list</em><em>[</em><em>ConfigurationSpace</em><em>]</em>) – the configuration spaces. in the best case it’s a single element, but for pcs-format we need to guess
 through a list of possible configspaces</p></li>
-<li><p><strong>output_dir</strong> (<em>str</em>) – the output-dir to save the smac-runs to</p></li>
+<li><p><strong>output_dir_base</strong> (<em>str</em>) – the output-dir to save the smac-runs to</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>converted</strong> – ‘config_space’ : config_space,
+<dd class="field-even"><p><strong>converted</strong> – ‘new_path’ : path_to_converted_input,
+‘hp_bandster_result’ : result_in_hpbandster_format,
+‘config_space’ : config_space,
 ‘runhistory’ : runhistory,
 ‘validated_runhistory’ : validated_runhistory,
 ‘scenario’ : scenario,

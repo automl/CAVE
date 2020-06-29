@@ -104,9 +104,9 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="cave.analyzer.html">cave.analyzer package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="cave.analyzer.budgets.html">cave.analyzer.budgets package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.budgets.bohb_incumbents_per_budget.html">cave.analyzer.budgets.bohb_incumbents_per_budget module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cave.analyzer.budgets.bohb_learning_curves.html">cave.analyzer.budgets.bohb_learning_curves module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cave.analyzer.budgets.budget_correlation.html">cave.analyzer.budgets.budget_correlation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.budgets.incumbents_over_budgets.html">cave.analyzer.budgets.incumbents_over_budgets module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cave.analyzer.configurator.html">cave.analyzer.configurator package</a><ul>
@@ -119,15 +119,14 @@
 <li class="toctree-l4"><a class="reference internal" href="cave.analyzer.feature_analysis.feature_analysis.html">cave.analyzer.feature_analysis.feature_analysis module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cave.analyzer.feature_analysis.feature_clustering.html">cave.analyzer.feature_analysis.feature_clustering module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cave.analyzer.feature_analysis.feature_correlation.html">cave.analyzer.feature_analysis.feature_correlation module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.feature_analysis.feature_imp.html">cave.analyzer.feature_analysis.feature_imp module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cave.analyzer.feature_analysis.feature_importance.html">cave.analyzer.feature_analysis.feature_importance module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cave.analyzer.parameter_importance.html">cave.analyzer.parameter_importance package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.cave_ablation.html">cave.analyzer.parameter_importance.cave_ablation module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.cave_fanova.html">cave.analyzer.parameter_importance.cave_fanova module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.cave_forward_selection.html">cave.analyzer.parameter_importance.cave_forward_selection module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.cave_parameter_importance.html">cave.analyzer.parameter_importance.cave_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.ablation.html">cave.analyzer.parameter_importance.ablation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.base_parameter_importance.html">cave.analyzer.parameter_importance.base_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.fanova.html">cave.analyzer.parameter_importance.fanova module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.forward_selection.html">cave.analyzer.parameter_importance.forward_selection module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.local_parameter_importance.html">cave.analyzer.parameter_importance.local_parameter_importance module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cave.analyzer.parameter_importance.pimp_comparison_table.html">cave.analyzer.parameter_importance.pimp_comparison_table module</a></li>
 </ul>
@@ -305,8 +304,11 @@ a runhistory with validation-data gathered after the optimization</p></li>
 <li><p><strong>ta_exec_dirs</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – optional, list of execution directories for target-algorithms (to find filepaths, etc.). If you’re not sure,
 just set to current working directory (which it is by default).</p></li>
 <li><p><strong>output_dir</strong> (<em>str</em>) – directory for output (temporary directory if not set)</p></li>
-<li><p><strong>file_format</strong> (<em>str</em>) – from [SMAC2, SMAC3, BOHB, CSV] defines what file-format the optimizer result is in.</p></li>
+<li><p><strong>file_format</strong> (<em>str</em>) – optional, from [AUTO, SMAC2, SMAC3, BOHB, CSV] defines what file-format the optimizer result is in.
+AUTO or None will lead to attempted automatic detection</p></li>
 <li><p><strong>validation_format</strong> (<em>str</em>) – from [SMAC2, SMAC3, BOHB, CSV] defines what file-format validation data is in.</p></li>
+<li><p><strong>analyzing_options</strong> (<em>dict / ConfigParser</em>) – contains important global configurations on how to run CAVE, see
+<a class="reference external" href="https://github.com/automl/CAVE/blob/master/cave/utils/options/default_analysis_options.ini">options</a></p></li>
 </ul>
 </dd>
 </dl>

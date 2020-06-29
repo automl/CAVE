@@ -10,7 +10,6 @@ cave.reader.conversion package
 
 
 .. toctree::
-   :maxdepth: 4
 
    cave.reader.conversion.base_converter
    cave.reader.conversion.csv2rh

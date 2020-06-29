@@ -10,11 +10,10 @@ cave.analyzer.parameter\_importance package
 
 
 .. toctree::
-   :maxdepth: 4
 
-   cave.analyzer.parameter_importance.cave_ablation
-   cave.analyzer.parameter_importance.cave_fanova
-   cave.analyzer.parameter_importance.cave_forward_selection
-   cave.analyzer.parameter_importance.cave_parameter_importance
+   cave.analyzer.parameter_importance.ablation
+   cave.analyzer.parameter_importance.base_parameter_importance
+   cave.analyzer.parameter_importance.fanova
+   cave.analyzer.parameter_importance.forward_selection
    cave.analyzer.parameter_importance.local_parameter_importance
    cave.analyzer.parameter_importance.pimp_comparison_table

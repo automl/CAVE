@@ -102,9 +102,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../apidoc/cave.analyzer.html">cave.analyzer package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.budgets.html">cave.analyzer.budgets package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.budgets.bohb_incumbents_per_budget.html">cave.analyzer.budgets.bohb_incumbents_per_budget module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.budgets.bohb_learning_curves.html">cave.analyzer.budgets.bohb_learning_curves module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.budgets.budget_correlation.html">cave.analyzer.budgets.budget_correlation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.budgets.incumbents_over_budgets.html">cave.analyzer.budgets.incumbents_over_budgets module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.configurator.html">cave.analyzer.configurator package</a><ul>
@@ -117,15 +117,14 @@
 <li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_analysis.feature_analysis.html">cave.analyzer.feature_analysis.feature_analysis module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_analysis.feature_clustering.html">cave.analyzer.feature_analysis.feature_clustering module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_analysis.feature_correlation.html">cave.analyzer.feature_analysis.feature_correlation module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_analysis.feature_imp.html">cave.analyzer.feature_analysis.feature_imp module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_analysis.feature_importance.html">cave.analyzer.feature_analysis.feature_importance module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.html">cave.analyzer.parameter_importance package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.cave_ablation.html">cave.analyzer.parameter_importance.cave_ablation module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.cave_fanova.html">cave.analyzer.parameter_importance.cave_fanova module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.cave_forward_selection.html">cave.analyzer.parameter_importance.cave_forward_selection module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.cave_parameter_importance.html">cave.analyzer.parameter_importance.cave_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.ablation.html">cave.analyzer.parameter_importance.ablation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.base_parameter_importance.html">cave.analyzer.parameter_importance.base_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.fanova.html">cave.analyzer.parameter_importance.fanova module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.forward_selection.html">cave.analyzer.parameter_importance.forward_selection module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html">cave.analyzer.parameter_importance.local_parameter_importance module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html">cave.analyzer.parameter_importance.pimp_comparison_table module</a></li>
 </ul>
@@ -273,9 +272,11 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">cave.__version__</span> <span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">cave_version</span>
-<span class="kn">from</span> <span class="nn">cave.analyzer.budgets.incumbents_over_budgets</span> <span class="kn">import</span> <span class="n">IncumbentsOverBudgets</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.apt.apt_overview</span> <span class="kn">import</span> <span class="n">APTOverview</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.apt.apt_tensorboard</span> <span class="kn">import</span> <span class="n">APTTensorboard</span>
 <span class="kn">from</span> <span class="nn">cave.analyzer.budgets.bohb_learning_curves</span> <span class="kn">import</span> <span class="n">BohbLearningCurves</span>
 <span class="kn">from</span> <span class="nn">cave.analyzer.budgets.budget_correlation</span> <span class="kn">import</span> <span class="n">BudgetCorrelation</span>
+<span class="kn">from</span> <span class="nn">cave.analyzer.budgets.incumbents_over_budgets</span> <span class="kn">import</span> <span class="n">IncumbentsOverBudgets</span>
 <span class="kn">from</span> <span class="nn">cave.analyzer.configurator.configurator_footprint</span> <span class="kn">import</span> <span class="n">ConfiguratorFootprint</span>
 <span class="kn">from</span> <span class="nn">cave.analyzer.configurator.parallel_coordinates</span> <span class="kn">import</span> <span class="n">ParallelCoordinates</span>
 <span class="kn">from</span> <span class="nn">cave.analyzer.feature_analysis.box_violin</span> <span class="kn">import</span> <span class="n">BoxViolin</span>
@@ -502,6 +503,13 @@
         <span class="c1"># Parallel Coordinates should be after parameter importance, if performed.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parallel_coordinates</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">website</span><span class="p">,</span> <span class="n">title</span><span class="p">))</span>
 
+        <span class="c1">###################################################</span>
+        <span class="c1">#            Auto-PyTorch specific                #</span>
+        <span class="c1">###################################################</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Auto-PyTorch specific&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apt_overview</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">website</span><span class="p">,</span> <span class="n">title</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apt_tensorboard</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">website</span><span class="p">,</span> <span class="n">title</span><span class="p">))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_website</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;CAVE finished. Report is located in </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;report.html&#39;</span><span class="p">))</span>
@@ -647,6 +655,14 @@
 <div class="viewcode-block" id="CAVE.budget_correlation"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.budget_correlation">[docs]</a>    <span class="nd">@_analyzer_type</span>
     <span class="k">def</span> <span class="nf">budget_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">BudgetCorrelation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CAVE.apt_overview"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.apt_overview">[docs]</a>    <span class="nd">@_analyzer_type</span>
+    <span class="k">def</span> <span class="nf">apt_overview</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">APTOverview</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CAVE.apt_tensorboard"><a class="viewcode-back" href="../../apidoc/cave.cavefacade.html#cave.cavefacade.CAVE.apt_tensorboard">[docs]</a>    <span class="nd">@_analyzer_type</span>
+    <span class="k">def</span> <span class="nf">apt_tensorboard</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">APTTensorboard</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="p">)</span></div>
 
 <span class="c1">###########################################################################</span>
 <span class="c1"># HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS HELPERS #</span>

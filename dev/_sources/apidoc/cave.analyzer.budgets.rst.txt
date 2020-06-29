@@ -10,8 +10,7 @@ cave.analyzer.budgets package
 
 
 .. toctree::
-   :maxdepth: 4
 
-   cave.analyzer.budgets.bohb_incumbents_per_budget
    cave.analyzer.budgets.bohb_learning_curves
    cave.analyzer.budgets.budget_correlation
+   cave.analyzer.budgets.incumbents_over_budgets
