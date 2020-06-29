@@ -1,7 +1,5 @@
 import os
 
-from tensorboard import program
-
 from cave.analyzer.base_analyzer import BaseAnalyzer
 from cave.utils.apt_helpers.apt_warning import apt_warning
 from cave.utils.exceptions import Deactivated
@@ -24,6 +22,11 @@ class APTTensorboard(BaseAnalyzer):
         return "Auto-PyTorch Tensorboard"
 
     def run(self):
+        try:
+            from tensorboard import program
+        except ModuleNotFoundError:
+            raise Deactivated("Please install tensorboard to perform this analysis!")
+
         if len(self.runscontainer.get_folders()) != 1:
             raise ValueError("Undefined behaviour for multiple APT-outputs...")
         run = self.runscontainer.get_aggregated(keep_budgets=False, keep_folders=True)[0]
