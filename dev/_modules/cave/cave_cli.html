@@ -398,6 +398,15 @@
         <span class="c1"># PIMP-configs</span>
         <span class="n">pimp_opts</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Parameter Importance&quot;</span><span class="p">,</span>
                                               <span class="s2">&quot;Define the behaviour of the ParameterImportance-module (pimp)&quot;</span><span class="p">)</span>
+
+        <span class="n">pimp_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--pimp_interactive&quot;</span><span class="p">,</span>
+                               <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;on&quot;</span><span class="p">,</span> <span class="s2">&quot;off&quot;</span><span class="p">],</span>
+                               <span class="n">default</span><span class="o">=</span><span class="s2">&quot;on&quot;</span><span class="p">,</span>
+                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Whether or not to plot interactive bokeh plots for parameter importance analysis&quot;</span><span class="p">)</span>
+        <span class="n">pimp_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--pimp_whiskers&quot;</span><span class="p">,</span>
+                               <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;on&quot;</span><span class="p">,</span> <span class="s2">&quot;off&quot;</span><span class="p">],</span>
+                               <span class="n">default</span><span class="o">=</span><span class="s2">&quot;on&quot;</span><span class="p">,</span>
+                               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Whether or not to plot interactive whisker plot for parameter importance analysis&quot;</span><span class="p">)</span>
         <span class="n">pimp_opts</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--pimp_max_samples&quot;</span><span class="p">,</span>
                                <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
                                <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
@@ -522,6 +531,8 @@
         <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;fANOVA&quot;</span><span class="p">][</span><span class="s2">&quot;fanova_pairwise&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">fanova_pairwise</span><span class="p">)</span>
         <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;fANOVA&quot;</span><span class="p">][</span><span class="s2">&quot;pimp_max_samples&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">pimp_max_samples</span><span class="p">)</span>
         <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Parallel Coordinates&quot;</span><span class="p">][</span><span class="s2">&quot;pc_sort_by&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">pc_sort_by</span><span class="p">)</span>
+        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Parameter Importance&quot;</span><span class="p">][</span><span class="s2">&quot;whisker_quantiles_plot&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">pimp_whiskers</span><span class="p">)</span>
+        <span class="n">analyzing_options</span><span class="p">[</span><span class="s2">&quot;Parameter Importance&quot;</span><span class="p">][</span><span class="s2">&quot;interactive_bokeh_plots&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args_</span><span class="o">.</span><span class="n">pimp_interactive</span><span class="p">)</span>
 
         <span class="c1"># Initialize CAVE</span>
         <span class="n">cave</span> <span class="o">=</span> <span class="n">CAVE</span><span class="p">(</span><span class="n">folders</span><span class="p">,</span>
