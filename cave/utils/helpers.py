@@ -6,12 +6,8 @@ import typing
 
 import numpy as np
 from ConfigSpace.configuration_space import Configuration
-from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunHistory, RunKey
 
-from cave.reader.csv_reader import CSVReader
-from cave.reader.smac2_reader import SMAC2Reader
-from cave.reader.smac3_reader import SMAC3Reader
 from cave.utils.exceptions import NotApplicable
 
 
@@ -41,10 +37,10 @@ def get_timeout(rh, conf, cutoff):
     conf_id = rh.config_ids[conf]
 
     timeouts = {}
-    runs = rh.get_runs_for_config(conf)
+    runs = rh.get_runs_for_config(conf, only_max_observed_budget=True)
     for run in runs:
         # Averaging over seeds, run = (inst, seed)
-        inst, seed = run
+        inst, seed, _git  = run
         status = rh.data[RunKey(conf_id, inst, seed)].time < cutoff
         if inst in timeouts:
             timeouts[inst].append(status)
@@ -78,28 +74,7 @@ def get_cost_dict_for_config(rh: RunHistory,
     cost: dict(instance->cost)
         cost per instance (aggregated or as list per seed)
     """
-    # Check if config is in runhistory
-    conf_id = rh.config_ids[conf]
-
-    # Map instances to seeds in dict
-    runs = rh.get_runs_for_config(conf)
-    instance_to_seeds = dict()
-    for run in runs:
-        inst, seed = run
-        if inst in instance_to_seeds:
-            instance_to_seeds[inst].append(seed)
-        else:
-            instance_to_seeds[inst] = [seed]
-
-    # Get loss per instance
-    instance_costs = {i: [rh.data[RunKey(conf_id, i, s)].cost for s in
-                          instance_to_seeds[i]] for i in instance_to_seeds}
-
-    # Aggregate:
-    instance_costs = {i: np.mean(instance_costs[i]) for i in instance_costs}
-
-    # TODO: uncomment next line and delete all above after next SMAC dev->master
-    # instance_costs = rh.get_instance_costs_for_config(conf)
+    instance_costs = rh.get_instance_costs_for_config(conf)
 
     if par != 1:
         if cutoff:
@@ -130,7 +105,7 @@ def scenario_sanity_check(s, logger):
 
 def combine_runhistories(rhs, logger=None):
     """Combine list of given runhistories. interleaving to best approximate execution order"""
-    combi_rh = RunHistory(average_cost)
+    combi_rh = RunHistory()
     rh_to_runs = {rh : list(rh.data.items()) for rh in rhs}
     if logger:
         logger.debug("number of elements: " + str({k : len(v) for k, v in rh_to_runs}))
@@ -139,7 +114,14 @@ def combine_runhistories(rhs, logger=None):
         for rh in list(rh_to_runs.keys()):
             try:
                 k, v = rh_to_runs[rh][idx]
-                combi_rh.add(rh.ids_config[k.config_id], v.cost, v.time, v.status, k.instance_id, k.seed, v.additional_info)
+                combi_rh.add(config=rh.ids_config[k.config_id],
+                             cost=v.cost,
+                             time=v.time,
+                             status=v.status,
+                             instance_id=k.instance_id,
+                             #TODO budget option
+                             seed=k.seed,
+                             additional_info=v.additional_info)
             except IndexError:
                 rh_to_runs.pop(rh)
         idx += 1
@@ -229,26 +211,45 @@ def load_default_options(options=None, file_format=None):
         else:
             default_options.read_dict(options)
 
-    if file_format == "BOHB":
-        default_options.read(os.path.join(own_folder, 'options/default_bohb_analysis_options.ini'))
-
     return default_options
 
 def detect_fileformat(folders):
-    # Check if it's BOHB
+    from cave.reader.conversion.csv2smac import CSV2SMAC
+    from cave.reader.smac2_reader import SMAC2Reader
+    from cave.reader.smac3_reader import SMAC3Reader
+
+    # First check if it's APT, else BOHB
     bohb_files = ["configs.json", "results.json", "configspace.json"]
-    for f in folders:
-        if not all([os.path.isfile(os.path.join(f, sub)) for sub in bohb_files]):
-            break
-    else:
-        return "BOHB"
+    apt_files = ["autonet_config.json", "results_fit.json"]
+    if all([all([os.path.isfile(os.path.join(f, sub)) for sub in bohb_files]) for f in folders]):
+        if all([all([os.path.isfile(os.path.join(f, sub)) for sub in apt_files]) for f in folders]):
+            return "APT"
+        else:
+            return "BOHB"
+
     # Check if it's SMAC
     if all([SMAC3Reader.check_for_files(f) for f in folders]):
         return "SMAC3"
     if all([SMAC2Reader.check_for_files(f) for f in folders]):
         return "SMAC2"
     # Check if it's CSV
-    if all([CSVReader.check_for_files(f) for f in folders]):
+    if all([CSV2SMAC.check_for_files(f) for f in folders]):
         return "CSV"
 
     raise RuntimeError("Autodetection of file-format failed. Please try to specify (using --file_format on cmd-line)")
+
+def get_folder_basenames(folders):
+    """Shorten folder-strings as much as possible (always keeping the basename).
+    ["foo/bar/run_1", "foo/bar/run_2/"] will be ["run_1", "run_2"]
+    ["foo/run_1/bar/", "foo/run_2/bar"] will be ["run_1/bar", "run_2/bar"]
+    """
+    throw, keep = folders[:], ['' for _ in range(len(set(folders)))]
+    max_parts = max([len(f.split('/')) for f in folders])
+    for _ in range(max_parts):
+        for idx in range(len(folders)):
+            throw[idx], new = os.path.split(throw[idx].rstrip('/'))
+            keep[idx] = os.path.join(new, keep[idx]).rstrip('/')
+        if len(set(keep)) == len(set(folders)):
+            break
+
+    return keep

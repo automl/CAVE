@@ -1,0 +1,16 @@
+{
+    "forward-selection": {
+        "imp": {
+            "None": 1.0488220037406923,
+            "nclauses": 0.32546964385257504,
+            "nclausesOrig": 0.32159310674384967,
+            "nvars": 0.3564213367331165
+        },
+        "order": [
+            "None",
+            "nvars",
+            "nclauses",
+            "nclausesOrig"
+        ]
+    }
+}

@@ -20,7 +20,7 @@ def format_budgets(budgets, allow_whitespace=False):
 
     Returns
     -------
-    formatted_budgets: List[str]
+    formatted_budgets: Dict[float] -> str
         list with formatted budgets
     """
     if len(budgets) == 0:
@@ -30,13 +30,13 @@ def format_budgets(budgets, allow_whitespace=False):
         return 'budget_{}'.format(int(b)) if float(b).is_integer() else 'budget_{:.{}f}'.format(b, round_to)
 
     round_to = 1
-    formatted_budgets = {b : format_budget(b, round_to) for b in budgets}
+    formatted_budgets = OrderedDict([(b, format_budget(b, round_to)) for b in budgets])
     while len(set(formatted_budgets.values())) != len(formatted_budgets.values()):
         round_to += 1
-        formatted_budgets = {b : format_budget(b, round_to) for b in budgets}
+        formatted_budgets = OrderedDict([(b, format_budget(b, round_to)) for b in budgets])
 
     if allow_whitespace:
-        formatted_budgets = {b : str(f).replace("_", " ") for b, f in formatted_budgets.items()}
+        formatted_budgets = OrderedDict([(b, str(f).replace("_", " ")) for b, f in formatted_budgets.items()])
 
     return formatted_budgets
 
@@ -75,7 +75,9 @@ def get_incumbent_trajectory(result, budgets=None, mode='racing'):
         return_dict = {'config_ids': [],
                        'times_finished': [],
                        'budgets': [],
-                       'losses': []}
+                       'losses': [],
+                       'config': [],
+                       }
         last_run = None
         for r in _compute_trajectory_racing(all_runs, budgets):
             if last_run is None or last_run is not r:
@@ -83,6 +85,7 @@ def get_incumbent_trajectory(result, budgets=None, mode='racing'):
                 return_dict['times_finished'].append(r.time_stamps['finished'])
                 return_dict['budgets'].append(r.budget)
                 return_dict['losses'].append(r.loss)
+                return_dict['config'].append(result.get_id2config_mapping()[r.config_id])
             last_run = r
         return return_dict
     else:
@@ -206,6 +209,7 @@ def _get_incumbent_trajectory_hpbandster(result, budgets, bigger_is_better=True,
                 finished, their respective budgets, and corresponding losses
     """
     all_runs = result.get_all_runs(only_largest_budget=False)
+    id2config = result.get_id2config_mapping()
 
     if isinstance(budgets, list):
         all_runs = list(filter(lambda r: r.budget in budgets, all_runs))
@@ -220,6 +224,7 @@ def _get_incumbent_trajectory_hpbandster(result, budgets, bigger_is_better=True,
                     'times_finished': [],
                     'budgets'    : [],
                     'losses'     : [],
+                    'config'     : [],
     }
 
     current_incumbent = float('inf')
@@ -248,6 +253,7 @@ def _get_incumbent_trajectory_hpbandster(result, budgets, bigger_is_better=True,
             return_dict['times_finished'].append(r.time_stamps['finished'])
             return_dict['budgets'].append(r.budget)
             return_dict['losses'].append(r.loss)
+            return_dict['config'].append(id2config[r.config_id])
 
     if current_incumbent != r.loss:
         r = all_runs[-1]
@@ -256,5 +262,6 @@ def _get_incumbent_trajectory_hpbandster(result, budgets, bigger_is_better=True,
         return_dict['times_finished'].append(r.time_stamps['finished'])
         return_dict['budgets'].append(return_dict['budgets'][-1])
         return_dict['losses'].append(return_dict['losses'][-1])
+        return_dict['config'].append(id2config[return_dict['config_ids'][-1]])
 
     return (return_dict)

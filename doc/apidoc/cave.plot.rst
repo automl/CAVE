@@ -6,6 +6,13 @@ cave.plot package
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:
+
+Subpackages
+
+.. toctree::
+
+   cave.plot.parallel_plot
 
 
 .. toctree::
@@ -13,5 +20,5 @@ cave.plot package
    cave.plot.algorithm_footprint
    cave.plot.cdf
    cave.plot.configurator_footprint
-   cave.plot.parallel_coordinates
    cave.plot.scatter
+   cave.plot.whisker_quantiles

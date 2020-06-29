@@ -1,3 +1,58 @@
+# 1.3.3
+
+## Interface changes
+
+* Deprecate deactivation of individual analysis methods using the `--no_[analysis_name]` flag
+* Add two mutually exclusive flags `--[skip|only] [analysis_name]` to activate / skip specific analysis methods
+* Remove `--pimp_sort_table_by` flag (table is sortable interactively now so no need)
+
+## Major changes
+
+* Drop support for Python 3.5, Add support for Python 3.7 and 3.8
+* Drop support for SMAC 0.12.0, Add support for SMAC 0.12.1 and 0.12.2
+* Distinguish between per-parallel-run and per-budget meta information (#270)
+
+## Minor changes
+
+* Change name of scatter plot from "Scatterplot" to "Scatter Plot"
+
+# 1.3.2
+
+## Bug fixes
+
+* Fix bug with duplicate entries in html-builder
+
+## Major changes
+
+* Internally adapt structure to support budgets and parallel runs in accordance with new SMAC
+* Enable budgets and parallel runs for CSV-Reader (and change to converting data always (so also in hpbandster-reader) instead of maintaining different readers)
+* Add interactive parallel coordinates plot
+* Add Whisker-Quantile plot to compare importances over budgets and parallel runs
+
+## Minor changes 
+
+* Add support for new trajectory files (overdue...)
+* Add script to enable generation of example-data in CSV-format
+* Add caching of aggregated ConfiguratorRuns
+* Update CSV-examples (now with budgets instead of instances...)
+
+# 1.3.1
+
+## Bug fixes
+
+* Fix #261, `get_checkbox` threw an error due to unpredictable return type
+
+# 1.3.0
+
+## Major changes
+
+* Support SMAC 0.12.0
+* Drop support for SMAC < 0.12.0 (use CAVE 1.2.x instead)
+
+## Minor changes
+
+* PyImp min version now 1.0.8
+
 # 1.2.0
 
 ## Bug fixes

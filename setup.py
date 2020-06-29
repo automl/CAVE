@@ -1,18 +1,13 @@
 import os
-import shutil
-import subprocess
-import sys
-import traceback
+
 import setuptools
-from setuptools.command.install import install
 
 import cave
 
 with open('requirements.txt') as fh:
     requirements = fh.read()
 requirements = requirements.split('\n')
-requirements = [requirement.strip() for requirement in requirements
-                if not "http" in requirement]
+requirements = [requirement.strip() for requirement in requirements if not "http" in requirement]
 
 with open("cave/__version__.py") as fh:
     version = fh.readlines()[-1].split()[-1].strip("\"'")
@@ -22,17 +17,32 @@ WEB_FILES_LOCATION = os.path.join(os.path.dirname(__file__), 'cave/html/web_file
 setuptools.setup(
     name="cave",
     version=version,
-    packages=['cave', 'cave.analyzer', 'cave.feature_analysis', 'cave.reader', 'cave.reader.conversion', 'cave.html', 'cave.plot', 'cave.utils'],
+    packages=['cave',
+              'cave.analyzer',
+              'cave.analyzer.budgets',
+              'cave.analyzer.configurator',
+              'cave.analyzer.feature_analysis',
+              'cave.analyzer.parameter_importance',
+              'cave.analyzer.performance',
+              'cave.reader',
+              'cave.reader.conversion',
+              'cave.html',
+              'cave.plot',
+              'cave.plot.parallel_plot',
+              'cave.utils',
+              ],
+    # For info about package_data, please check MANIFEST.in
+    # (https://stackoverflow.com/questions/7522250/how-to-include-package-data-with-setuptools-distribute)
     package_data={
-        'cave/analyzer': [
-            'cave/analyzer/mpl_style'
-        ],
         'cave/plot': [
             'cave/plot/mpl_style'
         ],
-        'cave/utils' : [
-            'cave/utils/options/default_analysis_options.ini'
-            'cave/utils/options/default_bohb_analysis_options.ini'
+        'cave/plot/parallel_plot': [
+            'cave/plot/parallel_plot/parallel_selection_tool.ts',
+            'cave/plot/parallel_plot/parallel_reset.ts',
+        ],
+        'cave/utils': [
+            'cave/utils/options/default_analysis_options.ini',
         ],
         'cave/html': [
             'cave/html/web_files/css/accordion.css',
@@ -58,6 +68,7 @@ setuptools.setup(
             'cave/html/web_files/images/ml4aad.png',
             'cave/html/web_files/images/next.png',
             'cave/html/web_files/images/prev.png',
+            'cave/html/web_files/images/CAVE_logo.png',
             'cave/html/web_files/images/SMAC_logo.png',
             'cave/html/web_files/images/BOHB_logo.png',
             'cave/html/web_files/images/automl-logo.png',
@@ -76,7 +87,7 @@ setuptools.setup(
     license="3-clause BSD",
     keywords="machine learning algorithm configuration hyperparameter "
              "optimization tuning analyzing analysis visualization",
-    url="",
+    url="https://github.com/automl/CAVE",
     entry_points={'console_scripts': ['explore-cave=cave.cave_cli:entry_point',
                                       'cave=cave.cave_cli:entry_point']},
     classifiers=[

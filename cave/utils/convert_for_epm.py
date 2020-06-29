@@ -77,7 +77,8 @@ def convert_data_for_epm(scenario: Scenario, runhistory: RunHistory, impute_inac
     else:
         rh2EPM = RunHistory2EPM4Cost(scenario=scenario,
                                      num_params=num_params,
-                                     success_states=None,
+                                     success_states=[
+                                         StatusType.SUCCESS, ],
                                      impute_censored_data=False,
                                      impute_state=None)
         X, Y = rh2EPM.transform(runhistory)

@@ -1,0 +1,50 @@
+\begin{table}
+\begin{tabular}{r|r|r|r|r}
+\toprule
+                                                            &      fANOVA       &     Ablation      & Forward-Selection &        LPI       \\
+\hline
+sp-var-dec-heur                                             & $         69.738$ & $         -0.000$ & $          0.331$ & $         87.346$\\
+sp-orig-clause-sort-heur                                    & $          4.686$ & $         45.213$ &                 - & $          7.317$\\
+sp-learned-clause-sort-heur                                 & $          4.383$ & $         96.299$ &                 - & $          0.003$\\
+sp-phase-dec-heur                                           & $          0.682$ & $          3.636$ &                 - & $          0.314$\\
+sp-res-order-heur                                           & $          0.550$ & $        -37.612$ &                 - & $          0.000$\\
+sp-max-res-runs                                             & $          0.094$ & $         -0.000$ &                 - & $          0.000$\\
+sp-rand-var-dec-scaling                                     & $          0.079$ & $         -0.000$ & $          0.311$ & $          0.000$\\
+sp-learned-size-factor                                      & $          0.078$ & $         -1.330$ &                 - & $          0.000$\\
+sp-res-cutoff-lits                                          & $          0.043$ & $         -0.000$ &                 - & $          0.000$\\
+sp-rand-phase-dec-freq                                      & $          0.033$ & $         -0.908$ &                 - & $          0.000$\\
+sp-clause-decay                                             & $          0.030$ & $         -0.000$ &                 - & $          0.140$\\
+sp-var-activity-inc                                         & $          0.030$ & $         -0.000$ &                 - & $          0.000$\\
+sp-clause-activity-inc                                      & $          0.027$ & $         -0.000$ &                 - & $          0.000$\\
+sp-res-cutoff-cls                                           & $          0.023$ & $         -0.000$ &                 - & $          0.000$\\
+sp-rand-var-dec-freq                                        & $          0.023$ & $         -7.098$ &                 - & $          0.360$\\
+sp-update-dec-queue                                         & $          0.021$ & $         -5.277$ &                 - & $          0.000$\\
+sp-learned-clauses-inc                                      & $          0.019$ & $         -0.000$ &                 - & $          0.000$\\
+sp-variable-decay                                           & $          0.019$ & $         -0.000$ &                 - & $          0.449$\\
+sp-clause-del-heur                                          & $          0.018$ & $         -4.950$ &                 - & $          0.153$\\
+sp-restart-inc                                              & $          0.017$ & $         14.025$ &                 - & $          0.009$\\
+sp-first-restart                                            & $          0.014$ & $         -1.999$ &                 - & $          0.000$\\
+sp-resolution                                               & $          0.010$ &                 - &                 - & $          3.910$\\
+sp-rand-phase-scaling                                       & $          0.010$ &                 - &                 - &                 -\\
+sp-max-res-lit-inc                                          & $          0.009$ & $         -0.000$ &                 - &                 -\\
+sp-use-pure-literal-rule                                    & $          0.001$ & $         -0.000$ &                 - & $          0.000$\\
+sp-clause-inversion                                         & $          0.000$ &                 - &                 - &                 -\\
+['sp-var-dec-heur', 'sp-orig-clause-sort-heur']             & $          6.534$ &                 - &                 - &                 -\\
+['sp-var-dec-heur', 'sp-learned-clause-sort-heur']          & $          4.233$ &                 - &                 - &                 -\\
+['sp-var-dec-heur', 'sp-phase-dec-heur']                    & $          1.063$ &                 - &                 - &                 -\\
+['sp-var-dec-heur', 'sp-res-order-heur']                    & $          0.633$ &                 - &                 - &                 -\\
+['sp-orig-clause-sort-heur', 'sp-learned-clause-sort-heur'] & $          0.908$ &                 - &                 - &                 -\\
+['sp-orig-clause-sort-heur', 'sp-phase-dec-heur']           & $          0.077$ &                 - &                 - &                 -\\
+['sp-orig-clause-sort-heur', 'sp-res-order-heur']           & $          0.653$ &                 - &                 - &                 -\\
+['sp-learned-clause-sort-heur', 'sp-phase-dec-heur']        & $          0.177$ &                 - &                 - &                 -\\
+['sp-learned-clause-sort-heur', 'sp-res-order-heur']        & $          0.084$ &                 - &                 - &                 -\\
+['sp-phase-dec-heur', 'sp-res-order-heur']                  & $          0.052$ &                 - &                 - &                 -\\
+None                                                        &                 - &                 - & $          0.345$ &                 -\\
+\bottomrule
+\end{tabular}
+\caption{Parameter Importance values, obtained using the PIMP package. Ablation values are percentages of improvement a single parameter change obtained between the default and an incumbent configuration.
+fANOVA values are percentages that show how much variance across the whole ConfigSpace can be explained by that parameter.
+Forward Selection values are RMSE values obtained using only a subset of parameters for prediction.
+fANOVA and Forward Selection try to estimate the importances across the whole parameter space, while ablation tries to estimate them between two given configurations.}
+\label{tab:pimp}
+\end{table}

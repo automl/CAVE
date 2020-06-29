@@ -6,3 +6,4 @@ cave.utils.hpbandster\_helpers module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

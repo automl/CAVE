@@ -12,7 +12,7 @@ from smac.scenario.scenario import Scenario
 from smac.utils.io.input_reader import InputReader
 
 from cave.reader.base_reader import BaseReader, changedir
-from cave.reader.csv2rh import CSV2RH
+from cave.reader.conversion.csv2rh import CSV2RH
 from cave.utils.io import load_csv_to_pandaframe
 
 
@@ -201,6 +201,7 @@ class SMAC2Reader(BaseReader):
         csv_data = pd.DataFrame(np.delete(csv_data, np.s_[5:], axis=1), columns=header)
         csv_data = csv_data.apply(pd.to_numeric, errors='ignore')
         traj = []
+
         def add_to_traj(row):
             new_entry = {}
             new_entry['cpu_time'] = row['CPU Time Used']
@@ -209,6 +210,7 @@ class SMAC2Reader(BaseReader):
             new_entry["evaluations"] = -1
             new_entry["cost"] = row["Estimated Training Performance"]
             new_entry["incumbent"] = self.id_to_config[row["Incumbent ID"]]
+            new_entry["budget"] = 0  # No budget-support for SMAC2!
             traj.append(new_entry)
         csv_data.apply(add_to_traj, axis=1)
         return traj

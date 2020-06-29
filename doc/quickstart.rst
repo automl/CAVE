@@ -1,8 +1,9 @@
 Quickstart
 ----------
-CAVE is designed to adapt to any given workflow. While it's possible to generate a HTML-report via the commandline on a
-given result-folder, CAVE may also run in interactive mode, running `individual analysis-methods <apidoc/cave.cavefacade.html>`_ on demand. We provide a
-few examples to demonstrate this.
+CAVE is designed to adapt to any given workflow.
+While it's possible to generate a HTML-report via the commandline on a given result-folder,
+CAVE may also run in interactive mode, running `individual analysis-methods <apidoc/cave.cavefacade.html>`_ on demand.
+We provide a few examples to demonstrate this.
 Make sure you followed the `installation details <installation.html>`_ before starting.
 
 Analyse existing results via the commandline
@@ -16,7 +17,7 @@ Run
 
     cave examples/smac3/example_output/* --ta_exec_dir examples/smac3/ --output output/smac3_example
 
-to start the example.
+to run the example.
 By default, CAVE will execute all parts of the analysis. To disable certain (timeconsuming) parts
 of the analysis, please see the section `commandline-options <manualdoc/commandline.html>`_.
 
@@ -42,5 +43,5 @@ To run the smac3-example (within a notebook):
                 output_dir="test_jupyter_smac",
                 ta_exec_dir=["examples/smac3"],
                )
-    cave.performance_table()
+    cave.parallel_coordinates()
 

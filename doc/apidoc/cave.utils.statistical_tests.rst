@@ -6,3 +6,4 @@ cave.utils.statistical\_tests module
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :private-members:

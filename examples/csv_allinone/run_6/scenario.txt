@@ -1,0 +1,2 @@
+paramfile = run_6/configspace.json
+run_obj = quality

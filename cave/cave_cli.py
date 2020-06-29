@@ -32,35 +32,42 @@ class CaveCLI(object):
 
     def main_cli(self):
         """
-        Main cli, implementing comparison between and analysis of Configuration-results.
+        Main cli, implementing comparison between and analysis of Configurator-results.
         """
         # Reset logging module (needs to happen before logger initalization)
         logging.shutdown()
         reload(logging)
 
-        # Some choice-blocks, that can be reused throughout the CLI
-        p_choices = [
-                     "all",
-                     "ablation",
-                     "forward_selection",
-                     "fanova",
-                     "lpi",
-                     "none"
-                    ]
-        p_sort_by_choices = ["average"] + p_choices[1:-1]
-        f_choices = [
-                     "all",
-                     "box_violin",
-                     "correlation",
-                     "clustering",
-                     "importance",
-                     "none"
-                    ]
+        # Those are the options for the --only / --skip flags
+        map_options = {
+            'performance_table': 'Performance Table',
+            'ecdf': 'empirical Cumulative Distribution Function (eCDF)',
+            'scatter_plot': 'Scatter Plot',
+            'cost_over_time': 'Cost Over Time',
+            'configurator_footprint': 'Configurator Footprint',
+            'parallel_coordinates': 'Parallel Coordinates',
+            'algorithm_footprints': 'Algorithm Footprint',
+            'budget_correlation': 'Budget Correlation',
+            'bohb_learning_curves': 'BOHB Learning Curves',
+            'incumbents_over_budgets': 'Incumbents Over Budgets',
+            # Parameter Importance:
+            'fanova': 'fANOVA',
+            'ablation': 'Ablation',
+            'lpi': 'Local Parameter Importance (LPI)',
+            'local_parameter_importance': 'Local Parameter Importance (LPI)',
+            'forward_selection': 'Forward Selection',
+            # Feature Importance
+            'clustering': "Feature Clustering",
+            'correlation': "Feature Correlation",
+            'importance': "Feature Importance",
+            'box_violin': "Violin and Box Plots",
+        }
 
-        parser = ArgumentParser(formatter_class=SmartArgsDefHelpFormatter, add_help=False,
+        parser = ArgumentParser(formatter_class=SmartArgsDefHelpFormatter,
+                                add_help=False,
                                 description='CAVE: Configuration Assessment Vizualisation and Evaluation')
 
-        req_opts = parser.add_mutually_exclusive_group(required=True)
+        req_opts = parser.add_mutually_exclusive_group(required=True)  # Either positional or keyword folders option
         req_opts.add_argument("folders",
                               nargs='*',
                               # strings prefixed with raw| can be manually split with \n
@@ -112,7 +119,7 @@ class CaveCLI(object):
         cave_opts.add_argument("--file_format",
                                default='auto',
                                help="specify the format of the configurator-files. ",
-                               choices=['auto', 'SMAC2', 'SMAC3', 'CSV', 'BOHB'],
+                               choices=['auto', 'SMAC2', 'SMAC3', 'CSV', 'BOHB', 'APT'],
                                type=str.upper)
         cave_opts.add_argument("--validation_format",
                                default='NONE',
@@ -126,9 +133,19 @@ class CaveCLI(object):
                                     "scenario, so they are relative to this path "
                                     "(e.g. 'ta_exec_dir/path_to_train_inst_specified_in_scenario.txt'). ",
                                nargs='+')
+
         # PIMP-configs
         pimp_opts = parser.add_argument_group("Parameter Importance",
                                               "Define the behaviour of the ParameterImportance-module (pimp)")
+
+        pimp_opts.add_argument("--pimp_interactive",
+                               choices=["on", "off"],
+                               default="on",
+                               help="Whether or not to plot interactive bokeh plots for parameter importance analysis")
+        pimp_opts.add_argument("--pimp_whiskers",
+                               choices=["on", "off"],
+                               default="on",
+                               help="Whether or not to plot interactive whisker plot for parameter importance analysis")
         pimp_opts.add_argument("--pimp_max_samples",
                                default=-1,
                                type=int,
@@ -137,13 +154,8 @@ class CaveCLI(object):
                                action="store_false",
                                dest="fanova_pairwise",
                                help="fANOVA won't compute pairwise marginals")
-        pimp_opts.add_argument("--pimp_sort_table_by",
-                               default="average",
-                               choices=p_sort_by_choices,
-                               help="raw|what kind of parameter importance method to "
-                                    "use to sort the overview-table. ")
 
-        cfp_opts = parser.add_argument_group("Configurator Footprint", "Finetune the configurator footprint")
+        cfp_opts = parser.add_argument_group("Configurator Footprint", "Fine-tune the configurator footprint")
         cfp_opts.add_argument("--cfp_time_slider",
                               help="whether or not to have a time_slider-widget on cfp-plot"
                                    "INCREASES FILE-SIZE (and loading) DRAMATICALLY. ",
@@ -157,14 +169,16 @@ class CaveCLI(object):
                                    "you run into a MemoryError). -1 -> plot all. ",
                               default=-1, type=int)
 
-        pc_opts = parser.add_argument_group("Parallel Coordinates", "Finetune the parameter parallel coordinates")
+        pc_opts = parser.add_argument_group("Parallel Coordinates", "Fine-tune the parameter parallel coordinates")
+        # TODO: this choice should be integrated into the bokeh plot
         pc_opts.add_argument("--pc_sort_by",
-                              help="parameter-importance method to determine the order (and selection) of parameters "
-                                   "for parallel coordinates. all: aggregate over all available methods. uses random "
-                                   "method if none is given. ",
-                              default="all", type=str.lower, choices=p_choices)
+                             help="parameter-importance method to determine the order (and selection) of parameters "
+                                  "for parallel coordinates. all: aggregate over all available methods. uses random "
+                                  "method if none is given. ",
+                             default="all", type=str.lower,
+                             choices=['fanova', 'lpi', 'ablation', 'forward_selection', 'all'])
 
-        cot_opts = parser.add_argument_group("Cost Over Time", "Finetune the cost over time plot")
+        cot_opts = parser.add_argument_group("Cost Over Time", "Fine-tune the cost over time plot")
         cot_opts.add_argument("--cot_inc_traj",
                               help="if the optimizer belongs to HpBandSter (e.g. bohb), you can choose how the "
                                    "incumbent-trajectory will be interpreted with regards to the budget. You can "
@@ -178,99 +192,36 @@ class CaveCLI(object):
                               choices=["racing", "minimum", "prefer_higher_budget"])
 
         # General analysis to be carried out
-        act_opts = parser.add_argument_group("Analysis", "Which analysis methods should be carried out")
-        act_opts.add_argument("--parameter_importance",
-                              default="all",
-                              nargs='+',
-                              help="raw|what kind of parameter importance method to "
-                                   "use. Choose any combination of\n[" + ', '.join(p_choices[1:-1]) + "] or set it to "
-                                                                                                      "all/none",
-                              choices=p_choices,
-                              type=str.lower)
-        act_opts.add_argument("--feature_analysis",
-                              default="all",
-                              nargs='+',
-                              help="raw|what kind of feature analysis methods to use. "
-                                   "Choose any combination of\n[" + ', '.join(f_choices[1:-1]) + "] or set it to "
-                                                                                                 "all/none",
-                              choices=f_choices,
-                              type=str.lower)
-        act_opts.add_argument("--no_performance_table",
-                              action='store_false',
-                              help="don't create performance table.",
-                              dest='performance_table')
-        act_opts.add_argument("--no_ecdf",
-                              action='store_false',
-                              help="don't plot ecdf.",
-                              dest='ecdf')
-        act_opts.add_argument("--no_scatter_plots",
-                              action='store_false',
-                              help="don't plot scatter plots.",
-                              dest='scatter')
-        act_opts.add_argument("--no_cost_over_time",
-                              action='store_false',
-                              help="don't plot cost over time.",
-                              dest='cost_over_time')
-        act_opts.add_argument("--no_configurator_footprint",
-                              action='store_false',
-                              help="don't plot configurator footprint.",
-                              dest='configurator_footprint')
-        act_opts.add_argument("--no_parallel_coordinates",
-                              action='store_false',
-                              help="don't plot parallel coordinates.",
-                              dest='parallel_coordinates')
-        act_opts.add_argument("--no_algorithm_footprints",
-                              action='store_false',
-                              help="don't plot algorithm footprints.",
-                              dest='algorithm_footprints')
-        act_opts.add_argument("--no_budget_correlation",
-                              action='store_false',
-                              help="don't plot budget correlation.",
-                              dest='budget_correlation')
-        act_opts.add_argument("--bohb_learning_curves",
-                              action='store_false',
-                              help="don't plot bohb learning curves.",
-                              dest='bohb_learning_curves')
-        act_opts.add_argument("--no_incumbents_over_budgets",
-                              action='store_false',
-                              help="don't plot incumbents over budgets.",
-                              dest='incumbents_over_budgets')
+        default_opts = parser.add_mutually_exclusive_group()
+        default_opts.add_argument("--only",
+                                  nargs='*',
+                                  help='perform only these analysis methods. choose from: {}'.format(
+                                      ", ".join(sorted(map_options.keys()))
+                                  ),
+                                  default=[],
+                                  )
+        default_opts.add_argument("--skip",
+                                  nargs='*',
+                                  help='perform all but these analysis methods. choose from: {}'.format(
+                                      ", ".join(sorted(map_options.keys()))
+                                  ),
+                                  default=[]
+                                  )
+
+        # Delete the following two lines and the corresponding function after 1.3.4 release
+        dep_opts = parser.add_argument_group("Deprecated", "Used to define which analysis methods should be performed")
+        self._add_deprecated(dep_opts, map_options)
 
         spe_opts = parser.add_argument_group("Meta arguments")
         spe_opts.add_argument('-v', '--version', action='version',
                               version='%(prog)s ' + str(v), help="show program's version number and exit.")
         spe_opts.add_argument('-h', '--help', action="help", help="show this help message and exit")
 
-        args_= parser.parse_args(sys.argv[1:])
+        # Parse arguments and save to args_
+        args_ = parser.parse_args(sys.argv[1:])
 
-        # Expand configs
-        if "all" in args_.parameter_importance:
-            param_imp = ["ablation", "forward_selection", "fanova", "lpi"]
-        elif "none" in args_.parameter_importance:
-            param_imp = []
-        else:
-            param_imp = args_.parameter_importance
-
-        if "fanova" in param_imp:
-            try:
-                import fanova  # noqa
-            except ImportError:
-                raise ImportError('fANOVA is not installed! To install it please run '
-                                  '"git+http://github.com/automl/fanova.git@master"')
-
-        if not (args_.pimp_sort_table_by == "average" or args_.pimp_sort_table_by in param_imp):
-            raise ValueError("Pimp comparison sorting key is {}, but this "
-                             "method is deactivated or non-existent.".format(args_.pimp_sort_table_by))
-
-
-        if "all" in args_.feature_analysis:
-            feature_analysis = ["box_violin", "correlation", "importance", "clustering"]
-        elif "none" in args_.feature_analysis:
-            feature_analysis = []
-        else:
-            feature_analysis = args_.feature_analysis
-
-        output_dir = args_.output
+        # Delete the following line and the corresponding function after 1.3.4 release
+        self._check_deprecated(args_)
 
         # Configuration results to be analyzed
         folders = []
@@ -287,6 +238,7 @@ class CaveCLI(object):
             else:
                 ta_exec_dir.append(t)
 
+        output_dir = args_.output
         file_format = args_.file_format
         validation_format = args_.validation_format
         validation = args_.validation
@@ -294,33 +246,34 @@ class CaveCLI(object):
         verbose_level = args_.verbose_level
         show_jupyter = args_.jupyter == 'on'
 
-        analyzing_options = load_default_options(file_format=detect_fileformat(folders) if file_format.upper() == "AUTO" else file_format)
+        # Load default options for this file_format
+        analyzing_options = load_default_options(file_format=detect_fileformat(folders)
+                                                 if file_format.upper() == "AUTO" else file_format)
 
-        analyzing_options["Ablation"]["run"] = str('ablation' in param_imp)
-        analyzing_options["Algorithm Footprint"]["run"] = str(args_.algorithm_footprints)
-        analyzing_options["Budget Correlation"]["run"] = str(args_.budget_correlation)
-        analyzing_options["BOHB Learning Curves"]["run"] = str(args_.bohb_learning_curves)
-        analyzing_options["Configurator Footprint"]["run"] = str(args_.configurator_footprint)
+        # Interpret the --skip and --only flags
+        if len(args_.only) > 0:
+            # Set all to False
+            for o in map_options.values():
+                analyzing_options[o]["run"] = str(False)
+        for o in args_.only if len(args_.only) > 0 else args_.skip:
+            if o.lower() not in map_options:
+                raise ValueError("Failed to interpret `--[only|skip] {}`.\n"
+                                 "Please choose from:\n  {}".format(o, '\n  '.join(sorted(map_options.keys()))))
+            # Set True if flag is --only and False if flag is --skip
+            analyzing_options[map_options[o.lower()]]["run"] = str(len(args_.only) > 0)
+
+        # Fine-tuning individual analyzer options
         analyzing_options["Configurator Footprint"]["time_slider"] = str(args_.cfp_time_slider)
         analyzing_options["Configurator Footprint"]["number_quantiles"] = str(args_.cfp_number_quantiles)
         analyzing_options["Configurator Footprint"]["max_configurations_to_plot"] = str(args_.cfp_max_configurations_to_plot)
-        analyzing_options["Cost Over Time"]["run"] = str(args_.cost_over_time)
         analyzing_options["Cost Over Time"]["incumbent_trajectory"] = str(args_.cot_inc_traj)
-        analyzing_options["empirical Cumulative Distribution Function (eCDF)"]["run"] = str(args_.ecdf)
-        analyzing_options["fANOVA"]["run"] = str('fanova' in param_imp)
         analyzing_options["fANOVA"]["fanova_pairwise"] = str(args_.fanova_pairwise)
         analyzing_options["fANOVA"]["pimp_max_samples"] = str(args_.pimp_max_samples)
-        analyzing_options["Feature Clustering"]["run"] = str('clustering' in feature_analysis)
-        analyzing_options["Feature Correlation"]["run"] = str('correlation' in feature_analysis)
-        analyzing_options["Feature Importance"]["run"] = str('importance' in feature_analysis)
-        analyzing_options["Forward Selection"]["run"] = str('forward_selection' in param_imp)
-        analyzing_options["Importance Table"]["sort_table_by"] = str(args_.pimp_sort_table_by)
-        analyzing_options["Incumbents Over Budgets"]["run"] = str(args_.incumbents_over_budgets)
-        analyzing_options["Local Parameter Importance (LPI)"]["run"] = str('lpi' in param_imp)
-        analyzing_options["Parallel Coordinates"]["run"] = str(args_.parallel_coordinates)
         analyzing_options["Parallel Coordinates"]["pc_sort_by"] = str(args_.pc_sort_by)
-        analyzing_options["Performance Table"]["run"] = str(args_.performance_table)
+        analyzing_options["Parameter Importance"]["whisker_quantiles_plot"] = str(args_.pimp_whiskers)
+        analyzing_options["Parameter Importance"]["interactive_bokeh_plots"] = str(args_.pimp_interactive)
 
+        # Initialize CAVE
         cave = CAVE(folders,
                     output_dir,
                     ta_exec_dir,
@@ -333,14 +286,86 @@ class CaveCLI(object):
                     analyzing_options=analyzing_options,
                     )
 
+        # Check if CAVE was successfully initialized
         try:
             cave.logger.debug("CAVE is called with arguments: " + str(args_))
         except AttributeError as err:
-            logging.getLogger().warning("Something went wrong with CAVE-initialization... (it's fine for running nosetests)")
+            logging.getLogger().warning("Error in CAVE-initialization... (it's fine for running nosetests)")
             logging.getLogger().debug("CAVE is called with arguments: " + str(args_))
 
-        # Analyze
+        # Analyze (with options defined in initialization via the analyzing_options
         cave.analyze()
+
+
+    def _check_deprecated(self, args_):
+        """ Delete this function after 1.3.4 release """
+        # Expand configs  # deprecated after 1.3.4
+        if "all" in args_.parameter_importance:  # deprecated after 1.3.4
+            param_imp = ["ablation", "forward_selection", "fanova", "lpi"]  # deprecated after 1.3.4
+        elif "none" in args_.parameter_importance or "deprecated" == args_.parameter_importance:
+            param_imp = []  # deprecated after 1.3.4
+        else:  # deprecated after 1.3.4
+            param_imp = args_.parameter_importance  # deprecated after 1.3.4
+
+        if "all" in args_.feature_analysis:
+            feature_analysis = ["box_violin", "correlation", "importance", "clustering"]
+        elif "none" in args_.feature_analysis or "deprecated" == args_.feature_analysis:
+            feature_analysis = []
+        else:
+            feature_analysis = args_.feature_analysis
+
+        if args_.parameter_importance != 'deprecated' or args_.feature_analysis != 'deprecated':
+            raise DeprecationWarning("The flags --parameter_importance and --feature_importance have been replaced "
+                                     "with the --only / --skip flag-combination. Please see the changelog or "
+                                     "documentation for more information. You probably want: "
+                                     "--only {}".format(' '.join(param_imp + feature_analysis)))
+
+        if args_.deprecated:
+            raise DeprecationWarning("The --no_[analysis_name] flag is deprecated."
+                                     "Please use --only and --skip flags to define what analysis methods to use.")
+
+    def _add_deprecated(self, dep_opts, map_options):
+        """ Delete this function after 1.3.4 release """
+        # Some choice-blocks, that can be reused throughout the CLI  # deprecated after 1.3.4
+        p_choices = [  # deprecated after 1.3.4
+            "all",  # deprecated after 1.3.4
+            "ablation",  # deprecated after 1.3.4
+            "forward_selection",  # deprecated after 1.3.4
+            "fanova",  # deprecated after 1.3.4
+            "lpi",  # deprecated after 1.3.4
+            "none",  # deprecated after 1.3.4
+            "deprecated",  # deprecated after 1.3.4
+        ]  # deprecated after 1.3.4
+        p_sort_by_choices = ["average"] + p_choices[1:-1]  # deprecated after 1.3.4
+        f_choices = [  # deprecated after 1.3.4
+            "all",  # deprecated after 1.3.4
+            "box_violin",  # deprecated after 1.3.4
+            "correlation",  # deprecated after 1.3.4
+            "clustering",  # deprecated after 1.3.4
+            "importance",  # deprecated after 1.3.4
+            "none",  # deprecated after 1.3.4
+            "deprecated",  # deprecated after 1.3.4
+        ]  # deprecated after 1.3.4
+
+        for key in map_options.keys():
+            dep_opts.add_argument('--no_' + key,
+                                  action='store_true',
+                                  dest='deprecated',
+                                  help=SUPPRESS)
+
+        dep_opts.add_argument("--parameter_importance",  # deprecated after 1.3.4
+                              default='deprecated',  # deprecated after 1.3.4
+                              nargs='+',  # deprecated after 1.3.4
+                              help=SUPPRESS,
+                              choices=p_choices,  # deprecated after 1.3.4
+                              type=str.lower)  # deprecated after 1.3.4
+        dep_opts.add_argument("--feature_analysis",  # deprecated after 1.3.4
+                              default='deprecated',  # deprecated after 1.3.4
+                              nargs='+',  # deprecated after 1.3.4
+                              help=SUPPRESS,
+                              choices=f_choices,  # deprecated after 1.3.4
+                              type=str.lower)  # deprecated after 1.3.4
+
 
 def entry_point():
     cave = CaveCLI()

@@ -5,7 +5,6 @@ import typing
 from ConfigSpace.configuration_space import ConfigurationSpace, Configuration
 from ConfigSpace.hyperparameters import FloatHyperparameter, IntegerHyperparameter, Constant, CategoricalHyperparameter
 from ConfigSpace.read_and_write import json as pcs_json
-from smac.optimizer.objective import average_cost
 from smac.runhistory.runhistory import RunHistory
 from smac.scenario.scenario import Scenario
 from smac.utils.io.input_reader import InputReader
@@ -53,13 +52,13 @@ class SMAC3Reader(BaseReader):
         rh_fn = os.path.join(self.folder, 'runhistory.json')
         if not os.path.isfile(rh_fn):
             rh_fn = self.get_glob_file(self.folder, 'runhistory.json')
-        rh = RunHistory(average_cost)
+        rh = RunHistory()
         try:
             rh.load_json(rh_fn, cs)
         except FileNotFoundError:
             self.logger.warning("%s not found. trying to read SMAC3-output, "
                                 "if that's not correct, change it with the "
-                                "--format option!", rh_fn)
+                                "--file_format option!", rh_fn)
             raise
         return rh
 
@@ -71,7 +70,7 @@ class SMAC3Reader(BaseReader):
             runhistory with validation-data, if available
         """
         rh_fn = os.path.join(self.folder, 'validated_runhistory.json')
-        rh = RunHistory(average_cost)
+        rh = RunHistory()
         try:
             rh.load_json(rh_fn, cs)
         except FileNotFoundError:
@@ -82,6 +81,7 @@ class SMAC3Reader(BaseReader):
         return rh
 
     def get_trajectory(self, cs):
+
         def alternative_configuration_recovery(config_list: typing.List[str], cs: ConfigurationSpace):
             """ Used to recover ints and bools as categoricals or constants from trajectory """
             config_dict = {}
@@ -111,10 +111,25 @@ class SMAC3Reader(BaseReader):
 
         TrajLogger._convert_dict_to_config = alternative_configuration_recovery
 
+        # Try to find trajectory in "alljson"-format todo instead just convert "old" smac data to new smac data
+        traj_fn = os.path.join(self.folder, 'traj.json')
+        if os.path.isfile(traj_fn):
+            self.logger.debug("Found trajectory file in alljson-format at %s", traj_fn)
+            return TrajLogger.read_traj_alljson_format(fn=traj_fn, cs=cs)
+        self.logger.debug("%s not found. Trying to find in subfolders.")
+        try:
+            return TrajLogger.read_traj_alljson_format(fn=self.get_glob_file(self.folder, 'traj.json'), cs=cs)
+        except FileNotFoundError:
+            self.logger.info("Globbed approach failed. Trying old format.")
+        old_traj_fn = os.path.join(self.folder, 'traj_aclib2.json')
+        if os.path.isfile(old_traj_fn):
+            self.logger.debug("Found trajectory file in aclib2-format (deprecated) at %s", old_traj_fn)
+            return TrajLogger.read_traj_aclib_format(fn=old_traj_fn, cs=cs)
+        try:
+            return TrajLogger.read_traj_aclib_format(fn=self.get_glob_file(self.folder, 'traj_aclib2.json'), cs=cs)
+        except FileNotFoundError:
+            raise FileNotFoundError("Neither 'traj.json' nor 'traj_aclib2.json in %s or subdirectories.", self.folder)
 
-        traj_fn = os.path.join(self.folder, 'traj_aclib2.json')
-        if not os.path.isfile(traj_fn):
-            traj_fn = self.get_glob_file(self.folder, 'traj_aclib2.json')
         traj = TrajLogger.read_traj_aclib_format(fn=traj_fn, cs=cs)
         return traj
 
