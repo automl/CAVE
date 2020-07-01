@@ -8,7 +8,7 @@ Last known working versions of major dependencies can be found [here](https://gi
 
 | master ([docs](https://automl.github.io/CAVE/stable/)) | development ([docs](https://automl.github.io/CAVE/dev/)) |
 | --- | --- |
-| [![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=master)](https://travis-ci.org/automl/CAVE) | [![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=development)](https://travis-ci.org/automl/CAVE) |   |
+| [![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=master)](https://travis-ci.org/automl/CAVE) | [![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=development)](https://travis-ci.org/automl/CAVE) |
 
 CAVE is a versatile analysis tool for automatic algorithm configurators. It generates comprehensive reports to
 give insights into the configured algorithm, the instance/feature set and also the configuration tool itself.
