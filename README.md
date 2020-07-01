@@ -55,6 +55,10 @@ git clone https://github.com/automl/CAVE.git && cd CAVE
 pip install -r requirements.txt
 python3 setup.py install  # (or: python3 setup.py develop)
 ```
+In case you have trouble with your virtualenv+pip setup, try:
+```
+pip install -U setuptools
+```
 Optional: To have some `.png`s automagically available, you also need phantomjs.
 ```
 npm install phantomjs-prebuilt
