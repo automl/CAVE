@@ -208,10 +208,6 @@ class CaveCLI(object):
                                   default=[]
                                   )
 
-        # Delete the following two lines and the corresponding function after 1.3.3 release
-        dep_opts = parser.add_argument_group("Deprecated", "Used to define which analysis methods should be performed")
-        self._add_deprecated(dep_opts, map_options)
-
         spe_opts = parser.add_argument_group("Meta arguments")
         spe_opts.add_argument('-v', '--version', action='version',
                               version='%(prog)s ' + str(v), help="show program's version number and exit.")
@@ -219,9 +215,6 @@ class CaveCLI(object):
 
         # Parse arguments and save to args_
         args_ = parser.parse_args(sys.argv[1:])
-
-        # Delete the following line and the corresponding function after 1.3.3 release
-        self._check_deprecated(args_)
 
         # Configuration results to be analyzed
         folders = []
@@ -295,76 +288,6 @@ class CaveCLI(object):
 
         # Analyze (with options defined in initialization via the analyzing_options
         cave.analyze()
-
-
-    def _check_deprecated(self, args_):
-        """ Delete this function after 1.3.3 release """
-        # Expand configs  # deprecated after 1.3.3
-        if "all" in args_.parameter_importance:  # deprecated after 1.3.3
-            param_imp = ["ablation", "forward_selection", "fanova", "lpi"]  # deprecated after 1.3.3
-        elif "none" in args_.parameter_importance or "deprecated" == args_.parameter_importance:
-            param_imp = []  # deprecated after 1.3.3
-        else:  # deprecated after 1.3.3
-            param_imp = args_.parameter_importance  # deprecated after 1.3.3
-
-        if "all" in args_.feature_analysis:
-            feature_analysis = ["box_violin", "correlation", "importance", "clustering"]
-        elif "none" in args_.feature_analysis or "deprecated" == args_.feature_analysis:
-            feature_analysis = []
-        else:
-            feature_analysis = args_.feature_analysis
-
-        if args_.parameter_importance != 'deprecated' or args_.feature_analysis != 'deprecated':
-            raise DeprecationWarning("The flags --parameter_importance and --feature_importance have been replaced "
-                                     "with the --only / --skip flag-combination. Please see the changelog or "
-                                     "documentation for more information. You probably want: "
-                                     "--only {}".format(' '.join(param_imp + feature_analysis)))
-
-        if args_.deprecated:
-            raise DeprecationWarning("The --no_[analysis_name] flag is deprecated."
-                                     "Please use --only and --skip flags to define what analysis methods to use.")
-
-    def _add_deprecated(self, dep_opts, map_options):
-        """ Delete this function after 1.3.3 release """
-        # Some choice-blocks, that can be reused throughout the CLI  # deprecated after 1.3.3
-        p_choices = [  # deprecated after 1.3.3
-            "all",  # deprecated after 1.3.3
-            "ablation",  # deprecated after 1.3.3
-            "forward_selection",  # deprecated after 1.3.3
-            "fanova",  # deprecated after 1.3.3
-            "lpi",  # deprecated after 1.3.3
-            "none",  # deprecated after 1.3.3
-            "deprecated",  # deprecated after 1.3.3
-        ]  # deprecated after 1.3.3
-        p_sort_by_choices = ["average"] + p_choices[1:-1]  # deprecated after 1.3.3
-        f_choices = [  # deprecated after 1.3.3
-            "all",  # deprecated after 1.3.3
-            "box_violin",  # deprecated after 1.3.3
-            "correlation",  # deprecated after 1.3.3
-            "clustering",  # deprecated after 1.3.3
-            "importance",  # deprecated after 1.3.3
-            "none",  # deprecated after 1.3.3
-            "deprecated",  # deprecated after 1.3.3
-        ]  # deprecated after 1.3.3
-
-        for key in map_options.keys():
-            dep_opts.add_argument('--no_' + key,
-                                  action='store_true',
-                                  dest='deprecated',
-                                  help=SUPPRESS)
-
-        dep_opts.add_argument("--parameter_importance",  # deprecated after 1.3.3
-                              default='deprecated',  # deprecated after 1.3.3
-                              nargs='+',  # deprecated after 1.3.3
-                              help=SUPPRESS,
-                              choices=p_choices,  # deprecated after 1.3.3
-                              type=str.lower)  # deprecated after 1.3.3
-        dep_opts.add_argument("--feature_analysis",  # deprecated after 1.3.3
-                              default='deprecated',  # deprecated after 1.3.3
-                              nargs='+',  # deprecated after 1.3.3
-                              help=SUPPRESS,
-                              choices=f_choices,  # deprecated after 1.3.3
-                              type=str.lower)  # deprecated after 1.3.3
 
 
 def entry_point():
