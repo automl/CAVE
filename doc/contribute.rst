@@ -3,7 +3,7 @@ Contribute
 
 Development Guide.
 
-A few notes on the general layout of the project (written for version 1.3.4).
+A few notes on the general layout of the project (written for version 1.4.0).
 
 Layout
 ------

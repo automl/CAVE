@@ -1,4 +1,9 @@
 # CAVE
+
+**NOTE** *This repository is waiting for adoption and there might be longer waiting times for answers.
+However, feel free to report bugs or ask questions in the issues.
+Last known working versions of major dependencies can be found [here](https://github.com/automl/issues/*
+
 ## Configuration Assessment, Visualization and Evaluation
 
 | master ([docs](https://automl.github.io/CAVE/stable/)) | development ([docs](https://automl.github.io/CAVE/dev/)) |

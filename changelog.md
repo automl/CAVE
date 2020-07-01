@@ -1,3 +1,22 @@
+# 1.4.0
+
+## Interface changes
+
+* Add `--pimp_interactive`-flag to toggle bokeh-plotting for pimp-plots
+* Add `--pimp_whiskers`-flag to toggle plotting of pimp-whiskers plot
+
+## Major changes
+
+* Add basic Auto-PyTorch file format support, including tensorboard support and custom overview tables
+* A
+
+## Bug fixes
+
+## Minor changes 
+
+* Add lots of docstring-documentation, PEP8 and a contribute-guide
+* Rename some classes and functions to unify naming (only internal)
+
 # 1.3.3
 
 ## Interface changes
