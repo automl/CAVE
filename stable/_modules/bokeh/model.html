@@ -1,0 +1,1176 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>bokeh.model &mdash; CAVE 1.4.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> CAVE
+          
+
+          
+            
+            <img src="../../_static/cave.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../manual.html">Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../manualdoc/commandline.html">Commandline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../manualdoc/fileformats.html">Input Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">F.A.Q.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../apidoc/cave.analyzer.html">cave.analyzer package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.budgets.html">cave.analyzer.budgets package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.budgets.bohb_learning_curves.html">cave.analyzer.budgets.bohb_learning_curves module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.budgets.budget_correlation.html">cave.analyzer.budgets.budget_correlation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.budgets.incumbents_over_budgets.html">cave.analyzer.budgets.incumbents_over_budgets module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.configurator.html">cave.analyzer.configurator package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.configurator.configurator_footprint.html">cave.analyzer.configurator.configurator_footprint module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.configurator.parallel_coordinates.html">cave.analyzer.configurator.parallel_coordinates module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_analysis.html">cave.analyzer.feature_analysis package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_analysis.box_violin.html">cave.analyzer.feature_analysis.box_violin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_analysis.feature_analysis.html">cave.analyzer.feature_analysis.feature_analysis module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_analysis.feature_clustering.html">cave.analyzer.feature_analysis.feature_clustering module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_analysis.feature_correlation.html">cave.analyzer.feature_analysis.feature_correlation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.feature_analysis.feature_importance.html">cave.analyzer.feature_analysis.feature_importance module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.html">cave.analyzer.parameter_importance package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.ablation.html">cave.analyzer.parameter_importance.ablation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.base_parameter_importance.html">cave.analyzer.parameter_importance.base_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.fanova.html">cave.analyzer.parameter_importance.fanova module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.forward_selection.html">cave.analyzer.parameter_importance.forward_selection module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html">cave.analyzer.parameter_importance.local_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html">cave.analyzer.parameter_importance.pimp_comparison_table module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.performance.html">cave.analyzer.performance package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.performance.algorithm_footprint.html">cave.analyzer.performance.algorithm_footprint module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.performance.compare_default_incumbent.html">cave.analyzer.performance.compare_default_incumbent module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.performance.cost_over_time.html">cave.analyzer.performance.cost_over_time module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.performance.overview_table.html">cave.analyzer.performance.overview_table module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.performance.performance_table.html">cave.analyzer.performance.performance_table module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.performance.plot_ecdf.html">cave.analyzer.performance.plot_ecdf module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.analyzer.performance.plot_scatter.html">cave.analyzer.performance.plot_scatter module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.analyzer.base_analyzer.html">cave.analyzer.base_analyzer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../apidoc/cave.cave_cli.html">cave.cave_cli module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../apidoc/cave.cavefacade.html">cave.cavefacade module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../apidoc/cave.plot.html">cave.plot package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.plot.parallel_plot.html">cave.plot.parallel_plot package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.plot.parallel_plot.parallel_plot.html">cave.plot.parallel_plot.parallel_plot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.plot.parallel_plot.parallel_reset.html">cave.plot.parallel_plot.parallel_reset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.plot.parallel_plot.parallel_selection_tool.html">cave.plot.parallel_plot.parallel_selection_tool module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../apidoc/cave.html.html">cave.html package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.html.html_builder.html">cave.html.html_builder module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.html.html_helpers.html">cave.html.html_helpers module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.reader.conversion.html">cave.reader.conversion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../apidoc/cave.utils.html">cave.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/cave.utils.tooltips.html">cave.utils.tooltips module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contact.html">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license.html">License</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CAVE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>bokeh.model</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for bokeh.model</h1><div class="highlight"><pre>
+<span></span><span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Copyright (c) 2012 - 2019, Anaconda, Inc., and Bokeh Contributors.</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># The full license is in the file LICENSE.txt, distributed with this software.</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="sd">&#39;&#39;&#39; Provide a base class for all objects (called Bokeh Models) that can go in</span>
+<span class="sd">a Bokeh |Document|.</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Boilerplate</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">unicode_literals</span>
+
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Imports</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+
+<span class="c1"># Standard library imports</span>
+<span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">loads</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">itemgetter</span>
+
+<span class="c1"># External imports</span>
+<span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">iteritems</span><span class="p">,</span> <span class="n">string_types</span>
+
+<span class="c1"># Bokeh imports</span>
+<span class="kn">from</span> <span class="nn">.core.json_encoder</span> <span class="kn">import</span> <span class="n">serialize_json</span>
+<span class="kn">from</span> <span class="nn">.core.properties</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">String</span>
+<span class="kn">from</span> <span class="nn">.core.has_props</span> <span class="kn">import</span> <span class="n">HasProps</span><span class="p">,</span> <span class="n">MetaHasProps</span>
+<span class="kn">from</span> <span class="nn">.core.query</span> <span class="kn">import</span> <span class="n">find</span>
+
+<span class="kn">from</span> <span class="nn">.events</span> <span class="kn">import</span> <span class="n">Event</span>
+<span class="kn">from</span> <span class="nn">.themes</span> <span class="kn">import</span> <span class="n">default</span> <span class="k">as</span> <span class="n">default_theme</span>
+
+<span class="kn">from</span> <span class="nn">.util.callback_manager</span> <span class="kn">import</span> <span class="n">PropertyCallbackManager</span><span class="p">,</span> <span class="n">EventCallbackManager</span>
+<span class="kn">from</span> <span class="nn">.util.future</span> <span class="kn">import</span> <span class="n">with_metaclass</span>
+<span class="kn">from</span> <span class="nn">.util.serialization</span> <span class="kn">import</span> <span class="n">make_id</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Globals and constants</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;collect_models&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;get_class&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Model&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># General API</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Dev API</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+
+<span class="k">def</span> <span class="nf">collect_filtered_models</span><span class="p">(</span><span class="n">discard</span><span class="p">,</span> <span class="o">*</span><span class="n">input_values</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Collect a duplicate-free list of all other Bokeh models referred to by</span>
+<span class="sd">    this model, or by any of its references, etc, unless filtered-out by the</span>
+<span class="sd">    provided callable.</span>
+
+<span class="sd">    Iterate over ``input_values`` and descend through their structure</span>
+<span class="sd">    collecting all nested ``Models`` on the go.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        *discard (Callable[[Model], bool])</span>
+<span class="sd">            a callable which accepts a *Model* instance as its single argument</span>
+<span class="sd">            and returns a boolean stating whether to discard the instance. The</span>
+<span class="sd">            latter means that the instance will not be added to collected</span>
+<span class="sd">            models nor will its references be explored.</span>
+
+<span class="sd">        *input_values (Model)</span>
+<span class="sd">            Bokeh models to collect other models from</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+    <span class="n">collected</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">queued</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">queue_one</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ids</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">callable</span><span class="p">(</span><span class="n">discard</span><span class="p">)</span> <span class="ow">and</span> <span class="n">discard</span><span class="p">(</span><span class="n">obj</span><span class="p">)):</span>
+            <span class="n">queued</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">input_values</span><span class="p">:</span>
+        <span class="n">_visit_value_and_its_immediate_references</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">queue_one</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="n">queued</span><span class="p">:</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">queued</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="n">ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">collected</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">_visit_immediate_value_references</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">queue_one</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">collected</span>
+
+<span class="k">def</span> <span class="nf">collect_models</span><span class="p">(</span><span class="o">*</span><span class="n">input_values</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Collect a duplicate-free list of all other Bokeh models referred to by</span>
+<span class="sd">    this model, or by any of its references, etc.</span>
+
+<span class="sd">    Iterate over ``input_values`` and descend through their structure</span>
+<span class="sd">    collecting all nested ``Models`` on the go. The resulting list is</span>
+<span class="sd">    duplicate-free based on objects&#39; identifiers.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        *input_values (Model)</span>
+<span class="sd">            Bokeh models to collect other models from</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list[Model] : all models reachable from this one.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">collect_filtered_models</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">input_values</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">get_class</span><span class="p">(</span><span class="n">view_model_name</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Look up a Bokeh model class, given its view model name.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        view_model_name (str) :</span>
+<span class="sd">            A view model name for a Bokeh model to look up</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Model: the model class corresponding to ``view_model_name``</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        KeyError, if the model cannot be found</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; from bokeh.model import get_class</span>
+<span class="sd">            &gt;&gt;&gt; get_class(&quot;Range1d&quot;)</span>
+<span class="sd">            &lt;class &#39;bokeh.models.ranges.Range1d&#39;&gt;</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c1"># in order to look up from the model catalog that MetaModel maintains, it</span>
+    <span class="c1"># has to be creates first. These imports ensure that all built-in Bokeh</span>
+    <span class="c1"># models are represented in the catalog.</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">models</span><span class="p">;</span> <span class="n">models</span>
+    <span class="kn">from</span> <span class="nn">.plotting</span> <span class="kn">import</span> <span class="n">Figure</span><span class="p">;</span> <span class="n">Figure</span>
+
+    <span class="n">d</span> <span class="o">=</span> <span class="n">MetaModel</span><span class="o">.</span><span class="n">model_class_reverse_map</span>
+    <span class="k">if</span> <span class="n">view_model_name</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="n">view_model_name</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;View model name &#39;</span><span class="si">%s</span><span class="s2">&#39; not found&quot;</span> <span class="o">%</span> <span class="n">view_model_name</span><span class="p">)</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Dev API</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+
+<span class="k">class</span> <span class="nc">MetaModel</span><span class="p">(</span><span class="n">MetaHasProps</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Specialize the construction of |Model| classes.</span>
+
+<span class="sd">    This class is a `metaclass`_ for |Model| that is responsible for</span>
+<span class="sd">    automatically cataloging all Bokeh models that get defined, so that the</span>
+<span class="sd">    serialization machinery between Bokeh and BokehJS can function properly.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        It is worth pointing out explicitly that this relies on the rules</span>
+<span class="sd">        for Metaclass inheritance in Python.</span>
+
+<span class="sd">    Bokeh works by replicating Python model objects (e.g. plots, ranges,</span>
+<span class="sd">    data sources, which are all |HasProps| subclasses) into BokehJS. In the</span>
+<span class="sd">    case of using a Bokeh server, the Bokeh model objects can also be</span>
+<span class="sd">    synchronized bidirectionally. This is accomplished by serializing the</span>
+<span class="sd">    models to and from a JSON format, that includes the name of the model type</span>
+<span class="sd">    as part of the payload, as well as a unique ID, and all the attributes:</span>
+
+<span class="sd">    .. code-block:: javascript</span>
+
+<span class="sd">        {</span>
+<span class="sd">            type: &quot;Plot&quot;,</span>
+<span class="sd">            id: 100032,</span>
+<span class="sd">            attributes: { ... }</span>
+<span class="sd">        }</span>
+
+<span class="sd">    Typically the type name is inferred automatically from the Python class</span>
+<span class="sd">    name, and is set as the ``__view_model__`` class attribute on the Model</span>
+<span class="sd">    class that is create. But it is also possible to override this value</span>
+<span class="sd">    explicitly:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        class Foo(Model): pass</span>
+
+<span class="sd">        class Bar(Model):</span>
+<span class="sd">            __view_model__ == &quot;Quux&quot;</span>
+
+<span class="sd">    This metaclass will raise an error if two Bokeh models are created that</span>
+<span class="sd">    attempt to have the same view model name. The only exception made is if</span>
+<span class="sd">    one of the models has a custom ``__implementation__`` in its class</span>
+<span class="sd">    definition.</span>
+
+<span class="sd">    This metaclass also handles subtype relationships between Bokeh models.</span>
+<span class="sd">    Occasionally it may be necessary for multiple class types on the Python</span>
+<span class="sd">    side to resolve to the same type on the BokehJS side. This is called</span>
+<span class="sd">    subtyping, and is expressed through a ``__subtype__`` class attribute on</span>
+<span class="sd">    a model:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        class Foo(Model): pass</span>
+
+<span class="sd">        class Bar(Foo):</span>
+<span class="sd">            __view_model__ = &quot;Foo&quot;</span>
+<span class="sd">            __subtype__ = &quot;Bar&quot;</span>
+
+<span class="sd">    In this case, python instances of ``Foo`` and ``Bar`` will both resolve to</span>
+<span class="sd">    ``Foo`` models in BokehJS. In the context of a Bokeh server application,</span>
+<span class="sd">    the original python types will be faithfully round-tripped. (Without the</span>
+<span class="sd">    ``__subtype__`` specified, the above code would raise an error due to</span>
+<span class="sd">    duplicate view model names.)</span>
+
+<span class="sd">    .. _metaclass: https://docs.python.org/3/reference/datamodel.html#metaclasses</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">model_class_reverse_map</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="n">meta_cls</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">class_dict</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Warning</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># use an explicitly provided view model name if there is one</span>
+        <span class="k">if</span> <span class="s2">&quot;__view_model__&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">class_dict</span><span class="p">:</span>
+            <span class="n">class_dict</span><span class="p">[</span><span class="s2">&quot;__view_model__&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">class_name</span>
+
+        <span class="c1"># call the parent metaclass to create the new model type</span>
+        <span class="n">newcls</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">MetaModel</span><span class="p">,</span> <span class="n">meta_cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">meta_cls</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">class_dict</span><span class="p">)</span>
+
+        <span class="c1"># update the mapping of view model names to classes, checking for any duplicates</span>
+        <span class="c1"># and handling any subtype relationships or custom implementations</span>
+        <span class="n">entry</span> <span class="o">=</span> <span class="n">class_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;__subtype__&quot;</span><span class="p">,</span> <span class="n">class_dict</span><span class="p">[</span><span class="s2">&quot;__view_model__&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">MetaModel</span><span class="o">.</span><span class="n">model_class_reverse_map</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">newcls</span><span class="p">,</span> <span class="s2">&quot;__implementation__&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Warning</span><span class="p">(</span><span class="s2">&quot;Duplicate __view_model__ or __subtype__ declaration of &#39;</span><span class="si">%s</span><span class="s2">&#39; for &quot;</span> \
+                          <span class="s2">&quot;class </span><span class="si">%s</span><span class="s2">.  Previous definition: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> \
+                          <span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span>
+                           <span class="n">MetaModel</span><span class="o">.</span><span class="n">model_class_reverse_map</span><span class="p">[</span><span class="n">entry</span><span class="p">]))</span>
+        <span class="n">MetaModel</span><span class="o">.</span><span class="n">model_class_reverse_map</span><span class="p">[</span><span class="n">entry</span><span class="p">]</span> <span class="o">=</span> <span class="n">newcls</span>
+
+        <span class="k">return</span> <span class="n">newcls</span>
+
+<span class="n">_HTML_REPR</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;script&gt;</span>
+<span class="s2">(function() {</span>
+<span class="s2">  var expanded = false;</span>
+<span class="s2">  var ellipsis = document.getElementById(&quot;</span><span class="si">%(ellipsis_id)s</span><span class="s2">&quot;);</span>
+<span class="s2">  ellipsis.addEventListener(&quot;click&quot;, function() {</span>
+<span class="s2">    var rows = document.getElementsByClassName(&quot;</span><span class="si">%(cls_name)s</span><span class="s2">&quot;);</span>
+<span class="s2">    for (var i = 0; i &lt; rows.length; i++) {</span>
+<span class="s2">      var el = rows[i];</span>
+<span class="s2">      el.style.display = expanded ? &quot;none&quot; : &quot;table-row&quot;;</span>
+<span class="s2">    }</span>
+<span class="s2">    ellipsis.innerHTML = expanded ? &quot;&amp;hellip;)&quot; : &quot;&amp;lsaquo;&amp;lsaquo;&amp;lsaquo;&quot;;</span>
+<span class="s2">    expanded = !expanded;</span>
+<span class="s2">  });</span>
+<span class="s2">})();</span>
+<span class="s2">&lt;/script&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">with_metaclass</span><span class="p">(</span><span class="n">MetaModel</span><span class="p">,</span> <span class="n">HasProps</span><span class="p">,</span> <span class="n">PropertyCallbackManager</span><span class="p">,</span> <span class="n">EventCallbackManager</span><span class="p">)):</span>
+    <span class="sd">&#39;&#39;&#39; Base class for all objects stored in Bokeh  |Document| instances.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">obj</span> <span class="o">=</span>  <span class="nb">super</span><span class="p">(</span><span class="n">Model</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">make_id</span><span class="p">())</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_document</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_temp_document</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">obj</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="c1"># &quot;id&quot; is popped from **kw in __new__, so in an ideal world I don&#39;t</span>
+        <span class="c1"># think it should be here too. But Python does this, so it is:</span>
+        <span class="c1">#</span>
+        <span class="c1"># class Foo(object):</span>
+        <span class="c1">#     def __new__(cls, *args, **kw):</span>
+        <span class="c1">#         obj = super(Foo, cls).__new__(cls)</span>
+        <span class="c1">#         obj.bar = kw.pop(&quot;bar&quot;, 111)</span>
+        <span class="c1">#         print(&quot;__new__  :&quot;, id(kw), kw)</span>
+        <span class="c1">#         return obj</span>
+        <span class="c1">#     def __init__(self, **kw):</span>
+        <span class="c1">#         print(&quot;__init__ :&quot;, id(kw), kw)</span>
+        <span class="c1">#</span>
+        <span class="c1"># &gt;&gt;&gt; f = Foo(bar=10)</span>
+        <span class="c1"># __new__  : 4405522296 {}</span>
+        <span class="c1"># __init__ : 4405522296 {&#39;bar&#39;: 10}</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Model</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">default_theme</span><span class="o">.</span><span class="n">apply_to_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">(id=</span><span class="si">%r</span><span class="s2">, ...)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+
+    <span class="fm">__repr__</span> <span class="o">=</span> <span class="fm">__str__</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">String</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    An arbitrary, user-supplied name for this model.</span>
+
+<span class="s2">    This name can be useful when querying the document to retrieve specific</span>
+<span class="s2">    Bokeh models.</span>
+
+<span class="s2">    .. code:: python</span>
+
+<span class="s2">        &gt;&gt;&gt; plot.circle([1,2,3], [4,5,6], name=&quot;temp&quot;)</span>
+<span class="s2">        &gt;&gt;&gt; plot.select(name=&quot;temp&quot;)</span>
+<span class="s2">        [GlyphRenderer(id=&#39;399d53f5-73e9-44d9-9527-544b761c7705&#39;, ...)]</span>
+
+<span class="s2">    .. note::</span>
+<span class="s2">        No uniqueness guarantees or other conditions are enforced on any names</span>
+<span class="s2">        that are provided, nor is the name used directly by Bokeh for any</span>
+<span class="s2">        reason.</span>
+
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">tags</span> <span class="o">=</span> <span class="n">List</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    An optional list of arbitrary, user-supplied values to attach to this</span>
+<span class="s2">    model.</span>
+
+<span class="s2">    This data can be useful when querying the document to retrieve specific</span>
+<span class="s2">    Bokeh models:</span>
+
+<span class="s2">    .. code:: python</span>
+
+<span class="s2">        &gt;&gt;&gt; r = plot.circle([1,2,3], [4,5,6])</span>
+<span class="s2">        &gt;&gt;&gt; r.tags = [&quot;foo&quot;, 10]</span>
+<span class="s2">        &gt;&gt;&gt; plot.select(tags=[&#39;foo&#39;, 10])</span>
+<span class="s2">        [GlyphRenderer(id=&#39;1de4c3df-a83d-480a-899b-fb263d3d5dd9&#39;, ...)]</span>
+
+<span class="s2">    Or simply a convenient way to attach any necessary metadata to a model</span>
+<span class="s2">    that can be accessed by ``CustomJS`` callbacks, etc.</span>
+
+<span class="s2">    .. note::</span>
+<span class="s2">        No uniqueness guarantees or other conditions are enforced on any tags</span>
+<span class="s2">        that are provided, nor are the tags used directly by Bokeh for any</span>
+<span class="s2">        reason.</span>
+
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">js_event_callbacks</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span><span class="n">String</span><span class="p">,</span> <span class="n">List</span><span class="p">(</span><span class="n">Instance</span><span class="p">(</span><span class="s2">&quot;bokeh.models.callbacks.CustomJS&quot;</span><span class="p">)),</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    A mapping of event names to lists of ``CustomJS`` callbacks.</span>
+
+<span class="s2">    Typically, rather then modifying this property directly, callbacks should be</span>
+<span class="s2">    added using the ``Model.js_on_event`` method:</span>
+
+<span class="s2">    .. code:: python</span>
+
+<span class="s2">        callback = CustomJS(code=&quot;console.log(&#39;tap event occurred&#39;)&quot;)</span>
+<span class="s2">        plot.js_on_event(&#39;tap&#39;, callback)</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">subscribed_events</span> <span class="o">=</span> <span class="n">List</span><span class="p">(</span><span class="n">String</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    List of events that are subscribed to by Python callbacks. This is</span>
+<span class="s2">    the set of events that will be communicated from BokehJS back to</span>
+<span class="s2">    Python for this model.</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">js_property_callbacks</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span><span class="n">String</span><span class="p">,</span> <span class="n">List</span><span class="p">(</span><span class="n">Instance</span><span class="p">(</span><span class="s2">&quot;bokeh.models.callbacks.CustomJS&quot;</span><span class="p">)),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    A mapping of attribute names to lists of ``CustomJS`` callbacks, to be set up on</span>
+<span class="s2">    BokehJS side when the document is created.</span>
+
+<span class="s2">    Typically, rather then modifying this property directly, callbacks should be</span>
+<span class="s2">    added using the ``Model.js_on_change`` method:</span>
+
+<span class="s2">    .. code:: python</span>
+
+<span class="s2">        callback = CustomJS(code=&quot;console.log(&#39;stuff&#39;)&quot;)</span>
+<span class="s2">        plot.x_range.js_on_change(&#39;start&#39;, callback)</span>
+
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Properties --------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">document</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; The |Document| this model is attached to (can be ``None``)</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_temp_document</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_temp_document</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_document</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ref</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; A Bokeh protocol &quot;reference&quot; to this model, i.e. a dict of the</span>
+<span class="sd">        form:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            {</span>
+<span class="sd">                &#39;type&#39; : &lt;&lt; view model name &gt;&gt;</span>
+<span class="sd">                &#39;id&#39;   : &lt;&lt; unique model id &gt;&gt;</span>
+<span class="sd">            }</span>
+
+<span class="sd">        Additionally there may be a `subtype` field if this model is a subtype.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="s2">&quot;__subtype__&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s1">&#39;type&#39;</span>    <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__view_model__</span><span class="p">,</span>
+                <span class="s1">&#39;subtype&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__subtype__</span><span class="p">,</span>
+                <span class="s1">&#39;id&#39;</span>      <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s1">&#39;type&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__view_model__</span><span class="p">,</span>
+                <span class="s1">&#39;id&#39;</span>   <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="p">}</span>
+
+    <span class="c1"># Public methods ----------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">js_on_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="o">*</span><span class="n">callbacks</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">string_types</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">Event</span><span class="p">):</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">event_name</span>
+
+        <span class="k">if</span> <span class="n">event</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">js_event_callbacks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">js_event_callbacks</span><span class="p">[</span><span class="n">event</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">js_event_callbacks</span><span class="p">[</span><span class="n">event</span><span class="p">]:</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">js_event_callbacks</span><span class="p">[</span><span class="n">event</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">js_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">other_attr</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Link two Bokeh model properties using JavaScript.</span>
+
+<span class="sd">        This is a convenience method that simplifies adding a CustomJS callback</span>
+<span class="sd">        to update one Bokeh model property whenever another changes value.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            attr (str) :</span>
+<span class="sd">                The name of a Bokeh property on this model</span>
+
+<span class="sd">            other (Model):</span>
+<span class="sd">                A Bokeh model to link to self.attr</span>
+
+<span class="sd">            other_attr (str) :</span>
+<span class="sd">                The property on ``other`` to link together</span>
+
+<span class="sd">        Added in version 1.1</span>
+
+<span class="sd">        Raises:</span>
+
+<span class="sd">            ValueError</span>
+
+<span class="sd">        Examples:</span>
+
+<span class="sd">            This code with ``js_link``:</span>
+
+<span class="sd">            .. code :: python</span>
+
+<span class="sd">                select.js_link(&#39;value&#39;, plot, &#39;sizing_mode&#39;)</span>
+
+<span class="sd">            is equivalent to the following:</span>
+
+<span class="sd">            .. code:: python</span>
+
+<span class="sd">                from bokeh.models import CustomJS</span>
+<span class="sd">                select.js_on_change(&#39;value&#39;,</span>
+<span class="sd">                    CustomJS(args=dict(other=plot),</span>
+<span class="sd">                             code=&quot;other.sizing_mode = this.value&quot;</span>
+<span class="sd">                    )</span>
+<span class="sd">                )</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%r</span><span class="s2"> is not a property of self (</span><span class="si">%r</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Model</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;other&#39; is not a Bokeh model: </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">other</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">other_attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">properties</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%r</span><span class="s2"> is not a property of other (</span><span class="si">%r</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">other_attr</span><span class="p">,</span> <span class="n">other</span><span class="p">))</span>
+
+        <span class="kn">from</span> <span class="nn">bokeh.models.callbacks</span> <span class="kn">import</span> <span class="n">CustomJS</span>
+        <span class="n">cb</span> <span class="o">=</span> <span class="n">CustomJS</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">other</span><span class="o">=</span><span class="n">other</span><span class="p">),</span> <span class="n">code</span><span class="o">=</span><span class="s2">&quot;other.</span><span class="si">%s</span><span class="s2"> = this.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">other_attr</span><span class="p">,</span> <span class="n">attr</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">js_on_change</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">cb</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">js_on_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="o">*</span><span class="n">callbacks</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Attach a ``CustomJS`` callback to an arbitrary BokehJS model event.</span>
+
+<span class="sd">        On the BokehJS side, change events for model properties have the</span>
+<span class="sd">        form ``&quot;change:property_name&quot;``. As a convenience, if the event name</span>
+<span class="sd">        passed to this method is also the name of a property on the model,</span>
+<span class="sd">        then it will be prefixed with ``&quot;change:&quot;`` automatically:</span>
+
+<span class="sd">        .. code:: python</span>
+
+<span class="sd">            # these two are equivalent</span>
+<span class="sd">            source.js_on_change(&#39;data&#39;, callback)</span>
+<span class="sd">            source.js_on_change(&#39;change:data&#39;, callback)</span>
+
+<span class="sd">        However, there are other kinds of events that can be useful to respond</span>
+<span class="sd">        to, in addition to property change events. For example to run a</span>
+<span class="sd">        callback whenever data is streamed to a ``ColumnDataSource``, use the</span>
+<span class="sd">        ``&quot;stream&quot;`` event on the source:</span>
+
+<span class="sd">        .. code:: python</span>
+
+<span class="sd">            source.js_on_change(&#39;streaming&#39;, callback)</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">callbacks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;js_on_change takes an event name and one or more callbacks, got only one parameter&quot;</span><span class="p">)</span>
+
+        <span class="c1"># handle any CustomJS callbacks here</span>
+        <span class="kn">from</span> <span class="nn">bokeh.models.callbacks</span> <span class="kn">import</span> <span class="n">CustomJS</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">CustomJS</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;not all callback values are CustomJS instances&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">():</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="s2">&quot;change:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">event</span>
+
+        <span class="k">if</span> <span class="n">event</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">js_property_callbacks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">js_property_callbacks</span><span class="p">[</span><span class="n">event</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">js_property_callbacks</span><span class="p">[</span><span class="n">event</span><span class="p">]:</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">js_property_callbacks</span><span class="p">[</span><span class="n">event</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">side</span><span class="p">,</span> <span class="n">plot</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">plot</span><span class="p">,</span> <span class="n">side</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">on_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="o">*</span><span class="n">callbacks</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Add a callback on this object to trigger when ``attr`` changes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attr (str) : an attribute name on this object</span>
+<span class="sd">            *callbacks (callable) : callback functions to register</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            widget.on_change(&#39;value&#39;, callback1, callback2, ..., callback_n)</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;attempted to add a callback on nonexistent </span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2"> property&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">attr</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Model</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">on_change</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="o">*</span><span class="n">callbacks</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">references</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Returns all ``Models`` that this object has references to.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">collect_models</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Query this object and all of its references for objects that</span>
+<span class="sd">        match the given selector.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            selector (JSON-like) :</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            seq[Model]</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">find</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">references</span><span class="p">(),</span> <span class="n">selector</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">select_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Query this object and all of its references for objects that</span>
+<span class="sd">        match the given selector.  Raises an error if more than one object</span>
+<span class="sd">        is found.  Returns single matching object, or None if nothing is found</span>
+<span class="sd">        Args:</span>
+<span class="sd">            selector (JSON-like) :</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Model</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">selector</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Found more than one object matching </span><span class="si">%s</span><span class="s2">: </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">selector</span><span class="p">,</span> <span class="n">result</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">set_select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">,</span> <span class="n">updates</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Update objects that match a given selector with the specified</span>
+<span class="sd">        attribute/value updates.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            selector (JSON-like) :</span>
+<span class="sd">            updates (dict) :</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">selector</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">updates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_defaults</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Returns a dictionary of the attributes of this object,</span>
+<span class="sd">        containing only &quot;JSON types&quot; (string, number, boolean,</span>
+<span class="sd">        none, dict, list).</span>
+
+<span class="sd">        References to other objects are serialized as &quot;refs&quot; (just</span>
+<span class="sd">        the object ID and type info), so the deserializer will</span>
+<span class="sd">        need to separately have the full attributes of those</span>
+<span class="sd">        other objects.</span>
+
+<span class="sd">        There&#39;s no corresponding ``from_json()`` because to</span>
+<span class="sd">        deserialize an object is normally done in the context of a</span>
+<span class="sd">        Document (since the Document can resolve references).</span>
+
+<span class="sd">        For most purposes it&#39;s best to serialize and deserialize</span>
+<span class="sd">        entire documents.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            include_defaults (bool) : whether to include attributes</span>
+<span class="sd">                that haven&#39;t been changed from the default</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_json_string</span><span class="p">(</span><span class="n">include_defaults</span><span class="o">=</span><span class="n">include_defaults</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">to_json_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_defaults</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Returns a JSON string encoding the attributes of this object.</span>
+
+<span class="sd">        References to other objects are serialized as references</span>
+<span class="sd">        (just the object ID and type info), so the deserializer</span>
+<span class="sd">        will need to separately have the full attributes of those</span>
+<span class="sd">        other objects.</span>
+
+<span class="sd">        There&#39;s no corresponding ``from_json_string()`` because to</span>
+<span class="sd">        deserialize an object is normally done in the context of a</span>
+<span class="sd">        Document (since the Document can resolve references).</span>
+
+<span class="sd">        For most purposes it&#39;s best to serialize and deserialize</span>
+<span class="sd">        entire documents.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            include_defaults (bool) : whether to include attributes</span>
+<span class="sd">                that haven&#39;t been changed from the default</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">json_like</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_json_like</span><span class="p">(</span><span class="n">include_defaults</span><span class="o">=</span><span class="n">include_defaults</span><span class="p">)</span>
+        <span class="n">json_like</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+        <span class="c1"># serialize_json &quot;fixes&quot; the JSON from _to_json_like by converting</span>
+        <span class="c1"># all types into plain JSON types # (it converts Model into refs,</span>
+        <span class="c1"># for example).</span>
+        <span class="k">return</span> <span class="n">serialize_json</span><span class="p">(</span><span class="n">json_like</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># The explicit assumption here is that hinted events do not need to</span>
+        <span class="c1"># go through all the same invalidation steps. Currently this is the</span>
+        <span class="c1"># case for ColumnsStreamedEvent and ColumnsPatchedEvent. However,</span>
+        <span class="c1"># this may need to be further refined in the future, if the</span>
+        <span class="c1"># assumption does not hold for future hinted events (e.g. the hint</span>
+        <span class="c1"># could specify explicitly whether to do normal invalidation or not)</span>
+        <span class="k">if</span> <span class="n">hint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dirty</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;count&#39;</span> <span class="p">:</span> <span class="mi">0</span> <span class="p">}</span>
+            <span class="k">def</span> <span class="nf">mark_dirty</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+                <span class="n">dirty</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_document</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">_visit_value_and_its_immediate_references</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">mark_dirty</span><span class="p">)</span>
+                <span class="n">_visit_value_and_its_immediate_references</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">mark_dirty</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">dirty</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_document</span><span class="o">.</span><span class="n">_invalidate_all_models</span><span class="p">()</span>
+        <span class="c1"># chain up to invoke callbacks</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Model</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="n">hint</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="n">setter</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_attach_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Attach a model to a Bokeh |Document|.</span>
+
+<span class="sd">        This private interface should only ever called by the Document</span>
+<span class="sd">        implementation to set the private ._document field properly</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_document</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_document</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">doc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Models must be owned by only a single document, </span><span class="si">%r</span><span class="s2"> is already in a doc&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">theme</span><span class="o">.</span><span class="n">apply_to_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_document</span> <span class="o">=</span> <span class="n">doc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_event_callbacks</span><span class="p">()</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_clear_extensions</span><span class="p">():</span>
+        <span class="n">MetaModel</span><span class="o">.</span><span class="n">model_class_reverse_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">MetaModel</span><span class="o">.</span><span class="n">model_class_reverse_map</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s2">&quot;__implementation__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">_detach_document</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Detach a model from a Bokeh |Document|.</span>
+
+<span class="sd">        This private interface should only ever called by the Document</span>
+<span class="sd">        implementation to unset the private ._document field properly</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_document</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">default_theme</span><span class="o">.</span><span class="n">apply_to_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_to_json_like</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_defaults</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Returns a dictionary of the attributes of this object, in</span>
+<span class="sd">        a layout corresponding to what BokehJS expects at unmarshalling time.</span>
+
+<span class="sd">        This method does not convert &quot;Bokeh types&quot; into &quot;plain JSON types,&quot;</span>
+<span class="sd">        for example each child Model will still be a Model, rather</span>
+<span class="sd">        than turning into a reference, numpy isn&#39;t handled, etc.</span>
+<span class="sd">        That&#39;s what &quot;json like&quot; means.</span>
+
+<span class="sd">        This method should be considered &quot;private&quot; or &quot;protected&quot;,</span>
+<span class="sd">        for use internal to Bokeh; use ``to_json()`` instead because</span>
+<span class="sd">        it gives you only plain JSON-compatible types.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            include_defaults (bool) : whether to include attributes</span>
+<span class="sd">                that haven&#39;t been changed from the default.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">all_attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties_with_values</span><span class="p">(</span><span class="n">include_defaults</span><span class="o">=</span><span class="n">include_defaults</span><span class="p">)</span>
+
+        <span class="c1"># If __subtype__ is defined, then this model may introduce properties</span>
+        <span class="c1"># that don&#39;t exist on __view_model__ in bokehjs. Don&#39;t serialize such</span>
+        <span class="c1"># properties.</span>
+        <span class="n">subtype</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="s2">&quot;__subtype__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">subtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">subtype</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">__view_model__</span><span class="p">:</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">all_attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">attrs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="n">all_attrs</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># we can&#39;t serialize Infinity, we send it as None and</span>
+            <span class="c1"># the other side has to fix it up. This transformation</span>
+            <span class="c1"># can&#39;t be in our json_encoder because the json</span>
+            <span class="c1"># module checks for inf before it calls the custom</span>
+            <span class="c1"># encoder.</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span> <span class="o">==</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">):</span>
+                <span class="n">attrs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">attrs</span>
+
+    <span class="k">def</span> <span class="nf">_repr_html_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+
+        <span class="n">_id</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">cls_name</span> <span class="o">=</span> <span class="n">make_id</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">row</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;&lt;div style=&quot;display: table-row;&quot;&gt;&#39;</span> <span class="o">+</span> <span class="n">c</span> <span class="o">+</span> <span class="s1">&#39;&lt;/div&gt;&#39;</span>
+        <span class="k">def</span> <span class="nf">hidden_row</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;&lt;div class=&quot;</span><span class="si">%s</span><span class="s1">&quot; style=&quot;display: none;&quot;&gt;</span><span class="si">%s</span><span class="s1">&lt;/div&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cls_name</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">cell</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;&lt;div style=&quot;display: table-cell;&quot;&gt;&#39;</span> <span class="o">+</span> <span class="n">c</span> <span class="o">+</span> <span class="s1">&#39;&lt;/div&gt;&#39;</span>
+
+        <span class="n">html</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">html</span> <span class="o">+=</span> <span class="s1">&#39;&lt;div style=&quot;display: table;&quot;&gt;&#39;</span>
+
+        <span class="n">ellipsis_id</span> <span class="o">=</span> <span class="n">make_id</span><span class="p">()</span>
+        <span class="n">ellipsis</span> <span class="o">=</span> <span class="s1">&#39;&lt;span id=&quot;</span><span class="si">%s</span><span class="s1">&quot; style=&quot;cursor: pointer;&quot;&gt;&amp;hellip;)&lt;/span&gt;&#39;</span> <span class="o">%</span> <span class="n">ellipsis_id</span>
+
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">cell</span><span class="p">(</span><span class="s1">&#39;&lt;b title=&quot;</span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&quot;&gt;</span><span class="si">%s</span><span class="s1">&lt;/b&gt;(&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+        <span class="n">html</span> <span class="o">+=</span> <span class="n">row</span><span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">cell</span><span class="p">(</span><span class="s1">&#39;id&#39;</span> <span class="o">+</span> <span class="s1">&#39;&amp;nbsp;=&amp;nbsp;&#39;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="n">ellipsis</span><span class="p">))</span>
+
+        <span class="n">props</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties_with_values</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="n">sorted_props</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">props</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">all_props</span> <span class="o">=</span> <span class="n">sorted_props</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">all_props</span><span class="p">):</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="s1">&#39;)&#39;</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_props</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="s1">&#39;,&#39;</span>
+            <span class="n">html</span> <span class="o">+=</span> <span class="n">hidden_row</span><span class="p">(</span><span class="n">cell</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">cell</span><span class="p">(</span><span class="n">prop</span> <span class="o">+</span> <span class="s1">&#39;&amp;nbsp;=&amp;nbsp;&#39;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="n">end</span><span class="p">))</span>
+
+        <span class="n">html</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/div&gt;&#39;</span>
+        <span class="n">html</span> <span class="o">+=</span> <span class="n">_HTML_REPR</span> <span class="o">%</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ellipsis_id</span><span class="o">=</span><span class="n">ellipsis_id</span><span class="p">,</span> <span class="n">cls_name</span><span class="o">=</span><span class="n">cls_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">html</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Private API</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+
+<span class="k">def</span> <span class="nf">_visit_immediate_value_references</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">visitor</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Visit all references to another Model without recursing into any</span>
+<span class="sd">    of the child Model; may visit the same Model more than once if</span>
+<span class="sd">    it&#39;s referenced more than once. Does not visit the passed-in value.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">HasProps</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">properties_with_refs</span><span class="p">():</span>
+            <span class="n">child</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+            <span class="n">_visit_value_and_its_immediate_references</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">visitor</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_visit_value_and_its_immediate_references</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">visitor</span><span class="p">)</span>
+
+
+<span class="n">_common_types</span> <span class="o">=</span> <span class="p">{</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">_visit_value_and_its_immediate_references</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">visitor</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Recurse down Models, HasProps, and Python containers</span>
+
+<span class="sd">    The ordering in this function is to optimize performance.  We check the</span>
+<span class="sd">    most comomn types (int, float, str) first so that we can quickly return in</span>
+<span class="sd">    the common case.  We avoid isinstance and issubclass checks in a couple</span>
+<span class="sd">    places with `type` checks because isinstance checks can be slow.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">typ</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">typ</span> <span class="ow">in</span> <span class="n">_common_types</span><span class="p">:</span>  <span class="c1"># short circuit on common base types</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="n">typ</span> <span class="ow">is</span> <span class="nb">list</span> <span class="ow">or</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>  <span class="c1"># check common containers</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="n">_visit_value_and_its_immediate_references</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">visitor</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+            <span class="n">_visit_value_and_its_immediate_references</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">visitor</span><span class="p">)</span>
+            <span class="n">_visit_value_and_its_immediate_references</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">visitor</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="n">HasProps</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="n">Model</span><span class="p">):</span>
+            <span class="n">visitor</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># this isn&#39;t a Model, so recurse into it</span>
+            <span class="n">_visit_immediate_value_references</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">visitor</span><span class="p">)</span>
+
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Code</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -8,6 +8,12 @@ cave.plot package
    :inherited-members:
    :private-members:
 
+Subpackages
+
+.. toctree::
+
+   cave.plot.parallel_plot
+
 
 .. toctree::
 

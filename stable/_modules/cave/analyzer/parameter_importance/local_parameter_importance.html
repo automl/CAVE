@@ -1,0 +1,352 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>cave.analyzer.parameter_importance.local_parameter_importance &mdash; CAVE 1.4.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> CAVE
+          
+
+          
+            
+            <img src="../../../../_static/cave.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../manual.html">Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/commandline.html">Commandline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/fileformats.html">Input Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../faq.html">F.A.Q.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api.html">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.analyzer.html">cave.analyzer package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.budgets.html">cave.analyzer.budgets package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.budgets.bohb_learning_curves.html">cave.analyzer.budgets.bohb_learning_curves module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.budgets.budget_correlation.html">cave.analyzer.budgets.budget_correlation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.budgets.incumbents_over_budgets.html">cave.analyzer.budgets.incumbents_over_budgets module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.configurator.html">cave.analyzer.configurator package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.configurator.configurator_footprint.html">cave.analyzer.configurator.configurator_footprint module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.configurator.parallel_coordinates.html">cave.analyzer.configurator.parallel_coordinates module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.html">cave.analyzer.feature_analysis package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.box_violin.html">cave.analyzer.feature_analysis.box_violin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.feature_analysis.html">cave.analyzer.feature_analysis.feature_analysis module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.feature_clustering.html">cave.analyzer.feature_analysis.feature_clustering module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.feature_correlation.html">cave.analyzer.feature_analysis.feature_correlation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.feature_analysis.feature_importance.html">cave.analyzer.feature_analysis.feature_importance module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.html">cave.analyzer.parameter_importance package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.ablation.html">cave.analyzer.parameter_importance.ablation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.base_parameter_importance.html">cave.analyzer.parameter_importance.base_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.fanova.html">cave.analyzer.parameter_importance.fanova module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.forward_selection.html">cave.analyzer.parameter_importance.forward_selection module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html">cave.analyzer.parameter_importance.local_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html">cave.analyzer.parameter_importance.pimp_comparison_table module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.html">cave.analyzer.performance package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.algorithm_footprint.html">cave.analyzer.performance.algorithm_footprint module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.compare_default_incumbent.html">cave.analyzer.performance.compare_default_incumbent module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.cost_over_time.html">cave.analyzer.performance.cost_over_time module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.overview_table.html">cave.analyzer.performance.overview_table module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.performance_table.html">cave.analyzer.performance.performance_table module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.plot_ecdf.html">cave.analyzer.performance.plot_ecdf module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.analyzer.performance.plot_scatter.html">cave.analyzer.performance.plot_scatter module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.analyzer.base_analyzer.html">cave.analyzer.base_analyzer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.cave_cli.html">cave.cave_cli module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.cavefacade.html">cave.cavefacade module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.plot.html">cave.plot package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.parallel_plot.html">cave.plot.parallel_plot package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.plot.parallel_plot.parallel_plot.html">cave.plot.parallel_plot.parallel_plot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.plot.parallel_plot.parallel_reset.html">cave.plot.parallel_plot.parallel_reset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.plot.parallel_plot.parallel_selection_tool.html">cave.plot.parallel_plot.parallel_selection_tool module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.html.html">cave.html package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.html.html_builder.html">cave.html.html_builder module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.html.html_helpers.html">cave.html.html_helpers module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.html">cave.reader.conversion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../apidoc/cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../apidoc/cave.utils.html">cave.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../apidoc/cave.utils.tooltips.html">cave.utils.tooltips module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contribute.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contact.html">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../license.html">License</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">CAVE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>cave.analyzer.parameter_importance.local_parameter_importance</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for cave.analyzer.parameter_importance.local_parameter_importance</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="kn">import</span> <span class="n">output_notebook</span><span class="p">,</span> <span class="n">show</span>
+
+<span class="kn">from</span> <span class="nn">cave.analyzer.parameter_importance.base_parameter_importance</span> <span class="kn">import</span> <span class="n">BaseParameterImportance</span>
+<span class="kn">from</span> <span class="nn">cave.html.html_helpers</span> <span class="kn">import</span> <span class="n">figure_to_html</span>
+
+
+<div class="viewcode-block" id="LocalParameterImportance"><a class="viewcode-back" href="../../../../apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance">[docs]</a><span class="k">class</span> <span class="nc">LocalParameterImportance</span><span class="p">(</span><span class="n">BaseParameterImportance</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Using an empirical performance model, performance changes of a configuration along each parameter are</span>
+<span class="sd">    calculated. To quantify the importance of a parameter value, the variance of all cost values by changing that</span>
+<span class="sd">    parameter are predicted and then the fraction of all variances is computed. This analysis is inspired by the</span>
+<span class="sd">    human behaviour to look for improvements in the neighborhood of individual parameters of a configuration.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">runscontainer</span><span class="p">,</span>
+                 <span class="n">marginal_threshold</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">runscontainer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameter_importance</span><span class="p">(</span><span class="s2">&quot;lpi&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LocalParameterImportance.get_name"><a class="viewcode-back" href="../../../../apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Local Parameter Importance (LPI)&quot;</span></div>
+
+<div class="viewcode-block" id="LocalParameterImportance.postprocess"><a class="viewcode-back" href="../../../../apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.postprocess">[docs]</a>    <span class="k">def</span> <span class="nf">postprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pimp</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+        <span class="n">param_imp</span> <span class="o">=</span> <span class="n">pimp</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">evaluated_parameter_importance</span>
+        <span class="n">plots</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">param_imp</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+                                               <span class="n">key</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)]:</span>
+            <span class="n">plots</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;lpi&#39;</span><span class="p">,</span> <span class="n">p</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([</span>
+            <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;figure&#39;</span><span class="p">:</span> <span class="n">path</span><span class="p">})</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">plots</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">])</span></div>
+
+<div class="viewcode-block" id="LocalParameterImportance.get_jupyter"><a class="viewcode-back" href="../../../../apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html#cave.analyzer.parameter_importance.local_parameter_importance.LocalParameterImportance.get_jupyter">[docs]</a>    <span class="k">def</span> <span class="nf">get_jupyter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">IPython.core.display</span> <span class="kn">import</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">display</span>
+        <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">figure_to_html</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_plots</span><span class="p">(),</span> <span class="n">max_in_a_row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">true_break_between_rows</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">runscontainer</span><span class="o">.</span><span class="n">analyzing_options</span><span class="p">[</span><span class="s1">&#39;Parameter Importance&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;whisker_quantiles_plot&#39;</span><span class="p">):</span>
+            <span class="n">output_notebook</span><span class="p">()</span>
+            <span class="n">show</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_whiskers</span><span class="p">())</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,982 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>bokeh.core.has_props &mdash; CAVE 1.4.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> CAVE
+          
+
+          
+            
+            <img src="../../../_static/cave.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../manual.html">Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/commandline.html">Commandline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/jupyternotebook.html">Jupyter Notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/fileformats.html">Input Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/budgets.html">Budgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manualdoc/internal_data_processing.html">Internal Data Processing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.analyzer.html">cave.analyzer package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.budgets.html">cave.analyzer.budgets package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.budgets.bohb_learning_curves.html">cave.analyzer.budgets.bohb_learning_curves module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.budgets.budget_correlation.html">cave.analyzer.budgets.budget_correlation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.budgets.incumbents_over_budgets.html">cave.analyzer.budgets.incumbents_over_budgets module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.configurator.html">cave.analyzer.configurator package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.configurator.configurator_footprint.html">cave.analyzer.configurator.configurator_footprint module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.configurator.parallel_coordinates.html">cave.analyzer.configurator.parallel_coordinates module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_analysis.html">cave.analyzer.feature_analysis package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_analysis.box_violin.html">cave.analyzer.feature_analysis.box_violin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_analysis.feature_analysis.html">cave.analyzer.feature_analysis.feature_analysis module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_analysis.feature_clustering.html">cave.analyzer.feature_analysis.feature_clustering module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_analysis.feature_correlation.html">cave.analyzer.feature_analysis.feature_correlation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.feature_analysis.feature_importance.html">cave.analyzer.feature_analysis.feature_importance module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.html">cave.analyzer.parameter_importance package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.ablation.html">cave.analyzer.parameter_importance.ablation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.base_parameter_importance.html">cave.analyzer.parameter_importance.base_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.fanova.html">cave.analyzer.parameter_importance.fanova module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.forward_selection.html">cave.analyzer.parameter_importance.forward_selection module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.local_parameter_importance.html">cave.analyzer.parameter_importance.local_parameter_importance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.parameter_importance.pimp_comparison_table.html">cave.analyzer.parameter_importance.pimp_comparison_table module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.performance.html">cave.analyzer.performance package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.performance.algorithm_footprint.html">cave.analyzer.performance.algorithm_footprint module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.performance.compare_default_incumbent.html">cave.analyzer.performance.compare_default_incumbent module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.performance.cost_over_time.html">cave.analyzer.performance.cost_over_time module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.performance.overview_table.html">cave.analyzer.performance.overview_table module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.performance.performance_table.html">cave.analyzer.performance.performance_table module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.performance.plot_ecdf.html">cave.analyzer.performance.plot_ecdf module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.analyzer.performance.plot_scatter.html">cave.analyzer.performance.plot_scatter module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.analyzer.base_analyzer.html">cave.analyzer.base_analyzer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.cave_cli.html">cave.cave_cli module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.cavefacade.html">cave.cavefacade module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.plot.html">cave.plot package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.parallel_plot.html">cave.plot.parallel_plot package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.plot.parallel_plot.parallel_plot.html">cave.plot.parallel_plot.parallel_plot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.plot.parallel_plot.parallel_reset.html">cave.plot.parallel_plot.parallel_reset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.plot.parallel_plot.parallel_selection_tool.html">cave.plot.parallel_plot.parallel_selection_tool module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.algorithm_footprint.html">cave.plot.algorithm_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.cdf.html">cave.plot.cdf module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.configurator_footprint.html">cave.plot.configurator_footprint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.scatter.html">cave.plot.scatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.plot.whisker_quantiles.html">cave.plot.whisker_quantiles module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.html.html">cave.html package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.html.html_builder.html">cave.html.html_builder module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.html.html_helpers.html">cave.html.html_helpers module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.reader.html">cave.reader package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.html">cave.reader.conversion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.base_converter.html">cave.reader.conversion.base_converter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.csv2rh.html">cave.reader.conversion.csv2rh module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.csv2smac.html">cave.reader.conversion.csv2smac module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidoc/cave.reader.conversion.hpbandster2smac.html">cave.reader.conversion.hpbandster2smac module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.base_reader.html">cave.reader.base_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.configurator_run.html">cave.reader.configurator_run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.runs_container.html">cave.reader.runs_container module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac2_reader.html">cave.reader.smac2_reader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.reader.smac3_reader.html">cave.reader.smac3_reader module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../apidoc/cave.utils.html">cave.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.bokeh_routines.html">cave.utils.bokeh_routines module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.convert_for_epm.html">cave.utils.convert_for_epm module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.exceptions.html">cave.utils.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.helpers.html">cave.utils.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.hpbandster_helpers.html">cave.utils.hpbandster_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.io.html">cave.utils.io module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.statistical_tests.html">cave.utils.statistical_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.timing.html">cave.utils.timing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidoc/cave.utils.tooltips.html">cave.utils.tooltips module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contribute.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contact.html">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CAVE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>bokeh.core.has_props</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for bokeh.core.has_props</h1><div class="highlight"><pre>
+<span></span><span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Copyright (c) 2012 - 2019, Anaconda, Inc., and Bokeh Contributors.</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># The full license is in the file LICENSE.txt, distributed with this software.</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="sd">&#39;&#39;&#39; Provide a base class for objects that can have declarative, typed,</span>
+<span class="sd">serializable properties.</span>
+
+<span class="sd">.. note::</span>
+<span class="sd">    These classes form part of the very low-level machinery that implements</span>
+<span class="sd">    the Bokeh model and property system. It is unlikely that any of these</span>
+<span class="sd">    classes or their methods will be applicable to any standard usage or to</span>
+<span class="sd">    anyone who is not directly developing on Bokeh&#39;s own infrastructure.</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Boilerplate</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">unicode_literals</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Imports</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+
+<span class="c1"># Standard library imports</span>
+<span class="kn">import</span> <span class="nn">difflib</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+
+<span class="c1"># External imports</span>
+
+<span class="c1"># Bokeh imports</span>
+<span class="kn">from</span> <span class="nn">..util.future</span> <span class="kn">import</span> <span class="n">with_metaclass</span>
+<span class="kn">from</span> <span class="nn">..util.string</span> <span class="kn">import</span> <span class="n">nice_join</span>
+
+<span class="kn">from</span> <span class="nn">.property.descriptor_factory</span> <span class="kn">import</span> <span class="n">PropertyDescriptorFactory</span>
+<span class="kn">from</span> <span class="nn">.property.override</span> <span class="kn">import</span> <span class="n">Override</span>
+<span class="kn">from</span> <span class="nn">.property.wrappers</span> <span class="kn">import</span> <span class="n">PropertyValueContainer</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Globals and constants</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;abstract&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;accumulate_dict_from_superclasses&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;accumulate_from_superclasses&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;HasProps&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;MetaHasProps&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># General API</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Dev API</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+
+<span class="k">def</span> <span class="nf">abstract</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; A decorator to mark abstract base classes derived from |HasProps|.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">HasProps</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not a subclass of HasProps&quot;</span> <span class="o">%</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="c1"># running python with -OO will discard docstrings -&gt; __doc__ is None</span>
+    <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__doc__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">_ABSTRACT_ADMONITION</span>
+
+    <span class="k">return</span> <span class="bp">cls</span>
+
+<span class="k">class</span> <span class="nc">MetaHasProps</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Specialize the construction of |HasProps| classes.</span>
+
+<span class="sd">    This class is a `metaclass`_ for |HasProps| that is responsible for</span>
+<span class="sd">    creating and adding the |PropertyDescriptor| instances that delegate</span>
+<span class="sd">    validation and serialization to |Property| attributes.</span>
+
+<span class="sd">    .. _metaclass: https://docs.python.org/3/reference/datamodel.html#metaclasses</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="n">meta_cls</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">class_dict</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">names_with_refs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">container_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="c1"># Now handle all the Override</span>
+        <span class="n">overridden_defaults</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">class_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">Override</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">default_overridden</span><span class="p">:</span>
+                <span class="n">overridden_defaults</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">default</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">default</span> <span class="ow">in</span> <span class="n">overridden_defaults</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">del</span> <span class="n">class_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+        <span class="n">generators</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">generator</span> <span class="ow">in</span> <span class="n">class_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">generator</span><span class="p">,</span> <span class="n">PropertyDescriptorFactory</span><span class="p">):</span>
+                <span class="n">generators</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">generator</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">generator</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">generator</span><span class="p">,</span> <span class="n">PropertyDescriptorFactory</span><span class="p">):</span>
+                <span class="c1"># Support the user adding a property without using parens,</span>
+                <span class="c1"># i.e. using just the Property subclass instead of an</span>
+                <span class="c1"># instance of the subclass</span>
+                <span class="n">generators</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">autocreate</span><span class="p">()</span>
+
+        <span class="n">dataspecs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">new_class_attrs</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">generator</span> <span class="ow">in</span> <span class="n">generators</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">prop_descriptors</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">make_descriptors</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">replaced_self</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">prop_descriptor</span> <span class="ow">in</span> <span class="n">prop_descriptors</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">prop_descriptor</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">generators</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">generators</span><span class="p">[</span><span class="n">prop_descriptor</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="ow">is</span> <span class="n">generator</span><span class="p">:</span>
+                        <span class="c1"># a generator can replace itself, this is the</span>
+                        <span class="c1"># standard case like `foo = Int()`</span>
+                        <span class="n">replaced_self</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">prop_descriptor</span><span class="o">.</span><span class="n">add_prop_descriptor_to_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">new_class_attrs</span><span class="p">,</span> <span class="n">names_with_refs</span><span class="p">,</span> <span class="n">container_names</span><span class="p">,</span> <span class="n">dataspecs</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># if a generator tries to overwrite another</span>
+                        <span class="c1"># generator that&#39;s been explicitly provided,</span>
+                        <span class="c1"># use the prop that was manually provided</span>
+                        <span class="c1"># and ignore this one.</span>
+                        <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">prop_descriptor</span><span class="o">.</span><span class="n">add_prop_descriptor_to_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">new_class_attrs</span><span class="p">,</span> <span class="n">names_with_refs</span><span class="p">,</span> <span class="n">container_names</span><span class="p">,</span> <span class="n">dataspecs</span><span class="p">)</span>
+            <span class="c1"># if we won&#39;t overwrite ourselves anyway, delete the generator</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">replaced_self</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">class_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+        <span class="n">class_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_class_attrs</span><span class="p">)</span>
+
+        <span class="n">class_dict</span><span class="p">[</span><span class="s2">&quot;__properties__&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">new_class_attrs</span><span class="p">)</span>
+        <span class="n">class_dict</span><span class="p">[</span><span class="s2">&quot;__properties_with_refs__&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">names_with_refs</span>
+        <span class="n">class_dict</span><span class="p">[</span><span class="s2">&quot;__container_props__&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">container_names</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">overridden_defaults</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">class_dict</span><span class="p">[</span><span class="s2">&quot;__overridden_defaults__&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">overridden_defaults</span>
+        <span class="k">if</span> <span class="n">dataspecs</span><span class="p">:</span>
+            <span class="n">class_dict</span><span class="p">[</span><span class="s2">&quot;__dataspecs__&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataspecs</span>
+
+        <span class="k">if</span> <span class="s2">&quot;__example__&quot;</span> <span class="ow">in</span> <span class="n">class_dict</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">class_dict</span><span class="p">[</span><span class="s2">&quot;__example__&quot;</span><span class="p">]</span>
+
+            <span class="c1"># running python with -OO will discard docstrings -&gt; __doc__ is None</span>
+            <span class="k">if</span> <span class="s2">&quot;__doc__&quot;</span> <span class="ow">in</span> <span class="n">class_dict</span> <span class="ow">and</span> <span class="n">class_dict</span><span class="p">[</span><span class="s2">&quot;__doc__&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">class_dict</span><span class="p">[</span><span class="s2">&quot;__doc__&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">_EXAMPLE_TEMPLATE</span> <span class="o">%</span> <span class="nb">dict</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">MetaHasProps</span><span class="p">,</span> <span class="n">meta_cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">meta_cls</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">class_dict</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">nmspc</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">class_name</span> <span class="o">==</span> <span class="s1">&#39;HasProps&#39;</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="c1"># Check for improperly overriding a Property attribute.</span>
+        <span class="c1"># Overriding makes no sense except through the Override</span>
+        <span class="c1"># class which can be used to tweak the default.</span>
+        <span class="c1"># Historically code also tried changing the Property&#39;s</span>
+        <span class="c1"># type or changing from Property to non-Property: these</span>
+        <span class="c1"># overrides are bad conceptually because the type of a</span>
+        <span class="c1"># read-write property is invariant.</span>
+        <span class="n">cls_attrs</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="c1"># we do NOT want inherited attrs here</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">cls_attrs</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">bases</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">HasProps</span><span class="p">)</span> <span class="ow">and</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">base</span><span class="o">.</span><span class="n">properties</span><span class="p">():</span>
+                    <span class="n">warn</span><span class="p">((</span><span class="s1">&#39;Property &quot;</span><span class="si">%s</span><span class="s1">&quot; in class </span><span class="si">%s</span><span class="s1"> was overridden by a class attribute &#39;</span> <span class="o">+</span> \
+                          <span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot; in class </span><span class="si">%s</span><span class="s1">; it never makes sense to do this. &#39;</span> <span class="o">+</span> \
+                          <span class="s1">&#39;Either </span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1"> or </span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1"> should be removed, or </span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1"> should not &#39;</span> <span class="o">+</span> \
+                          <span class="s1">&#39;be a Property, or use Override(), depending on the intended effect.&#39;</span><span class="p">)</span> <span class="o">%</span>
+                         <span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">base</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span>
+                          <span class="n">base</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span>
+                          <span class="n">class_name</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span>
+                          <span class="n">base</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">attr</span><span class="p">),</span>
+                         <span class="ne">RuntimeWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;__overridden_defaults__&quot;</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+            <span class="n">our_props</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">properties</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;__overridden_defaults__&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">our_props</span><span class="p">:</span>
+                    <span class="n">warn</span><span class="p">((</span><span class="s1">&#39;Override() of </span><span class="si">%s</span><span class="s1"> in class </span><span class="si">%s</span><span class="s1"> does not override anything.&#39;</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">class_name</span><span class="p">),</span>
+                         <span class="ne">RuntimeWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">accumulate_from_superclasses</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">propname</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Traverse the class hierarchy and accumulate the special sets of names</span>
+<span class="sd">    ``MetaHasProps`` stores on classes:</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str) : name of the special attribute to collect.</span>
+
+<span class="sd">            Typically meaningful values are: ``__container_props__``,</span>
+<span class="sd">            ``__properties__``, ``__properties_with_refs__``</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">cachename</span> <span class="o">=</span> <span class="s2">&quot;__cached_all&quot;</span> <span class="o">+</span> <span class="n">propname</span>
+    <span class="c1"># we MUST use cls.__dict__ NOT hasattr(). hasattr() would also look at base</span>
+    <span class="c1"># classes, and the cache must be separate for each class</span>
+    <span class="k">if</span> <span class="n">cachename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmro</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">HasProps</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">propname</span><span class="p">):</span>
+                <span class="n">base</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">propname</span><span class="p">)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cachename</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">cachename</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">accumulate_dict_from_superclasses</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">propname</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Traverse the class hierarchy and accumulate the special dicts</span>
+<span class="sd">    ``MetaHasProps`` stores on classes:</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str) : name of the special attribute to collect.</span>
+
+<span class="sd">            Typically meaningful values are: ``__dataspecs__``,</span>
+<span class="sd">            ``__overridden_defaults__``</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">cachename</span> <span class="o">=</span> <span class="s2">&quot;__cached_all&quot;</span> <span class="o">+</span> <span class="n">propname</span>
+    <span class="c1"># we MUST use cls.__dict__ NOT hasattr(). hasattr() would also look at base</span>
+    <span class="c1"># classes, and the cache must be separate for each class</span>
+    <span class="k">if</span> <span class="n">cachename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmro</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">HasProps</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">propname</span><span class="p">):</span>
+                <span class="n">base</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">propname</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">base</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                        <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cachename</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">cachename</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">HasProps</span><span class="p">(</span><span class="n">with_metaclass</span><span class="p">(</span><span class="n">MetaHasProps</span><span class="p">,</span> <span class="nb">object</span><span class="p">)):</span>
+    <span class="sd">&#39;&#39;&#39; Base class for all class types that have Bokeh properties.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">properties</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">HasProps</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_property_values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_unstable_default_values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_unstable_themed_values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Intercept attribute setting on HasProps in order to special case</span>
+<span class="sd">        a few situations:</span>
+
+<span class="sd">        * short circuit all property machinery for ``_private`` attributes</span>
+<span class="sd">        * suggest similar attribute names on attribute errors</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str) : the name of the attribute to set on this object</span>
+<span class="sd">            value (obj) : the value to set</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># self.properties() below can be expensive so avoid it</span>
+        <span class="c1"># if we&#39;re just setting a private underscore field</span>
+        <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">HasProps</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">props</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">())</span>
+        <span class="n">descriptor</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">props</span> <span class="ow">or</span> <span class="p">(</span><span class="n">descriptor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">descriptor</span><span class="o">.</span><span class="n">fset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">HasProps</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">matches</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="n">difflib</span><span class="o">.</span><span class="n">get_close_matches</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">props</span><span class="p">),</span> <span class="s2">&quot;similar&quot;</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span><span class="p">:</span>
+                <span class="n">matches</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="n">props</span><span class="p">,</span> <span class="s2">&quot;possible&quot;</span>
+
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;unexpected attribute &#39;</span><span class="si">%s</span><span class="s2">&#39; to </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2"> attributes are </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
+                <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">nice_join</span><span class="p">(</span><span class="n">matches</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">(...)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+
+    <span class="fm">__repr__</span> <span class="o">=</span> <span class="fm">__str__</span>
+
+    <span class="k">def</span> <span class="nf">equals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Structural equality of models.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            other (HasProps) : the other instance to compare to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True, if properties are structurally equal, otherwise False</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># NOTE: don&#39;t try to use this to implement __eq__. Because then</span>
+        <span class="c1"># you will be tempted to implement __hash__, which would interfere</span>
+        <span class="c1"># with mutability of models. However, not implementing __hash__</span>
+        <span class="c1"># will make bokeh unusable in Python 3, where proper implementation</span>
+        <span class="c1"># of __hash__ is required when implementing __eq__.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties_with_values</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">properties_with_values</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">set_from_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">json</span><span class="p">,</span> <span class="n">models</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Set a property value on this object from JSON.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: (str) : name of the attribute to set</span>
+
+<span class="sd">            json: (JSON-value) : value to set to the attribute to</span>
+
+<span class="sd">            models (dict or None, optional) :</span>
+<span class="sd">                Mapping of model ids to models (default: None)</span>
+
+<span class="sd">                This is needed in cases where the attributes to update also</span>
+<span class="sd">                have values that have references.</span>
+
+<span class="sd">            setter(ClientSession or ServerSession or None, optional) :</span>
+<span class="sd">                This is used to prevent &quot;boomerang&quot; updates to Bokeh apps.</span>
+
+<span class="sd">                In the context of a Bokeh server application, incoming updates</span>
+<span class="sd">                to properties will be annotated with the session that is</span>
+<span class="sd">                doing the updating. This value is propagated through any</span>
+<span class="sd">                subsequent change notifications that the update triggers.</span>
+<span class="sd">                The session can compare the event setter to itself, and</span>
+<span class="sd">                suppress any updates that originate from itself.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">():</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Patching attribute </span><span class="si">%r</span><span class="s2"> of </span><span class="si">%r</span><span class="s2"> with </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">json</span><span class="p">)</span>
+            <span class="n">descriptor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">descriptor</span><span class="o">.</span><span class="n">set_from_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json</span><span class="p">,</span> <span class="n">models</span><span class="p">,</span> <span class="n">setter</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;JSON had attr </span><span class="si">%r</span><span class="s2"> on obj </span><span class="si">%r</span><span class="s2">, which is a client-only or invalid attribute that shouldn&#39;t have been sent&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Updates the object&#39;s properties from the given keyword arguments.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Examples:</span>
+
+<span class="sd">            The following are equivalent:</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                from bokeh.models import Range1d</span>
+
+<span class="sd">                r = Range1d</span>
+
+<span class="sd">                # set properties individually:</span>
+<span class="sd">                r.start = 10</span>
+<span class="sd">                r.end = 20</span>
+
+<span class="sd">                # update properties together:</span>
+<span class="sd">                r.update(start=10, end=20)</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update_from_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_attributes</span><span class="p">,</span> <span class="n">models</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Updates the object&#39;s properties from a JSON attributes dictionary.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            json_attributes: (JSON-dict) : attributes and values to update</span>
+
+<span class="sd">            models (dict or None, optional) :</span>
+<span class="sd">                Mapping of model ids to models (default: None)</span>
+
+<span class="sd">                This is needed in cases where the attributes to update also</span>
+<span class="sd">                have values that have references.</span>
+
+<span class="sd">            setter(ClientSession or ServerSession or None, optional) :</span>
+<span class="sd">                This is used to prevent &quot;boomerang&quot; updates to Bokeh apps.</span>
+
+<span class="sd">                In the context of a Bokeh server application, incoming updates</span>
+<span class="sd">                to properties will be annotated with the session that is</span>
+<span class="sd">                doing the updating. This value is propagated through any</span>
+<span class="sd">                subsequent change notifications that the update triggers.</span>
+<span class="sd">                The session can compare the event setter to itself, and</span>
+<span class="sd">                suppress any updates that originate from itself.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">json_attributes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_from_json</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">models</span><span class="p">,</span> <span class="n">setter</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">lookup</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Find the ``PropertyDescriptor`` for a Bokeh property on a class,</span>
+<span class="sd">        given the property name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str) : name of the property to search for</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            PropertyDescriptor : descriptor for property named ``name``</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">properties_with_refs</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Collect the names of all properties on this class that also have</span>
+<span class="sd">        references.</span>
+
+<span class="sd">        This method *always* traverses the class hierarchy and includes</span>
+<span class="sd">        properties defined on any parent classes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            set[str] : names of properties that have references</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">accumulate_from_superclasses</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;__properties_with_refs__&quot;</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">properties_containers</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Collect the names of all container properties on this class.</span>
+
+<span class="sd">        This method *always* traverses the class hierarchy and includes</span>
+<span class="sd">        properties defined on any parent classes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            set[str] : names of container properties</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">accumulate_from_superclasses</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;__container_props__&quot;</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">properties</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">with_bases</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Collect the names of properties on this class.</span>
+
+<span class="sd">        This method *optionally* traverses the class hierarchy and includes</span>
+<span class="sd">        properties defined on any parent classes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            with_bases (bool, optional) :</span>
+<span class="sd">                Whether to include properties defined on parent classes in</span>
+<span class="sd">                the results. (default: True)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">           set[str] : property names</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">with_bases</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">accumulate_from_superclasses</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;__properties__&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__properties__</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">dataspecs</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Collect the names of all ``DataSpec`` properties on this class.</span>
+
+<span class="sd">        This method *always* traverses the class hierarchy and includes</span>
+<span class="sd">        properties defined on any parent classes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            set[str] : names of ``DataSpec`` properties</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">dataspecs_with_props</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">dataspecs_with_props</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Collect a dict mapping the names of all ``DataSpec`` properties</span>
+<span class="sd">        on this class to the associated properties.</span>
+
+<span class="sd">        This method *always* traverses the class hierarchy and includes</span>
+<span class="sd">        properties defined on any parent classes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict[str, DataSpec] : mapping of names and ``DataSpec`` properties</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">accumulate_dict_from_superclasses</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;__dataspecs__&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">properties_with_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_defaults</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Collect a dict mapping property names to their values.</span>
+
+<span class="sd">        This method *always* traverses the class hierarchy and includes</span>
+<span class="sd">        properties defined on any parent classes.</span>
+
+<span class="sd">        Non-serializable properties are skipped and property values are in</span>
+<span class="sd">        &quot;serialized&quot; format which may be slightly different from the values</span>
+<span class="sd">        you would normally read from the properties; the intent of this method</span>
+<span class="sd">        is to return the information needed to losslessly reconstitute the</span>
+<span class="sd">        object instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            include_defaults (bool, optional) :</span>
+<span class="sd">                Whether to include properties that haven&#39;t been explicitly set</span>
+<span class="sd">                since the object was created. (default: True)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">           dict : mapping from property names to their values</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_properties_with_values</span><span class="p">(</span><span class="k">lambda</span> <span class="n">prop</span><span class="p">:</span> <span class="n">prop</span><span class="o">.</span><span class="n">serialized</span><span class="p">,</span> <span class="n">include_defaults</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_overridden_defaults</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Returns a dictionary of defaults that have been overridden.</span>
+
+<span class="sd">        This is an implementation detail of Property.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">accumulate_dict_from_superclasses</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;__overridden_defaults__&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">query_properties_with_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">include_defaults</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Query the properties values of |HasProps| instances with a</span>
+<span class="sd">        predicate.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            query (callable) :</span>
+<span class="sd">                A callable that accepts property descriptors and returns True</span>
+<span class="sd">                or False</span>
+
+<span class="sd">            include_defaults (bool, optional) :</span>
+<span class="sd">                Whether to include properties that have not been explicitly</span>
+<span class="sd">                set by a user (default: True)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict : mapping of property names and values for matching properties</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">themed_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">include_defaults</span><span class="p">:</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># TODO (bev) For now, include unstable default values. Things rely on Instances</span>
+            <span class="c1"># always getting serialized, even defaults, and adding unstable defaults here</span>
+            <span class="c1"># accomplishes that. Unmodified defaults for property value containers will be</span>
+            <span class="c1"># weeded out below.</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_property_values</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_unstable_default_values</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">themed_values</span><span class="p">():</span>
+                <span class="n">themed_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">themed_values</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="n">keys</span> <span class="o">|=</span> <span class="n">themed_keys</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="n">descriptor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">query</span><span class="p">(</span><span class="n">descriptor</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="n">value</span> <span class="o">=</span> <span class="n">descriptor</span><span class="o">.</span><span class="n">serializable_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">include_defaults</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">themed_keys</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">PropertyValueContainer</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unstable_default_values</span><span class="p">:</span>
+                    <span class="k">continue</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">themed_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Get any theme-provided overrides.</span>
+
+<span class="sd">        Results are returned as a dict from property name to value, or</span>
+<span class="sd">        ``None`` if no theme overrides any values for this instance.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict or None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__themed_values__&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">apply_theme</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_values</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Apply a set of theme values which will be used rather than</span>
+<span class="sd">        defaults, but will not override application-set values.</span>
+
+<span class="sd">        The passed-in dictionary may be kept around as-is and shared with</span>
+<span class="sd">        other instances to save memory (so neither the caller nor the</span>
+<span class="sd">        |HasProps| instance should modify it).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            property_values (dict) : theme values to use in place of defaults</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">old_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">themed_values</span><span class="p">()</span>
+
+        <span class="c1"># if the same theme is set again, it should reuse the same dict</span>
+        <span class="k">if</span> <span class="n">old_dict</span> <span class="ow">is</span> <span class="n">property_values</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">removed</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="c1"># we&#39;re doing a little song-and-dance to avoid storing __themed_values__ or</span>
+        <span class="c1"># an empty dict, if there&#39;s no theme that applies to this HasProps instance.</span>
+        <span class="k">if</span> <span class="n">old_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">removed</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">old_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="n">added</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">property_values</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">old_values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">added</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">removed</span><span class="p">):</span>
+            <span class="n">old_values</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">property_values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__themed_values__&#39;</span><span class="p">,</span> <span class="n">property_values</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__themed_values__&#39;</span><span class="p">):</span>
+            <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__themed_values__&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Property container values might be cached even if unmodified. Invalidate</span>
+        <span class="c1"># any cached values that are not modified at this point.</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">old_values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unstable_themed_values</span><span class="p">:</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unstable_themed_values</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+        <span class="c1"># Emit any change notifications that result</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">old_values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">descriptor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">descriptor</span><span class="o">.</span><span class="n">trigger_if_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">unapply_theme</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Remove any themed values and restore defaults.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply_theme</span><span class="p">(</span><span class="n">property_values</span><span class="o">=</span><span class="nb">dict</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">_clone</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Duplicate a HasProps object.</span>
+
+<span class="sd">        Values that are containers are shallow-copied.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_property_values</span><span class="p">)</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Private API</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+
+<span class="n">_ABSTRACT_ADMONITION</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    .. note::</span>
+<span class="s1">        This is an abstract base class used to help organize the hierarchy of Bokeh</span>
+<span class="s1">        model types. **It is not useful to instantiate on its own.**</span>
+
+<span class="s1">&#39;&#39;&#39;</span>
+
+<span class="c1"># The &quot;../../&quot; is needed for bokeh-plot to construct the correct path to examples</span>
+<span class="n">_EXAMPLE_TEMPLATE</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+
+<span class="s1">    Example</span>
+<span class="s1">    -------</span>
+
+<span class="s1">    .. bokeh-plot:: ../../</span><span class="si">%(path)s</span><span class="s1"></span>
+<span class="s1">        :source-position: below</span>
+
+<span class="s1">&#39;&#39;&#39;</span>
+
+<span class="c1">#-----------------------------------------------------------------------------</span>
+<span class="c1"># Code</span>
+<span class="c1">#-----------------------------------------------------------------------------</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
