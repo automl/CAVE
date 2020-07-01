@@ -19,7 +19,7 @@ setuptools.setup(
     version=version,
     packages=['cave',
               'cave.analyzer',
-              'cave.analyzer.apt'
+              'cave.analyzer.apt',
               'cave.analyzer.budgets',
               'cave.analyzer.configurator',
               'cave.analyzer.feature_analysis',
