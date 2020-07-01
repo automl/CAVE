@@ -7,15 +7,16 @@
 
 ## Major changes
 
-* Add basic Auto-PyTorch file format support, including tensorboard support and custom overview tables
-* A
-
-## Bug fixes
+* Add basic Auto-PyTorch file format support
+* Add tensorboard support for notebooks
+* Add custom APT-overview tables
+* Use interactive bokeh plots for pimp
 
 ## Minor changes 
 
 * Add lots of docstring-documentation, PEP8 and a contribute-guide
 * Rename some classes and functions to unify naming (only internal)
+* Fix naming convention for hpbanster conversion folders
 
 # 1.3.3
 
