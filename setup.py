@@ -19,6 +19,7 @@ setuptools.setup(
     version=version,
     packages=['cave',
               'cave.analyzer',
+              'cave.analyzer.apt'
               'cave.analyzer.budgets',
               'cave.analyzer.configurator',
               'cave.analyzer.feature_analysis',
@@ -30,6 +31,7 @@ setuptools.setup(
               'cave.plot',
               'cave.plot.parallel_plot',
               'cave.utils',
+              'cave.utils.apt_helpers'
               ],
     # For info about package_data, please check MANIFEST.in
     # (https://stackoverflow.com/questions/7522250/how-to-include-package-data-with-setuptools-distribute)
@@ -91,7 +93,7 @@ setuptools.setup(
     entry_points={'console_scripts': ['explore-cave=cave.cave_cli:entry_point',
                                       'cave=cave.cave_cli:entry_point']},
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 5 - Production/Stable",
         "Topic :: Utilities",
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
