@@ -106,6 +106,24 @@ not needed. See below for example:
     | ...      | ...  | ...            | ...      | ...        | ...        | ... |
     +----------+------+----------------+----------+------------+------------+-----+
 
+*APT*
+~~~~~
+
+**NOTE** *Auto-PyTorch is still in alpha at the time of writing.
+Therefore, this describes more of a sketch and will likely not reflect the current status of development.
+The last known working version of Auto-PyTorch is
+https://github.com/automl/Auto-PyTorch/commit/a39012ff464a02eead9315a00179812206235f25*
+
+Relevant files for the analysis of *APT* are:
+
+- configs.json, results.json (same format as in *BOHB*)
+- configspace.json
+- autonet_config.json
+- results_fit.json
+
+For an example on how to use it, check
+`the notebook <https://github.com/automl/CAVE/blob/master/examples/autopytorch/apt_notebook.ipynb>`_.
+
 *SMAC2*
 ~~~~~~~
 

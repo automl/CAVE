@@ -75,7 +75,9 @@ def get_incumbent_trajectory(result, budgets=None, mode='racing'):
         return_dict = {'config_ids': [],
                        'times_finished': [],
                        'budgets': [],
-                       'losses': []}
+                       'losses': [],
+                       'config': [],
+                       }
         last_run = None
         for r in _compute_trajectory_racing(all_runs, budgets):
             if last_run is None or last_run is not r:
@@ -83,6 +85,7 @@ def get_incumbent_trajectory(result, budgets=None, mode='racing'):
                 return_dict['times_finished'].append(r.time_stamps['finished'])
                 return_dict['budgets'].append(r.budget)
                 return_dict['losses'].append(r.loss)
+                return_dict['config'].append(result.get_id2config_mapping()[r.config_id])
             last_run = r
         return return_dict
     else:
@@ -206,6 +209,7 @@ def _get_incumbent_trajectory_hpbandster(result, budgets, bigger_is_better=True,
                 finished, their respective budgets, and corresponding losses
     """
     all_runs = result.get_all_runs(only_largest_budget=False)
+    id2config = result.get_id2config_mapping()
 
     if isinstance(budgets, list):
         all_runs = list(filter(lambda r: r.budget in budgets, all_runs))
@@ -220,6 +224,7 @@ def _get_incumbent_trajectory_hpbandster(result, budgets, bigger_is_better=True,
                     'times_finished': [],
                     'budgets'    : [],
                     'losses'     : [],
+                    'config'     : [],
     }
 
     current_incumbent = float('inf')
@@ -248,6 +253,7 @@ def _get_incumbent_trajectory_hpbandster(result, budgets, bigger_is_better=True,
             return_dict['times_finished'].append(r.time_stamps['finished'])
             return_dict['budgets'].append(r.budget)
             return_dict['losses'].append(r.loss)
+            return_dict['config'].append(id2config[r.config_id])
 
     if current_incumbent != r.loss:
         r = all_runs[-1]
@@ -256,5 +262,6 @@ def _get_incumbent_trajectory_hpbandster(result, budgets, bigger_is_better=True,
         return_dict['times_finished'].append(r.time_stamps['finished'])
         return_dict['budgets'].append(return_dict['budgets'][-1])
         return_dict['losses'].append(return_dict['losses'][-1])
+        return_dict['config'].append(id2config[return_dict['config_ids'][-1]])
 
     return (return_dict)

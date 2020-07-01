@@ -101,20 +101,20 @@ class ConfiguratorRun(object):
         try:
             self._validate_default_and_incumbents("epm", self.ta_exec_dir)
         except KeyError as err:
-            self.logger.debug(err, exc_info=1)
-            msg = 'Validation of default and incumbent failed. SMAC (v: %s) does not support validation '\
-                  'of budgets+instances yet, if you use budgets but no instances ignore this warning.' % str(smac_version)
+            self.logger.debug(err, exc_info=True)
+            msg = "Validation of default and incumbent failed. SMAC (v: {}) does not support validation of budgets+ins"\
+                  "tances yet, if you use budgets but no instances ignore this warning.".format(str(smac_version))
             if self.feature_names:
                 self.logger.warning(msg)
             else:
                 self.logger.debug(msg)
 
         # Set during execution, to share information between Analyzers
-        self.share_information = {'parameter_importance' : OrderedDict(),
-                                  'feature_importance' : OrderedDict(),
-                                  'evaluators' : OrderedDict(),
-                                  'validator' : None,
-                                  'hpbandster_result' : None,  # Only for file-format BOHB
+        self.share_information = {'parameter_importance': OrderedDict(),
+                                  'feature_importance': OrderedDict(),
+                                  'evaluators': OrderedDict(),
+                                  'validator': None,
+                                  'hpbandster_result': None,  # Only for file-format BOHB
                                   }
 
     def get_identifier(self):
@@ -128,7 +128,6 @@ class ConfiguratorRun(object):
         if len(res) > len(str(hash(res))):
             res = str(hash(res))
         return res
-
 
     def get_budgets(self):
         return set([k.budget for k in self.original_runhistory.data.keys()])
@@ -154,20 +153,20 @@ class ConfiguratorRun(object):
             in the scenario-object. since instance- and PCS-files are necessary,
             specify the path to the execution-dir of SMAC here
         file_format: string
-            from [SMAC2, SMAC3, BOHB, CSV]
+            from [SMAC2, SMAC3, BOHB, APT, CSV]
         validation_format: string
-            from [SMAC2, SMAC3, CSV, NONE], in which format to look for validated data
+            from [SMAC2, SMAC3, APT, CSV, NONE], in which format to look for validated data
         """
         logger = logging.getLogger("cave.ConfiguratorRun.{}".format(folder))
         logger.debug("Loading from \'%s\' with ta_exec_dir \'%s\' with file-format '%s' and validation-format %s. ",
-                          folder, ta_exec_dir, file_format, validation_format)
+                     folder, ta_exec_dir, file_format, validation_format)
 
-        if file_format == 'BOHB':
-            logger.debug("File format is BOHB, assmuming data was converted to SMAC3-format using "
+        if file_format == 'BOHB' or file_format == "APT":
+            logger.debug("File format is BOHB or APT, assmuming data was converted to SMAC3-format using "
                          "HpBandSter2SMAC from cave.reader.converter.hpbandster2smac.")
         validation_format = validation_format if validation_format != 'NONE' else None
 
-        #### Read in data (scenario, runhistory & trajectory)
+        # Read in data (scenario, runhistory & trajectory)
         reader = cls.get_reader(file_format, folder, ta_exec_dir)
 
         scenario = reader.get_scenario()
@@ -184,8 +183,8 @@ class ConfiguratorRun(object):
             validated_runhistory = vali_reader.get_validated_runhistory(scenario.cs)
             #self._check_rh_for_inc_and_def(self.validated_runhistory, 'validated runhistory')
             logger.info("Found validated runhistory for \"%s\" and using "
-                         "it for evaluation. #configs in validated rh: %d",
-                         folder, len(validated_runhistory.config_ids))
+                        "it for evaluation. #configs in validated rh: %d",
+                        folder, len(validated_runhistory.config_ids))
 
         trajectory = reader.get_trajectory(scenario.cs)
 
@@ -207,7 +206,8 @@ class ConfiguratorRun(object):
     def _init_pimp_and_validator(self,
                                  alternative_output_dir=None,
                                  ):
-        """Create ParameterImportance-object and use it's trained model for validation and further predictions.
+        """
+        Create ParameterImportance-object and use it's trained model for validation and further predictions.
         We pass a combined (original + validated) runhistory, so that the returned model will be based on as much
         information as possible
 
@@ -217,7 +217,7 @@ class ConfiguratorRun(object):
             e.g. for budgets we want pimp to use an alternative output-dir (subfolders per budget)
         """
         self.logger.debug("Using '%s' as output for pimp", alternative_output_dir if alternative_output_dir else
-                                                           self.output_dir)
+                          self.output_dir)
         self.pimp = Importance(scenario=copy.deepcopy(self.scenario),
                                runhistory=self.combined_runhistory,
                                incumbent=self.incumbent if self.incumbent else self.default,
@@ -330,6 +330,8 @@ class ConfiguratorRun(object):
         if name == 'SMAC3':
             return SMAC3Reader(folder, ta_exec_dir)
         elif name == 'BOHB':
+            return SMAC3Reader(folder, ta_exec_dir)
+        elif name == 'APT':
             return SMAC3Reader(folder, ta_exec_dir)
         elif name == 'SMAC2':
             return SMAC2Reader(folder, ta_exec_dir)

@@ -1,9 +1,14 @@
 # CAVE
+
+**NOTE** *This repository is waiting for adoption and there might be longer waiting times for answers.
+However, feel free to report bugs or ask questions in the issues.
+Last known working versions of major dependencies can be found [here](https://github.com/automl/issues/*
+
 ## Configuration Assessment, Visualization and Evaluation
 
 | master ([docs](https://automl.github.io/CAVE/stable/)) | development ([docs](https://automl.github.io/CAVE/dev/)) |
 | --- | --- |
-| [![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=master)](https://travis-ci.org/automl/CAVE) | [![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=development)](https://travis-ci.org/automl/CAVE) |   |
+| [![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=master)](https://travis-ci.org/automl/CAVE) | [![Build Status](https://travis-ci.org/automl/CAVE.svg?branch=development)](https://travis-ci.org/automl/CAVE) |
 
 CAVE is a versatile analysis tool for automatic algorithm configurators. It generates comprehensive reports to
 give insights into the configured algorithm, the instance/feature set and also the configuration tool itself.
@@ -49,6 +54,10 @@ or clone the repository and install requirements into your virtual environment.
 git clone https://github.com/automl/CAVE.git && cd CAVE
 pip install -r requirements.txt
 python3 setup.py install  # (or: python3 setup.py develop)
+```
+In case you have trouble with your virtualenv+pip setup, try:
+```
+pip install -U setuptools
 ```
 Optional: To have some `.png`s automagically available, you also need phantomjs.
 ```
@@ -114,6 +123,7 @@ Some flags provide additional fine-tuning of the analysis methods:
 - `--cfp_time_slider`: `on` will add a time-slider to the interactive configurator footprint which will result in longer loading times, `off` will generate static png's at the desired quantiles
 - `--cfp_number_quantiles`: determines how many time-steps to prerender from in the configurator footprint
 - `--cot_inc_traj`: how the incumbent trajectory for the cost-over-time plot will be generated if the optimizer is BOHB (from [`racing`, `minimum`, `prefer_higher_budget`])
+- `--pimp_interactive`: whether to plot interactive bokeh-plots for parameter importance
 
 For a full list and further information on how to use CAVE, see:
 `cave --help`
@@ -141,6 +151,11 @@ All your favourite configurators can be processed using [this simple CSV-format]
 ```
 cave examples/csv_allinone/run_* --ta_exec_dir examples/csv_allinone/ --output output/csv_example
 ```
+
+#### Auto-PyTorch
+While APT is still in alpha and work in progress at the time of writing, *CAVE* strives to support it as closely as possible.
+There is no unified output available right now, so we provide a [notebook](https://github.com/automl/CAVE/blob/master/examples/autopytorch/apt_notebook.ipynb)
+to showcase some exemplary analysis.
 
 #### SMAC2
 The legacy format of SMAC2 is still supported, though not extensively tested

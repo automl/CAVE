@@ -1,16 +1,20 @@
 import logging
+import os
+import shutil
 import tempfile
 from collections import OrderedDict
 from typing import List
+from collections import OrderedDict
 
 from numpy.random.mtrand import RandomState
 from smac.runhistory.runhistory import RunHistory, DataOrigin
 
 from cave.reader.configurator_run import ConfiguratorRun
+from cave.reader.conversion.apt2smac import APT2SMAC
 from cave.reader.conversion.csv2smac import CSV2SMAC
 from cave.reader.conversion.hpbandster2smac import HpBandSter2SMAC
 from cave.utils.helpers import combine_trajectories, load_default_options, detect_fileformat
-
+from cave.utils.apt_helpers.refitting_routine import apt_refit
 
 class RunsContainer(object):
 
@@ -60,9 +64,13 @@ class RunsContainer(object):
         output_dir: str
             directory for output (temporary directory if not set)
         file_format: str
-            from [SMAC2, SMAC3, BOHB, CSV] defines what file-format the optimizer result is in.
+            optional, from [AUTO, SMAC2, SMAC3, BOHB, CSV] defines what file-format the optimizer result is in.
+            AUTO or None will lead to attempted automatic detection
         validation_format: str
             from [SMAC2, SMAC3, BOHB, CSV] defines what file-format validation data is in.
+        analyzing_options: dict / ConfigParser
+            contains important global configurations on how to run CAVE, see
+            `options <https://github.com/automl/CAVE/blob/master/cave/utils/options/default_analysis_options.ini>`_
         """
         ################################################################################################################
         #  Initialize and find suitable parameters                                                                     #
@@ -79,7 +87,7 @@ class RunsContainer(object):
 
         self.output_dir = output_dir if output_dir else tempfile.mkdtemp()
 
-        if file_format.upper() == "AUTO":
+        if file_format.upper() == "AUTO" or file_format is None:
             file_format = detect_fileformat(folders=self.folders)
             self.logger.info("Format of input detected automatically: %s", file_format)
         self.file_format = file_format
@@ -94,18 +102,19 @@ class RunsContainer(object):
         ################################################################################################################
         #  Convert if necessary, determine what folders and what budgets                                               #
         ################################################################################################################
-        # Both budgets and folders have "None" in the key-list for the aggregation over all available budgets/folders
         input_data = {f : {} for f in self.folders}
-        if self.file_format == 'BOHB':
-            self.logger.debug("Converting %d BOHB folders to SMAC-format", len(folders))
-            hpbandster2smac = HpBandSter2SMAC()
-            result = hpbandster2smac.convert(self.folders, self.output_dir)
-            input_data = result
-        elif self.file_format == 'CSV':
-            self.logger.debug("Check whether CSV-data needs to be split up (only if budgets are used)")
-            csv2smac = CSV2SMAC()
-            result = csv2smac.convert(self.folders, self.ta_exec_dirs, self.output_dir)
-            input_data = result
+        converters = {'BOHB' : HpBandSter2SMAC,
+                      'CSV'  : CSV2SMAC,
+                      'APT'  : APT2SMAC,
+                      }
+        if self.file_format in converters:
+            self.logger.debug("Converting %d %s folders to SMAC-format", len(folders), self.file_format)
+            converter = converters[self.file_format]()
+            input_data = converter.convert(self.folders,
+                                           ta_exec_dirs=self.ta_exec_dirs,
+                                           output_dir=self.output_dir,
+                                           )
+            # Also setting ta_exec_dirs to cwd, since we are now using the converted paths...
             self.ta_exec_dirs = ['.' for _ in range(len(self.folders))]
 
         ################################################################################################################
@@ -144,7 +153,6 @@ class RunsContainer(object):
                                                  output_dir = self.output_dir)
             self.data[f] = cr
         self.scenario = list(self.data.values())[0].scenario
-
 
     def __getitem__(self, key):
         """ Return highest budget for given folder. """

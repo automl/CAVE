@@ -20,6 +20,7 @@ Contents:
    manual
    faq
    api
+   contribute
    contact
    license
 

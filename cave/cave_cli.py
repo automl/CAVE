@@ -4,7 +4,6 @@ import logging
 import sys
 import time
 from argparse import ArgumentParser, SUPPRESS
-from collections import OrderedDict
 from datetime import datetime as datetime
 from importlib import reload
 
@@ -33,7 +32,7 @@ class CaveCLI(object):
 
     def main_cli(self):
         """
-        Main cli, implementing comparison between and analysis of Configuration-results.
+        Main cli, implementing comparison between and analysis of Configurator-results.
         """
         # Reset logging module (needs to happen before logger initalization)
         logging.shutdown()
@@ -120,7 +119,7 @@ class CaveCLI(object):
         cave_opts.add_argument("--file_format",
                                default='auto',
                                help="specify the format of the configurator-files. ",
-                               choices=['auto', 'SMAC2', 'SMAC3', 'CSV', 'BOHB'],
+                               choices=['auto', 'SMAC2', 'SMAC3', 'CSV', 'BOHB', 'APT'],
                                type=str.upper)
         cave_opts.add_argument("--validation_format",
                                default='NONE',
@@ -138,6 +137,15 @@ class CaveCLI(object):
         # PIMP-configs
         pimp_opts = parser.add_argument_group("Parameter Importance",
                                               "Define the behaviour of the ParameterImportance-module (pimp)")
+
+        pimp_opts.add_argument("--pimp_interactive",
+                               choices=["on", "off"],
+                               default="on",
+                               help="Whether or not to plot interactive bokeh plots for parameter importance analysis")
+        pimp_opts.add_argument("--pimp_whiskers",
+                               choices=["on", "off"],
+                               default="on",
+                               help="Whether or not to plot interactive whisker plot for parameter importance analysis")
         pimp_opts.add_argument("--pimp_max_samples",
                                default=-1,
                                type=int,
@@ -200,7 +208,7 @@ class CaveCLI(object):
                                   default=[]
                                   )
 
-        # Delete the following two lines and the corresponding function after 1.3.4 release
+        # Delete the following two lines and the corresponding function after 1.3.3 release
         dep_opts = parser.add_argument_group("Deprecated", "Used to define which analysis methods should be performed")
         self._add_deprecated(dep_opts, map_options)
 
@@ -212,7 +220,7 @@ class CaveCLI(object):
         # Parse arguments and save to args_
         args_ = parser.parse_args(sys.argv[1:])
 
-        # Delete the following line and the corresponding function after 1.3.4 release
+        # Delete the following line and the corresponding function after 1.3.3 release
         self._check_deprecated(args_)
 
         # Configuration results to be analyzed
@@ -262,6 +270,8 @@ class CaveCLI(object):
         analyzing_options["fANOVA"]["fanova_pairwise"] = str(args_.fanova_pairwise)
         analyzing_options["fANOVA"]["pimp_max_samples"] = str(args_.pimp_max_samples)
         analyzing_options["Parallel Coordinates"]["pc_sort_by"] = str(args_.pc_sort_by)
+        analyzing_options["Parameter Importance"]["whisker_quantiles_plot"] = str(args_.pimp_whiskers)
+        analyzing_options["Parameter Importance"]["interactive_bokeh_plots"] = str(args_.pimp_interactive)
 
         # Initialize CAVE
         cave = CAVE(folders,
@@ -288,14 +298,14 @@ class CaveCLI(object):
 
 
     def _check_deprecated(self, args_):
-        """ Delete this function after 1.3.4 release """
-        # Expand configs  # deprecated after 1.3.4
-        if "all" in args_.parameter_importance:  # deprecated after 1.3.4
-            param_imp = ["ablation", "forward_selection", "fanova", "lpi"]  # deprecated after 1.3.4
+        """ Delete this function after 1.3.3 release """
+        # Expand configs  # deprecated after 1.3.3
+        if "all" in args_.parameter_importance:  # deprecated after 1.3.3
+            param_imp = ["ablation", "forward_selection", "fanova", "lpi"]  # deprecated after 1.3.3
         elif "none" in args_.parameter_importance or "deprecated" == args_.parameter_importance:
-            param_imp = []  # deprecated after 1.3.4
-        else:  # deprecated after 1.3.4
-            param_imp = args_.parameter_importance  # deprecated after 1.3.4
+            param_imp = []  # deprecated after 1.3.3
+        else:  # deprecated after 1.3.3
+            param_imp = args_.parameter_importance  # deprecated after 1.3.3
 
         if "all" in args_.feature_analysis:
             feature_analysis = ["box_violin", "correlation", "importance", "clustering"]
@@ -315,27 +325,27 @@ class CaveCLI(object):
                                      "Please use --only and --skip flags to define what analysis methods to use.")
 
     def _add_deprecated(self, dep_opts, map_options):
-        """ Delete this function after 1.3.4 release """
-        # Some choice-blocks, that can be reused throughout the CLI  # deprecated after 1.3.4
-        p_choices = [  # deprecated after 1.3.4
-            "all",  # deprecated after 1.3.4
-            "ablation",  # deprecated after 1.3.4
-            "forward_selection",  # deprecated after 1.3.4
-            "fanova",  # deprecated after 1.3.4
-            "lpi",  # deprecated after 1.3.4
-            "none",  # deprecated after 1.3.4
-            "deprecated",  # deprecated after 1.3.4
-        ]  # deprecated after 1.3.4
-        p_sort_by_choices = ["average"] + p_choices[1:-1]  # deprecated after 1.3.4
-        f_choices = [  # deprecated after 1.3.4
-            "all",  # deprecated after 1.3.4
-            "box_violin",  # deprecated after 1.3.4
-            "correlation",  # deprecated after 1.3.4
-            "clustering",  # deprecated after 1.3.4
-            "importance",  # deprecated after 1.3.4
-            "none",  # deprecated after 1.3.4
-            "deprecated",  # deprecated after 1.3.4
-        ]  # deprecated after 1.3.4
+        """ Delete this function after 1.3.3 release """
+        # Some choice-blocks, that can be reused throughout the CLI  # deprecated after 1.3.3
+        p_choices = [  # deprecated after 1.3.3
+            "all",  # deprecated after 1.3.3
+            "ablation",  # deprecated after 1.3.3
+            "forward_selection",  # deprecated after 1.3.3
+            "fanova",  # deprecated after 1.3.3
+            "lpi",  # deprecated after 1.3.3
+            "none",  # deprecated after 1.3.3
+            "deprecated",  # deprecated after 1.3.3
+        ]  # deprecated after 1.3.3
+        p_sort_by_choices = ["average"] + p_choices[1:-1]  # deprecated after 1.3.3
+        f_choices = [  # deprecated after 1.3.3
+            "all",  # deprecated after 1.3.3
+            "box_violin",  # deprecated after 1.3.3
+            "correlation",  # deprecated after 1.3.3
+            "clustering",  # deprecated after 1.3.3
+            "importance",  # deprecated after 1.3.3
+            "none",  # deprecated after 1.3.3
+            "deprecated",  # deprecated after 1.3.3
+        ]  # deprecated after 1.3.3
 
         for key in map_options.keys():
             dep_opts.add_argument('--no_' + key,
@@ -343,18 +353,18 @@ class CaveCLI(object):
                                   dest='deprecated',
                                   help=SUPPRESS)
 
-        dep_opts.add_argument("--parameter_importance",  # deprecated after 1.3.4
-                              default='deprecated',  # deprecated after 1.3.4
-                              nargs='+',  # deprecated after 1.3.4
+        dep_opts.add_argument("--parameter_importance",  # deprecated after 1.3.3
+                              default='deprecated',  # deprecated after 1.3.3
+                              nargs='+',  # deprecated after 1.3.3
                               help=SUPPRESS,
-                              choices=p_choices,  # deprecated after 1.3.4
-                              type=str.lower)  # deprecated after 1.3.4
-        dep_opts.add_argument("--feature_analysis",  # deprecated after 1.3.4
-                              default='deprecated',  # deprecated after 1.3.4
-                              nargs='+',  # deprecated after 1.3.4
+                              choices=p_choices,  # deprecated after 1.3.3
+                              type=str.lower)  # deprecated after 1.3.3
+        dep_opts.add_argument("--feature_analysis",  # deprecated after 1.3.3
+                              default='deprecated',  # deprecated after 1.3.3
+                              nargs='+',  # deprecated after 1.3.3
                               help=SUPPRESS,
-                              choices=f_choices,  # deprecated after 1.3.4
-                              type=str.lower)  # deprecated after 1.3.4
+                              choices=f_choices,  # deprecated after 1.3.3
+                              type=str.lower)  # deprecated after 1.3.3
 
 
 def entry_point():

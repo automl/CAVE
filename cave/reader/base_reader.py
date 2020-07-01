@@ -17,8 +17,14 @@ def changedir(newdir):
 
 
 class BaseReader(object):
-    """Abstract base class to inherit reader from. Reader load necessary objects
-    (scenario, runhistory, trajectory) from files for different formats."""
+    """
+    Abstract base class to inherit reader from.
+    Reader load necessary objects (scenario, runhistory, trajectory) from files for different formats.
+
+    Please note that it is strongly encouraged to build a converter (from
+    `BaseConverter <apidoc/cave.reader.conversion.base_converter.BaseConverter>`_ ) instead of designing a new reader.
+    Conversion aims to make it easy and feasible to quickly support new file-formats.
+    """
 
     def __init__(self, folder, ta_exec_dir):
         self.logger = logging.getLogger("cave.reader")
@@ -32,20 +38,20 @@ class BaseReader(object):
         scenario-information (`<https://automl.github.io/SMAC3/stable/options.html#scenario>`_)"""
         raise NotImplemented()
 
-    def get_runhistory(self):
+    def get_runhistory(self, config_space):
         """Create RunHistory-object from files."""
         raise NotImplemented()
 
-    def get_validated_runhistory(self):
+    def get_validated_runhistory(self, config_space):
         """Create validated runhistory from files, if available."""
         raise NotImplemented()
 
-    def get_trajectory(self):
+    def get_trajectory(self, config_space):
         """Create trajectory (list with dicts as entries)"""
         raise NotImplemented()
 
     @classmethod
-    def check_for_files(cls):
+    def check_for_files(cls, path):
         raise NotImplemented()
 
     @classmethod

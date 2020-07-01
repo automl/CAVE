@@ -211,9 +211,6 @@ def load_default_options(options=None, file_format=None):
         else:
             default_options.read_dict(options)
 
-    if file_format == "BOHB":
-        default_options.read(os.path.join(own_folder, 'options/default_bohb_analysis_options.ini'))
-
     return default_options
 
 def detect_fileformat(folders):
@@ -221,13 +218,15 @@ def detect_fileformat(folders):
     from cave.reader.smac2_reader import SMAC2Reader
     from cave.reader.smac3_reader import SMAC3Reader
 
-    # Check if it's BOHB
+    # First check if it's APT, else BOHB
     bohb_files = ["configs.json", "results.json", "configspace.json"]
-    for f in folders:
-        if not all([os.path.isfile(os.path.join(f, sub)) for sub in bohb_files]):
-            break
-    else:
-        return "BOHB"
+    apt_files = ["autonet_config.json", "results_fit.json"]
+    if all([all([os.path.isfile(os.path.join(f, sub)) for sub in bohb_files]) for f in folders]):
+        if all([all([os.path.isfile(os.path.join(f, sub)) for sub in apt_files]) for f in folders]):
+            return "APT"
+        else:
+            return "BOHB"
+
     # Check if it's SMAC
     if all([SMAC3Reader.check_for_files(f) for f in folders]):
         return "SMAC3"
