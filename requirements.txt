@@ -13,3 +13,4 @@ scipy
 sklearn
 selenium
 nose
+smac>=0.13.0

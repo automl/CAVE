@@ -11,7 +11,7 @@ from ConfigSpace.read_and_write import pcs_new
 from smac.runhistory.runhistory import RunHistory
 from smac.scenario.scenario import Scenario
 from smac.stats.stats import Stats
-from smac.tae.execute_ta_run import StatusType
+from smac.tae import StatusType
 from smac.utils.io.traj_logging import TrajLogger
 
 from cave.reader.conversion.base_converter import BaseConverter
