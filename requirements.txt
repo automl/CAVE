@@ -1,6 +1,6 @@
 Cython
 configspace>=0.4.9
-smac>=0.12.1
+smac>=0.13.0
 fanova>=2.0.11
 pyimp>=1.1.0
 hpbandster
@@ -13,4 +13,3 @@ scipy
 sklearn
 selenium
 nose
-smac>=0.13.0
