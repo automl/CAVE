@@ -21,7 +21,7 @@ from bokeh.models.sources import CDSView
 from bokeh.models.widgets import CheckboxButtonGroup, RadioButtonGroup, Button, Div
 from bokeh.plotting import figure, ColumnDataSource
 from sklearn.decomposition import PCA
-from sklearn.manifold.mds import MDS
+from sklearn.manifold import MDS
 from sklearn.preprocessing import StandardScaler
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.runhistory.runhistory import RunHistory

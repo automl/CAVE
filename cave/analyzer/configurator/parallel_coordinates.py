@@ -5,6 +5,9 @@ import numpy as np
 import pandas as pd
 from ConfigSpace.configuration_space import ConfigurationSpace, Configuration
 from ConfigSpace.hyperparameters import NumericalHyperparameter, CategoricalHyperparameter
+from bokeh.io import output_notebook
+from bokeh.models.annotations import Title
+from bokeh.plotting import show
 from bokeh.embed import components
 from bokeh.layouts import column
 from bokeh.models import Div
@@ -235,3 +238,14 @@ class ParallelCoordinates(BaseAnalyzer):
             result["tooltip"] = self.__doc__
             d["Parallel Coordinates"] = result
         return result
+
+    def get_jupyter(self):
+        bokeh_plots = self.plot_bokeh()
+        output_notebook()
+        if len(self.result) == 0:
+            if(bokeh_plots):
+                show(bokeh_plots)
+            return
+        for budget, bokeh_plot in bokeh_plots.items():
+            plot = column( Div(text=budget), bokeh_plot) # to add a title
+            show(plot)
