@@ -99,17 +99,21 @@ class Fanova(BaseParameterImportance):
 
         return result
 
-    def _plot_img_lst(self, img_lst, max_cols, sup_title):
-        import matplotlib.pyplot as plt
+    def _plot_img_lst(self, plt, img_lst, max_cols, sup_title):
         import math
         rows = math.ceil( len(img_lst)/max_cols )
-        figure, axes = plt.subplots(rows, max_cols, figsize = (4*max_cols,3*rows))
+        figure, axes = plt.subplots(rows, max_cols, figsize = (5*max_cols,5*rows))
         i = 0
         for r in range(rows):
             for c in range(max_cols):
-                if(i<len(img_lst)):
-                    axes[r][c].imshow(img_lst[i])
-                axes[r][c].axis('off')
+                if(rows > 1):
+                    if(i < len(img_lst)):
+                        axes[r, c].imshow(img_lst[i])
+                    axes[r, c].axis('off')
+                else:
+                    if(i < len(img_lst)):
+                        axes[c].imshow(img_lst[i])
+                    axes[c].axis('off')
                 i += 1
 
         figure.suptitle(sup_title, fontsize=14)
@@ -122,11 +126,14 @@ class Fanova(BaseParameterImportance):
         #     # Show plots
         #     display(*list([Image(filename=d["figure"]) for d in result['Marginals'].values()]))
         #     display(*list([Image(filename=d["figure"]) for d in result['Pairwise Marginals'].values()]))
+        # Reload matplotlib backend to avoid GUI blank plots
         from IPython.core.display import HTML, display
-        import matplotlib.pyplot as plt
-        from matplotlib import style
         import matplotlib
-        matplotlib.use( 'nbAgg' )
+        import matplotlib.pyplot as plt
+        from importlib import reload
+        matplotlib.use('nbAgg')  # GUI backend
+        matplotlib = reload(matplotlib)
+
         for b, result in self.result['Importances Per Parameter'].items():
             # Show Table
             display(HTML(result["Importance"]["table"]))
@@ -136,10 +143,10 @@ class Fanova(BaseParameterImportance):
             marginals_lst = [plt.imread(hp['figure']) for hp in result['Marginals'].values()]
             pairws_marginals_lst = [plt.imread(hp['figure']) for hp in result['Pairwise Marginals'].values()]
 
-            f_marginals = self._plot_img_lst(marginals_lst, 
+            f_marginals = self._plot_img_lst(plt, marginals_lst,
                                                 max_cols = 2, 
                                                 sup_title = b + ": Marginals")
-            f_pairwise_marginals = self._plot_img_lst(pairws_marginals_lst, \
+            f_pairwise_marginals = self._plot_img_lst(plt, pairws_marginals_lst,\
                                                         max_cols = 2, 
                                                         sup_title = b + ": Pairwise Marginals")
             plt.show()

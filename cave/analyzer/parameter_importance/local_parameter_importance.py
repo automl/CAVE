@@ -27,7 +27,7 @@ class LocalParameterImportance(BaseParameterImportance):
     def postprocess(self, pimp, output_dir):
         param_imp = pimp.evaluator.evaluated_parameter_importance
         plots = OrderedDict()
-        for p, i in [(k, v) for k, v in sorted(param_imp.items(),
+        for p, _ in [(k, v) for k, v in sorted(param_imp.items(),
                                                key=operator.itemgetter(1), reverse=True)]:
             plots[p] = os.path.join(output_dir, 'lpi', p + '.png')
         return OrderedDict([
@@ -40,23 +40,32 @@ class LocalParameterImportance(BaseParameterImportance):
         #     for plots, d in budget_dict.items():
         #         if(plots != 'Interactive Plots'):
         #             display(Image(filename = d["figure"]))
+        # Reload matplotlib backend to avoid GUI blank plots
         from IPython.core.display import HTML, display
+        import matplotlib
         import matplotlib.pyplot as plt
-        from matplotlib import style
-        import matplotlib, math
-        matplotlib.use( 'nbAgg' )
+        from importlib import reload
+        import math
+        matplotlib.use('nbAgg')  # GUI backend
+        matplotlib = reload(matplotlib)
+        
         max_cols = 2
         for b, data in self.result['Importances Per Parameter'].items():
-            im_list = [ plt.imread( c['figure'] ) for c in data.values() if 'figure' in c ]
+            img_lst = [ plt.imread( c['figure'] ) for c in data.values() if 'figure' in c ]
             # Plot in grid
-            rows = math.ceil( len(im_list)/max_cols )
-            figure, axes = plt.subplots(rows, max_cols, figsize = (4*max_cols,3*rows))
+            rows = math.ceil( len(img_lst)/max_cols )
+            figure, axes = plt.subplots(rows, max_cols, figsize = (5*max_cols,4*rows))
             i = 0
             for r in range(rows):
                 for c in range(max_cols):
-                    if(i<len(im_list)):
-                        axes[r][c].imshow(im_list[i])
-                    axes[r][c].axis('off')
+                    if(rows > 1):
+                        if(i < len(img_lst)):
+                            axes[r, c].imshow(img_lst[i])
+                        axes[r, c].axis('off')
+                    else:
+                        if(i < len(img_lst)):
+                            axes[c].imshow(img_lst[i])
+                        axes[c].axis('off')
                     i += 1
 
             figure.suptitle(b, fontsize=14)
