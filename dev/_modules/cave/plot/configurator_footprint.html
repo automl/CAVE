@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>cave.plot.configurator_footprint &mdash; CAVE 1.4.1.dev0 documentation</title>
   
@@ -16,7 +16,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -49,7 +52,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> CAVE
+            <a href="../../../index.html" class="icon icon-home"> CAVE
           
 
           
@@ -235,6 +238,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -272,7 +277,7 @@
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">ConfigSpace</span> <span class="kn">import</span> <span class="n">CategoricalHyperparameter</span>
+<span class="kn">from</span> <span class="nn">ConfigSpace</span> <span class="kn">import</span> <span class="n">CategoricalHyperparameter</span><span class="p">,</span> <span class="n">UniformFloatHyperparameter</span>
 <span class="kn">from</span> <span class="nn">ConfigSpace.configuration_space</span> <span class="kn">import</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">ConfigurationSpace</span>
 <span class="kn">from</span> <span class="nn">ConfigSpace.util</span> <span class="kn">import</span> <span class="n">impute_inactive_values</span>
 <span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="kn">import</span> <span class="n">column</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">widgetbox</span>
@@ -282,7 +287,7 @@
 <span class="kn">from</span> <span class="nn">bokeh.models.widgets</span> <span class="kn">import</span> <span class="n">CheckboxButtonGroup</span><span class="p">,</span> <span class="n">RadioButtonGroup</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">Div</span>
 <span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">ColumnDataSource</span>
 <span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
-<span class="kn">from</span> <span class="nn">sklearn.manifold.mds</span> <span class="kn">import</span> <span class="n">MDS</span>
+<span class="kn">from</span> <span class="nn">sklearn.manifold</span> <span class="kn">import</span> <span class="n">MDS</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
 <span class="kn">from</span> <span class="nn">smac.epm.rf_with_instances</span> <span class="kn">import</span> <span class="n">RandomForestWithInstances</span>
 <span class="kn">from</span> <span class="nn">smac.runhistory.runhistory</span> <span class="kn">import</span> <span class="n">RunHistory</span>
@@ -465,6 +470,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Faking configspace to be able to train rf...&quot;</span><span class="p">)</span>
         <span class="c1"># We need to fake config-space bypass imputation of inactive values in random forest implementation</span>
         <span class="n">fake_cs</span> <span class="o">=</span> <span class="n">ConfigurationSpace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;fake-cs-for-configurator-footprint&quot;</span><span class="p">)</span>
+        <span class="c1"># We need to add fake hyperparameters. Always assume there are only two dimensions</span>
+        <span class="n">fake_cs</span><span class="o">.</span><span class="n">add_hyperparameters</span><span class="p">([</span>
+            <span class="n">UniformFloatHyperparameter</span><span class="p">(</span><span class="s1">&#39;fake-</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">100000.</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+                                       <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="p">])</span>
 
         <span class="n">bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">RandomForestWithInstances</span><span class="p">(</span><span class="n">fake_cs</span><span class="p">,</span>
@@ -1314,28 +1324,25 @@
            
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2017-2020, Marius Lindauer, Joshua Marben, Andre Biedenkapp
+        &#169; Copyright 2017-2021, Marius Lindauer, Joshua Marben, Andre Biedenkapp.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
