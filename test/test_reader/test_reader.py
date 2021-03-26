@@ -13,11 +13,11 @@ class TestReader(unittest.TestCase):
         folder = "examples/smac3/example_output/run_1"
         ta_exec_dir = "examples/smac3/"
         cr = ConfiguratorRun.from_folder(folder, ta_exec_dir, self.options, file_format="SMAC3", validation_format=None)
-        self.assertEqual(len(cr.original_runhistory.data), 147)
-        self.assertEqual(len(cr.original_runhistory.get_all_configs()), 43)
+        self.assertEqual(len(cr.original_runhistory.data), 271)
+        self.assertEqual(len(cr.original_runhistory.get_all_configs()), 62)
         self.assertIsNone(cr.validated_runhistory)
-        self.assertEqual(len(cr.combined_runhistory.data), 147)
-        self.assertEqual(len(cr.combined_runhistory.get_all_configs()), 43)
+        self.assertEqual(len(cr.combined_runhistory.data), 271)
+        self.assertEqual(len(cr.combined_runhistory.get_all_configs()), 62)
 
     def test_smac2_format(self):
         """ test whether smac2-format is correctly interpreted """
