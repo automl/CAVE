@@ -24,7 +24,8 @@
         "1",
         "2"
       ],
-      "default": "2"
+      "default": "2",
+      "probabilities": null
     },
     {
       "name": "sp-first-restart",
@@ -59,7 +60,8 @@
         "18",
         "19"
       ],
-      "default": "0"
+      "default": "0",
+      "probabilities": null
     },
     {
       "name": "sp-learned-clauses-inc",
@@ -102,7 +104,8 @@
         "18",
         "19"
       ],
-      "default": "0"
+      "default": "0",
+      "probabilities": null
     },
     {
       "name": "sp-phase-dec-heur",
@@ -116,7 +119,8 @@
         "5",
         "6"
       ],
-      "default": "5"
+      "default": "5",
+      "probabilities": null
     },
     {
       "name": "sp-rand-var-dec-freq",
@@ -129,7 +133,8 @@
         "0.01",
         "0.05"
       ],
-      "default": "0.001"
+      "default": "0.001",
+      "probabilities": null
     },
     {
       "name": "sp-resolution",
@@ -139,7 +144,8 @@
         "1",
         "2"
       ],
-      "default": "1"
+      "default": "1",
+      "probabilities": null
     },
     {
       "name": "sp-restart-inc",
@@ -156,7 +162,8 @@
         "0",
         "1"
       ],
-      "default": "1"
+      "default": "1",
+      "probabilities": null
     },
     {
       "name": "sp-use-pure-literal-rule",
@@ -165,7 +172,8 @@
         "0",
         "1"
       ],
-      "default": "1"
+      "default": "1",
+      "probabilities": null
     },
     {
       "name": "sp-var-activity-inc",
@@ -200,7 +208,8 @@
         "18",
         "19"
       ],
-      "default": "0"
+      "default": "0",
+      "probabilities": null
     },
     {
       "name": "sp-variable-decay",
@@ -217,7 +226,8 @@
         "0",
         "1"
       ],
-      "default": "1"
+      "default": "1",
+      "probabilities": null
     },
     {
       "name": "sp-max-res-lit-inc",
@@ -246,7 +256,8 @@
         "0.01",
         "0.05"
       ],
-      "default": "0.001"
+      "default": "0.001",
+      "probabilities": null
     },
     {
       "name": "sp-rand-var-dec-scaling",
@@ -297,7 +308,8 @@
         "18",
         "19"
       ],
-      "default": "0"
+      "default": "0",
+      "probabilities": null
     },
     {
       "name": "sp-rand-phase-scaling",
@@ -399,6 +411,6 @@
     }
   ],
   "forbiddens": [],
-  "python_module_version": "0.4.11",
-  "json_format_version": 0.1
+  "python_module_version": "0.4.18",
+  "json_format_version": 0.2
 }
