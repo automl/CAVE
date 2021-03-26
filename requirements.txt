@@ -2,7 +2,7 @@ Cython
 configspace>=0.4.9
 smac>=0.13.0
 fanova>=2.0.11
-pyimp>=1.1.4
+pyimp>=1.1.5
 hpbandster
 bokeh==1.1.0
 tqdm
