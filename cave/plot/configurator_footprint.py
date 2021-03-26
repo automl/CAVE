@@ -11,7 +11,7 @@ import os
 import time
 
 import numpy as np
-from ConfigSpace import CategoricalHyperparameter
+from ConfigSpace import CategoricalHyperparameter, UniformFloatHyperparameter
 from ConfigSpace.configuration_space import Configuration, ConfigurationSpace
 from ConfigSpace.util import impute_inactive_values
 from bokeh.layouts import column, row, widgetbox
@@ -21,7 +21,7 @@ from bokeh.models.sources import CDSView
 from bokeh.models.widgets import CheckboxButtonGroup, RadioButtonGroup, Button, Div
 from bokeh.plotting import figure, ColumnDataSource
 from sklearn.decomposition import PCA
-from sklearn.manifold.mds import MDS
+from sklearn.manifold import MDS
 from sklearn.preprocessing import StandardScaler
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.runhistory.runhistory import RunHistory
@@ -204,6 +204,11 @@ class ConfiguratorFootprintPlotter(object):
         self.logger.debug("Faking configspace to be able to train rf...")
         # We need to fake config-space bypass imputation of inactive values in random forest implementation
         fake_cs = ConfigurationSpace(name="fake-cs-for-configurator-footprint")
+        # We need to add fake hyperparameters. Always assume there are only two dimensions
+        fake_cs.add_hyperparameters([
+            UniformFloatHyperparameter('fake-%d' % i, lower=0., upper=100000., default_value=0.,
+                                       log=False) for i in range(2)
+        ])
 
         bounds = np.array([(0, np.nan), (0, np.nan)], dtype=object)
         model = RandomForestWithInstances(fake_cs,

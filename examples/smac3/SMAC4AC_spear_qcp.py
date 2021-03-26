@@ -23,12 +23,13 @@ if __name__ == '__main__':
                           # non-deterministic target algorithm
                           'initial_budget': 1,
                           'eta': 3,
+                          'min_chall': 1  # because successive halving cannot handle min_chall > 1
                           }
 
     smac = SMAC4AC(scenario=scenario,  # scenario object
                    intensifier_kwargs=intensifier_kwargs,  # arguments for Successive Halving
-                   intensifier=SuccessiveHalving  # change intensifier to successive halving by passing the class.
-                   # it must implement `AbstractRacer`
+                   intensifier=SuccessiveHalving,  # change intensifier to successive halving by passing the class.
+                   run_id=1, # it must implement `AbstractRacer`
                    )
 
     # Start optimization
