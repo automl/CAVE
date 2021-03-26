@@ -9,7 +9,7 @@ from ConfigSpace.hyperparameters import UniformFloatHyperparameter
 from ConfigSpace.read_and_write import pcs
 from ConfigSpace.util import deactivate_inactive_hyperparameters, fix_types
 from smac.runhistory.runhistory import RunHistory, DataOrigin
-from smac.tae.execute_ta_run import StatusType
+from smac.tae import StatusType
 from smac.utils.io.input_reader import InputReader
 
 from cave.utils.io import load_csv_to_pandaframe

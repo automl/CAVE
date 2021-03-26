@@ -283,7 +283,6 @@ class RunsContainer(object):
         orig_rh = reduce_runhistory(cr.original_runhistory, keep_budgets)
         vali_rh = reduce_runhistory(cr.validated_runhistory, keep_budgets)
         trajectory = [entry for entry in cr.trajectory if (entry['incumbent'] in orig_rh.config_ids.keys())]
-
         if any([len(x) == 0 for x in [orig_rh.data, trajectory]]):
             self.logger.debug("Runhistory: %s, Trajectory: %s", str(orig_rh.data), str(trajectory))
             raise ValueError("Reducing to budget {} for ConfiguratorRun {} failed for runhistory or trajectory. Are "
