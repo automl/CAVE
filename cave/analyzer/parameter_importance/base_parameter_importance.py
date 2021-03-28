@@ -109,3 +109,22 @@ class BaseParameterImportance(BaseAnalyzer):
                                                       "and the whiskers are quartiles."}
 
         return super().get_html(d, tooltip)
+
+    def get_jupyter(self):
+        from IPython.core.display import HTML, display
+        import matplotlib.pyplot as plt
+        import matplotlib
+        from importlib import reload
+        matplotlib.use('nbAgg')  # GUI backend
+        matplotlib = reload(matplotlib)
+        for b, data in self.result['Importances Per Parameter'].items():
+            im_list = []
+            for component, _ in data.items():
+                if(component == "figure"):
+                    im_list += [plt.imread(f) for f in data[component]]
+            f, axes = plt.subplots(1, len(im_list), figsize = (6*len(im_list),5))
+            for img, ax in zip(im_list, axes):
+                ax.imshow(img)
+                ax.axis('off')
+            f.suptitle(b, fontsize=14)
+            plt.show()
