@@ -1,5 +1,5 @@
 # CAVE [deprecated]
-[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/) ![DEPRECATED](https://img.shields.io/badge/CAVE-DEPRECATED-red) [![SUCCESSOR](https://img.shields.io/badge/DeepCAVE-SUCCESSOR-success)](https://github.com/automl/DeepCAVE)
 ## Deprecated
 :warning:
 **NOTE** *This repository is **deprecated**.
