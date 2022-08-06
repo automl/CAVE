@@ -1,10 +1,13 @@
-# CAVE
+# CAVE [deprecated]
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+## Deprecated
+:warning:
+**NOTE** *This repository is **deprecated**.
+However, feel free to report bugs or ask questions in the issues, however there is no guarantee we will answer in time.
+Last known working versions of major dependencies can be found [here](https://github.com/automl/issues/).*<BR>
+**We've released an improved successor to CAVE called [DeepCAVE](https://github.com/automl/DeepCAVE). To use it please go to https://github.com/automl/DeepCAVE**
 
-**NOTE** *This repository is waiting for adoption and there might be longer waiting times for answers.
-However, feel free to report bugs or ask questions in the issues.
-Last known working versions of major dependencies can be found [here](https://github.com/automl/issues/).*
-
-## Configuration Assessment, Visualization and Evaluation
+## Configuration Assessment, Visualization and Evaluation (CAVE)
 
 | master ([docs](https://automl.github.io/CAVE/stable/)) | development ([docs](https://automl.github.io/CAVE/dev/)) |
 | --- | --- |
