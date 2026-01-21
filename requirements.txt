@@ -4,7 +4,7 @@ smac>=0.13.0
 fanova>=2.0.11
 pyimp>=1.1.5
 hpbandster
-bokeh==1.1.0
+bokeh==3.8.2
 tqdm
 numpy
 pandas
